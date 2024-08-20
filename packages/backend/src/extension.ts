@@ -9,14 +9,15 @@ import { helloWorldApi } from './api-impl';
  * this file as well as package.json are the two main files that are required to develop a Podman Desktop extension.
  */
 
+
 // Initialize the activation of the extension.
 export async function activate(extensionContext: ExtensionContext): Promise<void> {
   console.log('starting hello world extension');
 
-  // A web view panel is created to display the index
-  // we use the 'media' folder that contains the bread-and-butter of the webview.
+  // A web view panel is created to display the index 
+  // we use the 'media' folder that contains the bread-and-butter of the webview. 
   // it is assumed that index.html is the main file that is being displayed and all other files have already been generated.
-  //
+  // 
   // The 'index.html' and all other files are built with the `yarn build` command within packages/frontend which can also be ran with the
   // `yarn build` command in the main directory, which will also build the backend and shared packages.
   const panel = extensionApi.window.createWebviewPanel('helloWorld', 'Hello World', {

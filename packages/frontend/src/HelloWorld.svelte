@@ -6,9 +6,9 @@ import { helloWorldClient } from './api/client';
 /**
  * HelloWorld component.
  * We use the Podman Desktop UI Svelte component to render a simple "EmptyScreen" component with a title, message and icon.
- *
+ * 
  * A button is also rendered which when clicked will call the "hello" method from the "helloWorldClient" API client which communicates with the backend.
- */
+  */
 </script>
 
 <EmptyScreen

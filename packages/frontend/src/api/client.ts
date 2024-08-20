@@ -3,8 +3,8 @@ import { RpcBrowser } from '/@shared/src/messages/MessageProxy';
 
 /**
  * This file is the client side of the API. It is used to communicate with the backend, which allows
- * cross-communication between the frontend and backend through an RPC-like communication.
- *
+ * cross-communication between the frontend and backend through an RPC-like communication. 
+ * 
  */
 export interface RouterState {
   url: string;

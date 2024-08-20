@@ -1,4 +1,5 @@
 <script lang="ts">
+
 // app.css includes tailwind css dependencies that we use
 import './app.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -7,6 +8,7 @@ import Route from './lib/Route.svelte';
 import { onMount } from 'svelte';
 import { getRouterState } from './api/client';
 import HelloWorld from './HelloWorld.svelte';
+
 
 // Using our router instance, we can determine if the application has been mounted.
 router.mode.hash();
@@ -19,6 +21,7 @@ onMount(() => {
   isMounted = true;
 });
 </script>
+
 
 <!--
   This is the main application component. It is the root component of the application.
