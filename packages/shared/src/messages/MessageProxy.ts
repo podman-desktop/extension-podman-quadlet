@@ -1,11 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Webview } from '@podman-desktop/api';
 
-
 /**
  * The below file creatse a "RPC" like communication between the webview and the browser.
  * Being able to provide a simple wall to call functions between the backend and frontend portions of the extension.
- * 
+ *
  * Keep note that there is a timeout of 10 seconds for each request, if the request is not answered in that time, it will be rejected.
  * So calls that take longer than 10 seconds should be avoided, this can be adjusted by increasing the timeout.
  */

@@ -5,7 +5,7 @@ import { saveRouterState } from '../api/client';
 
 /**
  * Route component.
- * 
+ *
  * This component is used to define a route in the application, to where a component / page should be rendered.
  */
 
