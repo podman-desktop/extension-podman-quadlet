@@ -1,4 +1,4 @@
-# Podman Desktop Extension Full Template
+# Podman Desktop Extension Template for Webview
 
 <p align="center">
   <img alt="Hello World" src="/images/helloselkie.png" width="50%">
@@ -6,9 +6,7 @@
 
 ## Overview
 
-This template provides a "full" example of creating an extension with a webview that utilizes multiple packages. Within this template, we use three separate packages to distinguish between the frontend, backend, and shared code that connects the frontend and backend.
-
-The "full" template is meant to showcase a full production example which includes multiple frontend and backend technologies such as TypeScript, Svelte and TailwindCSS.
+This template provides a simple starting point for creating an extension with a webview that utilizes multiple packages. Within this template, we use three separate packages to distinguish between the frontend, backend, and shared code that connects the frontend and backend.
 
 All backend-related code can be separated into its own package, which improves both security and code organization.
 
