@@ -1,13 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Webview } from '@podman-desktop/api';
 
-/**
- * The below file creatse a "RPC" like communication between the webview and the browser.
- * Being able to provide a simple wall to call functions between the backend and frontend portions of the extension.
- *
- * Keep note that there is a timeout of 10 seconds for each request, if the request is not answered in that time, it will be rejected.
- * So calls that take longer than 10 seconds should be avoided, this can be adjusted by increasing the timeout.
- */
+import type { Webview, Disposable } from '@podman-desktop/api';
+import { noTimeoutChannels } from './NoTimeoutChannels';
 
 export interface IMessage {
   id: number;
@@ -40,15 +34,18 @@ export function isMessageResponse(content: unknown): content is IMessageResponse
   return isMessageRequest(content) && 'status' in content;
 }
 
-export class RpcExtension {
+export class RpcExtension implements Disposable {
+  #webviewDisposable: Disposable | undefined;
   methods: Map<string, (...args: unknown[]) => Promise<unknown>> = new Map();
 
-  constructor(private webview: Webview) {
-    this.init();
+  constructor(private webview: Webview) {}
+
+  dispose(): void {
+    this.#webviewDisposable?.dispose();
   }
 
-  init() {
-    this.webview.onDidReceiveMessage(async (message: unknown) => {
+  init(): void {
+    this.#webviewDisposable = this.webview.onDidReceiveMessage(async (message: unknown) => {
       if (!isMessageRequest(message)) {
         console.error('Received incompatible message.', message);
         return;
@@ -91,18 +88,21 @@ export class RpcExtension {
     });
   }
 
-  registerInstance<T extends Record<keyof T, UnaryRPC>>(classType: { new (...args: any[]): T }, instance: T) {
-    const methodNames = Object.getOwnPropertyNames(classType.prototype).filter(
+  registerInstance<T extends Record<keyof T, UnaryRPC>>(
+    classType: { CHANNEL: string; prototype: T },
+    instance: T,
+  ): void {
+    const methodNames = Object.getOwnPropertyNames(Object.getPrototypeOf(instance)).filter(
       name => name !== 'constructor' && typeof instance[name as keyof T] === 'function',
     );
 
     methodNames.forEach(name => {
       const method = (instance[name as keyof T] as any).bind(instance);
-      this.register(name, method);
+      this.register(`${classType.CHANNEL}-${name}`, method);
     });
   }
 
-  register(channel: string, method: (body: any) => Promise<any>) {
+  register(channel: string, method: (body: any) => Promise<any>): void {
     this.methods.set(channel, method);
   }
 }
@@ -127,7 +127,7 @@ export class RpcBrowser {
     this.init();
   }
 
-  init() {
+  init(): void {
     this.window.addEventListener('message', (event: MessageEvent) => {
       const message = event.data;
       if (isMessageResponse(message)) {
@@ -154,7 +154,7 @@ export class RpcBrowser {
     });
   }
 
-  getProxy<T>(): T {
+  getProxy<T>(classType: { CHANNEL: string; prototype: T }): T {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisRef = this;
     const proxyHandler: ProxyHandler<object> = {
@@ -162,7 +162,7 @@ export class RpcBrowser {
         if (typeof prop === 'string') {
           return (...args: unknown[]) => {
             const channel = prop.toString();
-            return thisRef.invoke(channel, ...args);
+            return thisRef.invoke(`${classType.CHANNEL}-${channel}`, ...args);
           };
         }
         return Reflect.get(target, prop, receiver);
@@ -187,12 +187,15 @@ export class RpcBrowser {
       args: args,
     } as IMessageRequest);
 
-    setTimeout(() => {
-      const { reject } = this.promises.get(requestId) ?? {};
-      if (!reject) return;
-      reject(new Error('Timeout'));
-      this.promises.delete(requestId);
-    }, 10000); // 10 seconds
+    // Add some timeout
+    if (!noTimeoutChannels.includes(channel)) {
+      setTimeout(() => {
+        const { reject } = this.promises.get(requestId) ?? {};
+        if (!reject) return;
+        reject(new Error('Timeout'));
+        this.promises.delete(requestId);
+      }, 5000);
+    }
 
     // Create a Promise
     return promise;
@@ -201,7 +204,7 @@ export class RpcBrowser {
   subscribe(msgId: string, f: (msg: any) => void): Subscriber {
     this.subscribers.set(msgId, f);
     return {
-      unsubscribe: () => {
+      unsubscribe: (): void => {
         this.subscribers.delete(msgId);
       },
     };

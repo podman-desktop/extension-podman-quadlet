@@ -6,7 +6,7 @@ import type { HelloWorldApi } from '/@shared/src/HelloWorldApi';
  *
  * The below code can be used with the podmanDesktopApi to showcase the usage of the API, as well as any other "backend" code that you may want to run.
  */
-export class helloWorldApi implements HelloWorldApi {
+export class HelloWorldApiImpl implements HelloWorldApi {
   constructor(private readonly extensionContext: podmanDesktopApi.ExtensionContext) {}
 
   async hello(): Promise<void> {

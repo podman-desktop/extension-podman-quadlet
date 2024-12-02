@@ -1,4 +1,4 @@
-import { test, expect, beforeAll } from 'vitest';
+import { test, expect, beforeAll, vi } from 'vitest';
 import { RpcBrowser, RpcExtension } from './MessageProxy';
 import type { Webview } from '@podman-desktop/api';
 
@@ -24,6 +24,7 @@ beforeAll(() => {
       expect(channel).toBe('message');
       windowListener = listener;
     },
+    setTimeout: vi.fn(),
   } as unknown as Window;
 
   api = {
@@ -33,8 +34,17 @@ beforeAll(() => {
   } as unknown as PodmanDesktopApi;
 });
 
+test('init logic should be executing once', () => {
+  vi.spyOn(webview, 'onDidReceiveMessage');
+  const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
+
+  expect(webview.onDidReceiveMessage).toHaveBeenCalledOnce();
+});
+
 test('Test register channel no argument', async () => {
   const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
   const rpcBrowser = new RpcBrowser(window, api);
 
   rpcExtension.register('ping', () => {
@@ -46,6 +56,7 @@ test('Test register channel no argument', async () => {
 
 test('Test register channel one argument', async () => {
   const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
   const rpcBrowser = new RpcBrowser(window, api);
 
   rpcExtension.register('double', (value: number) => {
@@ -57,6 +68,7 @@ test('Test register channel one argument', async () => {
 
 test('Test register channel multiple arguments', async () => {
   const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
   const rpcBrowser = new RpcBrowser(window, api);
 
   rpcExtension.register('sum', (...args: number[]) => {
@@ -68,22 +80,69 @@ test('Test register channel multiple arguments', async () => {
 
 test('Test register instance with async', async () => {
   class Dummy {
+    static readonly CHANNEL: string = 'dummy';
     async ping(): Promise<string> {
       return 'pong';
     }
   }
 
   const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
   const rpcBrowser = new RpcBrowser(window, api);
 
   rpcExtension.registerInstance(Dummy, new Dummy());
 
-  const proxy = rpcBrowser.getProxy<Dummy>();
+  const proxy = rpcBrowser.getProxy<Dummy>(Dummy);
+  expect(await proxy.ping()).toBe('pong');
+});
+
+test('Test register instance and implemented abstract classes', async () => {
+  abstract class Foo {
+    static readonly CHANNEL: string = 'dummy';
+    abstract ping(): Promise<'pong'>;
+  }
+
+  class Dummy implements Foo {
+    async ping(): Promise<'pong'> {
+      return 'pong';
+    }
+  }
+
+  const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
+  const rpcBrowser = new RpcBrowser(window, api);
+
+  rpcExtension.registerInstance(Foo, new Dummy());
+
+  const proxy = rpcBrowser.getProxy<Foo>(Foo);
+  expect(await proxy.ping()).toBe('pong');
+});
+
+test('Test register instance and extended abstract classes', async () => {
+  abstract class Foo {
+    static readonly CHANNEL: string = 'dummy';
+    abstract ping(): Promise<'pong'>;
+  }
+
+  class Dummy extends Foo {
+    override async ping(): Promise<'pong'> {
+      return 'pong';
+    }
+  }
+
+  const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
+  const rpcBrowser = new RpcBrowser(window, api);
+
+  rpcExtension.registerInstance(Foo, new Dummy());
+
+  const proxy = rpcBrowser.getProxy<Foo>(Foo);
   expect(await proxy.ping()).toBe('pong');
 });
 
 test('Test raising exception', async () => {
   const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
   const rpcBrowser = new RpcBrowser(window, api);
 
   rpcExtension.register('raiseError', () => {
@@ -91,4 +150,18 @@ test('Test raising exception', async () => {
   });
 
   await expect(rpcBrowser.invoke('raiseError')).rejects.toThrow('big error');
+});
+
+test('A noTimeoutChannel should not call the setTimeout', async () => {
+  const rpcExtension = new RpcExtension(webview);
+  rpcExtension.init();
+  const rpcBrowser = new RpcBrowser(window, api);
+
+  rpcExtension.register('openDialog', () => {
+    return Promise.resolve();
+  });
+  const setTimeoutMock = vi.spyOn(window, 'setTimeout');
+
+  await rpcBrowser.invoke('openDialog');
+  expect(setTimeoutMock).not.toHaveBeenCalled();
 });

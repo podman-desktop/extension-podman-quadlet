@@ -2,7 +2,8 @@ import type { ExtensionContext } from '@podman-desktop/api';
 import * as extensionApi from '@podman-desktop/api';
 import fs from 'node:fs';
 import { RpcExtension } from '/@shared/src/messages/MessageProxy';
-import { helloWorldApi } from './api-impl';
+import { HelloWorldApiImpl } from './api-impl';
+import { HelloWorldApi } from '/@shared/src/HelloWorldApi';
 
 /**
  * Below is the "typical" extension.ts file that is used to activate and deactrivate the extension.
@@ -63,8 +64,11 @@ export async function activate(extensionContext: ExtensionContext): Promise<void
 
   // We now register the 'api' for the webview to communicate to the backend
   const rpcExtension = new RpcExtension(panel.webview);
-  const HelloWorldApi = new helloWorldApi(extensionContext);
-  rpcExtension.registerInstance<helloWorldApi>(helloWorldApi, HelloWorldApi);
+  rpcExtension.init();
+  extensionContext.subscriptions.push(rpcExtension);
+
+  const helloWorldApi = new HelloWorldApiImpl(extensionContext);
+  rpcExtension.registerInstance<HelloWorldApi>(HelloWorldApi, helloWorldApi);
 }
 
 export async function deactivate(): Promise<void> {

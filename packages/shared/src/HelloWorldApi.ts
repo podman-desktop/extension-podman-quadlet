@@ -4,6 +4,8 @@
  */
 
 export abstract class HelloWorldApi {
+  static readonly CHANNEL: string = 'HelloWorldApi';
+
   // In backend/src/api-impl.ts, this method is implemented to show a message to the user.
   abstract hello(): Promise<void>;
 }
