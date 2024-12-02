@@ -32,7 +32,7 @@ The tech stack for this extension template includes:
 * TypeScript
 * Svelte 5
 * TailwindCSS
-* Yarn
+* pnpm
 
 ## Architecture
 
@@ -51,9 +51,9 @@ To build and develop the extension, follow these steps:
 $ git clone https://github.com/containers/podman-desktop-extension-template-webview/
 ```
 
-2. Run `yarn install` to install all relevant packages:
+2. Run `pnpm install` to install all relevant packages:
 ```sh
-$ yarn install
+$ pnpm install
 ```
 
 3. Create a build:
@@ -61,13 +61,13 @@ $ yarn install
 Creating a build will generate all required files for Podman Desktop to load the extension:
 
 ```sh
-$ yarn build
+$ pnpm build
 ```
 
 In the `package.json` and `vite.config.js` files, we create a directory in `/packages/backend/media` that contains all the webview components. You will see output like the following:
 
 ```sh
-$ yarn build
+$ pnpm build
 ...
 [0] transforming...
 [0] ✓ 140 modules transformed.
@@ -84,16 +84,16 @@ $ yarn build
 [0] ../backend/media/index-ChFLTcUn.css                 116.79 kB
 [0] ../backend/media/index-B6Ge7rjZ.js                  125.62 kB │ map: 1,670.57 kB
 [0] ✓ built in 1.49s
-[0] yarn --cwd packages/frontend build exited with code 0
+[0] npm build exited with code 0
 ✨  Done in 3.02s.
 ```
 
 These files will be loaded from the extension.
 
-Optionally, you can also use `yarn watch` to continuously rebuild after each change, without needing to re-run `yarn build`:
+Optionally, you can also use `pnpm watch` to continuously rebuild after each change, without needing to re-run `pnpm build`:
 
 ```sh
-$ yarn watch
+$ pnpm watch
 ```
 
 4. Load the extension temporarily within Podman Desktop:
@@ -110,16 +110,16 @@ Navigate to the directory:
 $ cd podman-desktop
 ```
 
-Run the `yarn install` command:
+Run the `pnpm install` command:
 
 ```sh
-$ yarn install
+$ pnpm install
 ```
 
-Load the extension using the `yarn watch` command with an additional parameter to load the `backend` packaged data:
+Load the extension using the `pnpm watch` command with an additional parameter to load the `backend` packaged data:
 
 ```sh
-yarn watch --extension-folder ../podman-desktop-extension-template-webview/packages/backend
+pnpm watch --extension-folder ../podman-desktop-extension-template-webview/packages/backend
 ```
 
 5. Confirm that the extension has been loaded:
@@ -136,17 +136,17 @@ We include additional tools to assist in development, which can be found in the 
 
 Formatter:
 ```sh
-$ yarn format:fix
+$ pnpm format:fix
 ```
 
 Linter:
 ```sh
-$ yarn lint:fix
+$ pnpm lint:fix
 ```
 
 Typechecker:
 ```sh
-$ yarn typecheck
+$ pnpm typecheck
 ```
 
 ## Packaging and Publishing
