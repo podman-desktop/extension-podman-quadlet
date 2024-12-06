@@ -10,6 +10,7 @@ import Route from '/@/lib/Route.svelte';
 import { onMount } from 'svelte';
 import { quadletAPI } from '/@/api/client';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
+import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 
 interface Props {
   id: string;
@@ -77,7 +78,7 @@ onMount(async () => {
       </div>
     </svelte:fragment>
     <svelte:fragment slot="content">
-      <div class="flex flex-col w-full">
+      <div class="flex flex-col w-full h-full min-h-0">
         <!-- loading indicator -->
         <div class="h-0.5">
           <!-- avoid flickering -->
@@ -90,13 +91,13 @@ onMount(async () => {
         <Route path="/">
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
-          <code class="whitespace-break-spaces text-sm">{quadlet.content}</code>
+          <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
         </Route>
 
         <!-- content of the path -->
         <Route path="/source">
           <span>{quadlet.path}</span>
-          <code class="whitespace-break-spaces text-sm">{quadletSource}</code>
+          <MonacoEditor class="h-full" readOnly content={quadletSource ?? '<unknown>'} language="ini" />
         </Route>
       </div>
     </svelte:fragment>

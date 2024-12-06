@@ -215,7 +215,7 @@ function resetGenerate(): void {
         bind:value={quadletFilename}
         id="quadlet-name" />
 
-      <div class="h-[280px] pt-4">
+      <div class="h-[400px] pt-4">
         <!-- <code class="whitespace-break-spaces text-sm">{quadlet}</code> -->
         <MonacoEditor bind:content={quadlet} language="ini" />
       </div>
