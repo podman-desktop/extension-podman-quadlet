@@ -2,7 +2,7 @@
 
 ## Overview
 
-![quadlet-list.png](images/quadlet-list.png)![loaded](/images/loaded.png)
+![quadlet-list.png](images/quadlet-list.png)
 
 ## Generating Quadlets
 
