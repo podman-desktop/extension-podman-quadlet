@@ -45,7 +45,7 @@
     "monaco-editor": "^0.52.0",
     "postcss": "^8.4.41",
     "postcss-load-config": "^6.0.1",
-    "prettier": "^3.3.3",
+    "prettier": "^3.4.2",
     "prettier-plugin-svelte": "^3.2.6",
     "svelte": "5.8.0",
     "svelte-fa": "^4.0.2",
