@@ -1,16 +1,23 @@
-FROM scratch as builder
-COPY packages/backend/dist/ /extension/dist
-COPY packages/backend/package.json /extension/
-COPY packages/backend/media/ /extension/media
-COPY LICENSE /extension/
-COPY packages/backend/icon.png /extension/
-COPY README.md /extension/
+FROM node:20-slim AS builder
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+
+COPY . /app
+WORKDIR /app
+RUN pnpm install --frozen-lockfile
+RUN pnpm build
 
 FROM scratch
 
-LABEL org.opencontainers.image.title="Your Hello World Extension" \
-        org.opencontainers.image.description="Hello World Extension" \
-        org.opencontainers.image.vendor="Your Org / Username" \
-        io.podman-desktop.api.version=">= 1.12.0"
+COPY --from=builder /app/packages/backend/dist/ /extension/dist
+COPY --from=builder /app/packages/backend/package.json /extension/
+COPY --from=builder /app/packages/backend/media/ /extension/media
+COPY --from=builder /app/LICENSE /extension/
+COPY --from=builder /app/packages/backend/icon.png /extension/
+COPY --from=builder /app/README.md /extension/
 
-COPY --from=builder /extension /extension
+LABEL org.opencontainers.image.title="Podman Quadlet Extension" \
+        org.opencontainers.image.description="Podman Quadlet Extension" \
+        org.opencontainers.image.vendor="axel7083" \
+        io.podman-desktop.api.version=">= 1.14.0"
