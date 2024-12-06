@@ -100,7 +100,7 @@ function navigateToGenerate(): void {
     {#if data?.length > 0}
       <Table kind="service" data={data} columns={columns} row={row} />
     {:else}
-      <EmptyScreen icon={faArrowsRotate} title={'No Quadlet found on the system'}/>
+      <EmptyScreen icon={faArrowsRotate} title={'No Quadlet found on the system'} />
     {/if}
   </svelte:fragment>
 </NavPage>

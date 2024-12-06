@@ -27,3 +27,10 @@ export const QUADLET_GENERATE_FORMS: Record<QuadletTypeGenerate, Component<Quadl
   [QuadletType.NETWORK]: NetworkQuadletForm,
   [QuadletType.IMAGE]: ImageQuadletForm,
 };
+
+export interface QuadletGenerateFormProps {
+  providerId?: string;
+  connection?: string;
+  resourceId?: string;
+  quadletType?: string;
+}

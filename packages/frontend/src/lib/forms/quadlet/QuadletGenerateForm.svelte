@@ -5,6 +5,7 @@ import type { Component } from 'svelte';
 import {
   QUADLET_GENERATE_FORMS,
   type QuadletChildrenFormProps,
+  type QuadletGenerateFormProps,
   RESOURCE_ID_QUERY,
 } from '/@/lib/forms/quadlet/quadlet-utils';
 import { QuadletType, type QuadletTypeGenerate } from '/@shared/src/utils/quadlet-type';
@@ -14,7 +15,6 @@ import { router } from 'tinro';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
 import { ErrorMessage } from '@podman-desktop/ui-svelte';
 import { podletAPI, quadletAPI } from '/@/api/client';
-import type { QuadletGenerateFormProps } from '/@/pages/QuadletGenerate.svelte';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 // import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
