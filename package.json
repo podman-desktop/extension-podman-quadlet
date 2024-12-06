@@ -30,7 +30,7 @@
   "resolutions": {
     "string-width": "^4.2.0",
     "wrap-ansi": "^7.0.0"
-},
+  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.0.1",
@@ -62,5 +62,5 @@
   "dependencies": {
     "js-yaml": "^4.1.0"
   },
-  "packageManager": "pnpm@9.14.1+sha512.7f1de9cffea40ff4594c48a94776112a0db325e81fb18a9400362ff7b7247f4fbd76c3011611c9f8ac58743c3dc526017894e07948de9b72052f874ee2edfdcd"
+  "packageManager": "pnpm@9.15.0+sha512.76e2379760a4328ec4415815bcd6628dee727af3779aaa4c914e3944156c4299921a89f976381ee107d41f12cfa4b66681ca9c718f0668fa0831ed4c6d8ba56c"
 }
