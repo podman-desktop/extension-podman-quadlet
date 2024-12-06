@@ -1,8 +1,7 @@
 /**
  * @author axel7083
  */
-import type extensionApi from '@podman-desktop/api';
-import type { CliTool, Disposable, Logger, RunResult } from '@podman-desktop/api';
+import type { CliTool, Disposable, Logger, RunResult, QuickPickItem } from '@podman-desktop/api';
 import { ProgressLocation } from '@podman-desktop/api';
 import { PODLET_MARKDOWN, PODLET_ORGANISATION, PODLET_REPOSITORY } from '../utils/constants';
 import type { PodletCliDependencies } from './podlet-cli-helper';
@@ -13,7 +12,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { unTarXZ, unZip } from '../utils/archive';
 
-export interface PodletGithubReleaseArtifactMetadata extends extensionApi.QuickPickItem {
+export interface PodletGithubReleaseArtifactMetadata extends QuickPickItem {
   tag: string;
   id: number;
 }

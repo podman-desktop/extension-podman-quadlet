@@ -14,8 +14,18 @@ const cliMock: typeof cliApi = {
 const windowMock: typeof window = {} as unknown as typeof window;
 const octokitMock: Octokit = {} as unknown as Octokit;
 
+vi.mock('@podman-desktop/api', () => ({
+  ProgressLocation: {
+    TASK_WIDGET: 2,
+  },
+}));
+
 beforeEach(() => {
   vi.resetAllMocks();
+
+  vi.mocked(cliMock.createCliTool).mockReturnValue({
+    registerInstaller: vi.fn(),
+  } as unknown as CliTool);
 });
 
 const STORAGE_PATH_MOCK = 'dummy-storage-path';
@@ -86,6 +96,7 @@ test('dispose should dispose cli tool', async () => {
   const disposeMock = vi.fn();
   vi.mocked(cliMock.createCliTool).mockReturnValue({
     dispose: disposeMock,
+    registerInstaller: vi.fn(),
   } as unknown as CliTool);
   const podlet = getPodletCliService();
   await podlet.init();

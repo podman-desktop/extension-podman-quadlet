@@ -35,8 +35,10 @@ SourcePath=/home/user/.config/containers/systemd/nginx2.container
 RequiresMountsFor=%t/containers
 `;
 
+const DUMMY_SERVICE_NAME = 'dummy.container';
+
 test('expect path to be properly extracted', async () => {
-  const parser = new QuadletUnitParser(CONTAINER_QUADLET_EXAMPLE);
+  const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
   const result = await parser.parse();
 
   expect(result).toStrictEqual(
@@ -47,7 +49,7 @@ test('expect path to be properly extracted', async () => {
 });
 
 test('expect content to be identical to input', async () => {
-  const parser = new QuadletUnitParser(CONTAINER_QUADLET_EXAMPLE);
+  const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
   const result = await parser.parse();
 
   expect(result).toStrictEqual(

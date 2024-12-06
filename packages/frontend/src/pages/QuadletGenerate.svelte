@@ -10,13 +10,7 @@ import PodletInstall from '/@/lib/buttons/PodletInstall.svelte';
 import { router } from 'tinro';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
-
-export interface QuadletGenerateFormProps {
-  providerId?: string;
-  connection?: string;
-  resourceId?: string;
-  quadletType?: string;
-}
+import type { QuadletGenerateFormProps } from '/@/lib/forms/quadlet/quadlet-utils';
 
 // We get the query parameters from the parent
 let props: QuadletGenerateFormProps = $props();
