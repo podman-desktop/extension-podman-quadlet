@@ -18,6 +18,18 @@ const config = {
       '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
+  test: {
+    include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    globals: true,
+    environment: 'jsdom',
+    alias: [
+      { find: '@testing-library/svelte', replacement: '@testing-library/svelte/svelte5' },
+      {
+        find: /^monaco-editor$/,
+        replacement: `${PACKAGE_ROOT}/../../node_modules/monaco-editor/esm/vs/editor/editor.api`,
+      },
+    ],
+  },
   build: {
     sourcemap: 'inline',
     target: 'esnext',
@@ -34,7 +46,7 @@ const config = {
         ...builtinModules.flatMap(p => [p, `node:${p}`]),
       ],
       output: {
-        entryFileNames: '[name].js',
+        entryFileNames: '[name].cjs',
       },
     },
     emptyOutDir: true,

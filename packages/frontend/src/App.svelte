@@ -4,35 +4,56 @@ import './app.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { router } from 'tinro';
 import Route from './lib/Route.svelte';
-import { onMount } from 'svelte';
-import { getRouterState } from './api/client';
-import HelloWorld from './HelloWorld.svelte';
+import { onDestroy, onMount } from 'svelte';
+import { getRouterState, rpcBrowser } from './api/client';
+import QuadletDetails from '/@/pages/QuadletDetails.svelte';
+import QuadletsList from '/@/pages/QuadletsList.svelte';
+import { Messages } from '/@shared/src/messages';
+import type { Unsubscriber } from 'svelte/store';
+import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
 
-// Using our router instance, we can determine if the application has been mounted.
 router.mode.hash();
-let isMounted = false;
+let isMounted = $state(false);
+const unsubscribers: Unsubscriber[] = [];
 
-onMount(() => {
+onMount(async () => {
   // Load router state on application startup
-  const state = getRouterState();
+  const state = await getRouterState();
   router.goto(state.url);
   isMounted = true;
+
+  unsubscribers.push(
+    rpcBrowser.subscribe(Messages.ROUTE_UPDATE, location => {
+      router.goto(location);
+    }).unsubscribe,
+  );
+});
+
+onDestroy(() => {
+  unsubscribers.forEach(unsubscriber => unsubscriber());
 });
 </script>
 
-<!--
-  This is the main application component. It is the root component of the application.
-  It is responsible for rendering the application layout and routing the application to the correct page.
-
-  For example, the main page of the application is the "HelloWorld" svelte component.$derived
-
-  This can be expanded more by including more Route paths which the application can navigate too, for example /about, /contact etc.
--->
-<Route path="/*" breadcrumb="Hello World" isAppMounted={isMounted} let:meta>
+<Route path="/*" breadcrumb="" isAppMounted={isMounted} let:meta>
   <main class="flex flex-col w-screen h-screen overflow-hidden bg-[var(--pd-content-bg)]">
     <div class="flex flex-row w-full h-full overflow-hidden">
-      <Route path="/" breadcrumb="Hello World Page">
-        <HelloWorld />
+      <!-- list all quadlets -->
+      <Route path="/" breadcrumb="Quadlets">
+        <QuadletsList />
+      </Route>
+
+      <!-- create quadlet -->
+      <Route path="/quadlets/generate/*" firstmatch let:meta>
+        <QuadletGenerate
+          providerId={meta.query.providerId}
+          connection={meta.query.connection}
+          quadletType={meta.query.quadletType}
+          resourceId={meta.query.resourceId} />
+      </Route>
+
+      <!-- quadlets details -->
+      <Route path="/quadlets/:providerId/:connection/:id/*" firstmatch let:meta>
+        <QuadletDetails providerId={meta.params.providerId} connection={meta.params.connection} id={meta.params.id} />
       </Route>
     </div>
   </main>

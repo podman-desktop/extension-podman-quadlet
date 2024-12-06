@@ -1,15 +1,16 @@
 {
-  "name": "helloworld",
-  "displayName": "Hello World",
-  "description": "Hello World extension",
+  "name": "quadlet",
+  "displayName": "Pdoman Quadlet",
+  "description": "Manage, generate Podman Quadlet",
   "version": "0.0.1",
   "icon": "icon.png",
-  "publisher": "you",
+  "publisher": "axel7083",
+  "type": "module",
   "license": "Apache-2.0",
   "engines": {
     "podman-desktop": ">=1.10.0"
   },
-  "main": "./dist/extension.js",
+  "main": "./dist/extension.cjs",
   "scripts": {
     "build": "vite build",
     "test": "vitest run --coverage",
@@ -20,8 +21,39 @@
     "lint:fix": "eslint . --fix --ext js,ts,tsx",
     "watch": "vite --mode development build -w"
   },
+  "contributes": {
+    "icons": {
+      "quadlet-icon": {
+        "description": "Quadlet icon",
+        "default": {
+          "fontPath": "quadlet-icon.woff2",
+          "fontCharacter": "\\EA02"
+        }
+      }
+    },
+    "views": {
+      "icons/containersList": [
+        {
+          "when": "PODMAN_SYSTEMD_UNIT in containerLabelKeys",
+          "icon": "${quadlet-icon}"
+        }
+      ]
+    },
+    "menus": {
+      "dashboard/container": [{
+        "command": "podlet.generate.container",
+        "title": "Generate Quadlet"
+      }]
+    },
+    "commands": [{
+      "command": "podlet.generate.container",
+      "title": "Podlet: generate"
+    }]
+  },
   "devDependencies": {
-    "@podman-desktop/api": "1.12.0",
+    "@podman-desktop/api": "^1.14.1",
+    "@podman-desktop/podman-extension-api": "next",
+    "@types/ini": "^4.1.1",
     "@types/node": "^20",
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^6.16.0",
@@ -37,9 +69,16 @@
     "prettier": "^3.3.3",
     "typescript": "5.5.4",
     "vite": "^5.4.1",
-    "vitest": "^2.0.2"
+    "vitest": "^2.0.2",
+    "@types/tar-fs": "^2.0.4",
+    "@types/unzipper": "^0.10.10",
+    "xz-decompress": "^0.2.2"
   },
   "dependencies": {
-    "semver": "^7.6.3"
+    "ini": "^5.0.0",
+    "semver": "^7.6.3",
+    "@octokit/rest": "^21.0.2",
+    "tar-fs": "^3.0.6",
+    "unzipper": "^0.11.6"
   }
 }
