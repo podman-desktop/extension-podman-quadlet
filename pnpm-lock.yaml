@@ -184,8 +184,8 @@ importers:
         specifier: ^6.6.0
         version: 6.7.1
       '@podman-desktop/ui-svelte':
-        specifier: ^1.15.0-202412031339-936cb90e72b
-        version: 1.15.0-202412031339-936cb90e72b(svelte-fa@4.0.3(svelte@5.8.0))(svelte@5.8.0)
+        specifier: ^1.15.0-202412061045-b1000c2d866
+        version: 1.15.0-202412061045-b1000c2d866(svelte-fa@4.0.3(svelte@5.8.0))(svelte@5.8.0)
       '@sveltejs/vite-plugin-svelte':
         specifier: 3.1.1
         version: 3.1.1(svelte@5.8.0)(vite@5.4.11(@types/node@20.17.9))
@@ -622,8 +622,8 @@ packages:
   '@podman-desktop/podman-extension-api@1.15.0-202412061045-b1000c2d866':
     resolution: {integrity: sha512-HUIa4K+p1rEcYKEX37tbFwUfjAkcxEWQKFc7kvbGknoxGLJ7FknrGFDi1zgREV2SlHWfWWRGyEUrjTX9oir/iQ==}
 
-  '@podman-desktop/ui-svelte@1.15.0-202412031339-936cb90e72b':
-    resolution: {integrity: sha512-A7K7K0Rr/6JucjqF17WYpbygfmDkphvDfGjq0vK/KJBkh5s3k7i1BXfxFKfjWltf2hcqVLHZIavHky/FM6gGHw==}
+  '@podman-desktop/ui-svelte@1.15.0-202412061045-b1000c2d866':
+    resolution: {integrity: sha512-nVWkUZPHbZTWRyYHj7oKASllicVCrawej9IJ2tauxxFmUmHLdJZ/7A35HmK/sTndcjwreGjv+GZ1RdxuGxhRfg==}
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0
       svelte-fa: ^4.0.0
@@ -3235,7 +3235,7 @@ snapshots:
     dependencies:
       '@podman-desktop/api': 1.15.0-202412061045-b1000c2d866
 
-  '@podman-desktop/ui-svelte@1.15.0-202412031339-936cb90e72b(svelte-fa@4.0.3(svelte@5.8.0))(svelte@5.8.0)':
+  '@podman-desktop/ui-svelte@1.15.0-202412061045-b1000c2d866(svelte-fa@4.0.3(svelte@5.8.0))(svelte@5.8.0)':
     dependencies:
       '@fortawesome/fontawesome-free': 6.7.1
       '@fortawesome/free-brands-svg-icons': 6.7.1
