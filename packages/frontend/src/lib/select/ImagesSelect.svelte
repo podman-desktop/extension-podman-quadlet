@@ -42,7 +42,7 @@ function handleOnChange(nValue: SimpleImageInfo | undefined): void {
   <div slot="item" let:item>
     <div class="flex items-center">
       <div class="grow">
-        <span>{item.name.substring(1)}</span>
+        <span>{item.name}</span>
       </div>
     </div>
   </div>
