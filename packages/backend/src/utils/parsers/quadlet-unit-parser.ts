@@ -3,7 +3,7 @@
  */
 
 import { Parser } from './iparser';
-import { parse } from 'ini';
+import { parse } from 'js-ini';
 import type { Quadlet } from '../../models/quadlet';
 
 interface Unit {
@@ -27,8 +27,10 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
   }
 
   override async parse(): Promise<Quadlet> {
-    const raw = parse(this.content);
-    const unit = this.toUnit(raw['Unit']);
+    const raw = parse(this.content, {
+      comment: ['#', ';'],
+    });
+    const unit = this.toUnit(raw['Unit'] as Record<string, string>);
 
     return {
       path: unit.SourcePath,

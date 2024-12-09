@@ -19,7 +19,7 @@ import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import Stepper from '/@/lib/stepper/Stepper.svelte';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
-import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
+import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 
 interface Props extends QuadletGenerateFormProps {
   loading: boolean;
@@ -213,8 +213,7 @@ function resetGenerate(): void {
         id="quadlet-name" />
 
       <div class="h-[400px] pt-4">
-        <!-- <code class="whitespace-break-spaces text-sm">{quadlet}</code> -->
-        <MonacoEditor bind:content={quadlet} language="ini" />
+        <QuadletEditor validate bind:content={quadlet} />
       </div>
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">

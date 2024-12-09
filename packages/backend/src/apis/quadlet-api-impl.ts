@@ -9,6 +9,8 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import type { SystemdService } from '../services/systemd-service';
 import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
+import type { QuadletCheck } from '/@shared/src/models/quadlet-check';
+import { QuadletValidator } from '../utils/validators/quadlet-validator';
 
 interface Dependencies {
   quadlet: QuadletService;
@@ -91,5 +93,9 @@ export class QuadletApiImpl extends QuadletApi {
       ...options,
       provider: providerConnection,
     });
+  }
+
+  override async validate(content: string): Promise<QuadletCheck[]> {
+    return new QuadletValidator().validate(content);
   }
 }
