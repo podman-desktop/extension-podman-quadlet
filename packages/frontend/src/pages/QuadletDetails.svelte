@@ -1,16 +1,15 @@
 <script lang="ts">
-// import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { quadletsInfo } from '/@store/quadlets';
 import { DetailsPage, Tab } from '@podman-desktop/ui-svelte';
 import { router } from 'tinro';
-import Fa from 'svelte-fa';
-import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons/faMagnifyingGlass';
 import Route from '/@/lib/Route.svelte';
 import { onMount } from 'svelte';
 import { quadletAPI } from '/@/api/client';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
+import QuadletActions from '/@/lib/table/QuadletActions.svelte';
+import QuadletStatus from '/@/lib/QuadletStatus.svelte';
 
 interface Props {
   id: string;
@@ -34,6 +33,11 @@ let quadlet: QuadletInfo | undefined = $derived(
 export function close(): void {
   router.goto('/');
 }
+
+$effect(() => {
+  // redirect to quadlet list if ni quadlet info is found
+  if (!quadlet) router.goto('/');
+});
 
 onMount(async () => {
   try {
@@ -60,6 +64,9 @@ onMount(async () => {
     breadcrumbRightPart={quadlet.id}
     breadcrumbTitle="Go back to quadlets page"
     onbreadcrumbClick={close}>
+    <svelte:fragment slot="actions">
+      <QuadletActions object={quadlet} />
+    </svelte:fragment>
     <svelte:fragment slot="tabs">
       <!-- generated tab -->
       <Tab
@@ -73,9 +80,7 @@ onMount(async () => {
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/source`} />
     </svelte:fragment>
     <svelte:fragment slot="icon">
-      <div class="rounded-full w-8 h-8 flex items-center justify-center">
-        <Fa size="1.125x" class="text-[var(--pd-content-header-icon)]" icon={faMagnifyingGlass} />
-      </div>
+      <QuadletStatus object={quadlet} />
     </svelte:fragment>
     <svelte:fragment slot="content">
       <div class="flex flex-col w-full h-full min-h-0">
@@ -89,6 +94,12 @@ onMount(async () => {
 
         <!-- quadlet -dryrun output -->
         <Route path="/">
+          <div class="flex py-2 h-[40px]">
+            <span
+              class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
+              quadlet generated service
+            </span>
+          </div>
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
           <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
@@ -96,7 +107,12 @@ onMount(async () => {
 
         <!-- content of the path -->
         <Route path="/source">
-          <span>{quadlet.path}</span>
+          <div class="flex py-2 h-[40px]">
+            <span
+              class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
+              {quadlet.path}
+            </span>
+          </div>
           <MonacoEditor class="h-full" readOnly content={quadletSource ?? '<unknown>'} language="ini" />
         </Route>
       </div>
