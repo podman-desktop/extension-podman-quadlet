@@ -34,7 +34,7 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^8.1.0",
     "@typescript-eslint/parser": "^8.0.1",
-    "@vitest/coverage-v8": "^2.0.2",
+    "@vitest/coverage-v8": "^2.1.6",
     "autoprefixer": "^10.4.20",
     "concurrently": "^9.1.0",
     "eslint": "^8.56.0",
@@ -50,8 +50,8 @@
     "svelte": "5.9.0",
     "svelte-check": "^4.1.1",
     "typescript": "5.7.2",
-    "vite": "^5.4.1",
-    "vitest": "^2.0.2"
+    "vite": "^6.0.1",
+    "vitest": "^2.1.6"
   },
   "workspaces": {
     "packages": [
