@@ -1,6 +1,5 @@
 <script lang="ts">
 import { FormPage, EmptyScreen } from '@podman-desktop/ui-svelte';
-import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import Fa from 'svelte-fa';
 import { onMount } from 'svelte';
 import { podletAPI } from '/@/api/client';

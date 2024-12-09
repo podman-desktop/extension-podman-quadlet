@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { QuadletChildrenFormProps } from '/@/lib/forms/quadlet/quadlet-utils';
 
-let {}: QuadletChildrenFormProps = $props();
+let { provider }: QuadletChildrenFormProps = $props();
 </script>
 
-<span>Pod quadlet form</span>
+<span>Pod quadlet form ({provider?.providerId})</span>

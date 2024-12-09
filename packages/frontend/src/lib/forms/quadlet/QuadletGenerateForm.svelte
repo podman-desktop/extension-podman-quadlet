@@ -1,6 +1,6 @@
 <script lang="ts">
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
-import { Button } from '@podman-desktop/ui-svelte';
+import { Button, ErrorMessage, EmptyScreen, Input } from '@podman-desktop/ui-svelte';
 import type { Component } from 'svelte';
 import {
   QUADLET_GENERATE_FORMS,
@@ -13,15 +13,12 @@ import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/model
 import { providerConnectionsInfo } from '/@store/connections';
 import { router } from 'tinro';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
-import { ErrorMessage } from '@podman-desktop/ui-svelte';
 import { podletAPI, quadletAPI } from '/@/api/client';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 // import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import Stepper from '/@/lib/stepper/Stepper.svelte';
-import { EmptyScreen } from '@podman-desktop/ui-svelte';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
-import { Input } from '@podman-desktop/ui-svelte';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 
 interface Props extends QuadletGenerateFormProps {
