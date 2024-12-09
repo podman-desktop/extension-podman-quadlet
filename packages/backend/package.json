@@ -38,34 +38,37 @@
       ]
     },
     "menus": {
-      "dashboard/container": [{
-        "command": "podlet.generate.container",
-        "title": "Generate Quadlet"
-      }]
+      "dashboard/container": [
+        {
+          "command": "podlet.generate.container",
+          "title": "Generate Quadlet"
+        }
+      ]
     },
-    "commands": [{
-      "command": "podlet.generate.container",
-      "title": "Podlet: generate"
-    }]
+    "commands": [
+      {
+        "command": "podlet.generate.container",
+        "title": "Podlet: generate"
+      }
+    ]
   },
   "devDependencies": {
     "@podman-desktop/api": "^1.14.2",
     "@podman-desktop/podman-extension-api": "next",
-    "@types/ini": "^4.1.1",
     "@types/node": "^20",
+    "@types/tar-fs": "^2.0.4",
+    "@types/unzipper": "^0.10.10",
     "@vitest/coverage-v8": "^2.1.6",
     "prettier": "^3.4.2",
     "typescript": "5.7.2",
     "vite": "^6.0.1",
     "vitest": "^2.1.6",
-    "@types/tar-fs": "^2.0.4",
-    "@types/unzipper": "^0.10.10",
     "xz-decompress": "^0.2.2"
   },
   "dependencies": {
-    "ini": "^5.0.0",
-    "semver": "^7.6.3",
     "@octokit/rest": "^21.0.2",
+    "js-ini": "^1.6.0",
+    "semver": "^7.6.3",
     "tar-fs": "^3.0.6",
     "unzipper": "^0.11.6"
   }

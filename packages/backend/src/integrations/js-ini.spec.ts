@@ -2,10 +2,10 @@
  * @author axel7083
  */
 import { test, expect } from 'vitest';
-import { parse } from 'ini';
+import { KeyMergeStrategies, parse, stringify } from 'js-ini';
 
 // full example of an
-const SIMPLE_SERVICE = `
+const COMPLEX_SERVICE = `
 [X-Container]
 ContainerName=demo-quadlet-2
 Image=nginx
@@ -44,8 +44,27 @@ PodmanArgs=--cgroups=enabled
 PublishPort=8081:80
 `;
 
-test('expect SIMPLE_SERVICE to be parsed to be parsed properly', () => {
-  const ini = parse(SIMPLE_SERVICE);
+// basic example
+const SIMPLE_EXAMPLE = `
+[X-Container]
+ContainerName=demo-quadlet-2
+Image=nginx
+PodmanArgs="--cgroups=enabled"
+PublishPort=8081:80
+`;
+
+const DUPLICATE_KEY_EXAMPLE = `
+[X-Container]
+ContainerName=demo-quadlet-2
+Image=nginx
+PodmanArgs=--cgroups=enabled
+PublishPort=8081:80
+Annotation=hello=world
+Annotation=world=hello
+`;
+
+test('expect COMPLEX_SERVICE to be parsed to be parsed properly', () => {
+  const ini = parse(COMPLEX_SERVICE);
   expect(ini).toHaveProperty('X-Container');
   expect(ini).toHaveProperty('Service');
   expect(ini).toHaveProperty('Install');
@@ -85,10 +104,34 @@ test('expect SIMPLE_SERVICE to be parsed to be parsed properly', () => {
 });
 
 test('expect COMMENTS_EXAMPLE to be parsed properly', () => {
-  const ini = parse(COMMENTS_EXAMPLE);
+  const ini = parse(COMMENTS_EXAMPLE, {
+    comment: [';', '#'],
+  });
   expect(ini).toEqual({
     'X-Container': {
       ContainerName: 'demo-quadlet-2',
+      Image: 'nginx',
+      PodmanArgs: '--cgroups=enabled',
+      PublishPort: '8081:80',
+    },
+  });
+});
+
+test('expect identity operation to keep all data', () => {
+  const ini = parse(SIMPLE_EXAMPLE);
+  const raw = stringify(ini);
+
+  expect(raw.trim()).toBe(SIMPLE_EXAMPLE.trim());
+});
+
+test('expect duplicate key to be merged as an array', () => {
+  const ini = parse(DUPLICATE_KEY_EXAMPLE, {
+    keyMergeStrategy: KeyMergeStrategies.JOIN_TO_ARRAY,
+  });
+  expect(ini).toEqual({
+    'X-Container': {
+      ContainerName: 'demo-quadlet-2',
+      Annotation: ['hello=world', 'world=hello'],
       Image: 'nginx',
       PodmanArgs: '--cgroups=enabled',
       PublishPort: '8081:80',
