@@ -36,8 +36,8 @@ export function close(): void {
 
 $effect(() => {
   // redirect to quadlet list if ni quadlet info is found
-  if(!quadlet) router.goto('/');
-})
+  if (!quadlet) router.goto('/');
+});
 
 onMount(async () => {
   try {
@@ -65,7 +65,7 @@ onMount(async () => {
     breadcrumbTitle="Go back to quadlets page"
     onbreadcrumbClick={close}>
     <svelte:fragment slot="actions">
-      <QuadletActions object={quadlet}/>
+      <QuadletActions object={quadlet} />
     </svelte:fragment>
     <svelte:fragment slot="tabs">
       <!-- generated tab -->
@@ -80,7 +80,7 @@ onMount(async () => {
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/source`} />
     </svelte:fragment>
     <svelte:fragment slot="icon">
-      <QuadletStatus object={quadlet}/>
+      <QuadletStatus object={quadlet} />
     </svelte:fragment>
     <svelte:fragment slot="content">
       <div class="flex flex-col w-full h-full min-h-0">
