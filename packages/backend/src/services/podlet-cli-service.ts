@@ -343,6 +343,7 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
 
   protected async makeExecutable(filePath: string): Promise<void> {
     if (this.dependencies.env.isMac || this.dependencies.env.isLinux) {
+      // eslint-disable-next-line sonarjs/file-permissions
       await promises.chmod(filePath, 0o755);
     }
   }

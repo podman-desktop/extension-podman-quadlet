@@ -25,12 +25,12 @@ const columns = [
   new TableColumn<QuadletInfo, string>('Service name', {
     renderer: TableSimpleColumn,
     align: 'left',
-    renderMapping: (quadletsInfo: QuadletInfo) => quadletsInfo.id,
+    renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.id,
   }),
   new TableColumn<QuadletInfo, string>('Path', {
     renderer: TableSimpleColumn,
     align: 'left',
-    renderMapping: (quadletsInfo: QuadletInfo) => quadletsInfo.path,
+    renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.path,
   }),
   new TableColumn<QuadletInfo>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
 ];

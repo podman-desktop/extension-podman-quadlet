@@ -25,7 +25,7 @@ export const podletAPI: PodletApi = rpcBrowser.getProxy(PodletApi);
 
 // The below code is used to save the state of the router in the podmanDesktopApi, so
 // that we can determine the correct route to display when the extension is reloaded.
-export const saveRouterState = (state: RouterState) => {
+export const saveRouterState = (state: RouterState): void => {
   podmanDesktopApi.setState(state);
 };
 

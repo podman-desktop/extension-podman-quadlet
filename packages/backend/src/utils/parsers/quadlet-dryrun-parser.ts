@@ -24,6 +24,7 @@ export class QuadletDryRunParser extends Parser<string, Quadlet[]> {
     }
 
     // Regular expression to match the structure of the content
+    // eslint-disable-next-line sonarjs/slow-regex
     const serviceRegex = /---(.*?)---\n([\s\S]*?)(?=---|$)/g;
     let match;
 

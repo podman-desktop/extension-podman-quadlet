@@ -40,32 +40,34 @@ onMount(async () => {
   const terminalBg = getTerminalBg();
   const isDarkTheme: boolean = terminalBg === '#000000';
 
-  import('monaco-editor/esm/vs/editor/editor.api').then(monaco => {
-    // define custom theme
-    monaco.editor.defineTheme('podmanDesktopTheme', {
-      base: isDarkTheme ? 'vs-dark' : 'vs',
-      inherit: true,
-      rules: [{ token: 'custom-color', background: terminalBg }],
-      colors: {
-        'editor.background': terminalBg,
-        // make the --vscode-focusBorder transparent
-        focusBorder: '#00000000',
-      },
-    });
+  import('monaco-editor/esm/vs/editor/editor.api')
+    .then(monaco => {
+      // define custom theme
+      monaco.editor.defineTheme('podmanDesktopTheme', {
+        base: isDarkTheme ? 'vs-dark' : 'vs',
+        inherit: true,
+        rules: [{ token: 'custom-color', background: terminalBg }],
+        colors: {
+          'editor.background': terminalBg,
+          // make the --vscode-focusBorder transparent
+          focusBorder: '#00000000',
+        },
+      });
 
-    editor = monaco.editor.create(editorContainer, {
-      value: content,
-      language: language,
-      automaticLayout: true,
-      scrollBeyondLastLine: false,
-      readOnly: readOnly,
-      theme: 'podmanDesktopTheme',
-    });
+      editor = monaco.editor.create(editorContainer, {
+        value: content,
+        language: language,
+        automaticLayout: true,
+        scrollBeyondLastLine: false,
+        readOnly: readOnly,
+        theme: 'podmanDesktopTheme',
+      });
 
-    editor.onDidChangeModelContent(() => {
-      content = editor.getValue();
-    });
-  });
+      editor.onDidChangeModelContent(() => {
+        content = editor.getValue();
+      });
+    })
+    .catch(console.error);
 });
 
 onDestroy(() => {

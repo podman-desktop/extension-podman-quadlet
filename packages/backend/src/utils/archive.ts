@@ -5,7 +5,7 @@ import { Open } from 'unzipper';
 import fs from 'node:fs';
 import * as tarFs from 'tar-fs';
 import type { Readable } from 'node:stream';
-import { pipeline } from 'stream/promises';
+import { pipeline } from 'node:stream/promises';
 import { XzReadableStream } from 'xz-decompress';
 
 /**
@@ -20,12 +20,12 @@ export async function unZip(options: { source: string; destination: string }): P
 // Helper function to convert a Node.js ReadStream to a web-compatible ReadableStream
 function nodeToWebReadable(nodeStream: Readable): ReadableStream<Uint8Array> {
   return new ReadableStream<Uint8Array>({
-    start(controller) {
+    start(controller): void {
       nodeStream.on('data', chunk => controller.enqueue(chunk));
       nodeStream.on('end', () => controller.close());
       nodeStream.on('error', error => controller.error(error));
     },
-    cancel() {
+    cancel(): void {
       nodeStream.destroy();
     },
   });
