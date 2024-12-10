@@ -16,7 +16,7 @@ export class QuadletTypeParser extends Parser<string, QuadletType> {
     });
 
     const quadletType = Object.values(QuadletType).find(type => type in raw);
-    if(!quadletType) {
+    if (!quadletType) {
       throw new Error('cannot determine quadletType');
     }
     return quadletType;

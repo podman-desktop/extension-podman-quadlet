@@ -3,7 +3,12 @@
  */
 import type { Disposable, commands as commandsApi, ProviderContainerConnection } from '@podman-desktop/api';
 import type { AsyncInit } from '../utils/async-init';
-import { COMPOSE_LABEL_CONFIG_FILES, PODLET_COMPOSE_CMD, PODLET_GENERATE_CONTAINER_CMD } from '../utils/constants';
+import {
+  COMPOSE_LABEL_CONFIG_FILES,
+  COMPOSE_LABEL_WORKING_DIR,
+  PODLET_COMPOSE_CMD,
+  PODLET_GENERATE_CONTAINER_CMD,
+} from '../utils/constants';
 import type { ContainerInfoUI } from '../models/container-info-ui';
 import type { RoutingService } from './routing-service';
 import type { ContainerService } from './container-service';
@@ -33,27 +38,28 @@ export class CommandService implements Disposable, AsyncInit {
     );
 
     this.#disposables.push(
-      this.dependencies.commandsApi.registerCommand(
-        PODLET_COMPOSE_CMD,
-        this.handleCompose.bind(this),
-      ),
+      this.dependencies.commandsApi.registerCommand(PODLET_COMPOSE_CMD, this.handleCompose.bind(this)),
     );
   }
 
   protected async handleCompose(raw: ComposeInfoUI): Promise<void> {
-    if(raw.containers.length === 0) throw new Error('cannot generate quadlet without containers in the compose project');
+    if (raw.containers.length === 0)
+      throw new Error('cannot generate quadlet without containers in the compose project');
 
-    const workingDir: string | undefined = raw.containers[0].labels[COMPOSE_LABEL_CONFIG_FILES];
+    const workingDir: string | undefined = raw.containers[0].labels[COMPOSE_LABEL_WORKING_DIR];
     let configFile: string | undefined = raw.containers[0].labels[COMPOSE_LABEL_CONFIG_FILES];
 
-    if(!configFile || !workingDir) throw new Error(`Missing labels ${COMPOSE_LABEL_CONFIG_FILES} and ${COMPOSE_LABEL_CONFIG_FILES} in compose containers`);
+    if (!configFile || !workingDir)
+      throw new Error(
+        `Missing labels ${COMPOSE_LABEL_CONFIG_FILES} and ${COMPOSE_LABEL_CONFIG_FILES} in compose containers`,
+      );
 
-    if(!isAbsolute(configFile)) {
+    if (!isAbsolute(configFile)) {
       configFile = join(workingDir, configFile);
     }
 
     const stats = await stat(configFile);
-    if(!stats.isFile()) {
+    if (!stats.isFile()) {
       throw new Error(`invalid compose configuration file: ${configFile}`);
     }
 

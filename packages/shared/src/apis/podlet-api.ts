@@ -3,7 +3,7 @@
  */
 import type { SimpleContainerInfo } from '../models/simple-container-info';
 import type { ProviderContainerConnectionIdentifierInfo } from '../models/provider-container-connection-identifier-info';
-import { QuadletType, QuadletTypeGenerate } from '../utils/quadlet-type';
+import type { QuadletType, QuadletTypeGenerate } from '../utils/quadlet-type';
 
 export abstract class PodletApi {
   static readonly CHANNEL: string = 'podlet-api';
@@ -18,7 +18,7 @@ export abstract class PodletApi {
 
   abstract compose(options: {
     filepath: string;
-    type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD,
+    type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
   }): Promise<string>;
 
   abstract install(): Promise<void>;

@@ -168,9 +168,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     this.notify();
   }
 
-  protected splitResources(basename: string, content: string): { filename: string, content: string }[] {
+  protected splitResources(basename: string, content: string): { filename: string; content: string }[] {
     const resources = content.split('---');
-    return resources.map((resource) => {
+    return resources.map(resource => {
       console.log('analying resource', resource);
       try {
         const type = new QuadletTypeParser(resource).parse();

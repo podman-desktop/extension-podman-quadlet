@@ -53,7 +53,10 @@ onDestroy(() => {
       </Route>
 
       <Route path="/quadlets/compose/*" firstmatch let:meta>
-        <QuadletCompose providerId={meta.query.providerId} connection={meta.query.connection} filepath={meta.query.filepath} />
+        <QuadletCompose
+          providerId={meta.query.providerId}
+          connection={meta.query.connection}
+          filepath={meta.query.filepath} />
       </Route>
 
       <!-- quadlets details -->

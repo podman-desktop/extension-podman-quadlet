@@ -87,8 +87,8 @@ function onGenerated(value: string): void {
   quadlet = value;
 
   const comment = quadlet.split('\n')[0];
-  if(comment.startsWith('#')) {
-    const [ name ] = comment.substring(2).split('.');
+  if (comment.startsWith('#')) {
+    const [name] = comment.substring(2).split('.');
     quadletFilename = name;
   }
 }

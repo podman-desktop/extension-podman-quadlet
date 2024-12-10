@@ -40,9 +40,7 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
     this.dependencies.panel.reveal();
   }
 
-  async openQuadletCompose(
-    filepath: string
-  ): Promise<void> {
+  async openQuadletCompose(filepath: string): Promise<void> {
     return this.write(`/quadlets/compose?filepath=${filepath}`);
   }
 

@@ -7,9 +7,7 @@ import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
-import type {
-  ProviderContainerConnectionDetailedInfo
-} from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { providerConnectionsInfo } from '/@store/connections';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';
@@ -47,14 +45,14 @@ function onGenerated(value: string): void {
   quadlet = value;
 
   const comment = quadlet.split('\n')[0];
-  if(comment.startsWith('#')) {
-    const [ name ] = comment.substring(2).split('.');
+  if (comment.startsWith('#')) {
+    const [name] = comment.substring(2).split('.');
     quadletFilename = name;
   }
 }
 
 async function generate(): Promise<void> {
-  if(!filepath) return;
+  if (!filepath) return;
   loading = true;
 
   podletAPI
@@ -64,9 +62,7 @@ async function generate(): Promise<void> {
     })
     .then(onGenerated)
     .catch((err: unknown) => {
-      onError(
-        `Something went wrong while generating compose quadlet for provider: ${String(err)}`,
-      );
+      onError(`Something went wrong while generating compose quadlet for provider: ${String(err)}`);
     })
     .finally(() => {
       loading = false;
@@ -74,7 +70,7 @@ async function generate(): Promise<void> {
 }
 
 function onContainerProviderConnectionChange(value: ProviderContainerConnectionDetailedInfo | undefined): void {
-  if(value) {
+  if (value) {
     router.location.query.set('providerId', value.providerId);
     router.location.query.set('connection', value.name);
   } else {
@@ -101,7 +97,6 @@ async function saveIntoMachine(): Promise<void> {
     loading = false;
   }
 }
-
 
 function resetGenerate(): void {
   error = undefined;
@@ -141,11 +136,11 @@ function onQuadletTypeChange(value: string): void {
 
     {#if step === 'select'}
       <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-      >Compose file</label>
+        >Compose file</label>
       <Input readonly value={filepath} />
 
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-      >Quadlet type</label>
+        >Quadlet type</label>
       <RadioButtons
         disabled={loading}
         onChange={onQuadletTypeChange}
@@ -171,17 +166,12 @@ function onQuadletTypeChange(value: string): void {
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button
-          class=""
-          disabled={!filepath}
-          icon={faCode}
-          title="Generate"
-          on:click={generate}>Generate</Button>
+        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generate}>Generate</Button>
       </div>
       <!-- step 2 edit -->
     {:else if step === 'edit' && quadlet !== undefined}
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-      >Container engine</label>
+        >Container engine</label>
       <ContainerProviderConnectionSelect
         disabled={loading}
         onChange={onContainerProviderConnectionChange}
@@ -189,7 +179,7 @@ function onQuadletTypeChange(value: string): void {
         containerProviderConnections={$providerConnectionsInfo} />
 
       <label for="quadlet-name" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-      >Quadlet name</label>
+        >Quadlet name</label>
       <Input
         class="grow"
         name="quadlet name"
