@@ -12,6 +12,7 @@ FROM scratch
 
 COPY --from=builder /app/packages/backend/dist/ /extension/dist
 COPY --from=builder /app/packages/backend/package.json /extension/
+COPY --from=builder /app/packages/backend/quadlet-icon.woff2 /extension/
 COPY --from=builder /app/packages/backend/media/ /extension/media
 COPY --from=builder /app/LICENSE /extension/
 COPY --from=builder /app/packages/backend/icon.png /extension/
