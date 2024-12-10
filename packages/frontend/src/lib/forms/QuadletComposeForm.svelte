@@ -1,87 +1,45 @@
 <script lang="ts">
-import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
-import { Button, ErrorMessage, EmptyScreen, Input } from '@podman-desktop/ui-svelte';
-import type { Component } from 'svelte';
-import {
-  QUADLET_GENERATE_FORMS,
-  type QuadletChildrenFormProps,
-  type QuadletGenerateFormProps,
-  RESOURCE_ID_QUERY,
-} from '/@/lib/forms/quadlet/quadlet-utils';
-import { QuadletType, type QuadletTypeGenerate } from '/@shared/src/utils/quadlet-type';
+import Stepper from '/@/lib/stepper/Stepper.svelte';
+import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-svelte';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { podletAPI, quadletAPI } from '/@/api/client';
+import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
+import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { providerConnectionsInfo } from '/@store/connections';
+import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';
-import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
-import { podletAPI, quadletAPI } from '/@/api/client';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
-// import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
-import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
-import Stepper from '/@/lib/stepper/Stepper.svelte';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
-import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 
-interface Props extends QuadletGenerateFormProps {
+interface Props {
+  filepath?: string;
   loading: boolean;
-  close: () => void;
+  providerId?: string;
+  connection?: string;
 }
 
-let {
-  loading = $bindable(),
-  quadletType = QuadletType.CONTAINER, // default to container
-  providerId,
-  connection,
-  resourceId,
-  close,
-}: Props = $props();
-let ChildForm: Component<QuadletChildrenFormProps> = $derived(
-  QUADLET_GENERATE_FORMS[quadletType as QuadletTypeGenerate],
-);
+let { loading = $bindable(), providerId, connection, filepath }: Props = $props();
 
 // using the query parameters
 let selectedContainerProviderConnection: ProviderContainerConnectionDetailedInfo | undefined = $derived(
   $providerConnectionsInfo.find(provider => provider.providerId === providerId && provider.name === connection),
 );
 
-function onQuadletTypeChange(value: string): void {
-  router.location.query.set('quadletType', value);
-  router.location.query.delete(RESOURCE_ID_QUERY); // delete the key
-  // reset
-  error = undefined;
-  quadlet = undefined;
-}
-
-function onContainerProviderConnectionChange(value: ProviderContainerConnectionDetailedInfo | undefined): void {
-  if (value) {
-    router.location.query.set('providerId', value.providerId);
-    router.location.query.set('connection', value.name);
-    router.location.query.delete(RESOURCE_ID_QUERY); // delete the key
-  } else {
-    router.location.query.clear();
-  }
-  // reset
-  error = undefined;
-  quadlet = undefined;
-}
-
-// reset quadlet if any got cleared
-$effect(() => {
-  if (!providerId || !resourceId || !quadletType) {
-    quadlet = undefined;
-    error = undefined;
-  }
-});
-
 let quadlet: string | undefined = $state(undefined);
 let quadletFilename: string = $state('');
-let loaded: boolean = $state(false);
 
-let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'options');
+let loaded: boolean = $state(false);
+let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'select');
+
+let quadletType: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD = $state(QuadletType.CONTAINER);
 
 let error: string | undefined = $state();
 function onError(err: string): void {
   error = err;
 }
+
 function onGenerated(value: string): void {
   error = undefined;
   quadlet = value;
@@ -94,29 +52,37 @@ function onGenerated(value: string): void {
 }
 
 async function generate(): Promise<void> {
-  if (!selectedContainerProviderConnection || !resourceId) return;
+  if (!filepath) return;
   loading = true;
 
   podletAPI
-    .generate({
-      connection: $state.snapshot(selectedContainerProviderConnection),
-      resourceId: $state.snapshot(resourceId),
-      type: quadletType as QuadletTypeGenerate,
+    .compose({
+      filepath: $state.snapshot(filepath),
+      type: quadletType,
     })
     .then(onGenerated)
     .catch((err: unknown) => {
-      onError(
-        `Something went wrong while generating quadlet for provider ${selectedContainerProviderConnection.providerId}: ${String(err)}`,
-      );
+      onError(`Something went wrong while generating compose quadlet for provider: ${String(err)}`);
     })
     .finally(() => {
       loading = false;
     });
 }
 
+function onContainerProviderConnectionChange(value: ProviderContainerConnectionDetailedInfo | undefined): void {
+  if (value) {
+    router.location.query.set('providerId', value.providerId);
+    router.location.query.set('connection', value.name);
+  } else {
+    router.location.query.delete('providerId');
+    router.location.query.delete('connection');
+  }
+}
+
 async function saveIntoMachine(): Promise<void> {
   if (!selectedContainerProviderConnection) throw new Error('no container provider connection selected');
   if (!quadlet) throw new Error('generation invalid');
+
   loading = true;
   try {
     await quadletAPI.saveIntoMachine({
@@ -136,6 +102,16 @@ function resetGenerate(): void {
   error = undefined;
   quadlet = undefined;
 }
+
+function onQuadletTypeChange(value: string): void {
+  switch (value) {
+    case QuadletType.CONTAINER:
+    case QuadletType.POD:
+    case QuadletType.KUBE:
+      quadletType = value;
+      break;
+  }
+}
 </script>
 
 <!-- form -->
@@ -145,8 +121,8 @@ function resetGenerate(): void {
       value={step}
       steps={[
         {
-          label: 'Options',
-          id: 'options',
+          label: 'Select',
+          id: 'select',
         },
         {
           label: 'Edit',
@@ -158,21 +134,15 @@ function resetGenerate(): void {
         },
       ]} />
 
-    <!-- step 1 -->
-    {#if step === 'options'}
-      <!-- all forms share the container provider connection selection -->
-      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Container engine</label>
-      <ContainerProviderConnectionSelect
-        disabled={loading}
-        onChange={onContainerProviderConnectionChange}
-        value={selectedContainerProviderConnection}
-        containerProviderConnections={$providerConnectionsInfo} />
+    {#if step === 'select'}
+      <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Compose file</label>
+      <Input readonly value={filepath} />
 
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Quadlet type</label>
       <RadioButtons
-        disabled={loading || selectedContainerProviderConnection === undefined}
+        disabled={loading}
         onChange={onQuadletTypeChange}
         value={quadletType}
         options={[
@@ -181,34 +151,33 @@ function resetGenerate(): void {
             id: QuadletType.CONTAINER,
           },
           {
-            label: 'image',
-            id: QuadletType.IMAGE,
+            label: 'kube',
+            id: QuadletType.KUBE,
+          },
+          {
+            label: 'pod',
+            id: QuadletType.POD,
           },
         ]} />
 
-      <!-- each form is individual -->
-      <ChildForm
-        onChange={resetGenerate}
-        onError={onError}
-        bind:loading={loading}
-        provider={selectedContainerProviderConnection}
-        resourceId={resourceId} />
       {#if error}
         <ErrorMessage error={error} />
       {/if}
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button
-          class=""
-          disabled={!!error || !selectedContainerProviderConnection || !resourceId}
-          icon={faCode}
-          title="Generate"
-          on:click={generate}>Generate</Button>
+        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generate}>Generate</Button>
       </div>
-
       <!-- step 2 edit -->
     {:else if step === 'edit' && quadlet !== undefined}
+      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Container engine</label>
+      <ContainerProviderConnectionSelect
+        disabled={loading}
+        onChange={onContainerProviderConnectionChange}
+        value={selectedContainerProviderConnection}
+        containerProviderConnections={$providerConnectionsInfo} />
+
       <label for="quadlet-name" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Quadlet name</label>
       <Input
@@ -225,7 +194,7 @@ function resetGenerate(): void {
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
         <Button
-          disabled={quadletFilename.length === 0}
+          disabled={quadletFilename.length === 0 || !selectedContainerProviderConnection}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
           title="Load into machine">Load into machine</Button>

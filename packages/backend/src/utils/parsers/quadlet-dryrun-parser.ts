@@ -18,7 +18,7 @@ export class QuadletDryRunParser extends Parser<string, Quadlet[]> {
    * Parses the CLI output to extract services and their content.
    * @returns {Promise<number>} Number of services found
    */
-  override async parse(): Promise<Quadlet[]> {
+  override parse(): Quadlet[] {
     if (this.parsed) {
       throw new Error('Content has already been parsed.');
     }
@@ -33,7 +33,7 @@ export class QuadletDryRunParser extends Parser<string, Quadlet[]> {
 
       // parse the quadlet unit
       const quadletUnitParser = new QuadletUnitParser(serviceName, match[2].trim());
-      this.services[serviceName] = await quadletUnitParser.parse();
+      this.services[serviceName] = quadletUnitParser.parse();
     }
 
     this.parsed = true;

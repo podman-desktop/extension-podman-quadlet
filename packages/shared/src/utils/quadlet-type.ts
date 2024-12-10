@@ -2,10 +2,10 @@
 export type QuadletTypeGenerate = Exclude<QuadletType, QuadletType.KUBE>;
 
 export enum QuadletType {
-  CONTAINER = 'container',
-  IMAGE = 'image',
-  POD = 'pod',
-  VOLUME = 'volume',
-  NETWORK = 'network',
-  KUBE = 'kube',
+  CONTAINER = 'Container',
+  IMAGE = 'Image',
+  POD = 'Pod',
+  VOLUME = 'Volume',
+  NETWORK = 'Network',
+  KUBE = 'Kube',
 }
