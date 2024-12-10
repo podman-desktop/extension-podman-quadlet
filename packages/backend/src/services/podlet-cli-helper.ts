@@ -5,6 +5,7 @@ import type { Octokit } from '@octokit/rest';
 import type { env, window, process as processApi, cli as cliApi } from '@podman-desktop/api';
 import path from 'node:path';
 import os from 'node:os';
+import type { ProviderService } from './provider-service';
 
 export interface PodletCliDependencies {
   storagePath: string;
@@ -13,6 +14,7 @@ export interface PodletCliDependencies {
   window: typeof window;
   processApi: typeof processApi;
   cliApi: typeof cliApi;
+  providers: ProviderService;
 }
 
 export abstract class PodletCliHelper {

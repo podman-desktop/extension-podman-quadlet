@@ -6,6 +6,7 @@ import { expect, test, vi, beforeEach } from 'vitest';
 import { PodletCliService } from './podlet-cli-service';
 import type { Octokit } from '@octokit/rest';
 import type { PodletCliDependencies } from './podlet-cli-helper';
+import type { ProviderService } from './provider-service';
 
 const processApiMock: typeof processApi = {} as unknown as typeof processApi;
 const cliMock: typeof cliApi = {
@@ -13,6 +14,8 @@ const cliMock: typeof cliApi = {
 } as unknown as typeof cliApi;
 const windowMock: typeof window = {} as unknown as typeof window;
 const octokitMock: Octokit = {} as unknown as Octokit;
+
+const providersMock: ProviderService = {} as unknown as ProviderService;
 
 vi.mock('@podman-desktop/api', () => ({
   ProgressLocation: {
@@ -77,6 +80,7 @@ function getPodletCliService(options?: { isLinux?: boolean; isMac?: boolean; isW
     window: windowMock,
     octokit: octokitMock,
     storagePath: STORAGE_PATH_MOCK,
+    providers: providersMock,
   });
 }
 
