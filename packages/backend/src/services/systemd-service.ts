@@ -63,6 +63,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
      */
     admin: boolean;
   }): Promise<Record<string, boolean>> {
+    // shortcut if length is 0
+    if (options.services.length === 0) return {};
+
     const args: string[] = [];
     if (!options.admin) {
       args.push('--user');
