@@ -11,10 +11,6 @@ overrides:
 importers:
 
   .:
-    dependencies:
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
     devDependencies:
       '@eslint/compat':
         specifier: ^1.2.4
@@ -106,6 +102,9 @@ importers:
       js-ini:
         specifier: ^1.6.0
         version: 1.6.0
+      js-yaml:
+        specifier: ^4.1.0
+        version: 4.1.0
       semver:
         specifier: ^7.6.3
         version: 7.6.3
@@ -121,7 +120,7 @@ importers:
         version: 1.14.2
       '@podman-desktop/podman-extension-api':
         specifier: next
-        version: 1.15.0-202412101239-2f8de29d34c
+        version: 1.15.0-202412101321-323c24d728a
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -1184,11 +1183,11 @@ packages:
   '@podman-desktop/api@1.14.2':
     resolution: {integrity: sha512-s/f0mpgnhmVNAz3nhQ39Ce+36nnlEah3X3pQEKOlPuGn00eM3fHT3TOhcHvy4xURLXljn/mK4gUABofRVXblng==}
 
-  '@podman-desktop/api@1.15.0-202412101239-2f8de29d34c':
-    resolution: {integrity: sha512-shfaVHK+JiRkKDW/J1wpm4bFCU7kiGaRfpbw75I8IWrl4F09OsFDB7jmb+jgc/zv9ms37Lh+g9jr9DpULxPf6g==}
+  '@podman-desktop/api@1.15.0-202412101321-323c24d728a':
+    resolution: {integrity: sha512-N33PNc6nIH0lHdysm+UcBjnF93cgsLbgLMIAKwsYoWSpW6HhKHnLIyDQq2a78ttsZqxXP82lv0kU4/RG8OiouA==}
 
-  '@podman-desktop/podman-extension-api@1.15.0-202412101239-2f8de29d34c':
-    resolution: {integrity: sha512-kFql1W1PlrofK33x2rT6w6nYhiVp5Iu25eEHRPfJTCQQT+NHNmtW15/bLMmrc7lB+gwpXUtqKHv4VcmA2STuuQ==}
+  '@podman-desktop/podman-extension-api@1.15.0-202412101321-323c24d728a':
+    resolution: {integrity: sha512-xQGAJvZ5s50yP2VUUdXmtim5mLa2hyav9kfU4BLYQzQsEbOjyHY+fgs7uYUJRp/4tLTR0uMv6OZVadMICGGyww==}
 
   '@podman-desktop/ui-svelte@1.15.0-202412031339-936cb90e72b':
     resolution: {integrity: sha512-A7K7K0Rr/6JucjqF17WYpbygfmDkphvDfGjq0vK/KJBkh5s3k7i1BXfxFKfjWltf2hcqVLHZIavHky/FM6gGHw==}
@@ -4784,11 +4783,11 @@ snapshots:
 
   '@podman-desktop/api@1.14.2': {}
 
-  '@podman-desktop/api@1.15.0-202412101239-2f8de29d34c': {}
+  '@podman-desktop/api@1.15.0-202412101321-323c24d728a': {}
 
-  '@podman-desktop/podman-extension-api@1.15.0-202412101239-2f8de29d34c':
+  '@podman-desktop/podman-extension-api@1.15.0-202412101321-323c24d728a':
     dependencies:
-      '@podman-desktop/api': 1.15.0-202412101239-2f8de29d34c
+      '@podman-desktop/api': 1.15.0-202412101321-323c24d728a
 
   '@podman-desktop/ui-svelte@1.15.0-202412031339-936cb90e72b(svelte-fa@4.0.3(svelte@5.10.0))(svelte@5.10.0)':
     dependencies:
