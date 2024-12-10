@@ -11,6 +11,7 @@ import type { AsyncInit } from '../utils/async-init';
 import os from 'node:os';
 import path from 'node:path';
 import { unTarXZ, unZip } from '../utils/archive';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 export interface PodletGithubReleaseArtifactMetadata extends QuickPickItem {
   tag: string;
@@ -33,10 +34,17 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
   /**
    * Podlet exec
    * @param args
+   * @param connection
    */
-  exec(args: string[]): Promise<RunResult> {
+  exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
     if (!this.#executable) throw new Error('podlet is not installed.');
-    return this.dependencies.processApi.exec(this.#executable, args);
+    return this.dependencies.processApi.exec(this.#executable, args, {
+      env: connection
+        ? {
+            CONTAINER_CONNECTION: connection.name,
+          }
+        : {},
+    });
   }
 
   isInstalled(): boolean {
