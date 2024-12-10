@@ -4,6 +4,14 @@
 
 ![quadlet-list.png](images/quadlet-list.png)
 
+## Install
+
+You can install the Podman Quadlet Extension from the extension page and use `ghcr.io/axel7083/pd-extension-quadlet:latest`. See the instruction on [How to install an extension](https://podman-desktop.io/docs/extensions/install)
+
+### Requirements
+
+- Podman version 5 and above
+
 ## Generating Quadlets
 
 This extension will allow you to list, generate, enable and delete podman quadlet in a given Podman Machine.
