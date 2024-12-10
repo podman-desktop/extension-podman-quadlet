@@ -67,13 +67,13 @@ RequiresMountsFor=%t/containers
 
 test('expect result to contain two quadlets', async () => {
   const parser = new QuadletDryRunParser(MULTIPLE_QUADLETS_EXAMPLE);
-  const result = await parser.parse();
+  const result = parser.parse();
   expect(result).toHaveLength(2);
 });
 
 test('expect each path to be properly set', async () => {
   const parser = new QuadletDryRunParser(MULTIPLE_QUADLETS_EXAMPLE);
-  const result = await parser.parse();
+  const result = parser.parse();
   expect(result[0].path).toBe('/home/user/.config/containers/systemd/nginx.container');
   expect(result[1].path).toBe('/home/user/.config/containers/systemd/nginx2.container');
 });

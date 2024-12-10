@@ -39,7 +39,7 @@ const DUMMY_SERVICE_NAME = 'dummy.container';
 
 test('expect path to be properly extracted', async () => {
   const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
-  const result = await parser.parse();
+  const result = parser.parse();
 
   expect(result).toStrictEqual(
     expect.objectContaining({
@@ -50,7 +50,7 @@ test('expect path to be properly extracted', async () => {
 
 test('expect content to be identical to input', async () => {
   const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
-  const result = await parser.parse();
+  const result = parser.parse();
 
   expect(result).toStrictEqual(
     expect.objectContaining({
