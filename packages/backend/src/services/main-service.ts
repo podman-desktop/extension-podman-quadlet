@@ -84,6 +84,14 @@ export class MainService implements Disposable, AsyncInit {
     await routing.init();
     this.#disposables.push(routing);
 
+    // The provider service register subscribers events for provider updates
+    const providers = new ProviderService({
+      providers: this.dependencies.providers,
+      webview: webview.getPanel().webview,
+    });
+    await providers.init();
+    this.#disposables.push(providers);
+
     // Responsible for managing the Podlet cli tool
     const podletCli = new PodletCliService({
       cliApi: this.dependencies.cliApi,
@@ -92,17 +100,10 @@ export class MainService implements Disposable, AsyncInit {
       processApi: this.dependencies.processApi,
       storagePath: this.dependencies.extensionContext.storagePath,
       octokit: new Octokit(),
+      providers: providers,
     });
     await podletCli.init();
     this.#disposables.push(podletCli);
-
-    // The provider service register subscribers events for provider updates
-    const providers = new ProviderService({
-      providers: this.dependencies.providers,
-      webview: webview.getPanel().webview,
-    });
-    await providers.init();
-    this.#disposables.push(providers);
 
     // The Podman Service is responsible for communicating with the podman extension
     const podman = new PodmanService({

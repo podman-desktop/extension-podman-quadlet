@@ -38,12 +38,18 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
    */
   exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
     if (!this.#executable) throw new Error('podlet is not installed.');
+
+    const env: Record<string, string> = {};
+
+    if (connection) {
+      const provider = this.dependencies.providers.getProviderContainerConnection(connection);
+      if (provider.connection.vmType) {
+        env['CONTAINER_CONNECTION'] = connection.name;
+      }
+    }
+
     return this.dependencies.processApi.exec(this.#executable, args, {
-      env: connection
-        ? {
-            CONTAINER_CONNECTION: connection.name,
-          }
-        : {},
+      env: env,
     });
   }
 
