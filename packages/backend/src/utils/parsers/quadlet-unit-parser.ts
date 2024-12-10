@@ -26,7 +26,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     };
   }
 
-  override async parse(): Promise<Quadlet> {
+  override parse(): Quadlet {
     const raw = parse(this.content, {
       comment: ['#', ';'],
     });

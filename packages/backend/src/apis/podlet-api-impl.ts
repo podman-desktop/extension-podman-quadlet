@@ -5,7 +5,7 @@ import { PodletApi } from '/@shared/src/apis/podlet-api';
 import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
 import type { PodletCliService } from '../services/podlet-cli-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import type { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 interface Dependencies {
   podlet: PodletCliService;
@@ -26,7 +26,25 @@ export class PodletApiImpl extends PodletApi {
     type: QuadletType;
     resourceId: string;
   }): Promise<string> {
-    const result = await this.dependencies.podlet.exec(['generate', options.type, options.resourceId]);
+    const result = await this.dependencies.podlet.exec(['generate', options.type.toLowerCase(), options.resourceId]);
+    return result.stdout;
+  }
+
+  override async compose(options: {
+    filepath: string;
+    type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
+  }): Promise<string> {
+    const args = ['compose'];
+    switch (options.type) {
+      case QuadletType.POD:
+        args.push('--pod');
+        break;
+      case QuadletType.KUBE:
+        args.push('--kube');
+        break;
+    }
+    args.push(options.filepath);
+    const result = await this.dependencies.podlet.exec(args);
     return result.stdout;
   }
 

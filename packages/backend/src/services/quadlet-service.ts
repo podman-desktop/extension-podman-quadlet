@@ -11,6 +11,8 @@ import type { Quadlet } from '../models/quadlet';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { AsyncInit } from '../utils/async-init';
 import { join as joinposix } from 'node:path/posix';
+import { load } from 'js-yaml';
+import { QuadletTypeParser } from '../utils/parsers/quadlet-type-parser';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   // todo: find a better alternative, ProviderContainerConnection is not consistent
@@ -166,6 +168,28 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     this.notify();
   }
 
+  protected splitResources(basename: string, content: string): { filename: string, content: string }[] {
+    const resources = content.split('---');
+    return resources.map((resource) => {
+      console.log('analying resource', resource);
+      try {
+        const type = new QuadletTypeParser(resource).parse();
+        return {
+          filename: `${basename}.${type.toLowerCase()}`,
+          content: resource,
+        };
+        // eslint-disable-next-line sonarjs/no-ignored-exceptions
+      } catch (err: unknown) {
+        console.warn(err);
+        load(resource);
+        return {
+          filename: `${basename}.yaml`,
+          content: resource,
+        };
+      }
+    });
+  }
+
   async saveIntoMachine(options: {
     quadlet: string;
     name: string; // name of the quadlet file E.g. `example.container`
@@ -181,21 +205,30 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         location: ProgressLocation.TASK_WIDGET,
       },
       async () => {
-        // 1. write the file into the podman machine
-        let destination: string;
-        if (options.admin) {
-          destination = joinposix('/etc/containers/systemd/', options.name);
-        } else {
-          destination = joinposix('~/.config/containers/systemd/', options.name);
-        }
+        // 0. detect all resources
+        const resources = this.splitResources(options.name, options.quadlet);
+        console.debug(`saving into machine: found ${resources.length} resources`);
 
-        // 2. write the file
-        try {
-          console.debug(`[QuadletService] writing quadlet file to ${destination}`);
-          await this.dependencies.podman.writeTextFile(options.provider, destination, options.quadlet);
-        } catch (err: unknown) {
-          console.error(`Something went wrong while trying to write file to ${destination}`, err);
-          throw err;
+        // for each resource
+        for (const resource of resources) {
+          console.debug(`saving ${resource.filename}`);
+
+          // 1. write the file into the podman machine
+          let destination: string;
+          if (options.admin) {
+            destination = joinposix('/etc/containers/systemd/', resource.filename);
+          } else {
+            destination = joinposix('~/.config/containers/systemd/', resource.filename);
+          }
+
+          // 2. write the file
+          try {
+            console.debug(`[QuadletService] writing quadlet file to ${destination}`);
+            await this.dependencies.podman.writeTextFile(options.provider, destination, resource.content);
+          } catch (err: unknown) {
+            console.error(`Something went wrong while trying to write file to ${destination}`, err);
+            throw err;
+          }
         }
 
         // 3. reload

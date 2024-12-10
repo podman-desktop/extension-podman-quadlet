@@ -11,6 +11,7 @@ import QuadletsList from '/@/pages/QuadletsList.svelte';
 import { Messages } from '/@shared/src/messages';
 import type { Unsubscriber } from 'svelte/store';
 import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
+import QuadletCompose from '/@/pages/QuadletCompose.svelte';
 
 router.mode.hash();
 let isMounted = $state(false);
@@ -49,6 +50,10 @@ onDestroy(() => {
           connection={meta.query.connection}
           quadletType={meta.query.quadletType}
           resourceId={meta.query.resourceId} />
+      </Route>
+
+      <Route path="/quadlets/compose/*" firstmatch let:meta>
+        <QuadletCompose providerId={meta.query.providerId} connection={meta.query.connection} filepath={meta.query.filepath} />
       </Route>
 
       <!-- quadlets details -->

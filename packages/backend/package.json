@@ -43,12 +43,22 @@
           "command": "podlet.generate.container",
           "title": "Generate Quadlet"
         }
+      ],
+      "dashboard/compose": [
+        {
+          "command": "podlet.compose",
+          "title": "Generate Quadlet"
+        }
       ]
     },
     "commands": [
       {
         "command": "podlet.generate.container",
         "title": "Podlet: generate"
+      },
+      {
+        "command": "podlet.compose",
+        "title": "Podlet: compose"
       }
     ]
   },
@@ -63,7 +73,8 @@
     "typescript": "5.7.2",
     "vite": "^6.0.1",
     "vitest": "^2.1.6",
-    "xz-decompress": "^0.2.2"
+    "xz-decompress": "^0.2.2",
+    "@types/js-yaml": "^4.0.9"
   },
   "dependencies": {
     "@octokit/rest": "^21.0.2",
