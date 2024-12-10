@@ -27,7 +27,7 @@ Once generated, the podlet output can be edited before being loaded into the Pod
 
 Podlet has a support for create quadlet from an existing compose specification
 
-> :information: Podman Desktop group containers in the same compose project. 
+> Podman Desktop group containers in the same compose project. 
 > This allows us to determine which spec has been used by looking at the `com.docker.compose.project.config_files` containers label
 
 ![generate-from-compose.png](images/generate-from-compose.png)
