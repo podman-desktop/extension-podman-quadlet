@@ -21,4 +21,5 @@ export enum Messages {
   UPDATE_QUADLETS = 'update-quadlets',
   UPDATE_PROVIDERS = 'update-providers',
   ROUTE_UPDATE = 'route-update',
+  LOGGER_DATA = 'logger-data',
 }

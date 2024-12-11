@@ -38,6 +38,9 @@ import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { ImageApiImpl } from '../apis/image-api-impl';
 import { ImageService } from './image-service';
 import { ImageApi } from '/@shared/src/apis/image-api';
+import { LoggerService } from './logger-service';
+import { LoggerApiImpl } from '../apis/logger-api-impl';
+import { LoggerApi } from '/@shared/src/apis/logger-api';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -71,6 +74,12 @@ export class MainService implements Disposable, AsyncInit {
     });
     await webview.init();
     this.#disposables.push(webview);
+
+    // logger service store logs and publish them to the frontend
+    const loggerService = new LoggerService({
+      webview: webview.getPanel().webview,
+    });
+    this.#disposables.push(loggerService);
 
     // init IPC system
     const rpcExtension = new RpcExtension(webview.getPanel().webview);
@@ -170,8 +179,15 @@ export class MainService implements Disposable, AsyncInit {
       systemd: systemd,
       podman: podman,
       providers: providers,
+      loggerService: loggerService,
     });
     rpcExtension.registerInstance<QuadletApi>(QuadletApi, quadletApiImpl);
+
+    // logger api
+    const loggerServiceApiImpl = new LoggerApiImpl({
+      loggerService: loggerService,
+    });
+    rpcExtension.registerInstance<LoggerApi>(LoggerApi, loggerServiceApiImpl);
 
     // provider api
     const providerApiImpl = new ProviderApiImpl({

@@ -5,6 +5,7 @@ import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { ContainerApi } from '/@shared/src/apis/container-api';
 import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { ImageApi } from '/@shared/src/apis/image-api';
+import { LoggerApi } from '/@shared/src/apis/logger-api';
 
 /**
  * This file is the client side of the API. It is used to communicate with the backend, which allows
@@ -15,13 +16,16 @@ export interface RouterState {
   url: string;
 }
 const podmanDesktopApi = acquirePodmanDesktopApi();
+
 export const rpcBrowser: RpcBrowser = new RpcBrowser(window, podmanDesktopApi);
+// apis
 export const quadletAPI: QuadletApi = rpcBrowser.getProxy(QuadletApi);
 export const providerAPI: ProviderApi = rpcBrowser.getProxy(ProviderApi);
 export const routingAPI: RoutingApi = rpcBrowser.getProxy(RoutingApi);
 export const containerAPI: ContainerApi = rpcBrowser.getProxy(ContainerApi);
 export const imageAPI: ImageApi = rpcBrowser.getProxy(ImageApi);
 export const podletAPI: PodletApi = rpcBrowser.getProxy(PodletApi);
+export const loggerAPI: LoggerApi = rpcBrowser.getProxy(LoggerApi);
 
 // The below code is used to save the state of the router in the podmanDesktopApi, so
 // that we can determine the correct route to display when the extension is reloaded.
@@ -67,4 +71,8 @@ Object.defineProperty(window, 'containerAPI', {
 
 Object.defineProperty(window, 'podletAPI', {
   value: podletAPI,
+});
+
+Object.defineProperty(window, 'loggerAPI', {
+  value: loggerAPI,
 });

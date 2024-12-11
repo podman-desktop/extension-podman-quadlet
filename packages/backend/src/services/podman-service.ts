@@ -1,15 +1,18 @@
 /**
  * @author axel7083
  */
-import type { Disposable, ProviderContainerConnection, RunError, RunResult } from '@podman-desktop/api';
+import type { ProviderContainerConnection, RunError, RunResult } from '@podman-desktop/api';
+import { Disposable } from '@podman-desktop/api';
 import type { PodmanDependencies } from './podman-helper';
 import { PodmanHelper } from './podman-helper';
 import type { AsyncInit } from '../utils/async-init';
 import { dirname } from 'node:path/posix';
 import { writeFile, mkdir, readFile, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
+import { type ChildProcess, spawn } from 'node:child_process';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
+  #disposables: Disposable[] = [];
   #extensionsEventDisposable: Disposable | undefined;
 
   constructor(dependencies: PodmanDependencies) {
@@ -177,7 +180,38 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     });
   }
 
+  spawn(options: {
+    connection: ProviderContainerConnection;
+    command: string;
+    args: string[];
+    signal?: AbortSignal;
+  }): ChildProcess {
+    if (options.connection.connection.vmType !== undefined) {
+      throw new Error('[PodmanService] non-native connection are not supported');
+    }
+
+    const process = spawn(options.command, options.args, {
+      detached: true,
+      signal: options.signal,
+      env: {
+        SYSTEMD_COLORS: 'true',
+      },
+    });
+
+    this.#disposables.push(
+      Disposable.create(() => {
+        if (!process.killed || !process.exitCode || process.connected) {
+          console.warn(`killing process (${options.command})`);
+          process.kill();
+        }
+      }),
+    );
+
+    return process;
+  }
+
   dispose(): void {
+    this.#disposables.forEach(disposable => disposable.dispose());
     this.#extensionsEventDisposable?.dispose();
   }
 }
