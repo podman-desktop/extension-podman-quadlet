@@ -2,6 +2,7 @@
  * @author axel7083
  */
 import type {
+  Disposable,
   env,
   Extension,
   extensions,
@@ -29,6 +30,12 @@ vi.mock('node:fs/promises', () => ({
 
 vi.mock('node:os', () => ({
   homedir: vi.fn(),
+}));
+
+vi.mock('@podman-desktop/api', () => ({
+  Disposable: {
+    create: (fn: () => void): Disposable => ({ dispose: fn }),
+  },
 }));
 
 const extensionsMock: typeof extensions = {
@@ -203,4 +210,8 @@ describe('writeTextFile', () => {
       },
     );
   });
+});
+
+describe('spawn', () => {
+  test('systemctl journal', async () => {});
 });

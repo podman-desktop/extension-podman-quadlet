@@ -4,6 +4,7 @@ import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-i
 import { containerAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 let {
   loading = $bindable(),
@@ -24,10 +25,13 @@ async function listContainers(): Promise<void> {
   if (!provider) throw new Error('no container provider connection selected');
   loading = true;
   // reset
-  containers = [];
+  containers = undefined;
 
   try {
-    containers = await containerAPI.all($state.snapshot(provider));
+    const result = await containerAPI.all($state.snapshot(provider));
+    if (provider) {
+      containers = result;
+    }
   } catch (err: unknown) {
     onError(`Something went wrong while listing containers for provider ${provider.providerId}: ${String(err)}`);
   } finally {
@@ -44,6 +48,15 @@ function onContainerChange(value: SimpleContainerInfo | undefined): void {
   router.location.query.set(RESOURCE_ID_QUERY, value.id);
   onChange();
 }
+
+// reset if any change
+let prevProvider: ProviderContainerConnectionIdentifierInfo | undefined = $state();
+$effect(() => {
+  if (prevProvider !== provider) {
+    // containers = undefined;
+    // prevProvider = provider;
+  }
+});
 
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the containers

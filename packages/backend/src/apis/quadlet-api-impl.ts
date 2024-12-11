@@ -11,12 +11,15 @@ import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { QuadletCheck } from '/@shared/src/models/quadlet-check';
 import { QuadletValidator } from '../utils/validators/quadlet-validator';
+import type { ChildProcess } from 'node:child_process';
+import type { LoggerService } from '../services/logger-service';
 
 interface Dependencies {
   quadlet: QuadletService;
   systemd: SystemdService;
   podman: PodmanService;
   providers: ProviderService;
+  loggerService: LoggerService;
 }
 
 export class QuadletApiImpl extends QuadletApi {
@@ -80,6 +83,22 @@ export class QuadletApiImpl extends QuadletApi {
       id: id,
       admin: false,
     });
+  }
+
+  override async createLogger(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    quadletId: string;
+  }): Promise<string> {
+    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
+
+    // journalctl --user --unit caddy.service --follow
+    const process: ChildProcess = this.dependencies.podman.spawn({
+      connection: providerConnection,
+      command: 'journalctl',
+      args: ['--user', '--follow', `--unit=${options.quadletId}`, '--output=cat'],
+    });
+    // create a logger
+    return this.dependencies.loggerService.createLogger(process);
   }
 
   override saveIntoMachine(options: {

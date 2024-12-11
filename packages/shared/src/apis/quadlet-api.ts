@@ -15,6 +15,11 @@ export abstract class QuadletApi {
   abstract remove(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<void>;
   abstract read(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string>;
 
+  abstract createLogger(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    quadletId: string;
+  }): Promise<string>;
+
   abstract validate(content: string): Promise<QuadletCheck[]>;
 
   abstract saveIntoMachine(options: {
