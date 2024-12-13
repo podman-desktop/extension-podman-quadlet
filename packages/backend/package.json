@@ -63,7 +63,7 @@
     ]
   },
   "devDependencies": {
-    "@podman-desktop/api": "^1.14.2",
+    "@podman-desktop/api": "^1.15.0",
     "@podman-desktop/podman-extension-api": "next",
     "@types/node": "^20",
     "@types/tar-fs": "^2.0.4",

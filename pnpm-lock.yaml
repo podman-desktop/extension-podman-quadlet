@@ -116,8 +116,8 @@ importers:
         version: 0.11.6
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.14.2
-        version: 1.14.2
+        specifier: ^1.15.0
+        version: 1.15.0
       '@podman-desktop/podman-extension-api':
         specifier: next
         version: 1.16.0-202412121514-42f27c4dc76
@@ -1189,8 +1189,8 @@ packages:
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
     engines: {node: '>=14'}
 
-  '@podman-desktop/api@1.14.2':
-    resolution: {integrity: sha512-s/f0mpgnhmVNAz3nhQ39Ce+36nnlEah3X3pQEKOlPuGn00eM3fHT3TOhcHvy4xURLXljn/mK4gUABofRVXblng==}
+  '@podman-desktop/api@1.15.0':
+    resolution: {integrity: sha512-rYI2Fh/fRfNKtZAIz3OCk3GITJq5+oNxgU4aYVRWmPaX4Y5TSQoGr30Wwu4MGy02IQp3KY18JNe9/msWUE1MJA==}
 
   '@podman-desktop/api@1.16.0-202412121514-42f27c4dc76':
     resolution: {integrity: sha512-G30/pLPpbrklTKuiOa+Sld5dKA7BvSKY95m5v4jiLv8JEJqdxm7krHVPnvWtU4eHJN/AKnVtLRkq+z3D/0EhUA==}
@@ -4779,7 +4779,7 @@ snapshots:
   '@pkgjs/parseargs@0.11.0':
     optional: true
 
-  '@podman-desktop/api@1.14.2': {}
+  '@podman-desktop/api@1.15.0': {}
 
   '@podman-desktop/api@1.16.0-202412121514-42f27c4dc76': {}
 
