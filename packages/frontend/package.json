@@ -22,10 +22,10 @@
     "@xterm/addon-fit": "^0.10.0"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^6.6.0",
-    "@fortawesome/free-brands-svg-icons": "^6.6.0",
-    "@fortawesome/free-regular-svg-icons": "^6.6.0",
-    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@podman-desktop/ui-svelte": "^1.15.0-202412031339-936cb90e72b",
     "@sveltejs/vite-plugin-svelte": "5.0.2",
     "@tailwindcss/typography": "^0.5.14",
