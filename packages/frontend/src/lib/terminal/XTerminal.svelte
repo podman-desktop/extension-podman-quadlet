@@ -11,6 +11,7 @@ import { getTerminalTheme } from '/@/lib/terminal/terminal-theme';
 let terminalXtermDiv: HTMLDivElement;
 let serializeAddon: SerializeAddon;
 let shellTerminal: Terminal;
+let resizeObserver: ResizeObserver;
 
 interface Props {
   store: Readable<string>;
@@ -47,6 +48,11 @@ async function refreshTerminal(): Promise<void> {
 
   shellTerminal.open(terminalXtermDiv);
 
+  // Resize the terminal each time we change the div size
+  resizeObserver = new ResizeObserver(() => {
+    fitAddon?.fit();
+  });
+
   fitAddon.fit();
 }
 
@@ -65,6 +71,8 @@ onDestroy(() => {
   storeUnsubscriber();
   serializeAddon?.dispose();
   shellTerminal?.dispose();
+  // Cleanup the observer on destroy
+  resizeObserver?.unobserve(terminalXtermDiv);
 });
 </script>
 
