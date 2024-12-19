@@ -10,6 +10,7 @@ import { dirname } from 'node:path/posix';
 import { writeFile, mkdir, readFile, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { type ChildProcess, spawn } from 'node:child_process';
+import { env } from 'node:process';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #disposables: Disposable[] = [];
@@ -190,7 +191,14 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       throw new Error('[PodmanService] non-native connection are not supported');
     }
 
-    const process = spawn(options.command, options.args, {
+    let args = options.args;
+    let command = options.command;
+    if (env['FLATPAK_ID'] !== undefined) {
+      args = ['--host', options.command, ...(args ?? [])];
+      command = 'flatpak-spawn';
+    }
+
+    const process = spawn(command, args, {
       detached: true,
       signal: options.signal,
       env: {
@@ -199,6 +207,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     });
 
     // handle exit close
+    process.on('error', console.error);
     process.on('exit', console.log.bind(console, `${process.pid} exited`));
     process.on('close', console.log.bind(console, `${process.pid} closed`));
 
