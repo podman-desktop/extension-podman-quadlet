@@ -198,6 +198,10 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       },
     });
 
+    // handle exit close
+    process.on('exit', console.log.bind(console, `${process.pid} exited`));
+    process.on('close', console.log.bind(console, `${process.pid} closed`));
+
     this.#disposables.push(
       Disposable.create(() => {
         if (!process.killed || !process.exitCode || process.connected) {
