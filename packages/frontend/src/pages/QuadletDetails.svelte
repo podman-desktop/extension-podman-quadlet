@@ -87,7 +87,7 @@ onDestroy(() => {
   logger?.dispose();
   logger = undefined;
   // dispose logger => will kill the process, we don't want to keep it alive if we leave the page
-  if(loggerId) {
+  if (loggerId) {
     quadletAPI.disposeLogger(loggerId).catch(console.error);
   }
 });

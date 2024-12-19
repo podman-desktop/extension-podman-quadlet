@@ -28,7 +28,11 @@ export class Logger implements AsyncInit, Disposable {
   }
 
   protected disposeProcess(): void {
-    if (!this.dependencies.process.killed || !this.dependencies.process.exitCode || this.dependencies.process.connected) {
+    if (
+      !this.dependencies.process.killed ||
+      !this.dependencies.process.exitCode ||
+      this.dependencies.process.connected
+    ) {
       console.warn(`killing process (${this.dependencies.process.pid})`);
       this.dependencies.process.kill();
     }
