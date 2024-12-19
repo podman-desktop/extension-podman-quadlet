@@ -190,6 +190,42 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     });
   }
 
+  async updateIntoMachine(options: {
+    quadlet: string;
+    path: string; // path to the quadlet file
+    provider: ProviderContainerConnection;
+    /**
+     * @default false (Run as systemd user)
+     */
+    admin?: boolean;
+  }): Promise<void> {
+    return this.dependencies.window.withProgress(
+      {
+        title: `Updating ${options.path}`,
+        location: ProgressLocation.TASK_WIDGET,
+      },
+      async () => {
+        // 1. save the quadlet
+        try {
+          console.debug(`[QuadletService] updating quadlet file to ${options.path}`);
+          await this.dependencies.podman.writeTextFile(options.provider, options.path, options.quadlet);
+        } catch (err: unknown) {
+          console.error(`Something went wrong while trying to write file to ${options.path}`, err);
+          throw err;
+        }
+
+        // 2. reload
+        await this.dependencies.systemd.daemonReload({
+          admin: options.admin ?? false,
+          provider: options.provider,
+        });
+
+        //3. collect quadlets
+        await this.collectPodmanQuadlet();
+      },
+    );
+  }
+
   async saveIntoMachine(options: {
     quadlet: string;
     name: string; // name of the quadlet file E.g. `example.container`

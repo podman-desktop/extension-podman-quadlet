@@ -12,6 +12,7 @@ import QuadletActions from '/@/lib/table/QuadletActions.svelte';
 import QuadletStatus from '/@/lib/QuadletStatus.svelte';
 import { LoggerStore } from '/@store/logger-store';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
+import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
 
 interface Props {
   id: string;
@@ -23,6 +24,9 @@ let { id, providerId, connection }: Props = $props();
 
 let loading: boolean = $state(true);
 let quadletSource: string | undefined = $state(undefined);
+let originalSource: string | undefined = $state(undefined);
+let changed: boolean = $derived(quadletSource !== originalSource);
+
 let loggerId: string | undefined = $state(undefined);
 
 // found matching quadlets
@@ -51,6 +55,8 @@ onMount(async () => {
       },
       id,
     );
+    // copy the original
+    originalSource = quadletSource;
   } catch (err: unknown) {
     console.error(err);
   } finally {
@@ -91,6 +97,26 @@ onDestroy(() => {
     quadletAPI.disposeLogger(loggerId).catch(console.error);
   }
 });
+
+async function save(): Promise<void> {
+  if (!quadlet || !quadletSource || !connection || !providerId) return;
+
+  try {
+    await quadletAPI.updateIntoMachine({
+      connection: { providerId: providerId, name: connection },
+      quadlet: quadletSource,
+      path: quadlet.path,
+    });
+    // we should be good to consider we updated it
+    originalSource = quadletSource;
+  } catch (err: unknown) {
+    console.error(err);
+  }
+}
+
+function onchange(content: string): void {
+  quadletSource = content;
+}
 </script>
 
 {#if quadlet}
@@ -157,7 +183,8 @@ onDestroy(() => {
               {quadlet.path}
             </span>
           </div>
-          <MonacoEditor class="h-full" readOnly content={quadletSource ?? '<unknown>'} language="ini" />
+          <EditorOverlay save={save} loading={loading} changed={changed} />
+          <MonacoEditor class="h-full" onChange={onchange} content={quadletSource ?? '<unknown>'} language="ini" />
         </Route>
 
         <!-- quadlet -dryrun output -->

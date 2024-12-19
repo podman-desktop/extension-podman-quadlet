@@ -118,6 +118,19 @@ export class QuadletApiImpl extends QuadletApi {
     });
   }
 
+  override updateIntoMachine(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    quadlet: string; // content
+    path: string;
+  }): Promise<void> {
+    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
+
+    return this.dependencies.quadlet.updateIntoMachine({
+      ...options,
+      provider: providerConnection,
+    });
+  }
+
   override async validate(content: string): Promise<QuadletCheck[]> {
     return new QuadletValidator().validate(content);
   }

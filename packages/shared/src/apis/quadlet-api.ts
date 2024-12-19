@@ -28,4 +28,10 @@ export abstract class QuadletApi {
     quadlet: string; // content
     name: string; // filename
   }): Promise<void>;
+
+  abstract updateIntoMachine(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    quadlet: string; // content
+    path: string;
+  }): Promise<void>;
 }
