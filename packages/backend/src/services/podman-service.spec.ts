@@ -238,9 +238,7 @@ describe('spawn', () => {
       connection: NATIVE_PROVIDER_CONNECTION_MOCK,
     });
 
-    expect(spawn).toHaveBeenCalledWith('journactl', [
-      '--unit=dummy',
-    ], {
+    expect(spawn).toHaveBeenCalledWith('journactl', ['--unit=dummy'], {
       detached: true,
       env: {
         SYSTEMD_COLORS: 'true',
@@ -261,11 +259,7 @@ describe('spawn', () => {
       connection: NATIVE_PROVIDER_CONNECTION_MOCK,
     });
 
-    expect(spawn).toHaveBeenCalledWith('flatpak-spawn', [
-      '--host',
-      'journactl',
-      '--unit=dummy',
-    ], {
+    expect(spawn).toHaveBeenCalledWith('flatpak-spawn', ['--host', 'journactl', '--unit=dummy'], {
       detached: true,
       env: {
         SYSTEMD_COLORS: 'true',
