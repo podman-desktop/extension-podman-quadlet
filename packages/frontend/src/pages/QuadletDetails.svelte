@@ -23,6 +23,7 @@ let { id, providerId, connection }: Props = $props();
 
 let loading: boolean = $state(true);
 let quadletSource: string | undefined = $state(undefined);
+let loggerId: string | undefined = $state(undefined);
 
 // found matching quadlets
 let quadlet: QuadletInfo | undefined = $derived(
@@ -65,7 +66,7 @@ let logger: LoggerStore | undefined = $state();
 async function createLogger(): Promise<void> {
   if (!quadlet) throw new Error('Quadlets not found');
 
-  const loggerId = await quadletAPI.createLogger({
+  loggerId = await quadletAPI.createLogger({
     quadletId: quadlet.id,
     connection: {
       providerId: providerId,
@@ -85,6 +86,10 @@ async function createLogger(): Promise<void> {
 onDestroy(() => {
   logger?.dispose();
   logger = undefined;
+  // dispose logger => will kill the process, we don't want to keep it alive if we leave the page
+  if (loggerId) {
+    quadletAPI.disposeLogger(loggerId).catch(console.error);
+  }
 });
 </script>
 

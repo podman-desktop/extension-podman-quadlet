@@ -101,6 +101,10 @@ export class QuadletApiImpl extends QuadletApi {
     return this.dependencies.loggerService.createLogger(process);
   }
 
+  override async disposeLogger(loggerId: string): Promise<void> {
+    return this.dependencies.loggerService.disposeLogger(loggerId);
+  }
+
   override saveIntoMachine(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     quadlet: string;

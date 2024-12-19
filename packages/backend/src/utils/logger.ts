@@ -27,9 +27,23 @@ export class Logger implements AsyncInit, Disposable {
     }, '');
   }
 
+  protected disposeProcess(): void {
+    if (
+      !this.dependencies.process.killed ||
+      !this.dependencies.process.exitCode ||
+      this.dependencies.process.connected
+    ) {
+      console.warn(`killing process (${this.dependencies.process.pid})`);
+      this.dependencies.process.kill();
+    }
+  }
+
   dispose(): void {
     this.#disposables.forEach(disposable => disposable.dispose());
     this.#logs = [];
+
+    // if the logger is disposed, we should the process too.
+    this.disposeProcess();
   }
 
   protected onData(chunk: Buffer): void {

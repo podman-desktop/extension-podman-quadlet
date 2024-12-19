@@ -22,9 +22,20 @@ export class LoggerService implements Disposable {
   }
 
   getLogs(loggerId: string): string {
+    const logger = this.getLogger(loggerId);
+    return logger.all();
+  }
+
+  getLogger(loggerId: string): Logger {
     const logger = this.#registry.get(loggerId);
     if (!logger) throw new Error(`unknown logger with id ${loggerId}`);
-    return logger.all();
+    return logger;
+  }
+
+  disposeLogger(loggerId: string): void {
+    const logger = this.getLogger(loggerId);
+    logger.dispose();
+    this.#registry.delete(loggerId);
   }
 
   createLogger(process: ChildProcess): string {
