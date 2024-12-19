@@ -52,6 +52,7 @@ async function refreshTerminal(): Promise<void> {
   resizeObserver = new ResizeObserver(() => {
     fitAddon?.fit();
   });
+  resizeObserver.observe(terminalXtermDiv);
 
   fitAddon.fit();
 }
