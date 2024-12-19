@@ -3,7 +3,7 @@
  */
 import type {
   Disposable,
-  env,
+  env as envApi,
   Extension,
   extensions,
   process as processApi,
@@ -20,6 +20,12 @@ import type { ProviderService } from './provider-service';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path/posix';
+import { spawn } from 'node:child_process';
+import type { ChildProcess } from 'node:child_process';
+
+vi.mock('node:child_process', () => ({
+  spawn: vi.fn(),
+}));
 
 vi.mock('node:fs/promises', () => ({
   writeFile: vi.fn(),
@@ -94,7 +100,7 @@ function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWind
       isLinux: options?.isLinux ?? false,
       isMac: options?.isMac ?? false,
       isWindows: options?.isWindows ?? false,
-    } as typeof env,
+    } as typeof envApi,
     extensions: extensionsMock,
     processApi: processApiMock,
     providers: providersMock,
@@ -213,5 +219,51 @@ describe('writeTextFile', () => {
 });
 
 describe('spawn', () => {
-  test('systemctl journal', async () => {});
+  beforeEach(() => {
+    // prevent flatpak
+    vi.stubEnv('FLATPAK_ID', undefined);
+    vi.mocked(spawn).mockReturnValue({
+      on: vi.fn(),
+    } as unknown as ChildProcess);
+  });
+
+  test('systemctl journal on native linux', async () => {
+    const podman = getPodmanService({
+      isLinux: true,
+    });
+
+    podman.spawn({
+      command: 'journactl',
+      args: ['--unit=dummy'],
+      connection: NATIVE_PROVIDER_CONNECTION_MOCK,
+    });
+
+    expect(spawn).toHaveBeenCalledWith('journactl', ['--unit=dummy'], {
+      detached: true,
+      env: {
+        SYSTEMD_COLORS: 'true',
+      },
+    });
+  });
+
+  test('systemctl journal on native linux flatpak', async () => {
+    vi.stubEnv('FLATPAK_ID', 'dummyId');
+
+    const podman = getPodmanService({
+      isLinux: true,
+    });
+
+    podman.spawn({
+      command: 'journactl',
+      args: ['--unit=dummy'],
+      connection: NATIVE_PROVIDER_CONNECTION_MOCK,
+    });
+
+    expect(spawn).toHaveBeenCalledWith('flatpak-spawn', ['--host', 'journactl', '--unit=dummy'], {
+      detached: true,
+      env: {
+        SYSTEMD_COLORS: 'true',
+      },
+    });
+  });
 });
