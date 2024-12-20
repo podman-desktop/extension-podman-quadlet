@@ -15,7 +15,11 @@ export abstract class QuadletApi {
   abstract remove(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<void>;
   abstract read(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string>;
 
-  abstract createLogger(options: {
+  /**
+   * This method will use journalctl to create a logger
+   * @param options
+   */
+  abstract createQuadletLogger(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     quadletId: string;
   }): Promise<string>;

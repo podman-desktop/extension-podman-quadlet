@@ -11,7 +11,6 @@ import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { QuadletCheck } from '/@shared/src/models/quadlet-check';
 import { QuadletValidator } from '../utils/validators/quadlet-validator';
-import type { ChildProcess } from 'node:child_process';
 import type { LoggerService } from '../services/logger-service';
 
 interface Dependencies {
@@ -85,20 +84,31 @@ export class QuadletApiImpl extends QuadletApi {
     });
   }
 
-  override async createLogger(options: {
+  override async createQuadletLogger(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     quadletId: string;
   }): Promise<string> {
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
 
-    // journalctl --user --unit caddy.service --follow
-    const process: ChildProcess = this.dependencies.podman.spawn({
-      connection: providerConnection,
-      command: 'journalctl',
-      args: ['--user', '--follow', `--unit=${options.quadletId}`, '--output=cat'],
-    });
-    // create a logger
-    return this.dependencies.loggerService.createLogger(process);
+    const logger = this.dependencies.loggerService.createLogger();
+
+    // do not wait for the returned value as we --follow
+    this.dependencies.podman
+      .journalctlExec({
+        connection: providerConnection,
+        args: ['--user', '--follow', `--unit=${options.quadletId}`, '--output=cat'],
+        env: {
+          SYSTEMD_COLORS: 'true',
+          DBUS_SESSION_BUS_ADDRESS: 'unix:path=/run/user/1000/bus',
+        },
+        logger: logger,
+        // the logger has an internal cancellation token, let's use it
+        // if the logger is disposed, the process will be killed
+        token: logger.token,
+      })
+      .catch(console.debug);
+
+    return logger.id;
   }
 
   override async disposeLogger(loggerId: string): Promise<void> {

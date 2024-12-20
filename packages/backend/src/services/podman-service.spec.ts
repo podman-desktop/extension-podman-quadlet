@@ -20,12 +20,6 @@ import type { ProviderService } from './provider-service';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path/posix';
-import { spawn } from 'node:child_process';
-import type { ChildProcess } from 'node:child_process';
-
-vi.mock('node:child_process', () => ({
-  spawn: vi.fn(),
-}));
 
 vi.mock('node:fs/promises', () => ({
   writeFile: vi.fn(),
@@ -137,7 +131,10 @@ test('quadletExec should execute in podman machine on windows', async () => {
   const podman = getPodmanService({
     isWindows: true,
   });
-  const result = await podman.quadletExec(WSL_PROVIDER_CONNECTION_MOCK, ['-user -dryrun']);
+  const result = await podman.quadletExec({
+    connection: WSL_PROVIDER_CONNECTION_MOCK,
+    args: ['-user -dryrun'],
+  });
 
   expect(result).toStrictEqual(RUN_RESULT_MOCK);
   expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
@@ -163,7 +160,10 @@ test('systemctlExec should return RunError if contains exit code', async () => {
   const podman = getPodmanService({
     isWindows: true,
   });
-  const result = await podman.systemctlExec(WSL_PROVIDER_CONNECTION_MOCK, []);
+  const result = await podman.systemctlExec({
+    connection: WSL_PROVIDER_CONNECTION_MOCK,
+    args: [],
+  });
   expect(result).toStrictEqual(expect.objectContaining(RUN_RESULT_MOCK));
 });
 
@@ -215,55 +215,5 @@ describe('writeTextFile', () => {
         connection: WSL_PROVIDER_CONNECTION_MOCK,
       },
     );
-  });
-});
-
-describe('spawn', () => {
-  beforeEach(() => {
-    // prevent flatpak
-    vi.stubEnv('FLATPAK_ID', undefined);
-    vi.mocked(spawn).mockReturnValue({
-      on: vi.fn(),
-    } as unknown as ChildProcess);
-  });
-
-  test('systemctl journal on native linux', async () => {
-    const podman = getPodmanService({
-      isLinux: true,
-    });
-
-    podman.spawn({
-      command: 'journactl',
-      args: ['--unit=dummy'],
-      connection: NATIVE_PROVIDER_CONNECTION_MOCK,
-    });
-
-    expect(spawn).toHaveBeenCalledWith('journactl', ['--unit=dummy'], {
-      detached: true,
-      env: {
-        SYSTEMD_COLORS: 'true',
-      },
-    });
-  });
-
-  test('systemctl journal on native linux flatpak', async () => {
-    vi.stubEnv('FLATPAK_ID', 'dummyId');
-
-    const podman = getPodmanService({
-      isLinux: true,
-    });
-
-    podman.spawn({
-      command: 'journactl',
-      args: ['--unit=dummy'],
-      connection: NATIVE_PROVIDER_CONNECTION_MOCK,
-    });
-
-    expect(spawn).toHaveBeenCalledWith('flatpak-spawn', ['--host', 'journactl', '--unit=dummy'], {
-      detached: true,
-      env: {
-        SYSTEMD_COLORS: 'true',
-      },
-    });
   });
 });

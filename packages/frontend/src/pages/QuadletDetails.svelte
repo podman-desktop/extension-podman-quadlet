@@ -72,7 +72,7 @@ let logger: LoggerStore | undefined = $state();
 async function createLogger(): Promise<void> {
   if (!quadlet) throw new Error('Quadlets not found');
 
-  loggerId = await quadletAPI.createLogger({
+  loggerId = await quadletAPI.createQuadletLogger({
     quadletId: quadlet.id,
     connection: {
       providerId: providerId,

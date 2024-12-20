@@ -1,19 +1,22 @@
 /**
  * @author axel7083
  */
-import type { ProviderContainerConnection, RunError, RunResult } from '@podman-desktop/api';
-import { Disposable } from '@podman-desktop/api';
+import type {
+  CancellationToken,
+  Logger,
+  ProviderContainerConnection,
+  RunError,
+  RunResult,
+  Disposable,
+} from '@podman-desktop/api';
 import type { PodmanDependencies } from './podman-helper';
 import { PodmanHelper } from './podman-helper';
 import type { AsyncInit } from '../utils/async-init';
 import { dirname } from 'node:path/posix';
 import { writeFile, mkdir, readFile, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { type ChildProcess, spawn } from 'node:child_process';
-import { env } from 'node:process';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
-  #disposables: Disposable[] = [];
   #extensionsEventDisposable: Disposable | undefined;
 
   constructor(dependencies: PodmanDependencies) {
@@ -111,6 +114,9 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     connection: ProviderContainerConnection;
     command: string;
     args?: string[];
+    logger?: Logger;
+    env?: Record<string, string>;
+    token?: CancellationToken;
   }): Promise<RunResult> {
     const { connection, command, args = [] } = options;
 
@@ -118,7 +124,11 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     if (this.isLinux && connection.connection.vmType === undefined) {
       console.warn('[PodmanService] provider do not have a VMType, considering native podman linux.');
       console.debug(`[PodmanService] command ${command} args ${args}`);
-      return this.exec(command, args);
+      return this.exec(command, args, {
+        logger: options.logger,
+        env: options.env,
+        token: options.token,
+      });
     }
 
     // throw an error if vmType is undefined on non-linux platform
@@ -133,19 +143,26 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
 
     return this.podman.exec(sshCommand, {
       connection: connection,
+      logger: options.logger,
+      env: options.env,
+      token: options.token,
     });
   }
 
   /**
    * @privateRemarks We do not expose {@link internalExecute} for security purpose, so we must expose the quadlet exec
-   * @param connection
-   * @param args
+   * @param options
    */
-  quadletExec(connection: ProviderContainerConnection, args: string[]): Promise<RunResult> {
+  quadletExec(options: {
+    connection: ProviderContainerConnection;
+    args: string[];
+    logger?: Logger;
+    token?: CancellationToken;
+    env?: Record<string, string>;
+  }): Promise<RunResult> {
     return this.internalExecute({
-      connection,
+      ...options,
       command: '/usr/libexec/podman/quadlet',
-      args: args,
     });
   }
 
@@ -164,14 +181,18 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
    * @privateRemarks We do not expose {@link internalExecute} for security purpose, so we must expose the systemctl exec
    *
    * @dangerous
-   * @param connection
-   * @param args
+   * @param options
    */
-  async systemctlExec(connection: ProviderContainerConnection, args: string[]): Promise<RunResult> {
+  async systemctlExec(options: {
+    connection: ProviderContainerConnection;
+    args: string[];
+    logger?: Logger;
+    token?: CancellationToken;
+    env?: Record<string, string>;
+  }): Promise<RunResult> {
     return this.internalExecute({
-      connection,
+      ...options,
       command: 'systemctl',
-      args: args,
     }).catch((err: unknown) => {
       // check err is an RunError
       if (!err || typeof err !== 'object' || !('exitCode' in err)) {
@@ -181,50 +202,23 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     });
   }
 
-  spawn(options: {
+  /**
+   * @param options
+   */
+  async journalctlExec(options: {
     connection: ProviderContainerConnection;
-    command: string;
     args: string[];
-    signal?: AbortSignal;
-  }): ChildProcess {
-    if (options.connection.connection.vmType !== undefined) {
-      throw new Error('[PodmanService] non-native connection are not supported');
-    }
-
-    let args = options.args;
-    let command = options.command;
-    if (env['FLATPAK_ID'] !== undefined) {
-      args = ['--host', options.command, ...(args ?? [])];
-      command = 'flatpak-spawn';
-    }
-
-    const process = spawn(command, args, {
-      detached: true,
-      signal: options.signal,
-      env: {
-        SYSTEMD_COLORS: 'true',
-      },
+    logger?: Logger;
+    token?: CancellationToken;
+    env?: Record<string, string>;
+  }): Promise<RunResult> {
+    return this.internalExecute({
+      ...options,
+      command: 'journalctl',
     });
-
-    // handle exit close
-    process.on('error', console.error);
-    process.on('exit', console.log.bind(console, `${process.pid} exited`));
-    process.on('close', console.log.bind(console, `${process.pid} closed`));
-
-    this.#disposables.push(
-      Disposable.create(() => {
-        if (!process.killed || !process.exitCode || process.connected) {
-          console.warn(`killing process (${options.command})`);
-          process.kill();
-        }
-      }),
-    );
-
-    return process;
   }
 
   dispose(): void {
-    this.#disposables.forEach(disposable => disposable.dispose());
     this.#extensionsEventDisposable?.dispose();
   }
 }

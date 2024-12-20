@@ -64,7 +64,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * @param provider
    */
   protected async getQuadletVersion(provider: ProviderContainerConnection): Promise<string> {
-    const result = await this.podman.quadletExec(provider, ['-version']);
+    const result = await this.podman.quadletExec({
+      connection: provider,
+      args: ['-version'],
+    });
     return result.stdout;
   }
 
@@ -79,7 +82,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (!options.admin) {
       args.push('-user');
     }
-    const result = await this.podman.quadletExec(options.provider, args);
+    const result = await this.podman.quadletExec({
+      connection: options.provider,
+      args,
+    });
 
     const parser = new QuadletDryRunParser(result.stdout);
     return parser.parse();
