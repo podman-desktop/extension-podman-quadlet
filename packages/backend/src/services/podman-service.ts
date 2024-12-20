@@ -9,6 +9,7 @@ import type {
   RunResult,
   Disposable,
 } from '@podman-desktop/api';
+import { CancellationTokenSource } from '@podman-desktop/api';
 import type { PodmanDependencies } from './podman-helper';
 import { PodmanHelper } from './podman-helper';
 import type { AsyncInit } from '../utils/async-init';
@@ -18,9 +19,12 @@ import { homedir } from 'node:os';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
+  #execTimeout: number;
 
   constructor(dependencies: PodmanDependencies) {
     super(dependencies);
+
+    this.#execTimeout = 2500;
   }
 
   async init(): Promise<void> {
@@ -42,7 +46,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       return readFile(path, { encoding: 'utf8' });
     }
 
-    const result = await this.internalExecute({
+    const result = await this.executeWrapper({
       connection: connection,
       args: [],
       command: `cat "${path}"`,
@@ -70,14 +74,14 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     }
 
     // mkdir
-    await this.internalExecute({
+    await this.executeWrapper({
       connection: connection,
       args: ['-p', dirname(destination)],
       command: `mkdir`,
     });
 
     // write
-    await this.internalExecute({
+    await this.executeWrapper({
       connection: connection,
       args: [`"${content}"`, '>', destination],
       command: `echo`,
@@ -97,7 +101,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       return rm(path, { recursive: false, force: false });
     }
 
-    await this.internalExecute({
+    await this.executeWrapper({
       connection: connection,
       args: [path],
       command: `rm`,
@@ -105,21 +109,20 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
   }
 
   /**
-   * This method execute a given command in the podman machine
-   * @remarks if the podman connection is native, the command will be executed on the host.
-   * @dangerous
-   * @protected
+   * This method should not be called directly, use {@link executeWrapper}
+   * @param options
+   * @private
    */
-  protected internalExecute(options: {
+  private execute(options: {
     connection: ProviderContainerConnection;
     command: string;
     args?: string[];
     logger?: Logger;
     env?: Record<string, string>;
-    token?: CancellationToken;
+    token: CancellationToken;
   }): Promise<RunResult> {
     const { connection, command, args = [] } = options;
-    // let's check for podman native (only supported on linux)
+
     if (this.isLinux && connection.connection.vmType === undefined) {
       console.warn('[PodmanService] provider do not have a VMType, considering native podman linux.');
       console.debug(`[PodmanService] command ${command} args ${args}`);
@@ -149,7 +152,49 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
   }
 
   /**
-   * @privateRemarks We do not expose {@link internalExecute} for security purpose, so we must expose the quadlet exec
+   * This method execute a given command in the podman machine
+   * @remarks if the podman connection is native, the command will be executed on the host.
+   * @remarks if no CancellationToken is provided one will be created with a default timeout
+   * @remarks use internal {@link execute}
+   * @dangerous
+   * @protected
+   */
+  protected async executeWrapper(options: {
+    connection: ProviderContainerConnection;
+    command: string;
+    args?: string[];
+    logger?: Logger;
+    env?: Record<string, string>;
+    token?: CancellationToken;
+  }): Promise<RunResult> {
+    // we should always have a default timeout if no CancellationToken is provided
+    let token: CancellationToken;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let source: CancellationTokenSource | undefined;
+    if (options.token) {
+      token = options.token;
+    } else {
+      source = new CancellationTokenSource();
+      token = source.token;
+
+      timeoutId = setTimeout(() => {
+        source?.cancel();
+        source?.dispose();
+      }, this.#execTimeout);
+    }
+
+    let result: RunResult;
+    try {
+      result = await this.execute({ ...options, token: token });
+    } finally {
+      clearTimeout(timeoutId);
+      source?.dispose();
+    }
+    return result;
+  }
+
+  /**
+   * @privateRemarks We do not expose {@link executeWrapper} for security purpose, so we must expose the quadlet exec
    * @param options
    */
   quadletExec(options: {
@@ -159,7 +204,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     token?: CancellationToken;
     env?: Record<string, string>;
   }): Promise<RunResult> {
-    return this.internalExecute({
+    return this.executeWrapper({
       ...options,
       command: '/usr/libexec/podman/quadlet',
     });
@@ -177,7 +222,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
    *
    * ref {@link https://www.freedesktop.org/software/systemd/man/latest/systemctl.html#Exit%20status}
    *
-   * @privateRemarks We do not expose {@link internalExecute} for security purpose, so we must expose the systemctl exec
+   * @privateRemarks We do not expose {@link executeWrapper} for security purpose, so we must expose the systemctl exec
    *
    * @dangerous
    * @param options
@@ -189,7 +234,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     token?: CancellationToken;
     env?: Record<string, string>;
   }): Promise<RunResult> {
-    return this.internalExecute({
+    return this.executeWrapper({
       ...options,
       command: 'systemctl',
     }).catch((err: unknown) => {
@@ -211,7 +256,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     token?: CancellationToken;
     env?: Record<string, string>;
   }): Promise<RunResult> {
-    return this.internalExecute({
+    return this.executeWrapper({
       ...options,
       command: 'journalctl',
     });
