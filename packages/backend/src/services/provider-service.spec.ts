@@ -33,7 +33,7 @@ function getProviderService(): ProviderService {
   });
 }
 
-test('init should create cli tool', async () => {
+test('ProviderService#all should use provider api', async () => {
   vi.mocked(providerMock.getContainerConnections).mockReturnValue([WSL_PROVIDER_CONNECTION_MOCK]);
 
   const providers = getProviderService();
