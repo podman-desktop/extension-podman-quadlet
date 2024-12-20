@@ -119,7 +119,6 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     token?: CancellationToken;
   }): Promise<RunResult> {
     const { connection, command, args = [] } = options;
-
     // let's check for podman native (only supported on linux)
     if (this.isLinux && connection.connection.vmType === undefined) {
       console.warn('[PodmanService] provider do not have a VMType, considering native podman linux.');

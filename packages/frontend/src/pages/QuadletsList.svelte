@@ -9,7 +9,7 @@ import {
   EmptyScreen,
 } from '@podman-desktop/ui-svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import QuadletStatus from '../lib/QuadletStatus.svelte';
+import QuadletStatus from '../lib/table/QuadletStatus.svelte';
 import { quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate';
@@ -19,6 +19,8 @@ import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderCo
 import { providerConnectionsInfo } from '/@store/connections';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import MachineBadge from '/@/lib/table/MachineBadge.svelte';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 const columns = [
   new TableColumn<QuadletInfo>('Status', { width: '70px', renderer: QuadletStatus, align: 'center' }),
@@ -26,6 +28,13 @@ const columns = [
     renderer: TableSimpleColumn,
     align: 'left',
     renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.id,
+  }),
+  new TableColumn<QuadletInfo, ProviderContainerConnectionIdentifierInfo>('Environment', {
+    renderer: MachineBadge,
+    renderMapping: (quadletsInfo: QuadletInfo): ProviderContainerConnectionIdentifierInfo => quadletsInfo.connection,
+    comparator: (a, b): number => a.connection.name.localeCompare(b.connection.name),
+    overflow: true,
+    width: '250px',
   }),
   new TableColumn<QuadletInfo, string>('Path', {
     renderer: TableSimpleColumn,
