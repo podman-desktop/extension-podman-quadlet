@@ -9,7 +9,7 @@ import { loggerAPI, quadletAPI, rpcBrowser } from '/@/api/client';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import QuadletActions from '/@/lib/table/QuadletActions.svelte';
-import QuadletStatus from '/@/lib/QuadletStatus.svelte';
+import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import { LoggerStore } from '/@store/logger-store';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
