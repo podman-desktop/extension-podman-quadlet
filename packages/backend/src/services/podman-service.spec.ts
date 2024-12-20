@@ -12,7 +12,8 @@ import type {
   RunResult,
   Uri,
 } from '@podman-desktop/api';
-import { expect, test, vi, beforeEach, describe } from 'vitest';
+import { CancellationTokenSource } from '@podman-desktop/api';
+import { expect, test, vi, beforeEach, describe, afterEach } from 'vitest';
 import { PodmanService } from './podman-service';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
 import { PODMAN_EXTENSION_ID } from '../utils/constants';
@@ -36,6 +37,7 @@ vi.mock('@podman-desktop/api', () => ({
   Disposable: {
     create: (fn: () => void): Disposable => ({ dispose: fn }),
   },
+  CancellationTokenSource: vi.fn(),
 }));
 
 const extensionsMock: typeof extensions = {
@@ -81,11 +83,26 @@ const RUN_RESULT_MOCK: RunResult = {
 
 const HOMEDIR_MOCK = '/home/dummy-user';
 
+const CANCELLATION_SOURCE: CancellationTokenSource = {
+  cancel: vi.fn(),
+  dispose: vi.fn(),
+  token: {
+    isCancellationRequested: false,
+    onCancellationRequested: vi.fn(),
+  },
+} as unknown as CancellationTokenSource;
+
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.useFakeTimers();
   vi.mocked(extensionsMock.getExtension).mockReturnValue(podmanExtensionApiMock);
   vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(homedir).mockReturnValue(HOMEDIR_MOCK);
+  vi.mocked(CancellationTokenSource).mockReturnValue(CANCELLATION_SOURCE);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWindows?: boolean }): PodmanService {
@@ -141,6 +158,7 @@ test('quadletExec should execute in podman machine on windows', async () => {
     ['machine', 'ssh', '/usr/libexec/podman/quadlet -user -dryrun'],
     {
       connection: WSL_PROVIDER_CONNECTION_MOCK,
+      token: expect.anything(),
     },
   );
 });
@@ -165,6 +183,65 @@ test('systemctlExec should return RunError if contains exit code', async () => {
     args: [],
   });
   expect(result).toStrictEqual(expect.objectContaining(RUN_RESULT_MOCK));
+});
+
+test('expect a token to be created and disposed', async () => {
+  expect(CancellationTokenSource).not.toHaveBeenCalled();
+  const podman = getPodmanService();
+
+  await podman['executeWrapper']({
+    connection: WSL_PROVIDER_CONNECTION_MOCK,
+    command: 'echo',
+    args: ['hello world'],
+  });
+
+  expect(CancellationTokenSource).toHaveBeenCalledOnce();
+  // get the source token
+  expect(CANCELLATION_SOURCE.token.isCancellationRequested).toBeFalsy();
+  expect(CANCELLATION_SOURCE.dispose).toHaveBeenCalledOnce();
+  expect(CANCELLATION_SOURCE.cancel).not.toHaveBeenCalled();
+});
+
+test('expect a token to be created and cancelled', async () => {
+  expect(CancellationTokenSource).not.toHaveBeenCalled();
+  const podman = getPodmanService({
+    isWindows: true,
+  });
+
+  let resolve: ((value: RunResult) => void) | undefined;
+  let reject: ((err: Error) => void) | undefined;
+  const promise = new Promise<RunResult>((res, rej) => {
+    resolve = res;
+    reject = rej;
+  });
+  expect(resolve).toBeDefined();
+  expect(reject).toBeDefined();
+  expect(promise).toBeDefined();
+
+  vi.mocked(podmanExtensionApiMock.exports.exec).mockReturnValue(promise);
+
+  const execPromise = podman['executeWrapper']({
+    connection: WSL_PROVIDER_CONNECTION_MOCK,
+    command: 'echo',
+    args: ['hello world'],
+  });
+
+  expect(CancellationTokenSource).toHaveBeenCalledOnce();
+  expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(['machine', 'ssh', 'echo hello world'], {
+    token: CANCELLATION_SOURCE.token,
+    connection: WSL_PROVIDER_CONNECTION_MOCK,
+  });
+  await vi.advanceTimersByTimeAsync(5000);
+
+  // ensure the source token has been cancelled
+  await vi.waitFor(() => {
+    // get the source token
+    expect(CANCELLATION_SOURCE.dispose).toHaveBeenCalledOnce();
+    expect(CANCELLATION_SOURCE.cancel).toHaveBeenCalledOnce();
+  });
+
+  reject?.(new Error('final rejected'));
+  await expect(execPromise).rejects.toThrowError('final rejected');
 });
 
 describe('writeTextFile', () => {
@@ -206,6 +283,7 @@ describe('writeTextFile', () => {
       ['machine', 'ssh', 'mkdir -p ~/.config/containers/systemd'],
       {
         connection: WSL_PROVIDER_CONNECTION_MOCK,
+        token: expect.anything(),
       },
     );
 
@@ -213,6 +291,7 @@ describe('writeTextFile', () => {
       ['machine', 'ssh', `echo "${content}" > ${destination}`],
       {
         connection: WSL_PROVIDER_CONNECTION_MOCK,
+        token: expect.anything(),
       },
     );
   });
