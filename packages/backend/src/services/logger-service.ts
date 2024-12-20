@@ -2,16 +2,15 @@
  * @author axel7083
  */
 import type { Disposable, Webview } from '@podman-desktop/api';
-import type { ChildProcess } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
-import { Logger } from '../utils/logger';
+import { LoggerImpl } from '../utils/logger-impl';
 
 interface Dependencies {
   webview: Webview;
 }
 
 export class LoggerService implements Disposable {
-  #registry: Map<string, Logger>;
+  #registry: Map<string, LoggerImpl>;
 
   constructor(protected dependencies: Dependencies) {
     this.#registry = new Map();
@@ -26,7 +25,7 @@ export class LoggerService implements Disposable {
     return logger.all();
   }
 
-  getLogger(loggerId: string): Logger {
+  getLogger(loggerId: string): LoggerImpl {
     const logger = this.#registry.get(loggerId);
     if (!logger) throw new Error(`unknown logger with id ${loggerId}`);
     return logger;
@@ -38,19 +37,15 @@ export class LoggerService implements Disposable {
     this.#registry.delete(loggerId);
   }
 
-  createLogger(process: ChildProcess): string {
+  createLogger(): LoggerImpl {
     const loggerId = this.createID();
 
-    const logger = new Logger({
+    const logger = new LoggerImpl({
       webview: this.dependencies.webview,
-      process: process,
       loggerId: loggerId,
     });
     this.#registry.set(loggerId, logger);
-    // async init
-    logger.init().catch(console.error);
-
-    return loggerId;
+    return logger;
   }
 
   dispose(): void {
