@@ -214,13 +214,15 @@ function resetGenerate(): void {
         ]} />
 
       <!-- each form is individual -->
-      <ChildForm
-        onChange={resetGenerate}
-        onError={onError}
-        bind:loading={loading}
-        provider={selectedContainerProviderConnection}
-        resourceId={resourceId}
-        disabled={selectedContainerProviderConnection?.status !== 'started'} />
+      {#key selectedContainerProviderConnection}
+        <ChildForm
+          onChange={resetGenerate}
+          onError={onError}
+          bind:loading={loading}
+          provider={selectedContainerProviderConnection}
+          resourceId={resourceId}
+          disabled={selectedContainerProviderConnection?.status !== 'started'} />
+      {/key}
       {#if error}
         <ErrorMessage error={error} />
       {/if}
