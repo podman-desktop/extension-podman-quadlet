@@ -4,7 +4,6 @@ import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-i
 import { containerAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 let {
   loading = $bindable(),
@@ -12,6 +11,7 @@ let {
   provider,
   onError,
   onChange,
+  disabled,
 }: QuadletChildrenFormProps = $props();
 
 let containers: SimpleContainerInfo[] | undefined = $state();
@@ -49,19 +49,10 @@ function onContainerChange(value: SimpleContainerInfo | undefined): void {
   onChange();
 }
 
-// reset if any change
-let prevProvider: ProviderContainerConnectionIdentifierInfo | undefined = $state();
-$effect(() => {
-  if (prevProvider !== provider) {
-    // containers = undefined;
-    // prevProvider = provider;
-  }
-});
-
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the containers
 $effect(() => {
-  if (provider && !selectedContainer && containers === undefined && loading === false) {
+  if (provider?.status === 'started' && !selectedContainer && containers === undefined && loading === false) {
     listContainers().catch(console.error);
   }
 });
@@ -70,7 +61,7 @@ $effect(() => {
 <!-- container list -->
 <label for="container" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">Container</label>
 <ContainersSelect
-  disabled={loading || provider === undefined}
+  disabled={loading || provider === undefined || disabled}
   onChange={onContainerChange}
   value={selectedContainer}
   containers={containers ?? []} />

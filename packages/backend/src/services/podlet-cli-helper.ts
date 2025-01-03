@@ -6,6 +6,7 @@ import type { env, window, process as processApi, cli as cliApi } from '@podman-
 import path from 'node:path';
 import os from 'node:os';
 import type { ProviderService } from './provider-service';
+import type { PodmanService } from './podman-service';
 
 export interface PodletCliDependencies {
   storagePath: string;
@@ -15,6 +16,7 @@ export interface PodletCliDependencies {
   processApi: typeof processApi;
   cliApi: typeof cliApi;
   providers: ProviderService;
+  podman: PodmanService;
 }
 
 export abstract class PodletCliHelper {

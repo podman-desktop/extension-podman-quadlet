@@ -5,6 +5,7 @@ import { PodletApi } from '/@shared/src/apis/podlet-api';
 import type { PodletCliService } from '../services/podlet-cli-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { RunResult } from '@podman-desktop/api';
 
 interface Dependencies {
   podlet: PodletCliService;
@@ -19,18 +20,17 @@ export class PodletApiImpl extends PodletApi {
     connection: ProviderContainerConnectionIdentifierInfo;
     type: QuadletType;
     resourceId: string;
-  }): Promise<string> {
-    const result = await this.dependencies.podlet.exec(
+  }): Promise<RunResult> {
+    return this.dependencies.podlet.exec(
       ['generate', options.type.toLowerCase(), options.resourceId],
       options.connection,
     );
-    return result.stdout;
   }
 
   override async compose(options: {
     filepath: string;
     type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
-  }): Promise<string> {
+  }): Promise<RunResult> {
     const args = ['compose'];
     switch (options.type) {
       case QuadletType.POD:
@@ -41,8 +41,7 @@ export class PodletApiImpl extends PodletApi {
         break;
     }
     args.push(options.filepath);
-    const result = await this.dependencies.podlet.exec(args);
-    return result.stdout;
+    return this.dependencies.podlet.exec(args);
   }
 
   override async isInstalled(): Promise<boolean> {

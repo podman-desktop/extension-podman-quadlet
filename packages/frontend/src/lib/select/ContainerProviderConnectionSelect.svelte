@@ -27,6 +27,18 @@ function handleOnChange(nValue: ProviderContainerConnectionDetailedInfo | undefi
   value = nValue;
   onChange?.(value);
 }
+
+function getProviderStatusColor(item: ProviderContainerConnectionDetailedInfo): string {
+  switch (item.status) {
+    case 'starting':
+    case 'stopping':
+      return 'bg-[var(--pd-status-degraded)]';
+    case 'started':
+      return 'bg-[var(--pd-status-running)]';
+    default:
+      return 'bg-[var(--pd-status-stopped)]';
+  }
+}
 </script>
 
 <Select
@@ -43,6 +55,7 @@ function handleOnChange(nValue: ProviderContainerConnectionDetailedInfo | undefi
   }))}>
   <div slot="item" let:item>
     <div class="flex items-center">
+      <div class="flex w-2 h-2 me-2 rounded-full {getProviderStatusColor(item)}"></div>
       <div class="grow">
         <span>{item.name}</span>
       </div>

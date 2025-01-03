@@ -16,6 +16,7 @@ export interface QuadletChildrenFormProps {
   provider?: ProviderContainerConnectionDetailedInfo;
   onError: (error: string) => void;
   onChange: () => void;
+  disabled?: boolean;
 }
 
 export const RESOURCE_ID_QUERY = 'resourceId';
