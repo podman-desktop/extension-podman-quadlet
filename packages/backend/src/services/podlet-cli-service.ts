@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { CliTool, Disposable, Logger, RunResult, QuickPickItem } from '@podman-desktop/api';
+import type { CliTool, Disposable, Logger, QuickPickItem } from '@podman-desktop/api';
 import { ProgressLocation } from '@podman-desktop/api';
 import { PODLET_MARKDOWN, PODLET_ORGANISATION, PODLET_REPOSITORY } from '../utils/constants';
 import type { PodletCliDependencies } from './podlet-cli-helper';
@@ -12,6 +12,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { unTarXZ, unZip } from '../utils/archive';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { RunResult } from '/@shared/src/models/run-result';
 
 export interface PodletGithubReleaseArtifactMetadata extends QuickPickItem {
   tag: string;
@@ -36,7 +37,7 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
    * @param args
    * @param connection
    */
-  exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
+  async exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
     if (!this.#executable) throw new Error('podlet is not installed.');
 
     const env: Record<string, string> = {};
@@ -44,17 +45,40 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
     if (connection) {
       const provider = this.dependencies.providers.getProviderContainerConnection(connection);
       if (provider.connection.vmType) {
-        env['CONTAINER_CONNECTION'] = connection.name;
+        const isRoot: boolean = await this.dependencies.podman.isMachineRootful(provider);
+        env['CONTAINER_CONNECTION'] = `${connection.name}${isRoot ? '-root' : ''}`;
       }
     }
 
-    return this.dependencies.processApi.exec(this.#executable, args, {
-      env: env,
-    });
+    return this.dependencies.processApi
+      .exec(this.#executable, args, {
+        env: env,
+      })
+      .catch((err: unknown) => {
+        // check err is an RunError
+        if (
+          !err ||
+          typeof err !== 'object' ||
+          !('exitCode' in err) ||
+          !('stdout' in err) ||
+          !('stderr' in err) ||
+          !('command' in err) ||
+          !('exitCode' in err)
+        ) {
+          throw err;
+        }
+
+        return {
+          command: err.command as string,
+          stderr: err.stderr as string,
+          stdout: err.stdout as string,
+          exitCode: err.exitCode as number,
+        };
+      });
   }
 
   isInstalled(): boolean {
-    return this.#cliTool?.version !== undefined;
+    return !!this.#executable && this.#cliTool?.version !== undefined;
   }
 
   async init(): Promise<void> {
@@ -165,7 +189,7 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
   /**
    * search if podlet is available system-wide or in the extension folder
    */
-  async findPodletInfo(): Promise<PodletInfo | undefined> {
+  private async findPodletInfo(): Promise<PodletInfo | undefined> {
     let path: string | undefined = await this.wherePodlet();
 
     // if not installed system-wide, let's check extension folder

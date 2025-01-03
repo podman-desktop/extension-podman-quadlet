@@ -5,7 +5,14 @@ import { imageAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ImagesSelect from '/@/lib/select/ImagesSelect.svelte';
 
-let { loading = $bindable(), resourceId: imageId, provider, onError, onChange }: QuadletChildrenFormProps = $props();
+let {
+  loading = $bindable(),
+  resourceId: imageId,
+  provider,
+  onError,
+  onChange,
+  disabled,
+}: QuadletChildrenFormProps = $props();
 
 let images: SimpleImageInfo[] | undefined = $state();
 
@@ -40,7 +47,7 @@ function onImageChange(value: SimpleImageInfo | undefined): void {
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the containers
 $effect(() => {
-  if (provider && !selectedImage && images === undefined && loading === false) {
+  if (provider?.status === 'started' && !selectedImage && images === undefined && loading === false) {
     listImages().catch(console.error);
   }
 });
@@ -49,7 +56,7 @@ $effect(() => {
 <!-- image list -->
 <label for="image" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">Image</label>
 <ImagesSelect
-  disabled={loading || provider === undefined}
+  disabled={loading || provider === undefined || disabled}
   onChange={onImageChange}
   value={selectedImage}
   images={images ?? []} />

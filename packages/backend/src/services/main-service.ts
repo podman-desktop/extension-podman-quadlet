@@ -101,18 +101,13 @@ export class MainService implements Disposable, AsyncInit {
     await providers.init();
     this.#disposables.push(providers);
 
-    // Responsible for managing the Podlet cli tool
-    const podletCli = new PodletCliService({
-      cliApi: this.dependencies.cliApi,
-      env: this.dependencies.env,
-      window: this.dependencies.window,
-      processApi: this.dependencies.processApi,
-      storagePath: this.dependencies.extensionContext.storagePath,
-      octokit: new Octokit(),
+    // Basic manipulate of containers
+    const containers = new ContainerService({
+      containers: this.dependencies.containers,
       providers: providers,
     });
-    await podletCli.init();
-    this.#disposables.push(podletCli);
+    await containers.init();
+    this.#disposables.push(containers);
 
     // The Podman Service is responsible for communicating with the podman extension
     const podman = new PodmanService({
@@ -123,6 +118,20 @@ export class MainService implements Disposable, AsyncInit {
     });
     await podman.init();
     this.#disposables.push(podman);
+
+    // Responsible for managing the Podlet cli tool
+    const podletCli = new PodletCliService({
+      cliApi: this.dependencies.cliApi,
+      env: this.dependencies.env,
+      window: this.dependencies.window,
+      processApi: this.dependencies.processApi,
+      storagePath: this.dependencies.extensionContext.storagePath,
+      octokit: new Octokit(),
+      providers: providers,
+      podman: podman,
+    });
+    await podletCli.init();
+    this.#disposables.push(podletCli);
 
     // systemd service is responsible for communicating with the systemd in the podman machine
     const systemd = new SystemdService({
@@ -142,14 +151,6 @@ export class MainService implements Disposable, AsyncInit {
     });
     await quadletService.init();
     this.#disposables.push(quadletService);
-
-    // Basic manipulate of containers
-    const containers = new ContainerService({
-      containers: this.dependencies.containers,
-      providers: providers,
-    });
-    await containers.init();
-    this.#disposables.push(containers);
 
     // Basic manipulation of images
     const images = new ImageService({

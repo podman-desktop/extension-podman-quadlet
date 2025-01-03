@@ -262,6 +262,23 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     });
   }
 
+  /**
+   * Check if a given machine is rootful
+   * @param connection
+   */
+  public async isMachineRootful(connection: ProviderContainerConnection): Promise<boolean> {
+    if (!connection.connection.vmType)
+      throw new Error('connection provided is not a podman machine (native connection)');
+
+    const result = await this.podman.exec(
+      ['machine', 'inspect', '--format', '{{.Rootful}}', connection.connection.name],
+      {
+        connection: connection,
+      },
+    );
+    return result.stdout.trim() === 'true';
+  }
+
   dispose(): void {
     this.#extensionsEventDisposable?.dispose();
   }

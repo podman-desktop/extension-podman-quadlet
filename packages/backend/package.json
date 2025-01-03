@@ -1,6 +1,6 @@
 {
   "name": "quadlet",
-  "displayName": "Pdoman Quadlet",
+  "displayName": "Podman Quadlet",
   "description": "Manage, generate Podman Quadlet",
   "version": "0.5.0-next",
   "icon": "icon.png",

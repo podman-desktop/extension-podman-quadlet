@@ -12,6 +12,11 @@ import { providerConnectionsInfo } from '/@store/connections';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
+import Fa from 'svelte-fa';
+import type { RunResult } from '/@shared/src/models/run-result';
+import { toStore } from 'svelte/store';
+import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 
 interface Props {
   filepath?: string;
@@ -36,13 +41,24 @@ let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit
 let quadletType: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD = $state(QuadletType.CONTAINER);
 
 let error: string | undefined = $state();
+let stderr: string | undefined = $state();
+
 function onError(err: string): void {
   error = err;
 }
 
-function onGenerated(value: string): void {
+function onGenerated(value: RunResult): void {
+  // if exitCode is defined or non-zero: something went wrong
+  if (value.exitCode) {
+    stderr = value.stderr;
+    onError(
+      `Something went wrong while generating quadlet for provider ${selectedContainerProviderConnection?.providerId} (${value.exitCode})`,
+    );
+    return;
+  }
+
   error = undefined;
-  quadlet = value;
+  quadlet = value.stdout;
 
   const comment = quadlet.split('\n')[0];
   if (comment.startsWith('#')) {
@@ -117,6 +133,10 @@ function onQuadletTypeChange(value: string): void {
 <!-- form -->
 <div class="bg-[var(--pd-content-card-bg)] m-5 space-y-6 px-8 sm:pb-6 xl:pb-8 rounded-lg h-fit">
   <div class="w-full">
+    {#if stderr}
+      <XTerminal readonly store={toStore(() => stderr ?? '')} />
+    {/if}
+
     <Stepper
       value={step}
       steps={[
@@ -177,6 +197,12 @@ function onQuadletTypeChange(value: string): void {
         onChange={onContainerProviderConnectionChange}
         value={selectedContainerProviderConnection}
         containerProviderConnections={$providerConnectionsInfo} />
+      {#if selectedContainerProviderConnection && selectedContainerProviderConnection.status !== 'started'}
+        <div class="text-gray-800 text-sm flex items-center">
+          <Fa class="mr-2" icon={faWarning} />
+          <span role="alert">The container engine is not started</span>
+        </div>
+      {/if}
 
       <label for="quadlet-name" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Quadlet name</label>
@@ -194,7 +220,7 @@ function onQuadletTypeChange(value: string): void {
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
         <Button
-          disabled={quadletFilename.length === 0 || !selectedContainerProviderConnection}
+          disabled={quadletFilename.length === 0 || selectedContainerProviderConnection?.status !== 'started'}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
           title="Load into machine">Load into machine</Button>

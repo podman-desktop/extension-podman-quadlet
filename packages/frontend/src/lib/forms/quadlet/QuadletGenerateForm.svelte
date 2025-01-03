@@ -15,11 +15,15 @@ import { router } from 'tinro';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
 import { podletAPI, quadletAPI } from '/@/api/client';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
-// import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import Stepper from '/@/lib/stepper/Stepper.svelte';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
+import type { RunResult } from '/@shared/src/models/run-result';
+import XTerminal from '/@/lib/terminal/XTerminal.svelte';
+import { toStore } from 'svelte/store';
+import Fa from 'svelte-fa';
+import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 
 interface Props extends QuadletGenerateFormProps {
   loading: boolean;
@@ -79,12 +83,25 @@ let loaded: boolean = $state(false);
 let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'options');
 
 let error: string | undefined = $state();
+let stderr: string | undefined = $state();
+
 function onError(err: string): void {
   error = err;
 }
-function onGenerated(value: string): void {
+
+function onGenerated(value: RunResult): void {
+  // if exitCode is defined or non-zero: something went wrong
+  if (value.exitCode) {
+    stderr = value.stderr;
+    onError(
+      `Something went wrong while generating quadlet for provider ${selectedContainerProviderConnection?.providerId} (${value.exitCode})`,
+    );
+    return;
+  }
+
   error = undefined;
-  quadlet = value;
+  stderr = undefined;
+  quadlet = value.stdout;
 
   const comment = quadlet.split('\n')[0];
   if (comment.startsWith('#')) {
@@ -141,6 +158,10 @@ function resetGenerate(): void {
 <!-- form -->
 <div class="bg-[var(--pd-content-card-bg)] m-5 space-y-6 px-8 sm:pb-6 xl:pb-8 rounded-lg h-fit">
   <div class="w-full">
+    {#if stderr}
+      <XTerminal readonly store={toStore(() => stderr ?? '')} />
+    {/if}
+
     <Stepper
       value={step}
       steps={[
@@ -168,11 +189,17 @@ function resetGenerate(): void {
         onChange={onContainerProviderConnectionChange}
         value={selectedContainerProviderConnection}
         containerProviderConnections={$providerConnectionsInfo} />
+      {#if selectedContainerProviderConnection && selectedContainerProviderConnection.status !== 'started'}
+        <div class="text-gray-800 text-sm flex items-center">
+          <Fa class="mr-2" icon={faWarning} />
+          <span role="alert">The container engine is not started</span>
+        </div>
+      {/if}
 
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Quadlet type</label>
       <RadioButtons
-        disabled={loading || selectedContainerProviderConnection === undefined}
+        disabled={loading || selectedContainerProviderConnection?.status !== 'started'}
         onChange={onQuadletTypeChange}
         value={quadletType}
         options={[
@@ -187,12 +214,15 @@ function resetGenerate(): void {
         ]} />
 
       <!-- each form is individual -->
-      <ChildForm
-        onChange={resetGenerate}
-        onError={onError}
-        bind:loading={loading}
-        provider={selectedContainerProviderConnection}
-        resourceId={resourceId} />
+      {#key selectedContainerProviderConnection}
+        <ChildForm
+          onChange={resetGenerate}
+          onError={onError}
+          bind:loading={loading}
+          provider={selectedContainerProviderConnection}
+          resourceId={resourceId}
+          disabled={selectedContainerProviderConnection?.status !== 'started'} />
+      {/key}
       {#if error}
         <ErrorMessage error={error} />
       {/if}
@@ -201,7 +231,7 @@ function resetGenerate(): void {
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
         <Button
           class=""
-          disabled={!!error || !selectedContainerProviderConnection || !resourceId}
+          disabled={!!error || selectedContainerProviderConnection?.status !== 'started' || !resourceId}
           icon={faCode}
           title="Generate"
           on:click={generate}>Generate</Button>
