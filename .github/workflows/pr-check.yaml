@@ -96,10 +96,12 @@ jobs:
       # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
       - name: Extract @podman-desktop/api version
         id: pd-api-version
+        working-directory: ./pd-extension-quadlet
         run: |
           # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
           export PD_VERSION=$(pnpm list -C packages/backend/ --json | jq '.[0].devDependencies."@podman-desktop/api".version')
           echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
+          echo "Using @podman-desktop/api $PD_VERSION"
 
       # Check cache for existing podman-desktop
       - name: Cache Podman Desktop
