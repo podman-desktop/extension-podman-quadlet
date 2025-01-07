@@ -117,6 +117,8 @@ jobs:
         run: |
           echo "Podman Desktop $PD_VERSION cache hit" 
           echo "Podman Desktop version $(jq -r .version package.json) restored"
+          ls -R dist/
+          ls node_modules/
 
       # If cache-missed let's download podman-desktop
       - name: Download Podman Desktop
