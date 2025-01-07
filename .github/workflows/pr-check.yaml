@@ -108,16 +108,18 @@ jobs:
         id: cache-pd
         uses: actions/cache@v4
         with:
-          path: podman-desktop
+          path: ${{ github.workspace }}/podman-desktop
           key: pd-${{ steps.pd-api-version.outputs.PD_VERSION }}
 
       # If cache-missed let's download podman-desktop
       - name: Download Podman Desktop
         if: steps.cache-pd.outputs.cache-hit != 'true'
+        working-directory: ./pd-extension-quadlet
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
         run: |
           echo "Podman Desktop $PD_VERSION cache missed"
+          echo "Donwloading PD desktop to ${{ github.workspace }}/podman-desktop"
           # Stable release are available podman-desktop/podman-desktop
           # Prerelease are available under podman-desktop/prereleases
           if [[ "$PD_VERSION" =~ - ]]; then
@@ -131,7 +133,7 @@ jobs:
       # Install and build podman-desktop if never cached
       - name: Install pnpm deps and build Podman Desktop
         if: steps.cache-pd.outputs.cache-hit != 'true'
-        working-directory: ./podman-desktop
+        working-directory: ./pd-extension-quadlet/podman-desktop
         run: |
           pnpm install --frozen-lockfile
           pnpm test:e2e:build
@@ -187,7 +189,9 @@ jobs:
         env:
           PODMAN_DESKTOP_ARGS: ${{ github.workspace }}/podman-desktop
           EXTENSION_PREINSTALLED: true
-        run: pnpm test:e2e:smoke
+        run: |
+          echo "Run e2e with PODMAN_DESKTOP_ARGS=$PODMAN_DESKTOP_ARGS"
+          pnpm test:e2e:smoke
 
       - uses: actions/upload-artifact@v4
         if: always()
