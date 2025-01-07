@@ -136,7 +136,8 @@ jobs:
             wget -qO- "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
           fi
           # Move the extracted folder to the podman-desktop folder
-          mv podman-desktop-$PD_VERSION/ podman-desktop/     
+          mv podman-desktop-$PD_VERSION/ podman-desktop/
+          find ./podman-desktop/ -name ".gitignore" -type f -delete
 
       # Install and build podman-desktop if never cached
       - name: Install pnpm deps and build Podman Desktop
