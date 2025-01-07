@@ -146,7 +146,7 @@ export class MainService implements Disposable, AsyncInit {
       podman,
       webview: webview.getPanel().webview,
       env: this.dependencies.env,
-      providers: this.dependencies.providers,
+      providers: providers,
       window: this.dependencies.window,
     });
     await quadletService.init();

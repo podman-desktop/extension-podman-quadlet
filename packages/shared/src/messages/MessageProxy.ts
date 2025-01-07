@@ -132,10 +132,12 @@ export interface Subscriber {
   unsubscribe(): void;
 }
 
+export type Listener = (value: any) => void;
+
 export class RpcBrowser {
   counter: number = 0;
   promises: Map<number, { resolve: (value: unknown) => unknown; reject: (value: unknown) => void }> = new Map();
-  subscribers: Map<string, (msg: any) => void> = new Map();
+  subscribers: Map<string, Set<Listener>> = new Map();
 
   getUniqueId(): number {
     return ++this.counter;
@@ -158,6 +160,8 @@ export class RpcBrowser {
           return;
         }
 
+        console.log('received IPC', event.data);
+
         const { resolve, reject } = this.promises.get(message.id) ?? {};
 
         if (message.status === 'error') {
@@ -167,8 +171,7 @@ export class RpcBrowser {
         }
         this.promises.delete(message.id);
       } else if (this.isSubscribedMessage(message)) {
-        const handler = this.subscribers.get(message.id);
-        handler?.(message.body);
+        this.subscribers.get(message.id)?.forEach(handler => handler(message.body));
       } else {
         console.error('Received incompatible message.', message);
         return;
@@ -223,11 +226,12 @@ export class RpcBrowser {
     return promise;
   }
 
-  subscribe(msgId: string, f: (msg: any) => void): Subscriber {
-    this.subscribers.set(msgId, f);
+  subscribe(msgId: string, f: Listener): Subscriber {
+    this.subscribers.set(msgId, (this.subscribers.get(msgId) ?? new Set()).add(f));
+
     return {
       unsubscribe: (): void => {
-        this.subscribers.delete(msgId);
+        this.subscribers.get(msgId)?.delete(f);
       },
     };
   }

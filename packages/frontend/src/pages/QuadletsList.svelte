@@ -21,6 +21,7 @@ import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/model
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import { synchronisation } from '/@store/synchronisation';
 
 const columns = [
   new TableColumn<QuadletInfo>('Status', { width: '70px', renderer: QuadletStatus, align: 'center' }),
@@ -59,25 +60,35 @@ async function refreshQuadlets(): Promise<void> {
 let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undefined = $state(undefined);
 let searchTerm: string = $state('');
 
-let data: (QuadletInfo & { selected?: boolean })[] = $derived.by(() => {
-  return $quadletsInfo.reduce((output, current) => {
+let data: (QuadletInfo & { selected?: boolean })[] = $derived(
+  $quadletsInfo.filter(quadlet => {
     let match = true;
     if (containerProviderConnection) {
       match =
-        current.connection.providerId === containerProviderConnection.providerId &&
-        current.connection.name === containerProviderConnection.name;
+        quadlet.connection.providerId === containerProviderConnection.providerId &&
+        quadlet.connection.name === containerProviderConnection.name;
     }
 
     if (match && searchTerm.length > 0) {
-      match = current.id.includes(searchTerm);
+      match = quadlet.id.includes(searchTerm);
     }
 
-    if (match) {
-      output.push(current);
-    }
+    return match;
+  }, [] as QuadletInfo[]),
+);
 
-    return output;
-  }, [] as QuadletInfo[]);
+let empty: boolean = $derived(data.length === 0);
+
+let outOfSync: boolean = $derived.by(() => {
+  // check if synchronisation is out
+  if (containerProviderConnection) {
+    return (
+      !$synchronisation.find(provider => provider.connection === containerProviderConnection) &&
+      containerProviderConnection.status === 'started'
+    );
+  } else {
+    return $synchronisation.length === 0 && $providerConnectionsInfo.length > 0;
+  }
 });
 
 function navigateToGenerate(): void {
@@ -106,10 +117,24 @@ function navigateToGenerate(): void {
     </div>
   </svelte:fragment>
   <svelte:fragment slot="content">
-    {#if data?.length > 0}
+    {#if !empty}
       <Table kind="service" data={data} columns={columns} row={row} />
     {:else}
-      <EmptyScreen icon={faArrowsRotate} title={'No Quadlet found on the system'} />
+      <EmptyScreen
+        icon={faArrowsRotate}
+        title={'No Quadlet found on the system'}
+        message={outOfSync ? 'Extension is out of sync' : 'Try creating a quadlet'}>
+        {#if outOfSync}
+          <div class="flex flex-col">
+            <Button
+              icon={faArrowsRotate}
+              inProgress={loading}
+              disabled={loading}
+              title="Refresh Quadlets"
+              on:click={refreshQuadlets}>Refresh</Button>
+          </div>
+        {/if}
+      </EmptyScreen>
     {/if}
   </svelte:fragment>
 </NavPage>
