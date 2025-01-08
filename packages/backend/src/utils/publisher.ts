@@ -26,7 +26,8 @@ export class Publisher<T> {
   ) {}
 
   notify(): void {
-    this.webview
+    // side-case: the notify function may be called during the constructor so this may be undefined.
+    this?.webview
       .postMessage({
         id: this.channel,
         body: this.getter(),
