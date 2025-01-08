@@ -160,8 +160,6 @@ export class RpcBrowser {
           return;
         }
 
-        console.log('received IPC', event.data);
-
         const { resolve, reject } = this.promises.get(message.id) ?? {};
 
         if (message.status === 'error') {
