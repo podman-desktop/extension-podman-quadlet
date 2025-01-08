@@ -143,9 +143,9 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for generateButton to be enabled
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 10_000,
+          timeout: 2_000,
         })
-        .toBeTruthy();
+        .toBeFalsy();
 
       // select container
       const containers = await generateForm.containerSelect.getOptions();
