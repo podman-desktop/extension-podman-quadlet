@@ -13,15 +13,18 @@ import type { AsyncInit } from '../utils/async-init';
 import { join as joinposix } from 'node:path/posix';
 import { load } from 'js-yaml';
 import { QuadletTypeParser } from '../utils/parsers/quadlet-type-parser';
+import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   // todo: find a better alternative, ProviderContainerConnection is not consistent
   #value: Map<ProviderContainerConnection, Quadlet[]>;
   #extensionsEventDisposable: Disposable | undefined;
+  #synchronisation: Map<ProviderContainerConnection, number>;
 
   constructor(dependencies: QuadletServiceDependencies) {
     super(dependencies);
     this.#value = new Map<ProviderContainerConnection, Quadlet[]>();
+    this.#synchronisation = new Map<ProviderContainerConnection, number>();
   }
 
   /**
@@ -146,9 +149,15 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         }
       }
 
-      this.#value.set(provider, quadlets);
-      this.notify();
+      this.update(provider, quadlets, false);
     }
+    this.notify();
+  }
+
+  protected update(provider: ProviderContainerConnection, quadlets: Quadlet[], notify: boolean = true): void {
+    this.#value.set(provider, quadlets);
+    this.#synchronisation.set(provider, new Date().getTime());
+    if (notify) this.notify();
   }
 
   /**
@@ -169,7 +178,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         }
       }
 
-      this.#value.set(provider, quadlets);
+      this.update(provider, quadlets, false);
     }
     this.notify();
   }
@@ -333,6 +342,13 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
 
     return await this.dependencies.podman.readTextFile(options.provider, quadlet.path);
+  }
+
+  getSynchronisationInfo(): SynchronisationInfo[] {
+    return Array.from(this.#synchronisation.entries()).map(([provider, timestamp]) => ({
+      connection: this.providers.toProviderContainerConnectionDetailedInfo(provider),
+      timestamp: timestamp,
+    }));
   }
 
   dispose(): void {

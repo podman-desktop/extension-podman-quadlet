@@ -12,6 +12,7 @@ import type { ProviderService } from '../services/provider-service';
 import type { QuadletCheck } from '/@shared/src/models/quadlet-check';
 import { QuadletValidator } from '../utils/validators/quadlet-validator';
 import type { LoggerService } from '../services/logger-service';
+import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 
 interface Dependencies {
   quadlet: QuadletService;
@@ -139,6 +140,10 @@ export class QuadletApiImpl extends QuadletApi {
       ...options,
       provider: providerConnection,
     });
+  }
+
+  override async getSynchronisationInfo(): Promise<SynchronisationInfo[]> {
+    return this.dependencies.quadlet.getSynchronisationInfo();
   }
 
   override async validate(content: string): Promise<QuadletCheck[]> {

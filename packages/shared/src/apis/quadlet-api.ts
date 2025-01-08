@@ -4,6 +4,7 @@
 import type { QuadletInfo } from '../models/quadlet-info';
 import type { ProviderContainerConnectionIdentifierInfo } from '../models/provider-container-connection-identifier-info';
 import type { QuadletCheck } from '../models/quadlet-check';
+import type { SynchronisationInfo } from '../models/synchronisation';
 
 export abstract class QuadletApi {
   static readonly CHANNEL: string = 'quadlet-api';
@@ -38,4 +39,6 @@ export abstract class QuadletApi {
     quadlet: string; // content
     path: string;
   }): Promise<void>;
+
+  abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
 }
