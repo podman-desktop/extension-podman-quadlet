@@ -5,6 +5,7 @@ import type { Disposable, ProviderContainerConnection } from '@podman-desktop/ap
 import type { SystemdServiceDependencies } from './systemd-helper';
 import { SystemdHelper } from './systemd-helper';
 import type { AsyncInit } from '../utils/async-init';
+import { TelemetryEvents } from '../utils/telemetry-events';
 
 export class SystemdService extends SystemdHelper implements Disposable, AsyncInit {
   constructor(dependencies: SystemdServiceDependencies) {
@@ -127,17 +128,28 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
      */
     admin: boolean;
   }): Promise<boolean> {
-    const args: string[] = [];
-    if (!options.admin) {
-      args.push('--user');
-    }
-    args.push(...['start', options.service]);
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
 
-    const result = await this.podman.systemctlExec({
-      connection: options.provider,
-      args,
-    });
-    return result.stderr.length === 0;
+    try {
+      const args: string[] = [];
+      if (!options.admin) {
+        args.push('--user');
+      }
+      args.push(...['start', options.service]);
+
+      const result = await this.podman.systemctlExec({
+        connection: options.provider,
+        args,
+      });
+      return result.stderr.length === 0;
+    } catch (err: unknown) {
+      telemetry['error'] = err;
+      throw err;
+    } finally {
+      this.logUsage(TelemetryEvents.SYSTEMD_START, telemetry);
+    }
   }
 
   async stop(options: {
@@ -148,16 +160,27 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
      */
     admin: boolean;
   }): Promise<boolean> {
-    const args: string[] = [];
-    if (!options.admin) {
-      args.push('--user');
-    }
-    args.push(...['stop', options.service]);
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
 
-    const result = await this.podman.systemctlExec({
-      connection: options.provider,
-      args,
-    });
-    return result.stderr.length === 0;
+    try {
+      const args: string[] = [];
+      if (!options.admin) {
+        args.push('--user');
+      }
+      args.push(...['stop', options.service]);
+
+      const result = await this.podman.systemctlExec({
+        connection: options.provider,
+        args,
+      });
+      return result.stderr.length === 0;
+    } catch (err: unknown) {
+      telemetry['error'] = err;
+      throw err;
+    } finally {
+      this.logUsage(TelemetryEvents.SYSTEMD_STOP, telemetry);
+    }
   }
 }

@@ -10,10 +10,12 @@ import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
 import type { Quadlet } from '../models/quadlet';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { AsyncInit } from '../utils/async-init';
-import { join as joinposix } from 'node:path/posix';
+import { join as joinposix, basename } from 'node:path/posix';
 import { load } from 'js-yaml';
 import { QuadletTypeParser } from '../utils/parsers/quadlet-type-parser';
 import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
+import { TelemetryEvents } from '../utils/telemetry-events';
+import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   // todo: find a better alternative, ProviderContainerConnection is not consistent
@@ -183,7 +185,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     this.notify();
   }
 
-  protected splitResources(basename: string, content: string): { filename: string; content: string }[] {
+  protected splitResources(
+    basename: string,
+    content: string,
+  ): { filename: string; content: string; type?: QuadletType }[] {
     const resources = content.split('---');
     return resources.map(resource => {
       console.log('analying resource', resource);
@@ -192,8 +197,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         return {
           filename: `${basename}.${type.toLowerCase()}`,
           content: resource,
+          type,
         };
-        // eslint-disable-next-line sonarjs/no-ignored-exceptions
       } catch (err: unknown) {
         console.warn(err);
         load(resource);
@@ -214,31 +219,48 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     admin?: boolean;
   }): Promise<void> {
-    return this.dependencies.window.withProgress(
-      {
-        title: `Updating ${options.path}`,
-        location: ProgressLocation.TASK_WIDGET,
-      },
-      async () => {
-        // 1. save the quadlet
-        try {
-          console.debug(`[QuadletService] updating quadlet file to ${options.path}`);
-          await this.dependencies.podman.writeTextFile(options.provider, options.path, options.quadlet);
-        } catch (err: unknown) {
-          console.error(`Something went wrong while trying to write file to ${options.path}`, err);
-          throw err;
-        }
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
+    return this.dependencies.window
+      .withProgress(
+        {
+          title: `Updating ${options.path}`,
+          location: ProgressLocation.TASK_WIDGET,
+        },
+        async () => {
+          // extract the quadlet type using extension path (E.g. path=hello/world.pod => pod)
+          const split = basename(options.path).split('.');
+          if (split.length > 1) {
+            telemetry['quadlet-type'] = split[split.length - 1];
+          }
 
-        // 2. reload
-        await this.dependencies.systemd.daemonReload({
-          admin: options.admin ?? false,
-          provider: options.provider,
-        });
+          // 1. save the quadlet
+          try {
+            console.debug(`[QuadletService] updating quadlet file to ${options.path}`);
+            await this.dependencies.podman.writeTextFile(options.provider, options.path, options.quadlet);
+          } catch (err: unknown) {
+            console.error(`Something went wrong while trying to write file to ${options.path}`, err);
+            throw err;
+          }
 
-        //3. collect quadlets
-        await this.collectPodmanQuadlet();
-      },
-    );
+          // 2. reload
+          await this.dependencies.systemd.daemonReload({
+            admin: options.admin ?? false,
+            provider: options.provider,
+          });
+
+          //3. collect quadlets
+          await this.collectPodmanQuadlet();
+        },
+      )
+      .catch((err: unknown) => {
+        telemetry['error'] = err;
+        throw err;
+      })
+      .finally(() => {
+        this.logUsage(TelemetryEvents.QUADLET_UPDATE, telemetry);
+      });
   }
 
   async saveIntoMachine(options: {
@@ -250,48 +272,64 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     admin?: boolean;
   }): Promise<void> {
-    return this.dependencies.window.withProgress(
-      {
-        title: `Saving ${options.name} quadlet`,
-        location: ProgressLocation.TASK_WIDGET,
-      },
-      async () => {
-        // 0. detect all resources
-        const resources = this.splitResources(options.name, options.quadlet);
-        console.debug(`saving into machine: found ${resources.length} resources`);
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
+    return this.dependencies.window
+      .withProgress(
+        {
+          title: `Saving ${options.name} quadlet`,
+          location: ProgressLocation.TASK_WIDGET,
+        },
+        async () => {
+          // 0. detect all resources
+          const resources = this.splitResources(options.name, options.quadlet);
+          console.debug(`saving into machine: found ${resources.length} resources`);
+          telemetry['resources-length'] = resources.length;
 
-        // for each resource
-        for (const resource of resources) {
-          console.debug(`saving ${resource.filename}`);
+          // for each resource
+          for (const resource of resources) {
+            // keep track of the type we create
+            if (resource.type) {
+              const key = `quadlet-${resource.type.toLowerCase()}`;
+              telemetry[key] = (typeof telemetry[key] !== 'number' ? 0 : telemetry[key]) + 1;
+            }
 
-          // 1. write the file into the podman machine
-          let destination: string;
-          if (options.admin) {
-            destination = joinposix('/etc/containers/systemd/', resource.filename);
-          } else {
-            destination = joinposix('~/.config/containers/systemd/', resource.filename);
+            // 1. write the file into the podman machine
+            let destination: string;
+            if (options.admin) {
+              destination = joinposix('/etc/containers/systemd/', resource.filename);
+            } else {
+              destination = joinposix('~/.config/containers/systemd/', resource.filename);
+            }
+
+            // 2. write the file
+            try {
+              console.debug(`[QuadletService] writing quadlet file to ${destination}`);
+              await this.dependencies.podman.writeTextFile(options.provider, destination, resource.content);
+            } catch (err: unknown) {
+              console.error(`Something went wrong while trying to write file to ${destination}`, err);
+              throw err;
+            }
           }
 
-          // 2. write the file
-          try {
-            console.debug(`[QuadletService] writing quadlet file to ${destination}`);
-            await this.dependencies.podman.writeTextFile(options.provider, destination, resource.content);
-          } catch (err: unknown) {
-            console.error(`Something went wrong while trying to write file to ${destination}`, err);
-            throw err;
-          }
-        }
+          // 3. reload
+          await this.dependencies.systemd.daemonReload({
+            admin: options.admin ?? false,
+            provider: options.provider,
+          });
 
-        // 3. reload
-        await this.dependencies.systemd.daemonReload({
-          admin: options.admin ?? false,
-          provider: options.provider,
-        });
-
-        //4. collect quadlets
-        await this.collectPodmanQuadlet();
-      },
-    );
+          //4. collect quadlets
+          await this.collectPodmanQuadlet();
+        },
+      )
+      .catch((err: unknown) => {
+        telemetry['error'] = err;
+        throw err;
+      })
+      .finally(() => {
+        this.logUsage(TelemetryEvents.QUADLET_CREATE, telemetry);
+      });
   }
 
   async remove(options: {
@@ -302,25 +340,50 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     admin?: boolean;
   }): Promise<void> {
-    const quadlet = this.findQuadlet({
-      provider: options.provider,
-      id: options.id,
-    });
-    if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
+    return this.dependencies.window
+      .withProgress(
+        {
+          title: `Removing quadlet ${options.id}`,
+          location: ProgressLocation.TASK_WIDGET,
+        },
+        async () => {
+          const quadlet = this.findQuadlet({
+            provider: options.provider,
+            id: options.id,
+          });
+          if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
 
-    // 1. remove the quadlet file
-    console.debug(`[QuadletService] Deleting quadlet ${options.id} with path ${quadlet.path}`);
-    await this.dependencies.podman.rmFile(options.provider, quadlet.path);
+          // extract the quadlet type using extension path (E.g. path=hello/world.pod => pod)
+          const split = basename(quadlet.path).split('.');
+          if (split.length > 1) {
+            telemetry['quadlet-type'] = split[split.length - 1];
+          }
 
-    // 2. reload systemctl
-    console.debug(`[QuadletService] Reloading systemctl`);
-    await this.dependencies.systemd.daemonReload({
-      admin: options.admin ?? false,
-      provider: options.provider,
-    });
+          // 1. remove the quadlet file
+          console.debug(`[QuadletService] Deleting quadlet ${options.id} with path ${quadlet.path}`);
+          await this.dependencies.podman.rmFile(options.provider, quadlet.path);
 
-    // 3. update the list of quadlets
-    return this.collectPodmanQuadlet();
+          // 2. reload systemctl
+          console.debug(`[QuadletService] Reloading systemctl`);
+          await this.dependencies.systemd.daemonReload({
+            admin: options.admin ?? false,
+            provider: options.provider,
+          });
+
+          // 3. update the list of quadlets
+          return this.collectPodmanQuadlet();
+        },
+      )
+      .catch((err: unknown) => {
+        telemetry['error'] = err;
+        throw err;
+      })
+      .finally(() => {
+        this.logUsage(TelemetryEvents.QUADLET_REMOVE, telemetry);
+      });
   }
 
   /**

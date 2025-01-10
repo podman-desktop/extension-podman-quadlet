@@ -13,6 +13,8 @@ import path from 'node:path';
 import { unTarXZ, unZip } from '../utils/archive';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import type { RunResult } from '/@shared/src/models/run-result';
+import { TelemetryEvents } from '../utils/telemetry-events';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 export interface PodletGithubReleaseArtifactMetadata extends QuickPickItem {
   tag: string;
@@ -32,12 +34,60 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
     super(dependencies);
   }
 
+  public async generate(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    type: QuadletType;
+    resourceId: string;
+  }): Promise<RunResult> {
+    const telemetry: Record<string, unknown> = {};
+    try {
+      telemetry['quadlet-type'] = options.type.toLowerCase();
+      const result = await this.exec(['generate', options.type.toLowerCase(), options.resourceId], options.connection);
+      telemetry['exit-code'] = result.exitCode ?? 0;
+      return result;
+    } catch (err: unknown) {
+      telemetry['error'] = err;
+      throw err;
+    } finally {
+      this.logUsage(TelemetryEvents.PODLET_GENERATE, telemetry);
+    }
+  }
+
+  public async compose(options: {
+    filepath: string;
+    type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
+  }): Promise<RunResult> {
+    const telemetry: Record<string, unknown> = {
+      'quadlet-target-type': options.type.toLowerCase(),
+    };
+    try {
+      const args = ['compose'];
+      switch (options.type) {
+        case QuadletType.POD:
+          args.push('--pod');
+          break;
+        case QuadletType.KUBE:
+          args.push('--kube');
+          break;
+      }
+      args.push(options.filepath);
+      const result = await this.exec(args);
+      telemetry['exit-code'] = result.exitCode ?? 0;
+      return result;
+    } catch (err: unknown) {
+      telemetry['error'] = err;
+      throw err;
+    } finally {
+      this.logUsage(TelemetryEvents.PODLET_COMPOSE, telemetry);
+    }
+  }
+
   /**
    * Podlet exec
    * @param args
    * @param connection
    */
-  async exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
+  protected async exec(args: string[], connection?: ProviderContainerConnectionIdentifierInfo): Promise<RunResult> {
     if (!this.#executable) throw new Error('podlet is not installed.');
 
     const env: Record<string, string> = {};
@@ -85,6 +135,13 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
     const podletInfo = await this.findPodletInfo();
     this.#executable = podletInfo?.path;
 
+    // let's log the podlet version
+    if (podletInfo) {
+      this.logUsage(TelemetryEvents.PODLET_VERSION, {
+        podlet: podletInfo.version,
+      });
+    }
+
     // register the cli tool
     this.#cliTool = this.dependencies.cliApi.createCliTool({
       name: 'podlet',
@@ -107,8 +164,17 @@ export class PodletCliService extends PodletCliHelper implements Disposable, Asy
       },
       doInstall: async (logger: Logger): Promise<void> => {
         if (!selected) throw new Error('no asset selected');
-        const executable = await this.download(logger, selected);
-        return this.updateCliTool(executable);
+
+        const telemetry: Record<string, unknown> = {};
+        try {
+          const executable = await this.download(logger, selected);
+          return this.updateCliTool(executable);
+        } catch (err: unknown) {
+          telemetry['error'] = err;
+          throw err;
+        } finally {
+          this.logUsage(TelemetryEvents.PODLET_INSTALL, telemetry);
+        }
       },
       doUninstall: async (): Promise<void> => {
         throw new Error('not installed');

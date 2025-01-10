@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { env, Webview, window } from '@podman-desktop/api';
+import type { env, TelemetryLogger, Webview, window } from '@podman-desktop/api';
 import { Publisher } from '../utils/publisher';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { Messages } from '/@shared/src/messages';
@@ -16,6 +16,7 @@ export interface QuadletServiceDependencies {
   podman: PodmanService;
   systemd: SystemdService;
   window: typeof window;
+  telemetry: TelemetryLogger;
 }
 
 export abstract class QuadletHelper extends Publisher<QuadletInfo[]> {
@@ -27,6 +28,10 @@ export abstract class QuadletHelper extends Publisher<QuadletInfo[]> {
 
   protected get providers(): ProviderService {
     return this.dependencies.providers;
+  }
+
+  protected logUsage(eventName: string, data?: Record<string, unknown>): void {
+    return this.dependencies.telemetry.logUsage(eventName, data);
   }
 
   protected get podman(): PodmanService {

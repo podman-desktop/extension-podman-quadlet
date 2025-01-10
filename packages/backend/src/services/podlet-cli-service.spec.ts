@@ -2,28 +2,34 @@
  * @author axel7083
  */
 import type {
-  env,
-  window,
-  process as processApi,
   cli as cliApi,
   CliTool,
+  env,
+  process as processApi,
   ProviderContainerConnection,
+  RunError,
   RunResult,
+  TelemetryLogger,
+  window,
 } from '@podman-desktop/api';
-import { expect, test, vi, beforeEach, describe } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { PodletCliService } from './podlet-cli-service';
 import type { Octokit } from '@octokit/rest';
 import type { PodletCliDependencies } from './podlet-cli-helper';
 import type { ProviderService } from './provider-service';
 import type { PodmanService } from './podman-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import { TelemetryEvents } from '../utils/telemetry-events';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 const processApiMock: typeof processApi = {
   exec: vi.fn(),
 } as unknown as typeof processApi;
+
 const cliMock: typeof cliApi = {
   createCliTool: vi.fn(),
 } as unknown as typeof cliApi;
+
 const windowMock: typeof window = {} as unknown as typeof window;
 const octokitMock: Octokit = {} as unknown as Octokit;
 
@@ -43,6 +49,15 @@ const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   },
   providerId: 'podman',
 } as ProviderContainerConnection;
+
+const WSL_PROVIDER_IDENTIFIER: ProviderContainerConnectionIdentifierInfo = {
+  name: WSL_PROVIDER_CONNECTION_MOCK.connection.name,
+  providerId: WSL_PROVIDER_CONNECTION_MOCK.providerId,
+};
+
+const telemetryMock: TelemetryLogger = {
+  logUsage: vi.fn(),
+} as unknown as TelemetryLogger;
 
 vi.mock('@podman-desktop/api', () => ({
   ProgressLocation: {
@@ -96,9 +111,20 @@ class PodletCliServiceTest extends PodletCliService {
   public override async makeExecutable(filePath: string): Promise<void> {
     return super.makeExecutable(filePath);
   }
+
+  public override async exec(
+    args: string[],
+    connection?: ProviderContainerConnectionIdentifierInfo,
+  ): Promise<RunResult> {
+    return super.exec(args, connection);
+  }
 }
 
-function getPodletCliService(options?: { isLinux?: boolean; isMac?: boolean; isWindows?: boolean }): PodletCliService {
+function getPodletCliService(options?: {
+  isLinux?: boolean;
+  isMac?: boolean;
+  isWindows?: boolean;
+}): PodletCliServiceTest {
   return new PodletCliServiceTest({
     env: {
       isLinux: options?.isLinux ?? false,
@@ -112,6 +138,7 @@ function getPodletCliService(options?: { isLinux?: boolean; isMac?: boolean; isW
     storagePath: STORAGE_PATH_MOCK,
     providers: providersMock,
     podman: podmanMock,
+    telemetry: telemetryMock,
   });
 }
 
@@ -168,6 +195,17 @@ describe('podlet installed', () => {
     expect(podlet.isInstalled()).toBeTruthy();
   });
 
+  test('init should log usage through telemetry', async () => {
+    const podlet = getPodletCliService({
+      isWindows: true,
+    });
+    await podlet.init();
+
+    expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_VERSION, {
+      podlet: '1.5.2',
+    });
+  });
+
   test('exec should check rootful machine', async () => {
     const podletRunResult: RunResult = {
       command: 'podlet generate container <container-id>',
@@ -182,15 +220,11 @@ describe('podlet installed', () => {
     });
     await podlet.init();
 
-    const connection: ProviderContainerConnectionIdentifierInfo = {
-      name: WSL_PROVIDER_CONNECTION_MOCK.connection.name,
-      providerId: WSL_PROVIDER_CONNECTION_MOCK.providerId,
-    };
-    const result = await podlet.exec(['generate', 'container', '<container-id>'], connection);
+    const result = await podlet.exec(['generate', 'container', '<container-id>'], WSL_PROVIDER_IDENTIFIER);
     expect(result).toStrictEqual(podletRunResult);
 
     // should fetch the provider container connection
-    expect(providersMock.getProviderContainerConnection).toHaveBeenCalledWith(connection);
+    expect(providersMock.getProviderContainerConnection).toHaveBeenCalledWith(WSL_PROVIDER_IDENTIFIER);
 
     // should have check the machine is rootful since vmtype is defined
     expect(podmanMock.isMachineRootful).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
@@ -218,15 +252,82 @@ describe('podlet installed', () => {
     });
     await podlet.init();
 
-    await podlet.exec([], {
-      name: WSL_PROVIDER_CONNECTION_MOCK.connection.name,
-      providerId: WSL_PROVIDER_CONNECTION_MOCK.providerId,
-    });
+    await podlet.exec([], WSL_PROVIDER_IDENTIFIER);
 
     expect(processApiMock.exec).toHaveBeenCalledWith('C:/tmp/podlet.exe', [], {
       env: {
         CONTAINER_CONNECTION: 'podman-machine-default-root',
       },
+    });
+  });
+
+  test('podlet generate should log usage through telemetry', async () => {
+    vi.mocked(processApiMock.exec).mockResolvedValue({
+      command: '',
+      stdout: '',
+      stderr: '',
+    });
+    const podlet = getPodletCliService({
+      isWindows: true,
+    });
+    await podlet.init();
+
+    await podlet.generate({
+      type: QuadletType.IMAGE,
+      connection: WSL_PROVIDER_IDENTIFIER,
+      resourceId: 'dummy-resource-id',
+    });
+
+    expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+      'exit-code': 0,
+      'quadlet-type': QuadletType.IMAGE.toLowerCase(),
+    });
+  });
+
+  test('non-zero exit-code in podlet generate should log through telemetry', async () => {
+    const error: RunError = {
+      command: '',
+      stdout: '',
+      stderr: '',
+      exitCode: -1,
+    } as unknown as RunError;
+    vi.mocked(processApiMock.exec).mockRejectedValue(error);
+    const podlet = getPodletCliService({
+      isWindows: true,
+    });
+    await podlet.init();
+
+    await podlet.generate({
+      type: QuadletType.CONTAINER,
+      connection: WSL_PROVIDER_IDENTIFIER,
+      resourceId: 'dummy-resource-id',
+    });
+
+    expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+      'exit-code': -1,
+      'quadlet-type': QuadletType.CONTAINER.toLowerCase(),
+    });
+  });
+
+  test('podlet compose should log usage through telemetry', async () => {
+    vi.mocked(processApiMock.exec).mockResolvedValue({
+      command: '',
+      stdout: '',
+      stderr: '',
+    });
+    const podlet = getPodletCliService({
+      isWindows: true,
+    });
+    await podlet.init();
+
+    await podlet.compose({
+      filepath: 'hello/path',
+      type: QuadletType.CONTAINER,
+    });
+
+    expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_COMPOSE, {
+      'exit-code': 0,
+      'quadlet-target-type': QuadletType.CONTAINER.toLowerCase(),
     });
   });
 });

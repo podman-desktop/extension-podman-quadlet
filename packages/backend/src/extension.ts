@@ -18,8 +18,6 @@ let main: MainService | undefined;
 
 // Initialize the activation of the extension.
 export async function activate(extensionContext: ExtensionContext): Promise<void> {
-  console.log('starting hello world extension');
-
   main = new MainService({
     window: window,
     extensionContext,
