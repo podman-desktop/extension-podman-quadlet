@@ -5,7 +5,6 @@ import {
   test,
   RunnerOptions,
   waitForPodmanMachineStartup,
-  isLinux,
 } from '@podman-desktop/tests-playwright';
 import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
@@ -136,16 +135,30 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await playExpect(generateForm.cancelButton).toBeEnabled();
       await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
 
-      // select container engine
-      await generateForm.containerEngineSelect.fill(isLinux ? 'podman' : 'podman-machine-default');
-      await generateForm.webview.keyboard.press('Enter');
+      // open the select dropdown
+      const podmanProviders = await generateForm.containerEngineSelect.getOptions();
+      playExpect(podmanProviders.length).toBeGreaterThan(0);
 
-      // todo: do something better ? trying to wait for loading to finish?
-      await new Promise(resolve => setTimeout(resolve, 2_000));
+      const sorted = podmanProviders.find(provider => provider.toLowerCase().includes('podman'));
+      if (!sorted) throw new Error('cannot found podman provider');
+
+      // Value can be `podman-machine-default (WSL)`
+      const machine = sorted.split(' ')[0];
+      console.log(`Trying to use provider ${machine}`);
+      await generateForm.containerEngineSelect.set(machine);
+
+      // wait for generateButton to be enabled
+      await playExpect
+        .poll(async () => await generateForm.isLoading(), {
+          timeout: 2_000,
+        })
+        .toBeFalsy();
 
       // select container
-      await generateForm.containerSelect.fill(HELLO_CONTAINER);
-      await generateForm.webview.keyboard.press('Enter');
+      const containers = await generateForm.containerSelect.getOptions();
+      playExpect(containers.length).toBeGreaterThan(0);
+      playExpect(containers).toContain(HELLO_CONTAINER);
+      await generateForm.containerSelect.set(HELLO_CONTAINER);
 
       // wait for generateButton to be enabled
       await playExpect
