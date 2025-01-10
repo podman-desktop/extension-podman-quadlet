@@ -138,8 +138,12 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // open the select dropdown
       const podmanProviders = await generateForm.containerEngineSelect.getOptions();
       playExpect(podmanProviders.length).toBeGreaterThan(0);
+
+      const sorted = podmanProviders.find((provider) => provider.toLowerCase().includes('podman'));
+      if(!sorted) throw new Error('cannot found podman provider');
+
       // Value can be `podman-machine-default (WSL)`
-      const machine = podmanProviders[0].split(' ')[0];
+      const machine = sorted.split(' ')[0];
       console.log(`Trying to use provider ${machine}`);
       await generateForm.containerEngineSelect.set(machine);
 
