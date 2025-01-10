@@ -30,8 +30,8 @@ export abstract class QuadletHelper extends Publisher<QuadletInfo[]> {
     return this.dependencies.providers;
   }
 
-  protected get logUsage(): (eventName: string, data?: Record<string, unknown>) => void {
-    return this.dependencies.telemetry.logUsage.bind(this.dependencies.telemetry.logUsage);
+  protected logUsage(eventName: string, data?: Record<string, unknown>): void {
+    return this.dependencies.telemetry.logUsage(eventName, data);
   }
 
   protected get podman(): PodmanService {

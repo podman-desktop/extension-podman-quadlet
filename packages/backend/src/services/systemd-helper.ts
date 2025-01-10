@@ -16,7 +16,7 @@ export abstract class SystemdHelper {
     return this.dependencies.podman;
   }
 
-  protected get logUsage(): (eventName: string, data?: Record<string, unknown>) => void {
-    return this.dependencies.telemetry.logUsage.bind(this.dependencies.telemetry.logUsage);
+  protected logUsage(eventName: string, data?: Record<string, unknown>): void {
+    return this.dependencies.telemetry.logUsage(eventName, data);
   }
 }
