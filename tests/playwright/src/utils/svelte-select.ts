@@ -1,8 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
+import { expect as playExpect } from '@podman-desktop/tests-playwright';
 
 export class SvelteSelect {
   readonly select: Locator;
   readonly input: Locator;
+  readonly list: Locator;
 
   constructor(
     protected page: Page,
@@ -10,10 +12,28 @@ export class SvelteSelect {
   ) {
     this.input = page.getByLabel(label, { exact: true });
     this.select = this.input.locator('..').locator('..');
+    this.list = this.select.locator('.svelte-select-list');
+  }
+
+  protected async isOpen(): Promise<boolean> {
+    const list = this.select.locator('.svelte-select-list');
+    return (await list.all()).length > 0;
+  }
+
+  protected async open(): Promise<void> {
+    const isOpen = await this.isOpen();
+    if (isOpen) return;
+    await this.select.click();
+
+    return playExpect
+      .poll(async () => await this.isOpen(), {
+        timeout: 2_000,
+      })
+      .toBeTruthy();
   }
 
   async getOptions(): Promise<string[]> {
-    await this.select.click();
+    await this.open();
 
     // get all item
     const options = await this.select.locator('.list-item').all();
