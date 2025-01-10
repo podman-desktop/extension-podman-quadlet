@@ -2,7 +2,7 @@
  * @author axel7083
  */
 import type { Octokit } from '@octokit/rest';
-import type { env, window, process as processApi, cli as cliApi } from '@podman-desktop/api';
+import type { env, window, process as processApi, cli as cliApi, TelemetryLogger } from '@podman-desktop/api';
 import path from 'node:path';
 import os from 'node:os';
 import type { ProviderService } from './provider-service';
@@ -17,6 +17,7 @@ export interface PodletCliDependencies {
   cliApi: typeof cliApi;
   providers: ProviderService;
   podman: PodmanService;
+  telemetry: TelemetryLogger;
 }
 
 export abstract class PodletCliHelper {
@@ -32,6 +33,10 @@ export abstract class PodletCliHelper {
       fileExtension = '.exe';
     }
     return `podlet${fileExtension}`;
+  }
+
+  protected get logUsage(): (eventName: string, data?: Record<string, unknown>) => void {
+    return this.dependencies.telemetry.logUsage.bind(this.dependencies.telemetry.logUsage);
   }
 
   /**

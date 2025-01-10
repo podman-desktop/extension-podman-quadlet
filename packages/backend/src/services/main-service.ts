@@ -12,6 +12,7 @@ import type {
   window,
   cli as cliApi,
   containerEngine,
+  TelemetryLogger,
 } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
 import { RpcExtension } from '/@shared/src/messages/MessageProxy';
@@ -56,11 +57,15 @@ interface Dependencies {
 
 export class MainService implements Disposable, AsyncInit {
   readonly #disposables: Disposable[] = [];
+  readonly #telemetry: TelemetryLogger;
 
-  constructor(private dependencies: Dependencies) {}
+  constructor(private dependencies: Dependencies) {
+    this.#telemetry = dependencies.env.createTelemetryLogger();
+  }
 
   dispose(): void {
     this.#disposables.forEach(disposable => disposable.dispose());
+    this.#telemetry.dispose();
   }
 
   async init(): Promise<void> {
@@ -129,6 +134,7 @@ export class MainService implements Disposable, AsyncInit {
       octokit: new Octokit(),
       providers: providers,
       podman: podman,
+      telemetry: this.#telemetry,
     });
     await podletCli.init();
     this.#disposables.push(podletCli);
@@ -136,6 +142,7 @@ export class MainService implements Disposable, AsyncInit {
     // systemd service is responsible for communicating with the systemd in the podman machine
     const systemd = new SystemdService({
       podman,
+      telemetry: this.#telemetry,
     });
     await systemd.init();
     this.#disposables.push(systemd);
@@ -148,6 +155,7 @@ export class MainService implements Disposable, AsyncInit {
       env: this.dependencies.env,
       providers: providers,
       window: this.dependencies.window,
+      telemetry: this.#telemetry,
     });
     await quadletService.init();
     this.#disposables.push(quadletService);
