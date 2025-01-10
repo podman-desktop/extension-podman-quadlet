@@ -73,26 +73,59 @@ jobs:
     runs-on: ubuntu-24.04
     env:
       SKIP_INSTALLATION: true
+      EXTENSION_PREINSTALLED: true
+      PODMAN_DESKTOP_ARGS: ${{ github.workspace }}/podman-desktop
     steps:
       - uses: actions/checkout@v4
-        with:
-          path: pd-extension-quadlet
+
       # Set up pnpm
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
           run_install: false
-          package_json_file: ./pd-extension-quadlet/package.json
+
       # Install Node.js
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      # Checkout podman desktop
-      - uses: actions/checkout@v4
-        with:
-          repository: containers/podman-desktop
-          ref: main
-          path: podman-desktop
+          cache: 'pnpm'
+
+      # Install npm packages for quadlet extension
+      - name: Execute pnpm in Podman Quadlet Extension
+        run: pnpm install --no-frozen-lockfile
+
+      # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
+      - name: Extract @podman-desktop/api version
+        id: pd-api-version
+        run: |
+          # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
+          export PD_VERSION=$(pnpm list -C packages/backend/ --json | jq -r '.[0].devDependencies."@podman-desktop/api".version')
+          echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
+          echo "Using @podman-desktop/api $PD_VERSION"
+
+      # Download Podman Desktop repository based on version defined in package.json
+      - name: Download Podman Desktop
+        env:
+          PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
+        run: |
+          echo "Podman Desktop $PD_VERSION cache missed"
+          echo "Downloading PD desktop to ${{ github.workspace }}/podman-desktop"
+          # Stable release are available podman-desktop/podman-desktop
+          # Prerelease are available under podman-desktop/prereleases
+          if [[ "$PD_VERSION" =~ - ]]; then
+            wget -qO- "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+          else
+            wget -qO- "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+          fi
+          # Move the extracted folder to the podman-desktop folder
+          mv podman-desktop-$PD_VERSION/ podman-desktop/
+
+      # Install and build podman-desktop
+      - name: Install pnpm deps and build Podman Desktop
+        working-directory: ${{ github.workspace }}/podman-desktop
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm test:e2e:build
 
       - name: Update podman to 5.x
         run: |
@@ -129,18 +162,7 @@ jobs:
           EOT
           podman info
 
-      - name: Install pnpm deps and build Podman Desktop
-        working-directory: ./podman-desktop
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm test:e2e:build
-
-      - name: Execute pnpm in Podman Quadlet Extension
-        working-directory: ./pd-extension-quadlet
-        run: pnpm install --no-frozen-lockfile
-
       - name: Build Image
-        working-directory: ./pd-extension-quadlet
         id: build-image
         run: |
           podman build -t local_image ./
@@ -151,10 +173,6 @@ jobs:
           podman rmi -f localhost/local_image:latest
 
       - name: Run E2E Smoke tests
-        working-directory: ./pd-extension-quadlet
-        env:
-          PODMAN_DESKTOP_ARGS: ${{ github.workspace }}/podman-desktop
-          EXTENSION_PREINSTALLED: true
         run: pnpm test:e2e:smoke
 
       - uses: actions/upload-artifact@v4
