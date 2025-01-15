@@ -14,13 +14,21 @@ import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 const columns = [
-  new TableColumn<QuadletInfo>('Status', { width: '70px', renderer: QuadletStatus, align: 'center' }),
+  new TableColumn<QuadletInfo>('Status', {
+    width: '70px',
+    renderer: QuadletStatus,
+    align: 'center',
+    comparator: (a, b): number => Number(a.isActive) - Number(b.isActive),
+  }),
   new TableColumn<QuadletInfo, string>('Service name', {
     renderer: TableSimpleColumn,
     align: 'left',
+    width: '200px',
     renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.id,
+    comparator: (a, b): number => a.id.localeCompare(b.id),
   }),
   new TableColumn<QuadletInfo, ProviderContainerConnectionIdentifierInfo>('Environment', {
     renderer: MachineBadge,
@@ -32,6 +40,7 @@ const columns = [
   new TableColumn<QuadletInfo, string>('Path', {
     renderer: TableSimpleColumn,
     align: 'left',
+    width: '1fr',
     renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.path,
   }),
   new TableColumn<QuadletInfo>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
@@ -51,6 +60,7 @@ async function refreshQuadlets(): Promise<void> {
 // undefined mean all
 let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undefined = $state(undefined);
 let searchTerm: string = $state('');
+let selectedItemsNumber: number = $state(0);
 
 let data: (QuadletInfo & { selected?: boolean })[] = $derived(
   $quadletsInfo.filter(quadlet => {
@@ -74,6 +84,11 @@ let empty: boolean = $derived(data.length === 0);
 function navigateToGenerate(): void {
   router.goto('/quadlets/generate');
 }
+
+async function deleteSelected(): Promise<void> {
+  // const items = data.filter((item) => item.selected);
+  // Promise.all(quadletAPI.remove())
+}
 </script>
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
@@ -88,7 +103,17 @@ function navigateToGenerate(): void {
       on:click={refreshQuadlets}>Refresh</Button>
   </svelte:fragment>
   <svelte:fragment slot="bottom-additional-actions">
-    <div class="w-full flex justify-end">
+    <div class="w-full flex justify-between">
+      <div class="flex flex-row items-center space-x-2">
+        {#if selectedItemsNumber > 0}
+          <Button
+            on:click={deleteSelected}
+            title="Delete {selectedItemsNumber} selected items"
+            inProgress={loading}
+            icon={faTrash} />
+          <span>On {selectedItemsNumber} selected items.</span>
+        {/if}
+      </div>
       <div class="w-[250px]">
         <ContainerProviderConnectionSelect
           bind:value={containerProviderConnection}
@@ -98,7 +123,14 @@ function navigateToGenerate(): void {
   </svelte:fragment>
   <svelte:fragment slot="content">
     {#if !empty}
-      <Table kind="service" data={data} columns={columns} row={row} />
+      <Table
+        kind="quadlets"
+        data={data}
+        columns={columns}
+        row={row}
+        bind:selectedItemsNumber={selectedItemsNumber}
+        defaultSortColumn="Environment"
+      />
     {:else}
       <EmptyQuadletList connection={containerProviderConnection} refreshQuadlets={refreshQuadlets} loading={loading} />
     {/if}
