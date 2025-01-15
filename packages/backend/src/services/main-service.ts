@@ -15,7 +15,7 @@ import type {
   TelemetryLogger,
 } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
-import { RpcExtension } from '/@shared/src/messages/MessageProxy';
+import { RpcExtension } from '/@shared/src/messages/message-proxy';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';
