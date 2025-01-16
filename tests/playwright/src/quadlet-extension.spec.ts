@@ -11,9 +11,9 @@ import { QuadletListPage } from './model/quadlet-list-page';
 import { handleWebview } from './utils/webviewHandler';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
-  process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/axel7083/pd-extension-quadlet:latest';
+  process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
 const PODMAN_QUADLET_EXTENSION_PREINSTALLED: boolean = process.env.EXTENSION_PREINSTALLED === 'true';
-const PODMAN_QUADLET_CATALOG_EXTENSION_LABEL: string = 'axel7083.quadlet';
+const PODMAN_QUADLET_CATALOG_EXTENSION_LABEL: string = 'podman-desktop.quadlet';
 const PODMAN_QUADLET_CATALOG_EXTENSION_NAME: string = 'Podman Quadlet';
 const PODMAN_QUADLET_CATALOG_STATUS_ACTIVE: string = 'ACTIVE';
 const QUAY_HELLO_IMAGE = 'quay.io/podman/hello';
