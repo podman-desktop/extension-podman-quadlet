@@ -1,5 +1,5 @@
 import { QuadletApi } from '/@shared/src/apis/quadlet-api';
-import { RpcBrowser } from '/@shared/src/messages/MessageProxy';
+import { RpcBrowser } from '/@shared/src/messages/message-proxy';
 import { ProviderApi } from '/@shared/src/apis/provide-api';
 import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { ContainerApi } from '/@shared/src/apis/container-api';

@@ -17,15 +17,16 @@
  ***********************************************************************/
 
 import { test, expect, vi, describe, beforeEach, afterEach } from 'vitest';
-import { getChannel, RpcBrowser, RpcExtension } from './MessageProxy';
+import { RpcBrowser, RpcExtension } from './message-proxy';
+import { getChannel } from './utils';
 import type { Webview } from '@podman-desktop/api';
-import * as defaultNoTimeoutChannels from './NoTimeoutChannels';
+import * as messageConstants from './constants';
 
 let webview: Webview;
 let window: Window;
 let api: PodmanDesktopApi;
 
-vi.mock('./NoTimeoutChannels', async () => ({
+vi.mock('./constants', async () => ({
   noTimeoutChannels: [],
 }));
 
@@ -190,7 +191,7 @@ describe('subscribe', () => {
   beforeEach(() => {
     window.addEventListener = vi.fn();
 
-    (defaultNoTimeoutChannels.noTimeoutChannels as string[]) = [];
+    (messageConstants.noTimeoutChannels as string[]) = [];
   });
 
   test('subscriber should be called on event received', async () => {
@@ -285,7 +286,7 @@ describe('no timeout channel', () => {
     vi.resetAllMocks();
     vi.useFakeTimers();
 
-    (defaultNoTimeoutChannels.noTimeoutChannels as string[]) = [];
+    (messageConstants.noTimeoutChannels as string[]) = [];
   });
 
   afterEach(() => {
@@ -328,7 +329,7 @@ describe('no timeout channel', () => {
     }
 
     // fake the noTimeoutChannels
-    (defaultNoTimeoutChannels.noTimeoutChannels as string[]) = [`${Dummy.CHANNEL}-ping`];
+    (messageConstants.noTimeoutChannels as string[]) = [`${Dummy.CHANNEL}-ping`];
 
     const rpcExtension = new RpcExtension(webview);
     rpcExtension.init();
