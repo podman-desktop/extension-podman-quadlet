@@ -26,7 +26,7 @@ let webview: Webview;
 let window: Window;
 let api: PodmanDesktopApi;
 
-vi.mock('./NoTimeoutChannels', async () => ({
+vi.mock('./constants', async () => ({
   noTimeoutChannels: [],
 }));
 
