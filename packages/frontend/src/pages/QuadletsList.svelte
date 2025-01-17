@@ -86,8 +86,24 @@ function navigateToGenerate(): void {
 }
 
 async function deleteSelected(): Promise<void> {
-  // const items = data.filter((item) => item.selected);
-  // Promise.all(quadletAPI.remove())
+  const items: Map<ProviderContainerConnectionIdentifierInfo, QuadletInfo[]> = data.reduce((accumulator, current) => {
+    if(!current.selected) return accumulator;
+    // append the quadlet to the corresponding group
+    //  todo: does not work need to fix
+    accumulator.set(
+      current.connection,
+      [
+        ...(accumulator.get(current.connection) ?? []),
+        current,
+      ]
+    );
+    return accumulator;
+  }, new Map<ProviderContainerConnectionIdentifierInfo, QuadletInfo[]>());
+
+  console.log('deleteSelected', items);
+  for (let [connection, quadlets] of items.entries()) {
+    await quadletAPI.remove(connection, ...quadlets.map((quadlet) => quadlet.id));
+  }
 }
 </script>
 
