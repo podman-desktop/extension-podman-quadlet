@@ -1,4 +1,3 @@
-import * as monaco from 'monaco-editor';
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
 
 self.MonacoEnvironment = {
@@ -6,5 +5,3 @@ self.MonacoEnvironment = {
     return new editorWorker();
   },
 };
-
-monaco.languages.typescript.typescriptDefaults.setEagerModelSync(true);

@@ -59,6 +59,7 @@ export default [
       '**/src-generated/',
       'tests/playwright/output/**',
       'tests/playwright/tests/**',
+      '**/vite.*.js'
     ],
   },
   js.configs.recommended,

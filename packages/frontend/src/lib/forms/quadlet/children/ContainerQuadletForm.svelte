@@ -52,7 +52,13 @@ function onContainerChange(value: SimpleContainerInfo | undefined): void {
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the containers
 $effect(() => {
-  if (provider?.status === 'started' && !selectedContainer && containers === undefined && loading === false) {
+  if (
+    provider?.status === 'started' &&
+    !selectedContainer &&
+    containers === undefined &&
+    loading === false &&
+    !disabled
+  ) {
     listContainers().catch(console.error);
   }
 });

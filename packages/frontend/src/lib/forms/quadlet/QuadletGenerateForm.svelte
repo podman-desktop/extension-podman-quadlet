@@ -199,6 +199,7 @@ function resetGenerate(): void {
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Quadlet type</label>
       <RadioButtons
+        label="Quadlet type"
         disabled={loading || selectedContainerProviderConnection?.status !== 'started'}
         onChange={onQuadletTypeChange}
         value={quadletType}
@@ -230,8 +231,8 @@ function resetGenerate(): void {
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
         <Button
-          class=""
-          disabled={!!error || selectedContainerProviderConnection?.status !== 'started' || !resourceId}
+          disabled={!!error || selectedContainerProviderConnection?.status !== 'started' || !resourceId || loading}
+          inProgress={loading}
           icon={faCode}
           title="Generate"
           on:click={generate}>Generate</Button>
@@ -251,11 +252,14 @@ function resetGenerate(): void {
       <div class="h-[400px] pt-4">
         <QuadletEditor validate bind:content={quadlet} />
       </div>
-
+      {#if error}
+        <ErrorMessage error={error} />
+      {/if}
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
         <Button
-          disabled={quadletFilename.length === 0}
+          disabled={quadletFilename.length === 0 || loading}
+          inProgress={loading}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
           title="Load into machine">Load into machine</Button>

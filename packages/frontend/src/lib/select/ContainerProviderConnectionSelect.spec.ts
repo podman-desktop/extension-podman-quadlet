@@ -18,10 +18,11 @@
 
 import '@testing-library/jest-dom/vitest';
 import { beforeEach, expect, test, vi } from 'vitest';
-import { fireEvent, render, within } from '@testing-library/svelte';
+import { render, within } from '@testing-library/svelte';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { VMType } from '/@shared/src/utils/vm-types';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -50,15 +51,14 @@ test('Should list all container provider connections', async () => {
   });
 
   // first get the select input
-  const input = within(container).getByLabelText('Select Container Engine');
-  await fireEvent.pointerUp(input); // they are using the pointer up event instead of click.
+  const select = new SvelteSelectHelper(container, 'Select Container Engine');
 
   // get all options available
-  const items: NodeListOf<HTMLElement> = container.querySelectorAll('div[class~="list-item"]');
+  const items: string[] = await select.getOptions();
   // ensure we have two options
   expect(items.length).toBe(2);
-  expect(items[0]).toHaveTextContent(wslConnection.name);
-  expect(items[1]).toHaveTextContent(qemuConnection.name);
+  expect(items[0]).toContain(wslConnection.name);
+  expect(items[1]).toContain(qemuConnection.name);
 });
 
 test('default value should be visible', async () => {

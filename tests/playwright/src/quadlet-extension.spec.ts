@@ -16,8 +16,10 @@ const PODMAN_QUADLET_EXTENSION_PREINSTALLED: boolean = process.env.EXTENSION_PRE
 const PODMAN_QUADLET_CATALOG_EXTENSION_LABEL: string = 'podman-desktop.quadlet';
 const PODMAN_QUADLET_CATALOG_EXTENSION_NAME: string = 'Podman Quadlet';
 const PODMAN_QUADLET_CATALOG_STATUS_ACTIVE: string = 'ACTIVE';
-const QUAY_HELLO_IMAGE = 'quay.io/podman/hello';
-const HELLO_CONTAINER = 'hello-container';
+
+const QUAY_HELLO_IMAGE_REPO = 'quay.io/podman/hello';
+const QUAY_HELLO_IMAGE_TAG = 'latest';
+const QUAY_HELLO_IMAGE = `${QUAY_HELLO_IMAGE_REPO}:${QUAY_HELLO_IMAGE_TAG}`;
 
 test.use({
   runnerOptions: new RunnerOptions({
@@ -93,7 +95,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
   test.describe.serial('Generate quadlets', () => {
     let quadletListPage: QuadletListPage;
 
-    test.beforeAll('Pull Images & Start Hello Container', async ({ navigationBar }) => {
+    /*test.beforeAll('Pull Images & Start Hello Container', async ({ navigationBar }) => {
       // let's pull QUAY_HELLO_IMAGE image
       const imagesPage = await navigationBar.openImages();
       await playExpect(imagesPage.heading).toBeVisible();
@@ -101,22 +103,9 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const pullImagePage = await imagesPage.openPullImage();
       const updatedImages = await pullImagePage.pullImage(QUAY_HELLO_IMAGE);
 
-      const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE);
+      const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
       playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
-
-      // let's create container from pulled image
-      const imageDetails = await imagesPage.openImageDetails(QUAY_HELLO_IMAGE);
-      const runImage = await imageDetails.openRunImage();
-      const containers = await runImage.startContainer(HELLO_CONTAINER, {
-        attachTerminal: false,
-      });
-      await playExpect(containers.header).toBeVisible();
-      await playExpect
-        .poll(async () => await containers.containerExists(HELLO_CONTAINER), {
-          timeout: 60_000,
-        })
-        .toBeTruthy();
-    });
+    });*/
 
     test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
       // open the webview
@@ -126,7 +115,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await quadletListPage.waitForLoad();
     });
 
-    test('generate container quadlet', async () => {
+    test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
       test.setTimeout(150_000);
 
       const generateForm = await quadletListPage.navigateToGenerateForm();
@@ -147,18 +136,30 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       console.log(`Trying to use provider ${machine}`);
       await generateForm.containerEngineSelect.set(machine);
 
-      // wait for generateButton to be enabled
+      // wait for loading to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
           timeout: 2_000,
         })
         .toBeFalsy();
 
-      // select container
-      const containers = await generateForm.containerSelect.getOptions();
-      playExpect(containers.length).toBeGreaterThan(0);
-      playExpect(containers).toContain(HELLO_CONTAINER);
-      await generateForm.containerSelect.set(HELLO_CONTAINER);
+      // select the image
+      const options = await generateForm.quadletType.getOptions();
+      playExpect(options).toContain('image');
+      await generateForm.quadletType.select('image');
+
+      // wait for loading to be finished
+      await playExpect
+        .poll(async () => await generateForm.isLoading(), {
+          timeout: 2_000,
+        })
+        .toBeFalsy();
+
+      // select hello world image
+      const images = await generateForm.imageSelect.getOptions();
+      playExpect(images.length).toBeGreaterThan(0);
+      playExpect(images).toContain(QUAY_HELLO_IMAGE);
+      await generateForm.imageSelect.set(QUAY_HELLO_IMAGE);
 
       // wait for generateButton to be enabled
       await playExpect
@@ -170,22 +171,33 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // generate
       await generateForm.generateButton.click();
 
+      // wait for loading to be finished
+      await playExpect
+        .poll(async () => await generateForm.isLoading(), {
+          timeout: 2_000,
+        })
+        .toBeTruthy();
+
       const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
       const content = await monacoEditor.textContent();
-      playExpect(content).not.toBeNull();
-    });
+      playExpect(content).toContain(`[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux`);
 
-    test.afterAll(`Deleting container ${HELLO_CONTAINER}`, async ({ navigationBar }) => {
-      test.setTimeout(150_000);
-
-      const containers = await navigationBar.openContainers();
-      const containersPage = await containers.deleteContainer(HELLO_CONTAINER);
-      await playExpect(containersPage.heading).toBeVisible();
+      // wait for saveIntoMachine button to be enabled
       await playExpect
-        .poll(async () => await containersPage.containerExists(HELLO_CONTAINER), {
-          timeout: 30_000,
+        .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
+          timeout: 2_000,
         })
-        .toBeFalsy();
+        .toBeTruthy();
+
+      // start save into machine
+      await generateForm.saveIntoMachine.click();
+
+      // wait for complete button to appear
+      await playExpect
+        .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
+          timeout: 10_000,
+        })
+        .toBeTruthy();
     });
   });
 });
