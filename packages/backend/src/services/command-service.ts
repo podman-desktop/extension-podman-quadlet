@@ -69,7 +69,7 @@ export class CommandService implements Disposable, AsyncInit {
   protected async routeToQuadletCreateContainer(container: ContainerInfoUI): Promise<void> {
     // 1. Get the {@link ProviderContainerConnection} by engine id
     const provider: ProviderContainerConnection =
-      await this.dependencies.containers.getProviderContainerConnectionByEngineId(container.engineId);
+      await this.dependencies.containers.getRunningProviderContainerConnectionByEngineId(container.engineId);
     // 2. Transform the ProviderContainerConnection in ProviderContainerConnectionDetailedInfo
     const providerIdentifier = this.dependencies.providers.toProviderContainerConnectionDetailedInfo(provider);
     // 3. Open the quadlet create page
