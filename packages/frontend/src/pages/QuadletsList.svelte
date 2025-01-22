@@ -1,13 +1,5 @@
 <script lang="ts">
-import {
-  Button,
-  Table,
-  TableColumn,
-  TableRow,
-  NavPage,
-  TableSimpleColumn,
-  EmptyScreen,
-} from '@podman-desktop/ui-svelte';
+import { Button, Table, TableColumn, TableRow, NavPage, TableSimpleColumn } from '@podman-desktop/ui-svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
 import { quadletAPI } from '../api/client';
@@ -21,7 +13,7 @@ import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/model
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { synchronisation } from '/@store/synchronisation';
+import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 
 const columns = [
   new TableColumn<QuadletInfo>('Status', { width: '70px', renderer: QuadletStatus, align: 'center' }),
@@ -79,18 +71,6 @@ let data: (QuadletInfo & { selected?: boolean })[] = $derived(
 
 let empty: boolean = $derived(data.length === 0);
 
-let outOfSync: boolean = $derived.by(() => {
-  // check if synchronisation is out
-  if (containerProviderConnection) {
-    return (
-      !$synchronisation.find(provider => provider.connection === containerProviderConnection) &&
-      containerProviderConnection.status === 'started'
-    );
-  } else {
-    return $synchronisation.length === 0 && $providerConnectionsInfo.length > 0;
-  }
-});
-
 function navigateToGenerate(): void {
   router.goto('/quadlets/generate');
 }
@@ -120,21 +100,7 @@ function navigateToGenerate(): void {
     {#if !empty}
       <Table kind="service" data={data} columns={columns} row={row} />
     {:else}
-      <EmptyScreen
-        icon={faArrowsRotate}
-        title={'No Quadlet found on the system'}
-        message={outOfSync ? 'Extension is out of sync' : 'Try creating a quadlet'}>
-        {#if outOfSync}
-          <div class="flex flex-col">
-            <Button
-              icon={faArrowsRotate}
-              inProgress={loading}
-              disabled={loading}
-              title="Refresh Quadlets"
-              on:click={refreshQuadlets}>Refresh</Button>
-          </div>
-        {/if}
-      </EmptyScreen>
+      <EmptyQuadletList connection={containerProviderConnection} refreshQuadlets={refreshQuadlets} loading={loading} />
     {/if}
   </svelte:fragment>
 </NavPage>
