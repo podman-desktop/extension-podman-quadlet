@@ -41,10 +41,13 @@ export class ContainerService extends EngineHelper<Dependencies> implements Disp
 
   /**
    * This method return the ContainerProviderConnection corresponding to an engineId
+   * @remarks only works with running container connection
    * @param engineId
    */
-  async getProviderContainerConnectionByEngineId(engineId: string): Promise<ProviderContainerConnection> {
+  async getRunningProviderContainerConnectionByEngineId(engineId: string): Promise<ProviderContainerConnection> {
     for (const provider of this.dependencies.providers.getContainerConnections()) {
+      if (provider.connection.status() !== 'started') continue;
+
       const infos = await this.dependencies.containers.listInfos({ provider: provider.connection });
       if (infos.length === 0) continue;
 
