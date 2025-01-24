@@ -7,7 +7,7 @@ export interface QuadletInfo {
   id: string;
   // absolute path in the machine
   path: string;
-  isActive?: boolean;
+  state: 'active' | 'inactive' | 'deleting' | 'unknown';
 
   // raw content of the service file
   content: string;

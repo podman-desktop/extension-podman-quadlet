@@ -7,5 +7,5 @@ export interface Quadlet {
   path: string;
   // raw content of the service file
   content: string;
-  isActive?: boolean;
+  state: 'active' | 'inactive' | 'deleting' | 'unknown';
 }
