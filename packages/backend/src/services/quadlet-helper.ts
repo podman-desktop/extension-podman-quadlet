@@ -8,9 +8,7 @@ import { Messages } from '/@shared/src/messages';
 import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import type { ProviderService } from './provider-service';
-import type {
-  ProviderContainerConnectionIdentifierInfo
-} from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 export interface QuadletServiceDependencies {
   providers: ProviderService;
@@ -48,7 +46,7 @@ export abstract class QuadletHelper extends Publisher<QuadletInfo[]> {
 
   protected fromSymbol(symbol: symbol): ProviderContainerConnectionIdentifierInfo {
     const result = Array.from(this.#symbols.entries()).find(([_, value]) => value === symbol);
-    if(!result) throw new Error(`cannot found corresponding provider connection for symbol ${symbol.toString()}`);
+    if (!result) throw new Error(`cannot found corresponding provider connection for symbol ${symbol.toString()}`);
     const [providerId, connection] = result[0].split(':');
     return {
       providerId: providerId,
@@ -56,10 +54,10 @@ export abstract class QuadletHelper extends Publisher<QuadletInfo[]> {
     };
   }
 
-  protected getSymbol(connection: { providerId: string, connection: { name: string } }): symbol {
+  protected getSymbol(connection: { providerId: string; connection: { name: string } }): symbol {
     const key: ProviderIdentifier = `${connection.providerId}:${connection.connection.name}`;
     let symbol: symbol | undefined = this.#symbols.get(key);
-    if(!symbol) {
+    if (!symbol) {
       symbol = Symbol(key);
       this.#symbols.set(key, symbol);
     }

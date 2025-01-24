@@ -69,7 +69,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     // update the value
     this.#value.set(
       symbol,
-      (this.#value.get(symbol) ?? []).filter(quadlet => quadlet.id !== options.id)
+      (this.#value.get(symbol) ?? []).filter(quadlet => quadlet.id !== options.id),
     );
     // notify
     this.notify();
@@ -149,7 +149,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       this.update(provider, quadlets, false);
 
       // 5. Refresh the status if some quadlets are found
-      if(quadlets.length > 0) {
+      if (quadlets.length > 0) {
         await this.refreshQuadletsStatuses(false);
       }
     }
@@ -186,7 +186,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       // update each quadlets
       for (const quadlet of quadlets) {
         if (quadlet.id in statuses) {
-          quadlet.state = statuses[quadlet.id]?'active' : 'inactive';
+          quadlet.state = statuses[quadlet.id] ? 'active' : 'inactive';
         } else {
           quadlet.state = 'unknown';
         }

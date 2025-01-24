@@ -77,7 +77,7 @@ const SYSTEMD_SERVICE_MOCK: SystemdService = {
 const WINDOW_MOCK: typeof window = {
   withProgress: vi.fn(),
 } as unknown as typeof window;
-const ENV_MOCK: typeof env = {} as unknown as  typeof env;
+const ENV_MOCK: typeof env = {} as unknown as typeof env;
 const TELEMETRY_LOGGER_MOCK: TelemetryLogger = {
   logUsage: vi.fn(),
 } as unknown as TelemetryLogger;
@@ -113,20 +113,23 @@ beforeEach(() => {
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
   vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
-    return tasks({
-      report: vi.fn(),
-    }, {} as unknown as CancellationToken);
+    return tasks(
+      {
+        report: vi.fn(),
+      },
+      {} as unknown as CancellationToken,
+    );
   });
 });
 
 function getQuadletService(): QuadletService {
   return new QuadletService({
     providers: PROVIDER_SERVICE_MOCK,
-    env:  ENV_MOCK,
+    env: ENV_MOCK,
     webview: WEBVIEW_MOCK,
     podman: PODMAN_SERVICE_MOCK,
     systemd: SYSTEMD_SERVICE_MOCK,
-    window:  WINDOW_MOCK,
+    window: WINDOW_MOCK,
     telemetry: TELEMETRY_LOGGER_MOCK,
   });
 }
@@ -189,7 +192,7 @@ describe('QuadletService#saveIntoMachine', () => {
     );
   });
 
-  test.each(Object.values(QuadletType))('QuadletType %s should have corresponding extension', async (quadletType) => {
+  test.each(Object.values(QuadletType))('QuadletType %s should have corresponding extension', async quadletType => {
     vi.mocked(QuadletTypeParser.prototype.parse).mockReturnValue(quadletType);
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
@@ -323,7 +326,7 @@ describe('QuadletService#read', () => {
 });
 
 describe('QuadletService#getSynchronisationInfo', () => {
-  test('should contain provider synchronisation', async ()=> {
+  test('should contain provider synchronisation', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 

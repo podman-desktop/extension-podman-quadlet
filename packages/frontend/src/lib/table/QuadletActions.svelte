@@ -48,4 +48,9 @@ async function remove(): Promise<void> {
 {:else}
   <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading && !deleting} />
 {/if}
-<ListItemButtonIcon icon={faTrash} onClick={remove} title="Remove quadlet" inProgress={deleting} enabled={!loading && !deleting} />
+<ListItemButtonIcon
+  icon={faTrash}
+  onClick={remove}
+  title="Remove quadlet"
+  inProgress={deleting}
+  enabled={!loading && !deleting} />
