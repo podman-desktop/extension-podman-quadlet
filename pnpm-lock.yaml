@@ -120,7 +120,7 @@ importers:
         version: 1.15.0
       '@podman-desktop/podman-extension-api':
         specifier: next
-        version: 1.16.0-202501221520-078290a3048
+        version: 1.16.0-202501240137-5c23243d0d5
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -1400,11 +1400,11 @@ packages:
   '@podman-desktop/api@1.15.0':
     resolution: {integrity: sha512-rYI2Fh/fRfNKtZAIz3OCk3GITJq5+oNxgU4aYVRWmPaX4Y5TSQoGr30Wwu4MGy02IQp3KY18JNe9/msWUE1MJA==}
 
-  '@podman-desktop/api@1.16.0-202501221520-078290a3048':
-    resolution: {integrity: sha512-wn9ycLA0juvmxElIFxBsQw3o5PlPFiqw/d2SmL0QJ6IZZaK5yWxTeram+JiQ1zNalFWyL1qIxwwfya2GBFkSPA==}
+  '@podman-desktop/api@1.16.0-202501240137-5c23243d0d5':
+    resolution: {integrity: sha512-9Rrp7KstG1IhmwFNLh6dyLc7kMmXXVOFfMAwoFHKKravb5ZRQRuAkIpo5iZkGyVmAfwLLyvKHwUHFi6FiyHJtQ==}
 
-  '@podman-desktop/podman-extension-api@1.16.0-202501221520-078290a3048':
-    resolution: {integrity: sha512-Oa0UFBHUaOaCQGOFB0zIchqOcuRl9Qcgc8TsFCj+fmvgOzx8Zg3207NHRWGLkcz9X22B2lI01C9Nvhy4kxtYLQ==}
+  '@podman-desktop/podman-extension-api@1.16.0-202501240137-5c23243d0d5':
+    resolution: {integrity: sha512-1OR2m3a5E3GYwyHJWtmetlKIq4PGFhfJYshuSYvC+TptPdmlDzCHGjPnv7n8hPV16xA0psgxG0uKF2l1InS9ug==}
 
   '@podman-desktop/tests-playwright@1.15.0':
     resolution: {integrity: sha512-lDNHSr6dKaECuqwtpjDJRX/2SYYvK3o6uTQv1lMzuG3+99C27MqjgBPMcCvCYhFCT7BQDMZ9nJxeMlQsa2rJUg==}
@@ -5445,11 +5445,11 @@ snapshots:
 
   '@podman-desktop/api@1.15.0': {}
 
-  '@podman-desktop/api@1.16.0-202501221520-078290a3048': {}
+  '@podman-desktop/api@1.16.0-202501240137-5c23243d0d5': {}
 
-  '@podman-desktop/podman-extension-api@1.16.0-202501221520-078290a3048':
+  '@podman-desktop/podman-extension-api@1.16.0-202501240137-5c23243d0d5':
     dependencies:
-      '@podman-desktop/api': 1.16.0-202501221520-078290a3048
+      '@podman-desktop/api': 1.16.0-202501240137-5c23243d0d5
 
   '@podman-desktop/tests-playwright@1.15.0': {}
 
