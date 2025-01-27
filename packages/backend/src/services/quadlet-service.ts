@@ -59,6 +59,30 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   }
 
   /**
+   * Given a {@link ProviderContainerConnection} and an Array<string> of Quadlet ids return a matching Array<Quadlet>
+   * @remarks will throw an error if one of the id has no matching Quadlet.
+   * @param options
+   * @protected
+   */
+  protected getQuadlets(options: { provider: ProviderContainerConnection; ids: string[] }): Quadlet[] {
+    // get the corresponding symbol
+    const symbol = this.getSymbol(options.provider);
+
+    // get in corresponding quadlets
+    const quadlets: Map<string, Quadlet> = new Map(
+      (this.#value.get(symbol) ?? []).map(quadlet => [quadlet.id, quadlet]),
+    );
+
+    return options.ids.map(id => {
+      const quadlet = quadlets.get(id);
+      if (quadlet) return quadlet;
+      throw new Error(
+        `cannot found quadlet with id ${id} and provider ${options.provider.providerId}:${options.provider.connection.name}`,
+      );
+    });
+  }
+
+  /**
    * This method remove an entry in the #values map
    * @param options
    * @protected
@@ -351,58 +375,82 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   }
 
   async remove(options: {
-    id: string;
+    ids: string[];
     provider: ProviderContainerConnection;
     /**
      * @default false (Run as systemd user)
      */
     admin?: boolean;
   }): Promise<void> {
+    if (options.ids.length === 0) throw new Error('cannot delete zero quadlets.');
+
     const telemetry: Record<string, unknown> = {
       admin: options.admin,
     };
+
+    // title depends on the number of quadlets
+    const title: string =
+      options.ids.length === 1 ? `Removing quadlet ${options.ids[0]}` : `Removing ${options.ids.length} quadlets`;
     return this.dependencies.window
       .withProgress(
         {
-          title: `Removing quadlet ${options.id}`,
+          title: title,
           location: ProgressLocation.TASK_WIDGET,
         },
-        async () => {
-          const quadlet = this.findQuadlet({
-            provider: options.provider,
-            id: options.id,
-          });
-          if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
-          // set quadlet as deleting and notify
-          quadlet.state = 'deleting';
+        async progress => {
+          // get quadlets
+          const quadlets = this.getQuadlets(options);
+
+          // mark as deleting
+          quadlets.forEach(quadlet => (quadlet.state = 'deleting'));
           this.notify();
 
-          // extract the quadlet type using extension path (E.g. path=hello/world.pod => pod)
-          const split = basename(quadlet.path).split('.');
-          if (split.length > 1) {
-            telemetry['quadlet-type'] = split[split.length - 1];
+          // for each quadlet to delete
+          for (const [index, quadlet] of quadlets.entries()) {
+            if (quadlets.length > 1) {
+              progress.report({
+                message: `Removing ${quadlet.id} (${index + 1}/${quadlets.length}).`,
+              });
+            }
+
+            // extract the quadlet type using extension path (E.g. path=hello/world.pod => pod)
+            const split = basename(quadlet.path).split('.');
+            if (split.length > 1) {
+              telemetry['quadlet-type'] = split[split.length - 1];
+            }
+
+            // 1. remove the quadlet file
+            console.debug(`[QuadletService] Deleting quadlet ${quadlet.id} with path ${quadlet.path}`);
+            await this.dependencies.podman.rmFile(options.provider, quadlet.path);
+
+            // 2. remove the deleted quadlet from the entries
+            this.removeEntry({
+              provider: options.provider,
+              id: quadlet.id,
+            });
           }
 
-          // 1. remove the quadlet file
-          console.debug(`[QuadletService] Deleting quadlet ${options.id} with path ${quadlet.path}`);
-          await this.dependencies.podman.rmFile(options.provider, quadlet.path);
+          // finalize message
+          if (quadlets.length > 1) {
+            progress.report({ message: `Removed ${quadlets.length} quadlets.` });
+          } else {
+            progress.report({ message: `Removed quadlet ${quadlets[0].id}.` });
+          }
 
-          // 2. reload systemctl
+          // 3. reload systemctl
           console.debug(`[QuadletService] Reloading systemctl`);
           await this.dependencies.systemd.daemonReload({
             admin: options.admin ?? false,
             provider: options.provider,
           });
-
-          // 3. remove the deleted quadlet from the entries
-          this.removeEntry({
-            provider: options.provider,
-            id: options.id,
-          });
         },
       )
       .catch((err: unknown) => {
+        console.error(err);
         telemetry['error'] = err;
+        // refresh async in case of issue
+        this.collectPodmanQuadlet().catch(console.error);
+        // propagate error
         throw err;
       })
       .finally(() => {

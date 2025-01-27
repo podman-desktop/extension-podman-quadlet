@@ -8,7 +8,7 @@ import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
-import { providerConnectionsInfo } from '/@store/connections';
+import { providerConnectionsInfo } from '/@/stores/connections';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
@@ -127,6 +127,10 @@ function onQuadletTypeChange(value: string): void {
       quadletType = value;
       break;
   }
+}
+
+function close(): void {
+  router.goto('/');
 }
 </script>
 
