@@ -18,29 +18,30 @@ import { TelemetryEvents } from '../utils/telemetry-events';
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
-  // todo: find a better alternative, ProviderContainerConnection is not consistent
-  #value: Map<ProviderContainerConnection, Quadlet[]>;
   #extensionsEventDisposable: Disposable | undefined;
-  #synchronisation: Map<ProviderContainerConnection, number>;
+  // symbols are internal to QuadletService: do not expose outside
+  #value: Map<symbol, Quadlet[]>;
+  #synchronisation: Map<symbol, number>;
 
   constructor(dependencies: QuadletServiceDependencies) {
     super(dependencies);
-    this.#value = new Map<ProviderContainerConnection, Quadlet[]>();
-    this.#synchronisation = new Map<ProviderContainerConnection, number>();
+    this.#value = new Map<symbol, Quadlet[]>();
+    this.#synchronisation = new Map<symbol, number>();
   }
 
   /**
    * Transform the Map<ProviderContainerConnection, Quadlet[]> to a flat {@link QuadletInfo} array
    */
   override all(): QuadletInfo[] {
-    return Array.from(this.#value).reduce((output, [provider, quadlets]) => {
+    return Array.from(this.#value).reduce((output, [symbol, quadlets]) => {
+      const { providerId, name } = this.fromSymbol(symbol);
       // adding all quadlets
       output.push(
         ...quadlets.map(quadlet => ({
           ...quadlet,
           connection: {
-            providerId: provider.providerId,
-            name: provider.connection.name,
+            providerId: providerId,
+            name: name,
           },
         })),
       );
@@ -50,17 +51,28 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
   async init(): Promise<void> {}
 
-  public findQuadlet(options: { provider: ProviderContainerConnection; id: string }): Quadlet | undefined {
-    for (const [provider, quadlets] of this.#value.entries()) {
-      if (
-        provider.providerId !== options.provider.providerId ||
-        provider.connection.name !== options.provider.connection.name
-      )
-        continue;
+  protected findQuadlet(options: { provider: ProviderContainerConnection; id: string }): Quadlet | undefined {
+    // get the corresponding symbol
+    const symbol = this.getSymbol(options.provider);
+    // find in corresponding quadlets
+    return this.#value.get(symbol)?.find(quadlet => quadlet.id === options.id);
+  }
 
-      return quadlets.find(quadlet => quadlet.id === options.id);
-    }
-    return undefined;
+  /**
+   * This method remove an entry in the #values map
+   * @param options
+   * @protected
+   */
+  protected removeEntry(options: { provider: ProviderContainerConnection; id: string }): void {
+    // get the corresponding symbol
+    const symbol = this.getSymbol(options.provider);
+    // update the value
+    this.#value.set(
+      symbol,
+      (this.#value.get(symbol) ?? []).filter(quadlet => quadlet.id !== options.id),
+    );
+    // notify
+    this.notify();
   }
 
   /**
@@ -130,35 +142,27 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         `[QuadletService] found quadlet version ${quadletVersion} for connection ${provider.connection.name} of provider ${provider.providerId}`,
       );
 
-      // TODO: check min version supported
-
       // 3. get the quadlets
       const quadlets = await this.getPodmanQuadlets({ provider, admin: false });
-      console.log(`[QuadletService] quadlets dryrun provided ${quadlets.length} objects`);
 
-      // 4. use systemd service to set the is active properties of quadlets
-      const statuses = await this.dependencies.systemd.getActiveStatus({
-        provider: provider,
-        admin: false,
-        services: quadlets.map(quadlet => quadlet.id),
-      });
-
-      console.log(`[QuadletService] getActiveStatus got`, statuses);
-
-      for (const quadlet of quadlets) {
-        if (quadlet.id in statuses) {
-          quadlet.isActive = statuses[quadlet.id];
-        }
-      }
-
+      // 4. update internally but do not notify (we need to collect the statuses)
       this.update(provider, quadlets, false);
+
+      // 5. Refresh the status if some quadlets are found
+      if (quadlets.length > 0) {
+        await this.refreshQuadletsStatuses(false);
+      }
     }
+    // notify completion
     this.notify();
   }
 
   protected update(provider: ProviderContainerConnection, quadlets: Quadlet[], notify: boolean = true): void {
-    this.#value.set(provider, quadlets);
-    this.#synchronisation.set(provider, new Date().getTime());
+    // get corresponding symbol
+    const symbol = this.getSymbol(provider);
+    // update value & synchronisation
+    this.#value.set(symbol, quadlets);
+    this.#synchronisation.set(symbol, new Date().getTime());
     if (notify) this.notify();
   }
 
@@ -166,23 +170,30 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * @remarks only refresh the statuses of ***known** quadlets, do not catch new ones.
    * todo: optimise ? paralele ?
    */
-  async refreshQuadletsStatuses(): Promise<void> {
-    for (const [provider, quadlets] of Array.from(this.#value.entries())) {
+  async refreshQuadletsStatuses(notify = true): Promise<void> {
+    for (const [symbol, quadlets] of Array.from(this.#value.entries())) {
+      // retreive the provider from the symbol
+      const providerIdentifier = this.fromSymbol(symbol);
+      const provider = this.providers.getProviderContainerConnection(providerIdentifier);
+
+      // get the statuses of the quadlets
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
         admin: false,
         services: quadlets.map(quadlet => quadlet.id),
       });
 
+      // update each quadlets
       for (const quadlet of quadlets) {
         if (quadlet.id in statuses) {
-          quadlet.isActive = statuses[quadlet.id];
+          quadlet.state = statuses[quadlet.id] ? 'active' : 'inactive';
+        } else {
+          quadlet.state = 'unknown';
         }
       }
 
-      this.update(provider, quadlets, false);
+      this.update(provider, quadlets, notify);
     }
-    this.notify();
   }
 
   protected splitResources(
@@ -191,7 +202,6 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   ): { filename: string; content: string; type?: QuadletType }[] {
     const resources = content.split('---');
     return resources.map(resource => {
-      console.log('analying resource', resource);
       try {
         const type = new QuadletTypeParser(resource).parse();
         return {
@@ -210,6 +220,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     });
   }
 
+  /**
+   * This method differ from {@link saveIntoMachine} it aims to update a single Quadlet file.
+   * @param options the options.quadlet cannot contain mutliple resources.
+   */
   async updateIntoMachine(options: {
     quadlet: string;
     path: string; // path to the quadlet file
@@ -263,6 +277,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       });
   }
 
+  /**
+   * This method differ from {@link updateIntoMachine} it aims to create a new Quadlet file
+   * @param options The options.quadlet can contain multiple resources.
+   */
   async saveIntoMachine(options: {
     quadlet: string;
     name: string; // name of the quadlet file E.g. `example.container`
@@ -355,6 +373,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             id: options.id,
           });
           if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
+          // set quadlet as deleting and notify
+          quadlet.state = 'deleting';
+          this.notify();
 
           // extract the quadlet type using extension path (E.g. path=hello/world.pod => pod)
           const split = basename(quadlet.path).split('.');
@@ -373,8 +394,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             provider: options.provider,
           });
 
-          // 3. update the list of quadlets
-          return this.collectPodmanQuadlet();
+          // 3. remove the deleted quadlet from the entries
+          this.removeEntry({
+            provider: options.provider,
+            id: options.id,
+          });
         },
       )
       .catch((err: unknown) => {
@@ -408,8 +432,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   }
 
   getSynchronisationInfo(): SynchronisationInfo[] {
-    return Array.from(this.#synchronisation.entries()).map(([provider, timestamp]) => ({
-      connection: this.providers.toProviderContainerConnectionDetailedInfo(provider),
+    return Array.from(this.#synchronisation.entries()).map(([symbol, timestamp]) => ({
+      connection: this.fromSymbol(symbol),
       timestamp: timestamp,
     }));
   }

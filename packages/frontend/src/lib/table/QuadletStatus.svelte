@@ -12,7 +12,7 @@ interface Props {
 let { object }: Props = $props();
 
 let status: string = $derived.by(() => {
-  if (object.isActive) {
+  if (object.state === 'active') {
     return 'RUNNING';
   } else {
     return '';

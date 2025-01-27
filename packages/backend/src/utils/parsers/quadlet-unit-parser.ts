@@ -36,6 +36,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       path: unit.SourcePath,
       id: this.serviceName,
       content: this.content,
+      state: 'unknown',
     };
   }
 }

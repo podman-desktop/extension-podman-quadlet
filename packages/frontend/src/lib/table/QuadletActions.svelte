@@ -12,6 +12,7 @@ interface Props {
 
 let { object }: Props = $props();
 
+let deleting: boolean = $derived(object.state === 'deleting');
 let loading: boolean = $state(false);
 
 async function start(): Promise<void> {
@@ -42,9 +43,14 @@ async function remove(): Promise<void> {
 }
 </script>
 
-{#if object.isActive}
-  <ListItemButtonIcon icon={faStop} onClick={stop} title="Stop quadlet" enabled={!loading} />
+{#if object.state === 'active'}
+  <ListItemButtonIcon icon={faStop} onClick={stop} title="Stop quadlet" enabled={!loading && !deleting} />
 {:else}
-  <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading} />
+  <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading && !deleting} />
 {/if}
-<ListItemButtonIcon icon={faTrash} onClick={remove} title="Remove quadlet" enabled={!loading} />
+<ListItemButtonIcon
+  icon={faTrash}
+  onClick={remove}
+  title="Remove quadlet"
+  inProgress={deleting}
+  enabled={!loading && !deleting} />

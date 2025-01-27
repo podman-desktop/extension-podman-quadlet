@@ -29,7 +29,10 @@ let outOfSync: boolean = $derived.by(() => {
   if (connection.status !== 'started') return false;
 
   // if connection is started let's check for previous synchronisation
-  return !$synchronisation.find(provider => provider.connection === connection);
+  return !$synchronisation.find(
+    provider =>
+      provider.connection.providerId === connection.providerId && provider.connection.name === connection.name,
+  );
 });
 
 let message: string = $derived.by(() => {
