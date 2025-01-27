@@ -140,7 +140,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       );
     }
 
-    const sshCommand = ['machine', 'ssh', `${command} ${args.join(' ')}`];
+    const sshCommand = ['machine', 'ssh', options.connection.connection.name, `${command} ${args.join(' ')}`];
     console.debug('[PodmanService] ssh command', sshCommand);
 
     return this.podman.exec(sshCommand, {

@@ -63,6 +63,7 @@ const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
     type: 'podman',
     vmType: 'WSL',
+    name: 'podman-machine-default',
   },
   providerId: 'podman',
 } as ProviderContainerConnection;
@@ -155,7 +156,7 @@ test('quadletExec should execute in podman machine on windows', async () => {
 
   expect(result).toStrictEqual(RUN_RESULT_MOCK);
   expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-    ['machine', 'ssh', '/usr/libexec/podman/quadlet -user -dryrun'],
+    ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, '/usr/libexec/podman/quadlet -user -dryrun'],
     {
       connection: WSL_PROVIDER_CONNECTION_MOCK,
       token: expect.anything(),
@@ -227,10 +228,13 @@ test('expect a token to be created and cancelled', async () => {
   });
 
   expect(CancellationTokenSource).toHaveBeenCalledOnce();
-  expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(['machine', 'ssh', 'echo hello world'], {
-    token: CANCELLATION_SOURCE.token,
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
-  });
+  expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
+    ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, 'echo hello world'],
+    {
+      token: CANCELLATION_SOURCE.token,
+      connection: WSL_PROVIDER_CONNECTION_MOCK,
+    },
+  );
   await vi.advanceTimersByTimeAsync(5000);
 
   // ensure the source token has been cancelled
@@ -280,7 +284,7 @@ describe('writeTextFile', () => {
 
     // mkdir
     expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-      ['machine', 'ssh', 'mkdir -p ~/.config/containers/systemd'],
+      ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, 'mkdir -p ~/.config/containers/systemd'],
       {
         connection: WSL_PROVIDER_CONNECTION_MOCK,
         token: expect.anything(),
@@ -288,7 +292,7 @@ describe('writeTextFile', () => {
     );
 
     expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-      ['machine', 'ssh', `echo "${content}" > ${destination}`],
+      ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, `echo "${content}" > ${destination}`],
       {
         connection: WSL_PROVIDER_CONNECTION_MOCK,
         token: expect.anything(),
