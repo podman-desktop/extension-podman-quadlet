@@ -66,8 +66,8 @@
       "properties": {
         "quadlet.unit-path":  {
           "type": "string",
-          "default": "/etc/containers/systemd/users/",
-          "enum": ["/etc/containers/systemd/users/", "~/.config/containers/systemd/"],
+          "default": "~/.config/containers/systemd/",
+          "enum": ["~/.config/containers/systemd/", "/etc/containers/systemd/users/"],
           "markdownDescription": "Podman unit search path"
         }
       }

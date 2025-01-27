@@ -12,7 +12,8 @@ import type {
   window,
   cli as cliApi,
   containerEngine,
-  TelemetryLogger, configuration,
+  TelemetryLogger,
+  configuration,
 } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
 import { RpcExtension } from '/@shared/src/messages/message-proxy';
