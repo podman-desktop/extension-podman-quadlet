@@ -15,13 +15,14 @@ import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { get } from 'svelte/store';
 
 const columns = [
   new TableColumn<QuadletInfo>('Status', {
     width: '70px',
     renderer: QuadletStatus,
     align: 'center',
-    comparator: (a, b): number => Number(a.isActive) - Number(b.isActive),
+    comparator: (a, b): number => a.state.localeCompare(b.state),
   }),
   new TableColumn<QuadletInfo, string>('Service name', {
     renderer: TableSimpleColumn,
@@ -86,24 +87,30 @@ function navigateToGenerate(): void {
 }
 
 async function deleteSelected(): Promise<void> {
+  // 1. Get all the connections object
+  const connections: ProviderContainerConnectionIdentifierInfo[] = get(providerConnectionsInfo);
+
+  // 2. group quadlet by connections
   const items: Map<ProviderContainerConnectionIdentifierInfo, QuadletInfo[]> = data.reduce((accumulator, current) => {
-    if(!current.selected) return accumulator;
-    // append the quadlet to the corresponding group
-    //  todo: does not work need to fix
-    accumulator.set(
-      current.connection,
-      [
-        ...(accumulator.get(current.connection) ?? []),
-        current,
-      ]
+    if (!current.selected) return accumulator;
+
+    // Found matching connection object
+    const connection = connections.find(
+      connection =>
+        current.connection.providerId === connection.providerId && current.connection.name === connection.name,
     );
+    if (!connection) throw new Error(`cannot found connection for quadlet ${current.id}`);
+
+    accumulator.set(connection, [...(accumulator.get(connection) ?? []), current]);
     return accumulator;
   }, new Map<ProviderContainerConnectionIdentifierInfo, QuadletInfo[]>());
 
-  console.log('deleteSelected', items);
-  for (let [connection, quadlets] of items.entries()) {
-    await quadletAPI.remove(connection, ...quadlets.map((quadlet) => quadlet.id));
-  }
+  //  Let's delete everything (parallel vs iteration?)
+  await Promise.all(
+    Array.from(items.entries()).map(([connection, quadlets]) =>
+      quadletAPI.remove(connection, ...quadlets.map(quadlet => quadlet.id)),
+    ),
+  );
 }
 </script>
 
@@ -145,8 +152,7 @@ async function deleteSelected(): Promise<void> {
         columns={columns}
         row={row}
         bind:selectedItemsNumber={selectedItemsNumber}
-        defaultSortColumn="Environment"
-      />
+        defaultSortColumn="Environment" />
     {:else}
       <EmptyQuadletList connection={containerProviderConnection} refreshQuadlets={refreshQuadlets} loading={loading} />
     {/if}

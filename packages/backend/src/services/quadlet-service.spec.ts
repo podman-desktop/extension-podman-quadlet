@@ -20,12 +20,14 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type {
   CancellationToken,
   env,
+  Progress,
   ProviderContainerConnection,
   RunResult,
   TelemetryLogger,
   Webview,
   window,
 } from '@podman-desktop/api';
+import { ProgressLocation } from '@podman-desktop/api';
 import type { ProviderService } from './provider-service';
 import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
@@ -98,6 +100,10 @@ const QUADLET_MOCK: Quadlet = {
   content: 'dummy-content',
 };
 
+const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
+  report: vi.fn(),
+};
+
 beforeEach(() => {
   vi.resetAllMocks();
 
@@ -113,12 +119,7 @@ beforeEach(() => {
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
   vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
-    return tasks(
-      {
-        report: vi.fn(),
-      },
-      {} as unknown as CancellationToken,
-    );
+    return tasks(PROGRESS_REPORT, {} as unknown as CancellationToken);
   });
 });
 
@@ -276,33 +277,140 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
 });
 
 describe('QuadletService#remove', () => {
+  const QUADLETS_MOCK: Quadlet[] = Array.from({ length: 10 }, (_, index) => ({
+    id: `quadlet-${index}.container`,
+    state: 'unknown',
+    path: `config/quadlet-${index}.container`,
+    content: 'dummy-content',
+  }));
+
+  beforeEach(() => {
+    vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue(QUADLETS_MOCK);
+  });
+
+  test('removing ONE quadlet should use its name in the task created', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    await quadlet.remove({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      ids: [QUADLETS_MOCK[0].id],
+    });
+
+    // task should be created with appropriate title
+    expect(WINDOW_MOCK.withProgress).toHaveBeenCalledWith(
+      {
+        location: ProgressLocation.TASK_WIDGET,
+        title: `Removing quadlet ${QUADLETS_MOCK[0].id}`,
+      },
+      expect.any(Function),
+    );
+
+    // last call should properly set final message
+    expect(PROGRESS_REPORT.report).toHaveBeenLastCalledWith({
+      message: `Removed quadlet ${QUADLETS_MOCK[0].id}.`,
+    });
+  });
+
+  test('removing MULTIPLE quadlets should have appropriate task title', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    await quadlet.remove({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      ids: QUADLETS_MOCK.map(({ id }): string => id),
+    });
+
+    // task should be created with appropriate title
+    expect(WINDOW_MOCK.withProgress).toHaveBeenCalledWith(
+      {
+        location: ProgressLocation.TASK_WIDGET,
+        title: `Removing ${QUADLETS_MOCK.length} quadlets`,
+      },
+      expect.any(Function),
+    );
+
+    // last call should properly set final message
+    expect(PROGRESS_REPORT.report).toHaveBeenLastCalledWith({
+      message: `Removed ${QUADLETS_MOCK.length} quadlets.`,
+    });
+  });
+
   test('should update the state to deleting before removing it.', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
     await quadlet.remove({
       provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      id: QUADLET_MOCK.id,
+      ids: [QUADLETS_MOCK[0].id],
     });
 
     // 1. should have notified while deleting
     expect(WEBVIEW_MOCK.postMessage).toHaveBeenCalledWith({
       id: Messages.UPDATE_QUADLETS,
-      body: [
+      body: expect.arrayContaining([
         expect.objectContaining({
           state: 'deleting',
+          id: QUADLETS_MOCK[0].id,
         }),
-      ],
+      ]),
     });
 
     // 2. should have notified after deletion
     expect(WEBVIEW_MOCK.postMessage).toHaveBeenCalledWith({
       id: Messages.UPDATE_QUADLETS,
-      body: [],
+      body: expect.not.arrayContaining([
+        expect.objectContaining({
+          id: QUADLETS_MOCK[0].id,
+        }),
+      ]),
+    });
+
+    // Removed
+    expect(quadlet.all()).toHaveLength(9);
+  });
+
+  test('remove all should properly removed all', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    await quadlet.remove({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      ids: QUADLETS_MOCK.map(({ id }): string => id),
     });
 
     // Removed
     expect(quadlet.all()).toHaveLength(0);
+  });
+
+  test('error should be propagated', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    await expect(() => {
+      return quadlet.remove({
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+        ids: ['invalid-id'],
+      });
+    }).rejects.toThrowError('cannot found quadlet with id invalid-id and provider podman:podman-machine');
+  });
+
+  test('error should trigger a QuadletService#collectPodmanQuadlet', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    // reset mock to reset call count
+    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockReset();
+    expect(PODMAN_SERVICE_MOCK.quadletExec).not.toHaveBeenCalled(); // ensure reset worked
+
+    await expect(() => {
+      return quadlet.remove({
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+        ids: ['invalid-id'],
+      });
+    }).rejects.toThrowError();
+
+    expect(PODMAN_SERVICE_MOCK.quadletExec).toHaveBeenCalledOnce();
   });
 });
 
