@@ -116,11 +116,11 @@ importers:
         version: 0.11.6
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.15.0
-        version: 1.15.0
+        specifier: ^1.16.0
+        version: 1.16.0
       '@podman-desktop/podman-extension-api':
         specifier: next
-        version: 1.16.0-202501221520-078290a3048
+        version: 1.17.0-202501241426-5b789b34941
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -1397,14 +1397,14 @@ packages:
     engines: {node: '>=18'}
     hasBin: true
 
-  '@podman-desktop/api@1.15.0':
-    resolution: {integrity: sha512-rYI2Fh/fRfNKtZAIz3OCk3GITJq5+oNxgU4aYVRWmPaX4Y5TSQoGr30Wwu4MGy02IQp3KY18JNe9/msWUE1MJA==}
+  '@podman-desktop/api@1.16.0':
+    resolution: {integrity: sha512-ZgSN3oJkwzoz2oMBO77EA+7rugt7R7kL6JmVtq5siXrRqj2Nn9tj0KYMv/jzz9KhlaHI2/ELN0qLWLNFuvxu0Q==}
 
-  '@podman-desktop/api@1.16.0-202501221520-078290a3048':
-    resolution: {integrity: sha512-wn9ycLA0juvmxElIFxBsQw3o5PlPFiqw/d2SmL0QJ6IZZaK5yWxTeram+JiQ1zNalFWyL1qIxwwfya2GBFkSPA==}
+  '@podman-desktop/api@1.17.0-202501241426-5b789b34941':
+    resolution: {integrity: sha512-LbPiW8QbwPbJlgcIHc49POwGN/+ng3Z++TMxnCc4S++Me2ieP0wfgL3eOb3B8ENreEHPDeDPio5viiBl2pa3eQ==}
 
-  '@podman-desktop/podman-extension-api@1.16.0-202501221520-078290a3048':
-    resolution: {integrity: sha512-Oa0UFBHUaOaCQGOFB0zIchqOcuRl9Qcgc8TsFCj+fmvgOzx8Zg3207NHRWGLkcz9X22B2lI01C9Nvhy4kxtYLQ==}
+  '@podman-desktop/podman-extension-api@1.17.0-202501241426-5b789b34941':
+    resolution: {integrity: sha512-mm0GFqbQwDBkxj0kJF3L2ZkkcmJVEU11FttKgnk+UlvxZ6lzxrTULcw1KAylxwkh1SX1mb3pm/aWBoduOIKycA==}
 
   '@podman-desktop/tests-playwright@1.15.0':
     resolution: {integrity: sha512-lDNHSr6dKaECuqwtpjDJRX/2SYYvK3o6uTQv1lMzuG3+99C27MqjgBPMcCvCYhFCT7BQDMZ9nJxeMlQsa2rJUg==}
@@ -5443,13 +5443,13 @@ snapshots:
     dependencies:
       playwright: 1.49.1
 
-  '@podman-desktop/api@1.15.0': {}
+  '@podman-desktop/api@1.16.0': {}
 
-  '@podman-desktop/api@1.16.0-202501221520-078290a3048': {}
+  '@podman-desktop/api@1.17.0-202501241426-5b789b34941': {}
 
-  '@podman-desktop/podman-extension-api@1.16.0-202501221520-078290a3048':
+  '@podman-desktop/podman-extension-api@1.17.0-202501241426-5b789b34941':
     dependencies:
-      '@podman-desktop/api': 1.16.0-202501221520-078290a3048
+      '@podman-desktop/api': 1.17.0-202501241426-5b789b34941
 
   '@podman-desktop/tests-playwright@1.15.0': {}
 
