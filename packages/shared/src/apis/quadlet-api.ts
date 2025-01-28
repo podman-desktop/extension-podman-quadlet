@@ -13,7 +13,7 @@ export abstract class QuadletApi {
   abstract refresh(): Promise<void>;
   abstract start(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean>;
   abstract stop(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean>;
-  abstract remove(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<void>;
+  abstract remove(connection: ProviderContainerConnectionIdentifierInfo, ...ids: string[]): Promise<void>;
   abstract read(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string>;
 
   /**

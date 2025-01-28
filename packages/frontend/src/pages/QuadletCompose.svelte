@@ -8,7 +8,7 @@ import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import PodletInstall from '/@/lib/buttons/PodletInstall.svelte';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
 import Fa from 'svelte-fa';
-import QuadletComposeForm from '/@/lib/forms/QuadletComposeForm.svelte';
+import QuadletComposeForm from '/@/lib/forms/compose/QuadletComposeForm.svelte';
 
 interface Props {
   filepath?: string;

@@ -5,11 +5,6 @@
     "module": "esnext",
     "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "lib": [
-      "ES2017",
-      "webworker",
-      "dom",
-    ],
     "sourceMap": true,
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,

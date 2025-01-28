@@ -61,13 +61,13 @@ export class QuadletApiImpl extends QuadletApi {
     }
   }
 
-  override async remove(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<void> {
+  override async remove(connection: ProviderContainerConnectionIdentifierInfo, ...ids: string[]): Promise<void> {
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
 
     try {
       return await this.dependencies.quadlet.remove({
         provider: providerConnection,
-        id: id,
+        ids: ids,
         admin: false,
       });
     } finally {
