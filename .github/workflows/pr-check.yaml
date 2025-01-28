@@ -107,21 +107,14 @@ jobs:
           # Check the logs for debugging purposes
           Get-Content podman-logs.txt
 
-      # Ensure the podman version on windows
-      - name: Print Podman version (Windows)
+      # Init Podman Machine
+      - name: Init Podman Machine (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
           echo "Adding Podman to PATH"
           $env:PATH += ";C:\Program Files\RedHat\Podman"
-          echo $env:PATH
-          # Confirm Podman is installed and accessible
-          podman --version
-
-      # Init Podman Machine
-      - name: Init Podman Machine
-        if: runner.os == 'Windows'
-        run: |
+           podman --version
           podman machine init
 
       # Update Podman linux
@@ -220,9 +213,17 @@ jobs:
         shell: bash
         id: build-image
         run: |
+          # Ensure Podman is in PATH (if not already set in previous steps)
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            export PATH=$PATH:"/c/Program Files/RedHat/Podman"
+          fi
+    
+          # build quadlet image
           podman build -t local_image ./
           CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
+          # mkdir output directory
           mkdir -p tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins
+          # export container
           podman export $CONTAINER_ID | tar -x -C tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
           podman rm -f $CONTAINER_ID
           podman rmi -f localhost/local_image:latest
