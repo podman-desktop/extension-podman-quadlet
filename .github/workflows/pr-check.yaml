@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024 Red Hat, Inc.
+# Copyright (C) 2024-2025 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,9 +79,31 @@ jobs:
       - name: Run unit tests
         run: pnpm test:unit
 
+  # Dedicated step to build the quadlet extension image
+  build-container:
+    name: Build Extension Image
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Image and Extract Files
+        id: build-image
+        run: |
+          podman build -t local_image ./
+          CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
+          mkdir -p output/plugins
+          podman export $CONTAINER_ID | tar -x -C output/plugins/
+          podman rm -f $CONTAINER_ID
+          podman rmi -f localhost/local_image:latest
+      - name: Upload Quadlet Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quadlet-plugin
+          path: output/plugins/
+
   e2e-pr-check:
     name: e2e tests smoke / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: build-container
     strategy:
       fail-fast: false
       matrix:
@@ -209,24 +231,12 @@ jobs:
           pnpm install --frozen-lockfile
           pnpm test:e2e:build
 
-      - name: Build Image
-        shell: bash
-        id: build-image
-        run: |
-          # Ensure Podman is in PATH (if not already set in previous steps)
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            export PATH=$PATH:"/c/Program Files/RedHat/Podman"
-          fi
-    
-          # build quadlet image
-          podman build -t local_image ./
-          CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
-          # mkdir output directory
-          mkdir -p tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins
-          # export container
-          podman export $CONTAINER_ID | tar -x -C tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
-          podman rm -f $CONTAINER_ID
-          podman rmi -f localhost/local_image:latest
+      # Install the quadlet extension
+      - name: Download Quadlet Plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: quadlet-plugin
+          path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
 
       - name: Run E2E Smoke tests
         shell: bash
