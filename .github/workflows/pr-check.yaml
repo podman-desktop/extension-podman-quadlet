@@ -81,7 +81,11 @@ jobs:
 
   e2e-pr-check:
     name: e2e tests smoke
-    runs-on: ubuntu-24.04
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2022, ubuntu-24.04 ]
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
@@ -103,11 +107,12 @@ jobs:
 
       # Install npm packages for quadlet extension
       - name: Execute pnpm in Podman Quadlet Extension
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install --frozen-lockfile
 
       # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
       - name: Extract @podman-desktop/api version
         id: pd-api-version
+        shell: bash
         run: |
           # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
           export PD_VERSION=$(pnpm list -C packages/backend/ --json | jq -r '.[0].devDependencies."@podman-desktop/api".version')
@@ -116,6 +121,7 @@ jobs:
 
       # Download Podman Desktop repository based on version defined in package.json
       - name: Download Podman Desktop
+        shell: bash
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
         run: |
@@ -133,12 +139,14 @@ jobs:
 
       # Install and build podman-desktop
       - name: Install pnpm deps and build Podman Desktop
+        shell: bash
         working-directory: ${{ github.workspace }}/podman-desktop
         run: |
           pnpm install --frozen-lockfile
           pnpm test:e2e:build
 
       - name: Update podman to 5.x
+        if: runner.os == 'Linux'
         run: |
           echo "ubuntu version from kubic repository to install podman we need (v5)"
           ubuntu_version='23.10'
@@ -160,11 +168,13 @@ jobs:
           podman version
 
       - name: Revert unprivileged user namespace restrictions in Ubuntu 24.04
+        if: runner.os == 'Linux'
         run: |
           # allow unprivileged user namespace
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Set cgroup_manager to 'cgroupfs' instead of systemd
+        if: runner.os == 'Linux'
         run: |
           mkdir -p ~/.config/containers
           cat <<EOT >> ~/.config/containers/containers.conf
@@ -174,6 +184,7 @@ jobs:
           podman info
 
       - name: Build Image
+        shell: bash
         id: build-image
         run: |
           podman build -t local_image ./
@@ -184,6 +195,7 @@ jobs:
           podman rmi -f localhost/local_image:latest
 
       - name: Run E2E Smoke tests
+        shell: bash
         run: pnpm test:e2e:smoke
 
       - uses: actions/upload-artifact@v4
@@ -191,3 +203,4 @@ jobs:
         with:
           name: e2e-pr-check
           path: ./**/tests/**/output/
+
