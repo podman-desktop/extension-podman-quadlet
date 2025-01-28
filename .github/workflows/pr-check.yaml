@@ -115,7 +115,7 @@ jobs:
           echo "Adding Podman to PATH"
           $env:PATH += ";C:\Program Files\RedHat\Podman"
            podman --version
-          podman machine init
+          podman machine init --now
 
       # Update Podman linux
       - name: Update podman to 5.x
