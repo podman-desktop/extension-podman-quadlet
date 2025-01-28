@@ -24,14 +24,42 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint-format-unit:
-    name: linter, formatters and unit tests / ${{ matrix.os }}
+  lint-format-typecheck:
+    name: linter, formatters
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+      - name: Execute pnpm
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linter
+        run: pnpm lint:check
+
+      - name: Run formatter
+        run: pnpm format:check
+
+      - name: Run typecheck
+        run: pnpm typecheck
+
+      - name: Run svelte check
+        run: pnpm svelte:check
+
+  unit-tests:
+    name: unit tests / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2022, ubuntu-22.04, macos-14]
+        os: [windows-2022, ubuntu-24.04, macos-15]
     steps:
       - uses: actions/checkout@v4
 
@@ -48,29 +76,8 @@ jobs:
       - name: Execute pnpm
         run: pnpm install
 
-      - name: Run linter
-        run: pnpm lint:check
-
-      - name: Run formatter
-        run: pnpm format:check
-
       - name: Run unit tests
         run: pnpm test:unit
-
-      - name: Run typecheck
-        run: pnpm typecheck
-
-      - name: Run svelte check
-        run: pnpm svelte:check
-
-      # Check we don't have changes in git
-      - name: Check no changes in git
-        if: ${{ matrix.os=='ubuntu-22.04'}}
-        run: |
-          if ! git diff --exit-code; then
-            echo "Found changes in git"
-            exit 1
-          fi
 
   e2e-pr-check:
     name: e2e tests smoke
