@@ -28,7 +28,9 @@ export class ProviderService
   }
 
   getContainerConnections(): ProviderContainerConnection[] {
-    return this.dependencies.providers.getContainerConnections();
+    return this.dependencies.providers
+      .getContainerConnections()
+      .filter(({ connection }) => connection.type === 'podman');
   }
 
   public all(): ProviderContainerConnectionDetailedInfo[] {
