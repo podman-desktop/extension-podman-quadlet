@@ -130,9 +130,9 @@ jobs:
           # Stable release are available podman-desktop/podman-desktop
           # Prerelease are available under podman-desktop/prereleases
           if [[ "$PD_VERSION" =~ - ]]; then
-            wget -qO- "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+            curl -sL "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
           else
-            wget -qO- "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+            curl -sL "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
           fi
           # Move the extracted folder to the podman-desktop folder
           mv podman-desktop-$PD_VERSION/ podman-desktop/
