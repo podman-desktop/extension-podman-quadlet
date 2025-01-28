@@ -107,6 +107,17 @@ jobs:
           # Check the logs for debugging purposes
           Get-Content podman-logs.txt
 
+      # Ensure the podman version on windows
+      - name: Print Podman version (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          echo "Adding Podman to PATH"
+          $env:PATH += ";C:\Program Files\RedHat\Podman"
+          echo $env:PATH
+          # Confirm Podman is installed and accessible
+          podman --version
+
       # Init Podman Machine
       - name: Init Podman Machine
         if: runner.os == 'Windows'
