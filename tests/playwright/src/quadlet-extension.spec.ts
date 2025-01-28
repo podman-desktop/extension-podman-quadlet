@@ -24,6 +24,21 @@ const QUAY_HELLO_IMAGE = `${QUAY_HELLO_IMAGE_REPO}:${QUAY_HELLO_IMAGE_TAG}`;
 test.use({
   runnerOptions: new RunnerOptions({
     customFolder: 'pd-extension-quadlet-tests',
+    /**
+     * For performance reasons, disable extensions which are not necessary for the e2e
+     */
+    customSettings: {
+      'extensions.disabled': [
+        'podman-desktop.compose',
+        'podman-desktop.docker',
+        'podman-desktop.kind',
+        'podman-desktop.kube-context',
+        'podman-desktop.kubectl-cli',
+        'podman-desktop.lima',
+        'podman-desktop.minikube',
+        'podman-desktop.registries',
+      ],
+    },
   }),
 });
 
