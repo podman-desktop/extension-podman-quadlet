@@ -30,11 +30,11 @@ test.use({
 test.beforeAll(async ({ runner, welcomePage, page }) => {
   runner.setVideoAndTraceName('podman-quadlet-e2e');
   await welcomePage.handleWelcomePage(true);
-  await waitForPodmanMachineStartup(page);
+  await waitForPodmanMachineStartup(page, 80_000); // default is 30s let's increase that to 80s
 });
 
 test.afterAll(async ({ runner }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(200_000);
   await runner.close();
 });
 
