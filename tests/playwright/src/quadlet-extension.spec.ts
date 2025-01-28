@@ -189,6 +189,13 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // generate
       await generateForm.generateButton.click();
 
+      // wait for loading (generate) to be finished
+      await playExpect
+        .poll(async () => await generateForm.isLoading(), {
+          timeout: 10_000,
+        })
+        .toBeFalsy();
+
       // wait for content to be available
       await playExpect
         .poll(
