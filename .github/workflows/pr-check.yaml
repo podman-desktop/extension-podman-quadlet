@@ -93,26 +93,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set up pnpm
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          run_install: false
-
-      # Install Node.js
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      # Install Podman windows
+      # ==============================================
+      # Installing Podman
+      # ==============================================
       - name: Install podman to 5.x
         if: runner.os == 'Windows'
         run: |
           echo Installing Podman
           curl --output .\podman-setup.exe  -L https://github.com/containers/podman/releases/download/v5.3.2/podman-5.3.2-setup.exe
-          .\podman-setup.exe /install /passive /norestart /log podman-logs.txt
-          cat podman-logs.txt
+          # Start the installer and wait for it to complete
+          Start-Process -FilePath .\podman-setup.exe -ArgumentList "/install", "/passive", "/norestart", "/log podman-logs.txt" -Wait
+          # Check the logs for debugging purposes
+          Get-Content podman-logs.txt
 
       # Init Podman Machine
       - name: Init Podman Machine
@@ -158,6 +150,20 @@ jobs:
           cgroup_manager="cgroupfs"
           EOT
           podman info
+
+      # ==============================================
+      # Installing Podman Desktop
+      # ==============================================
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      # Install Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
 
       # Install npm packages for quadlet extension
       - name: Execute pnpm in Podman Quadlet Extension
