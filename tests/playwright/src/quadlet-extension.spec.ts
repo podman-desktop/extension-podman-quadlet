@@ -28,6 +28,9 @@ test.use({
 });
 
 test.beforeAll(async ({ runner, welcomePage, page }) => {
+  // 80s timeout
+  test.setTimeout(80_000);
+
   runner.setVideoAndTraceName('podman-quadlet-e2e');
   await welcomePage.handleWelcomePage(true);
   await waitForPodmanMachineStartup(page, 80_000); // default is 30s let's increase that to 80s
