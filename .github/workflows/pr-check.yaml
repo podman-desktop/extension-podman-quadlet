@@ -125,7 +125,6 @@ jobs:
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
         run: |
-          echo "Podman Desktop $PD_VERSION cache missed"
           echo "Downloading PD desktop to ${{ github.workspace }}/podman-desktop"
           # Stable release are available podman-desktop/podman-desktop
           # Prerelease are available under podman-desktop/prereleases
@@ -144,6 +143,21 @@ jobs:
         run: |
           pnpm install --frozen-lockfile
           pnpm test:e2e:build
+
+      # Install Podman windows
+      - name: Install podman to 5.x
+        if: runner.os == 'Window'
+        run: |
+          echo Installing Podman
+          curl --output .\podman-setup.exe  -L https://github.com/containers/podman/releases/download/v5.3.2/podman-5.3.2-setup.exe
+          .\podman-setup.exe /install /passive /norestart /log podman-logs.txt
+          cat podman-logs.txt
+
+      # Init Podman Machine
+      - name: Init Podman Machine
+        if: runner.os == 'Window'
+        run: |
+          podman machine init
 
       - name: Update podman to 5.x
         if: runner.os == 'Linux'
