@@ -80,7 +80,7 @@ jobs:
         run: pnpm test:unit
 
   e2e-pr-check:
-    name: e2e tests smoke
+    name: e2e tests smoke / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
