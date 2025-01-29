@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024 Red Hat, Inc.
+# Copyright (C) 2024-2025 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,9 +79,35 @@ jobs:
       - name: Run unit tests
         run: pnpm test:unit
 
-  e2e-pr-check:
-    name: e2e tests smoke
+  # Dedicated step to build the quadlet extension image
+  build-container:
+    name: Build Extension Image
     runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Image and Extract Files
+        id: build-image
+        run: |
+          podman build -t local_image ./
+          CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
+          mkdir -p output/plugins
+          podman export $CONTAINER_ID | tar -x -C output/plugins/
+          podman rm -f $CONTAINER_ID
+          podman rmi -f localhost/local_image:latest
+      - name: Upload Quadlet Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: quadlet-plugin
+          path: output/plugins/
+
+  e2e-pr-check:
+    name: e2e tests smoke / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    needs: build-container
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ windows-2022, ubuntu-24.04 ]
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
@@ -89,56 +115,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set up pnpm
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
-        with:
-          run_install: false
-
-      # Install Node.js
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'pnpm'
-
-      # Install npm packages for quadlet extension
-      - name: Execute pnpm in Podman Quadlet Extension
-        run: pnpm install --no-frozen-lockfile
-
-      # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
-      - name: Extract @podman-desktop/api version
-        id: pd-api-version
+      # ==============================================
+      # Installing Podman
+      # ==============================================
+      - name: Install podman to 5.x
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
-          export PD_VERSION=$(pnpm list -C packages/backend/ --json | jq -r '.[0].devDependencies."@podman-desktop/api".version')
-          echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
-          echo "Using @podman-desktop/api $PD_VERSION"
+          echo Installing Podman
+          curl --output .\podman-setup.exe  -L https://github.com/containers/podman/releases/download/v5.3.2/podman-5.3.2-setup.exe
+          # Start the installer and wait for it to complete
+          Start-Process -FilePath .\podman-setup.exe -ArgumentList "/install", "/passive", "/norestart", "/log podman-logs.txt" -Wait
+          # Check the logs for debugging purposes
+          Get-Content podman-logs.txt
 
-      # Download Podman Desktop repository based on version defined in package.json
-      - name: Download Podman Desktop
-        env:
-          PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
+      # Init Podman Machine
+      - name: Init Podman Machine (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
         run: |
-          echo "Podman Desktop $PD_VERSION cache missed"
-          echo "Downloading PD desktop to ${{ github.workspace }}/podman-desktop"
-          # Stable release are available podman-desktop/podman-desktop
-          # Prerelease are available under podman-desktop/prereleases
-          if [[ "$PD_VERSION" =~ - ]]; then
-            wget -qO- "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
-          else
-            wget -qO- "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
-          fi
-          # Move the extracted folder to the podman-desktop folder
-          mv podman-desktop-$PD_VERSION/ podman-desktop/
+          echo "Adding Podman to PATH"
+          $env:PATH += ";C:\Program Files\RedHat\Podman"
+           podman --version
+          podman machine init --now
 
-      # Install and build podman-desktop
-      - name: Install pnpm deps and build Podman Desktop
-        working-directory: ${{ github.workspace }}/podman-desktop
-        run: |
-          pnpm install --frozen-lockfile
-          pnpm test:e2e:build
-
+      # Update Podman linux
       - name: Update podman to 5.x
+        if: runner.os == 'Linux'
         run: |
           echo "ubuntu version from kubic repository to install podman we need (v5)"
           ubuntu_version='23.10'
@@ -160,11 +163,13 @@ jobs:
           podman version
 
       - name: Revert unprivileged user namespace restrictions in Ubuntu 24.04
+        if: runner.os == 'Linux'
         run: |
           # allow unprivileged user namespace
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       - name: Set cgroup_manager to 'cgroupfs' instead of systemd
+        if: runner.os == 'Linux'
         run: |
           mkdir -p ~/.config/containers
           cat <<EOT >> ~/.config/containers/containers.conf
@@ -173,21 +178,73 @@ jobs:
           EOT
           podman info
 
-      - name: Build Image
-        id: build-image
+      # ==============================================
+      # Installing Podman Desktop
+      # ==============================================
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      # Install Node.js
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'pnpm'
+
+      # Install npm packages for quadlet extension
+      - name: Execute pnpm in Podman Quadlet Extension
+        run: pnpm install
+
+      # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
+      - name: Extract @podman-desktop/api version
+        id: pd-api-version
+        shell: bash
         run: |
-          podman build -t local_image ./
-          CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
-          mkdir -p tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins
-          podman export $CONTAINER_ID | tar -x -C tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
-          podman rm -f $CONTAINER_ID
-          podman rmi -f localhost/local_image:latest
+          # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
+          export PD_VERSION=$(pnpm list -C packages/backend/ --json | jq -r '.[0].devDependencies."@podman-desktop/api".version')
+          echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
+          echo "Using @podman-desktop/api $PD_VERSION"
+
+      # Download Podman Desktop repository based on version defined in package.json
+      - name: Download Podman Desktop
+        shell: bash
+        env:
+          PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
+        run: |
+          echo "Downloading PD desktop to ${{ github.workspace }}/podman-desktop"
+          # Stable release are available podman-desktop/podman-desktop
+          # Prerelease are available under podman-desktop/prereleases
+          if [[ "$PD_VERSION" =~ - ]]; then
+            curl -sL "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+          else
+            curl -sL "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+          fi
+          # Move the extracted folder to the podman-desktop folder
+          mv podman-desktop-$PD_VERSION/ podman-desktop/
+
+      # Install and build podman-desktop
+      - name: Install pnpm deps and build Podman Desktop
+        shell: bash
+        working-directory: ${{ github.workspace }}/podman-desktop
+        run: |
+          pnpm install
+          pnpm test:e2e:build
+
+      # Install the quadlet extension
+      - name: Download Quadlet Plugins
+        uses: actions/download-artifact@v4
+        with:
+          name: quadlet-plugin
+          path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
 
       - name: Run E2E Smoke tests
+        shell: bash
         run: pnpm test:e2e:smoke
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: e2e-pr-check
+          name: e2e-pr-check-${{ matrix.os }}
           path: ./**/tests/**/output/
+

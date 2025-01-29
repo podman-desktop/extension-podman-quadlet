@@ -24,17 +24,35 @@ const QUAY_HELLO_IMAGE = `${QUAY_HELLO_IMAGE_REPO}:${QUAY_HELLO_IMAGE_TAG}`;
 test.use({
   runnerOptions: new RunnerOptions({
     customFolder: 'pd-extension-quadlet-tests',
+    /**
+     * For performance reasons, disable extensions which are not necessary for the e2e
+     */
+    customSettings: {
+      'extensions.disabled': [
+        'podman-desktop.compose',
+        'podman-desktop.docker',
+        'podman-desktop.kind',
+        'podman-desktop.kube-context',
+        'podman-desktop.kubectl-cli',
+        'podman-desktop.lima',
+        'podman-desktop.minikube',
+        'podman-desktop.registries',
+      ],
+    },
   }),
 });
 
 test.beforeAll(async ({ runner, welcomePage, page }) => {
+  // 80s timeout
+  test.setTimeout(80_000);
+
   runner.setVideoAndTraceName('podman-quadlet-e2e');
   await welcomePage.handleWelcomePage(true);
-  await waitForPodmanMachineStartup(page);
+  await waitForPodmanMachineStartup(page, 80_000); // default is 30s let's increase that to 80s
 });
 
 test.afterAll(async ({ runner }) => {
-  test.setTimeout(120_000);
+  test.setTimeout(200_000);
   await runner.close();
 });
 
@@ -139,7 +157,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for loading to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeFalsy();
 
@@ -151,7 +169,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for loading to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeFalsy();
 
@@ -164,21 +182,21 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for generateButton to be enabled
       await playExpect
         .poll(async () => await generateForm.generateButton.isEnabled(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeTruthy();
 
       // generate
       await generateForm.generateButton.click();
 
-      // wait for loading to be finished
+      // wait for loading (generate) to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 2_000,
+          timeout: 15_000,
         })
         .toBeFalsy();
 
-      // wait for loading to be finished
+      // wait for content to be available
       await playExpect
         .poll(
           async (): Promise<boolean> => {
@@ -187,7 +205,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
             return content?.includes('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux') ?? false;
           },
           {
-            timeout: 2_000,
+            timeout: 5_000,
           },
         )
         .toBeTruthy();
@@ -195,7 +213,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for saveIntoMachine button to be enabled
       await playExpect
         .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeTruthy();
 
@@ -205,7 +223,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for complete button to appear
       await playExpect
         .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
-          timeout: 10_000,
+          timeout: 15_000,
         })
         .toBeTruthy();
     });

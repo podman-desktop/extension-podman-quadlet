@@ -235,7 +235,7 @@ test('expect a token to be created and cancelled', async () => {
       connection: WSL_PROVIDER_CONNECTION_MOCK,
     },
   );
-  await vi.advanceTimersByTimeAsync(5000);
+  await vi.advanceTimersByTimeAsync(50_000);
 
   // ensure the source token has been cancelled
   await vi.waitFor(() => {

@@ -24,7 +24,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
   constructor(dependencies: PodmanDependencies) {
     super(dependencies);
 
-    this.#execTimeout = 2500;
+    this.#execTimeout = 10_000;
   }
 
   async init(): Promise<void> {
