@@ -42,6 +42,9 @@ import { ImageApi } from '/@shared/src/apis/image-api';
 import { LoggerService } from './logger-service';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
 import { LoggerApi } from '/@shared/src/apis/logger-api';
+import { DialogService } from './dialog-service';
+import { DialogApiImpl } from '../apis/dialog-api-impl';
+import { DialogApi } from '/@shared/src/apis/dialog-api';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -85,6 +88,11 @@ export class MainService implements Disposable, AsyncInit {
       webview: webview.getPanel().webview,
     });
     this.#disposables.push(loggerService);
+
+    // dialog service
+    const dialog = new DialogService({
+      windowApi: this.dependencies.window,
+    });
 
     // init IPC system
     const rpcExtension = new RpcExtension(webview.getPanel().webview);
@@ -228,5 +236,11 @@ export class MainService implements Disposable, AsyncInit {
       routing: routing,
     });
     rpcExtension.registerInstance<RoutingApi>(RoutingApi, routingApiImpl);
+
+    // dialog api
+    const dialogApiImpl = new DialogApiImpl({
+      dialog: dialog,
+    });
+    rpcExtension.registerInstance<DialogApi>(DialogApi, dialogApiImpl);
   }
 }
