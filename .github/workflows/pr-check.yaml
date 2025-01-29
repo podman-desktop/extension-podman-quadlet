@@ -194,7 +194,7 @@ jobs:
 
       # Install npm packages for quadlet extension
       - name: Execute pnpm in Podman Quadlet Extension
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
       # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
       - name: Extract @podman-desktop/api version
@@ -228,7 +228,7 @@ jobs:
         shell: bash
         working-directory: ${{ github.workspace }}/podman-desktop
         run: |
-          pnpm install --frozen-lockfile
+          pnpm install
           pnpm test:e2e:build
 
       # Install the quadlet extension
