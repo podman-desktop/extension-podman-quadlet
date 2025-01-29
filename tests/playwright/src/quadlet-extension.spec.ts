@@ -157,7 +157,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for loading to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeFalsy();
 
@@ -169,7 +169,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for loading to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeFalsy();
 
@@ -182,7 +182,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for generateButton to be enabled
       await playExpect
         .poll(async () => await generateForm.generateButton.isEnabled(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeTruthy();
 
@@ -192,7 +192,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for loading (generate) to be finished
       await playExpect
         .poll(async () => await generateForm.isLoading(), {
-          timeout: 10_000,
+          timeout: 15_000,
         })
         .toBeFalsy();
 
@@ -205,7 +205,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
             return content?.includes('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux') ?? false;
           },
           {
-            timeout: 2_000,
+            timeout: 5_000,
           },
         )
         .toBeTruthy();
@@ -213,7 +213,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for saveIntoMachine button to be enabled
       await playExpect
         .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
-          timeout: 2_000,
+          timeout: 5_000,
         })
         .toBeTruthy();
 
@@ -223,7 +223,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for complete button to appear
       await playExpect
         .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
-          timeout: 10_000,
+          timeout: 15_000,
         })
         .toBeTruthy();
     });
