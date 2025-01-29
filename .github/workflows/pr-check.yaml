@@ -112,6 +112,8 @@ jobs:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
       PODMAN_DESKTOP_ARGS: ${{ github.workspace }}/podman-desktop
+      # by default playwright cache browsers binaries in ~/.cache/ms-playwright on Linux and %USERPROFILE%\AppData\Local\ms-playwright on Windows
+      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/podman-desktop/pw-browsers
     steps:
       - uses: actions/checkout@v4
 
