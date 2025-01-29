@@ -206,8 +206,17 @@ jobs:
           echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
           echo "Using @podman-desktop/api $PD_VERSION"
 
+      # Check cache for existing podman-desktop
+      - name: Cache Podman Desktop
+        id: cache-pd
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/podman-desktop
+          key: pd-${{ steps.pd-api-version.outputs.PD_VERSION }}-${{ runner.os }}
+
       # Download Podman Desktop repository based on version defined in package.json
       - name: Download Podman Desktop
+        if: steps.cache-pd.outputs.cache-hit != 'true'
         shell: bash
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
@@ -225,6 +234,7 @@ jobs:
 
       # Install and build podman-desktop
       - name: Install pnpm deps and build Podman Desktop
+        if: steps.cache-pd.outputs.cache-hit != 'true'
         shell: bash
         working-directory: ${{ github.workspace }}/podman-desktop
         run: |
