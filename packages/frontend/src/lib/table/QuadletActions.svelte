@@ -35,7 +35,7 @@ async function stop(): Promise<void> {
 
 async function remove(): Promise<void> {
   const result = await dialogAPI.showWarningMessage(`Are you sure you want to delete ${object.id}?`, 'No', 'Yes');
-  if(result !== 'Yes') return;
+  if (result !== 'Yes') return;
 
   loading = true;
   try {
