@@ -109,7 +109,7 @@ test('Refresh Quadlet button should call ', async () => {
 });
 
 test('removing all quadlets should call quadletAPI#remove for each connection', async () => {
-  vi.mocked(dialogAPI.showWarningMessage).mockResolvedValue('Yes');
+  vi.mocked(dialogAPI.showWarningMessage).mockResolvedValue('Confirm');
 
   const { getByRole } = render(QuadletsList);
 
@@ -130,8 +130,8 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
   // ensure dialog is the one expected
   expect(dialogAPI.showWarningMessage).toHaveBeenCalledWith(
     'Are you sure you want to delete 10 quadlets?',
-    'No',
-    'Yes',
+    'Confirm',
+    'Cancel',
   );
 
   // We have two provider, so should have call it twice

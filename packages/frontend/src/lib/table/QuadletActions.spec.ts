@@ -95,14 +95,14 @@ test('expect remove action to use dialogAPI#showWarningMessage', async () => {
 
   expect(dialogAPI.showWarningMessage).toHaveBeenCalledWith(
     'Are you sure you want to delete foo.container?',
-    'No',
-    'Yes',
+    'Confirm',
+    'Cancel',
   );
   expect(quadletAPI.remove).not.toHaveBeenCalled();
 });
 
 test('expect user confirm removal action to use quadletAPI#remove', async () => {
-  vi.mocked(dialogAPI.showWarningMessage).mockResolvedValue('Yes');
+  vi.mocked(dialogAPI.showWarningMessage).mockResolvedValue('Confirm');
 
   const { getByRole } = render(QuadletActions, {
     object: QUADLET_MOCK,

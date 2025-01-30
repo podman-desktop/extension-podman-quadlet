@@ -89,10 +89,10 @@ function navigateToGenerate(): void {
 async function deleteSelected(): Promise<void> {
   const result = await dialogAPI.showWarningMessage(
     `Are you sure you want to delete ${selectedItemsNumber} quadlet${selectedItemsNumber > 1 ? 's' : ''}?`,
-    'No',
-    'Yes',
+    'Confirm',
+    'Cancel'
   );
-  if (result !== 'Yes') return;
+  if (result !== 'Confirm') return;
 
   // 1. Get all the connections object
   const connections: ProviderContainerConnectionIdentifierInfo[] = get(providerConnectionsInfo);
