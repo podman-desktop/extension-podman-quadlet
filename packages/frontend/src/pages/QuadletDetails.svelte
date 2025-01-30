@@ -13,6 +13,9 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import { LoggerStore } from '/@store/logger-store';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
+import { isKubeQuadlet } from '/@/utils/quadlet';
 
 interface Props {
   id: string;
@@ -101,6 +104,7 @@ onDestroy(() => {
 async function save(): Promise<void> {
   if (!quadlet || !quadletSource || !connection || !providerId) return;
 
+  loading = true;
   try {
     await quadletAPI.updateIntoMachine({
       connection: { providerId: providerId, name: connection },
@@ -111,6 +115,8 @@ async function save(): Promise<void> {
     originalSource = quadletSource;
   } catch (err: unknown) {
     console.error(err);
+  } finally {
+    loading = false;
   }
 }
 
@@ -141,6 +147,13 @@ function onchange(content: string): void {
         title="Source"
         url="/quadlets/{providerId}/{connection}/{id}/source"
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/source`} />
+      <!-- kube yaml tab -->
+      {#if quadlet.type === QuadletType.KUBE}
+        <Tab
+          title="kube yaml"
+          url="/quadlets/{providerId}/{connection}/{id}/yaml"
+          selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/yaml`} />
+      {/if}
       {#if logger}
         <!-- journalctl tab -->
         <Tab
@@ -185,6 +198,12 @@ function onchange(content: string): void {
           </div>
           <EditorOverlay save={save} loading={loading} changed={changed} />
           <MonacoEditor class="h-full" onChange={onchange} content={quadletSource ?? '<unknown>'} language="ini" />
+        </Route>
+
+        <Route path="/yaml">
+          {#if isKubeQuadlet(quadlet)}
+            <KubeYamlEditor quadlet={quadlet} bind:loading={loading} />
+          {/if}
         </Route>
 
         <!-- quadlet -dryrun output -->
