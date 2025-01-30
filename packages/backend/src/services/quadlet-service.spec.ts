@@ -98,6 +98,7 @@ const QUADLET_MOCK: Quadlet = {
   path: 'foo/bar',
   state: 'unknown',
   content: 'dummy-content',
+  type: QuadletType.CONTAINER,
 };
 
 const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
@@ -282,6 +283,7 @@ describe('QuadletService#remove', () => {
     state: 'unknown',
     path: `config/quadlet-${index}.container`,
     content: 'dummy-content',
+    type: QuadletType.CONTAINER,
   }));
 
   beforeEach(() => {

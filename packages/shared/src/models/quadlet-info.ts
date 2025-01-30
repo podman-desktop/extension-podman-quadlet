@@ -2,6 +2,7 @@
  * @author axel7083
  */
 import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
+import type { QuadletType } from '../utils/quadlet-type';
 
 export interface QuadletInfo {
   id: string;
@@ -13,4 +14,6 @@ export interface QuadletInfo {
   content: string;
   // the connection linked
   connection: ProviderContainerConnectionIdentifierInfo;
+  // type of quadlet
+  type: QuadletType;
 }
