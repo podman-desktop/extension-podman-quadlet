@@ -90,7 +90,7 @@ async function deleteSelected(): Promise<void> {
   const result = await dialogAPI.showWarningMessage(
     `Are you sure you want to delete ${selectedItemsNumber} quadlet${selectedItemsNumber > 1 ? 's' : ''}?`,
     'Confirm',
-    'Cancel'
+    'Cancel',
   );
   if (result !== 'Confirm') return;
 
