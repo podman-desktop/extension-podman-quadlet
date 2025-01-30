@@ -342,7 +342,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (options.admin) {
               destination = joinposix('/etc/containers/systemd/', resource.filename);
             } else {
-              destination = joinposix('~/.config/containers/systemd/', resource.filename);
+              destination = joinposix(this.dependencies.configuration.getUnitPath(), resource.filename);
             }
 
             // 2. write the file

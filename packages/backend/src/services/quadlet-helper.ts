@@ -9,6 +9,7 @@ import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import type { ProviderService } from './provider-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { ConfigurationService } from './configuration-service';
 
 export interface QuadletServiceDependencies {
   providers: ProviderService;
@@ -18,6 +19,7 @@ export interface QuadletServiceDependencies {
   systemd: SystemdService;
   window: typeof window;
   telemetry: TelemetryLogger;
+  configuration: ConfigurationService;
 }
 
 type ProviderIdentifier = `${string}:${string}`;

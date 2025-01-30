@@ -13,6 +13,7 @@ import type {
   cli as cliApi,
   containerEngine,
   TelemetryLogger,
+  configuration,
 } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
 import { RpcExtension } from '/@shared/src/messages/message-proxy';
@@ -42,6 +43,7 @@ import { ImageApi } from '/@shared/src/apis/image-api';
 import { LoggerService } from './logger-service';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
 import { LoggerApi } from '/@shared/src/apis/logger-api';
+import { ConfigurationService } from './configuration-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -53,6 +55,7 @@ interface Dependencies {
   cliApi: typeof cliApi;
   commandsApi: typeof commandsApi;
   containers: typeof containerEngine;
+  configurationApi: typeof configuration;
 }
 
 export class MainService implements Disposable, AsyncInit {
@@ -85,6 +88,11 @@ export class MainService implements Disposable, AsyncInit {
       webview: webview.getPanel().webview,
     });
     this.#disposables.push(loggerService);
+
+    const configuration = new ConfigurationService({
+      configurationApi: this.dependencies.configurationApi,
+    });
+    this.#disposables.push(configuration);
 
     // init IPC system
     const rpcExtension = new RpcExtension(webview.getPanel().webview);
@@ -156,6 +164,7 @@ export class MainService implements Disposable, AsyncInit {
       providers: providers,
       window: this.dependencies.window,
       telemetry: this.#telemetry,
+      configuration,
     });
     await quadletService.init();
     this.#disposables.push(quadletService);

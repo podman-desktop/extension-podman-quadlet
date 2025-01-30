@@ -60,7 +60,18 @@
         "command": "podlet.compose",
         "title": "Podlet: compose"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Quadlet",
+      "properties": {
+        "quadlet.unit-path":  {
+          "type": "string",
+          "default": "~/.config/containers/systemd/",
+          "enum": ["~/.config/containers/systemd/", "/etc/containers/systemd/users/"],
+          "markdownDescription": "Podman unit search path"
+        }
+      }
+    }
   },
   "devDependencies": {
     "@podman-desktop/api": "^1.16.0",
