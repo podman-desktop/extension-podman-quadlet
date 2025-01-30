@@ -5,7 +5,6 @@ import type {
   CancellationToken,
   Logger,
   ProviderContainerConnection,
-  RunError,
   RunResult,
   Disposable,
 } from '@podman-desktop/api';
@@ -16,6 +15,7 @@ import type { AsyncInit } from '../utils/async-init';
 import { dirname } from 'node:path/posix';
 import { writeFile, mkdir, readFile, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
+import { isRunError } from '../utils/exec-utils';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -186,6 +186,12 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     let result: RunResult;
     try {
       result = await this.execute({ ...options, token: token });
+    } catch (err: unknown) {
+      // check err is an RunError
+      if (!isRunError(err)) {
+        throw err;
+      }
+      throw new Error(`command '${options.command} ${options.args?.join(' ')}' failed with exit code ${err.exitCode}. stderr: ${err.stderr}`);
     } finally {
       clearTimeout(timeoutId);
       source?.dispose();
@@ -239,10 +245,10 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       command: 'systemctl',
     }).catch((err: unknown) => {
       // check err is an RunError
-      if (!err || typeof err !== 'object' || !('exitCode' in err)) {
+      if (!isRunError(err)) {
         throw err;
       }
-      return err as RunError;
+      return err;
     });
   }
 
