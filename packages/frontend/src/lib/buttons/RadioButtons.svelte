@@ -23,7 +23,7 @@ function onclick(id: string): void {
 <ul
   role="radiogroup"
   aria-label={label}
-  class="text-sm text-center rounded-lg shadow bg-[var(--pd-action-button-bg)] flex overflow-hidden">
+  class="text-sm text-center rounded-lg shadow-sm bg-[var(--pd-action-button-bg)] flex overflow-hidden">
   {#each options as option (option.id)}
     {@const selected = value === option.id}
     <li class="w-full">
