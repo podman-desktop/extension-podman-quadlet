@@ -1,5 +1,5 @@
-// we cannot generate quadlet type for kube
-export type QuadletTypeGenerate = Exclude<QuadletType, QuadletType.KUBE>;
+// we cannot generate quadlet type for kube or build
+export type QuadletTypeGenerate = Exclude<QuadletType, QuadletType.KUBE | QuadletType.BUILD>;
 
 export enum QuadletType {
   CONTAINER = 'Container',
@@ -8,4 +8,5 @@ export enum QuadletType {
   VOLUME = 'Volume',
   NETWORK = 'Network',
   KUBE = 'Kube',
+  BUILD = 'Build',
 }
