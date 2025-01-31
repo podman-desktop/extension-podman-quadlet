@@ -27,7 +27,7 @@ import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/model
 import { readable } from 'svelte/store';
 import * as quadletStore from '/@store/quadlets';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { quadletAPI } from '/@/api/client';
+import { dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
 
 // ui object
@@ -52,6 +52,9 @@ vi.mock('/@/api/client', () => ({
   quadletAPI: {
     remove: vi.fn(),
     refresh: vi.fn(),
+  },
+  dialogAPI: {
+    showWarningMessage: vi.fn(),
   },
 }));
 // mock stores
@@ -106,6 +109,8 @@ test('Refresh Quadlet button should call ', async () => {
 });
 
 test('removing all quadlets should call quadletAPI#remove for each connection', async () => {
+  vi.mocked(dialogAPI.showWarningMessage).mockResolvedValue('Confirm');
+
   const { getByRole } = render(QuadletsList);
 
   // get toggle all checkbox
@@ -121,6 +126,13 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
 
   // delete all
   await fireEvent.click(deleteSelected);
+
+  // ensure dialog is the one expected
+  expect(dialogAPI.showWarningMessage).toHaveBeenCalledWith(
+    'Are you sure you want to delete 10 quadlets?',
+    'Confirm',
+    'Cancel',
+  );
 
   // We have two provider, so should have call it twice
   expect(quadletAPI.remove).toHaveBeenCalledTimes(2);

@@ -3,7 +3,7 @@ import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import ListItemButtonIcon from '/@/lib/buttons/ListItemButtonIcon.svelte';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
-import { quadletAPI } from '/@/api/client';
+import { dialogAPI, quadletAPI } from '/@/api/client';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
@@ -34,6 +34,13 @@ async function stop(): Promise<void> {
 }
 
 async function remove(): Promise<void> {
+  const result = await dialogAPI.showWarningMessage(
+    `Are you sure you want to delete ${object.id}?`,
+    'Confirm',
+    'Cancel',
+  );
+  if (result !== 'Confirm') return;
+
   loading = true;
   try {
     await quadletAPI.remove(object.connection, object.id);

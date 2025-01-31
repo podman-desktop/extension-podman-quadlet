@@ -2,7 +2,7 @@
 import { Button, Table, TableColumn, TableRow, NavPage, TableSimpleColumn } from '@podman-desktop/ui-svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
-import { quadletAPI } from '../api/client';
+import { dialogAPI, quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate';
 import { quadletsInfo } from '/@store/quadlets';
@@ -87,6 +87,13 @@ function navigateToGenerate(): void {
 }
 
 async function deleteSelected(): Promise<void> {
+  const result = await dialogAPI.showWarningMessage(
+    `Are you sure you want to delete ${selectedItemsNumber} quadlet${selectedItemsNumber > 1 ? 's' : ''}?`,
+    'Confirm',
+    'Cancel',
+  );
+  if (result !== 'Confirm') return;
+
   // 1. Get all the connections object
   const connections: ProviderContainerConnectionIdentifierInfo[] = get(providerConnectionsInfo);
 
