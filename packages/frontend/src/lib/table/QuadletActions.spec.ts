@@ -19,11 +19,12 @@
 import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, render } from '@testing-library/svelte';
-import { expect, test, vi, beforeEach } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import QuadletActions from '/@/lib/table/QuadletActions.svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { dialogAPI, quadletAPI } from '/@/api/client';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 vi.mock('/@/api/client', () => ({
   dialogAPI: {
@@ -49,6 +50,7 @@ const QUADLET_MOCK: QuadletInfo = {
   state: 'active',
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,
+  type: QuadletType.CONTAINER,
 };
 
 test('expect active quadlet to have stop enabled', async () => {
