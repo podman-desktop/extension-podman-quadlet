@@ -254,7 +254,7 @@ describe('QuadletService#saveIntoMachine', () => {
     // expect yaml file to be created
     expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
       WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      `~/.config/containers/systemd/foo.yaml`, // always the same (using node:path/posix)
+      `~/.config/containers/systemd/foo-kube.yaml`, // always the same (using node:path/posix)
       'foo: bar',
     );
   });

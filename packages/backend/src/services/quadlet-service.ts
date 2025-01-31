@@ -238,7 +238,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         console.warn(err);
         load(resource);
         return {
-          filename: `${basename}.yaml`,
+          filename: `${basename}-kube.yaml`,
           content: resource,
         };
       }
