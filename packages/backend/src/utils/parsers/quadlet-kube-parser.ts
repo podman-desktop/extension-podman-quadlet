@@ -14,9 +14,7 @@ export interface XKube {
  * The quadlet must be of type Kube.
  */
 export class QuadletKubeParser extends Parser<string, XKube> {
-  constructor(
-    content: string,
-  ) {
+  constructor(content: string) {
     super(content);
   }
 

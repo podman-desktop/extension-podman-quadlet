@@ -16,7 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 

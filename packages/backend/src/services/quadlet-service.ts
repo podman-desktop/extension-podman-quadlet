@@ -487,10 +487,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }));
   }
 
-  async getKubeYAML(options: {
-                id: string;
-                provider: ProviderContainerConnection;
-              }): Promise<string> {
+  async getKubeYAML(options: { id: string; provider: ProviderContainerConnection }): Promise<string> {
     const quadlet = this.findQuadlet({
       provider: options.provider,
       id: options.id,
@@ -498,7 +495,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
 
     // assert quadlet type is kube.
-    if(quadlet.type !== QuadletType.KUBE) throw new Error(`cannot get kube yaml of non-kube quadlet: quadlet ${quadlet.id} type is ${quadlet.type}`);
+    if (quadlet.type !== QuadletType.KUBE)
+      throw new Error(`cannot get kube yaml of non-kube quadlet: quadlet ${quadlet.id} type is ${quadlet.type}`);
 
     // extract the yaml file from
     const { yaml } = new QuadletKubeParser(quadlet.content).parse();
@@ -506,14 +504,14 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     // found the absolute path of the yaml
     // the documentation says "The path, absolute or relative to the location of the unit file, to the Kubernetes YAML file to use."
     let target: string;
-    if(isAbsolute(yaml)) {
+    if (isAbsolute(yaml)) {
       target = yaml;
     } else {
       target = joinposix(dirname(quadlet.path), yaml);
     }
 
     // some security, only allow to read yaml / yml files.
-    if(!target.endsWith('.yaml') && !target.endsWith('.yml')) {
+    if (!target.endsWith('.yaml') && !target.endsWith('.yml')) {
       throw new Error(`quadlet ${quadlet.id} declared yaml file ${target}: invalid file format.`);
     }
 

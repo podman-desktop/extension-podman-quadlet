@@ -35,7 +35,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
 
     const extension = unit.SourcePath.split('.').pop();
     const type: QuadletType | undefined = Object.values(QuadletType).find(type => extension === type.toLowerCase());
-    if(!type) throw new Error(`cannot found quadlet type for file ${unit.SourcePath}`);
+    if (!type) throw new Error(`cannot found quadlet type for file ${unit.SourcePath}`);
 
     return {
       path: unit.SourcePath,
