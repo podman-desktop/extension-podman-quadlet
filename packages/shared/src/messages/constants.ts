@@ -7,4 +7,5 @@ export const noTimeoutChannels: string[] = [
   getChannel(PodletApi, 'install'),
   getChannel(QuadletApi, 'saveIntoMachine'),
   getChannel(DialogApi, 'showWarningMessage'),
+  getChannel(QuadletApi, 'start'),
 ];
