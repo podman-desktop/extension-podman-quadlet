@@ -37,7 +37,7 @@ onMount(() => {
 
 <div class="flex py-2 h-[40px]">
   <span class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-    <Button icon={faRotateRight} padding="px-2" disabled={loading} title="reload file" on:click={pull}>Reload</Button>
+    <Button icon={faRotateRight} padding="px-2" disabled={loading} title="Reload file" on:click={pull}>Reload</Button>
   </span>
 </div>
 {#if error}
