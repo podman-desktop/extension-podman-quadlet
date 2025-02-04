@@ -1,7 +1,7 @@
 FROM node:20-slim AS builder
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN npm i -g corepack@latest && corepack enable
+RUN npm i -g corepack@0.31.0 && corepack enable
 
 COPY . /app
 WORKDIR /app
