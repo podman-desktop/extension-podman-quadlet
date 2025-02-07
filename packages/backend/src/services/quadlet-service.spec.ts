@@ -98,6 +98,7 @@ const QUADLET_MOCK: Quadlet = {
   path: 'foo/bar',
   state: 'unknown',
   content: 'dummy-content',
+  type: QuadletType.CONTAINER,
 };
 
 const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
@@ -253,7 +254,7 @@ describe('QuadletService#saveIntoMachine', () => {
     // expect yaml file to be created
     expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
       WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      `~/.config/containers/systemd/foo.yaml`, // always the same (using node:path/posix)
+      `~/.config/containers/systemd/foo-kube.yaml`, // always the same (using node:path/posix)
       'foo: bar',
     );
   });
@@ -282,6 +283,7 @@ describe('QuadletService#remove', () => {
     state: 'unknown',
     path: `config/quadlet-${index}.container`,
     content: 'dummy-content',
+    type: QuadletType.CONTAINER,
   }));
 
   beforeEach(() => {

@@ -21,7 +21,7 @@ import '@testing-library/jest-dom/vitest';
 import { fireEvent, render } from '@testing-library/svelte';
 
 import * as connectionStore from '/@store/connections';
-import { expect, test, vi, beforeEach } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { readable } from 'svelte/store';
@@ -29,6 +29,7 @@ import * as quadletStore from '/@store/quadlets';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -70,6 +71,7 @@ const QUADLETS_MOCK: QuadletInfo[] = Array.from({ length: 10 }, (_, index) => ({
   content: 'dummy-content',
   state: 'active',
   path: `bar/foo-${index}.container`,
+  type: QuadletType.CONTAINER,
 }));
 
 beforeEach(() => {

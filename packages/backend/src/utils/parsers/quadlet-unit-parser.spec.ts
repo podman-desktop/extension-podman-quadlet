@@ -4,6 +4,7 @@
 
 import { test, expect } from 'vitest';
 import { QuadletUnitParser } from './quadlet-unit-parser';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 const CONTAINER_QUADLET_EXAMPLE = `
 # demo-quadlet.container
@@ -44,6 +45,7 @@ test('expect path to be properly extracted', async () => {
   expect(result).toStrictEqual(
     expect.objectContaining({
       path: '/home/user/.config/containers/systemd/nginx2.container',
+      type: QuadletType.CONTAINER,
     }),
   );
 });
