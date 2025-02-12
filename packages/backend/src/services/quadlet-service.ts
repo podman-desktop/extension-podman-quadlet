@@ -367,6 +367,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         },
       )
       .catch((err: unknown) => {
+        console.error(err);
         telemetry['error'] = err;
         throw err;
       })

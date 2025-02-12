@@ -15,7 +15,7 @@ export class Annotation extends ContainerQuadletBuilder {
     );
 
     // we can have multiple annotations
-    from.Container.Annotations = Array.from(containerAnnotations.entries()).reduce((accumulator, [key, value]) => {
+    from.Container.Annotation = Array.from(containerAnnotations.entries()).reduce((accumulator, [key, value]) => {
       if(imageAnnotations.get(key) !== value && !IGNORED_ANNOTATIONS.has(key)) {
         accumulator.push(`${key}=${value}`);
       }

@@ -2,7 +2,7 @@ export interface ContainerQuadlet {
   Container: {
     AddHost?: string[],
     PublishPort?: string[],
-    Annotations?: string[],
+    Annotation?: string[],
     Image?: string,
     ContainerName?: string,
     Entrypoint?: string,
