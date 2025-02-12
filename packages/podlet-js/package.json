@@ -20,7 +20,8 @@
     "@podman-desktop/api": "^1.16.0"
   },
   "dependencies": {
-    "js-ini": "^1.6.0"
+    "js-ini": "^1.6.0",
+    "compose-spec-ts": "^0.3.2"
   },
   "files": ["dist"]
 }

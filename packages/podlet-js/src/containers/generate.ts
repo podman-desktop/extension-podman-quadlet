@@ -22,6 +22,15 @@ interface Dependencies {
 export class Generate {
   constructor(private dependencies: Dependencies) {}
 
+  /**
+   * The object is under the format `{ Container: { Annotation: Array<string>, ... } }` but js-ini
+   * need to have `{ Container: Array<string> }` to convert it to ini.
+   *
+   * See https://github.com/Sdju/js-ini/pull/37 for future improvement
+   *
+   * @param containerQuadlet
+   * @protected
+   */
   protected format(containerQuadlet: ContainerQuadlet): IIniObject {
     return Object.fromEntries(
       Object.entries(containerQuadlet).map(([key, value]) => {

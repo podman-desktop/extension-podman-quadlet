@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { test, expect, describe } from 'vitest';
 import { Generate } from './generate';
 
-const assetsDir = join(__dirname, './assets');
+const assetsDir = join(__dirname, './tests');
 
 describe('generate', async () => {
   const folders = await readdir(assetsDir);
