@@ -158,20 +158,6 @@
     "Binds": [
       "/home/axel7083/github/redhat/pd-extension-quadlet:/mnt/container:rw,rprivate,rbind"
     ],
-    "Mounts": [
-      {
-        "Type": "bind",
-        "Source": "/home/axel7083/github/redhat/pd-extension-quadlet",
-        "Target": "/mnt/container",
-        "Driver": "",
-        "Mode": "",
-        "Options": [
-          "rbind"
-        ],
-        "RW": true,
-        "Propagation": "rprivate"
-      }
-    ],
     "CgroupManager": "systemd",
     "CgroupMode": "private",
     "ContainerIDFile": "",
@@ -277,5 +263,19 @@
     "IOMaximumIOps": 0,
     "IOMaximumBandwidth": 0,
     "CgroupConf": null
-  }
+  },
+  "Mounts": [
+    {
+      "Type": "bind",
+      "Source": "/home/axel7083/github/redhat/pd-extension-quadlet",
+      "Destination": "/mnt/container",
+      "Driver": "",
+      "Mode": "",
+      "Options": [
+        "rbind"
+      ],
+      "RW": true,
+      "Propagation": "rprivate"
+    }
+  ]
 }

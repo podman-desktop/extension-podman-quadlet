@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { Disposable, ContainerInfo, ProviderContainerConnection } from '@podman-desktop/api';
+import type { Disposable, ContainerInfo, ProviderContainerConnection, ContainerInspectInfo } from '@podman-desktop/api';
 import type { AsyncInit } from '../utils/async-init';
 import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
 import type { ProviderService } from './provider-service';
@@ -54,6 +54,19 @@ export class ContainerService extends EngineHelper<Dependencies> implements Disp
       if (infos[0].engineId === engineId) return provider;
     }
     throw new Error('connection not found');
+  }
+
+  public async getEngineId(
+    connection: ProviderContainerConnectionIdentifierInfo,
+  ): Promise<string> {
+    const provider = this.dependencies.providers.getProviderContainerConnection(connection);
+
+    const info = await this.getEngineInfo(provider.connection);
+    return info.engineId;
+  }
+
+  public inspectContainer(engineId: string, containerId: string): Promise<ContainerInspectInfo> {
+    return this.dependencies.containers.inspectContainer(engineId, containerId);
   }
 
   protected toSimpleContainerInfo(

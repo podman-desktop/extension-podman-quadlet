@@ -21,7 +21,7 @@ export class PublishPort extends ContainerQuadletBuilder {
         if(typeof value.HostIp === 'string' && value.HostIp !== '0.0.0.0') {
           result = `${result}${value.HostIp}:`;
         }
-        accumulator.push(`${result}${containerPort}:${value.HostPort}`);
+        accumulator.push(`${result}${value.HostPort}:${containerPort}`);
       });
 
       return accumulator;

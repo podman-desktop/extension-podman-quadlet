@@ -45,6 +45,7 @@ import { LoggerApi } from '/@shared/src/apis/logger-api';
 import { DialogService } from './dialog-service';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
+import { PodletJsService } from './podlet-js-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -186,6 +187,12 @@ export class MainService implements Disposable, AsyncInit {
     await command.init();
     this.#disposables.push(command);
 
+    // Replacement of PodletCli
+    const podletJS = new PodletJsService({
+      containers: containers,
+      images: images,
+    });
+
     /**
      * Creating the api for the frontend IPCs
      */
@@ -228,6 +235,7 @@ export class MainService implements Disposable, AsyncInit {
     // podlet api
     const podletApiImpl = new PodletApiImpl({
       podlet: podletCli,
+      podletJS: podletJS,
     });
     rpcExtension.registerInstance<PodletApi>(PodletApi, podletApiImpl);
 

@@ -26,6 +26,9 @@ interface PodletInfo {
   path: string;
 }
 
+/**
+ * @deprecated use {@link PodletJsService} instead
+ */
 export class PodletCliService extends PodletCliHelper implements Disposable, AsyncInit {
   #cliTool: CliTool | undefined;
   #executable: string | undefined;
