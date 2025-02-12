@@ -9,5 +9,6 @@ export interface ContainerQuadlet {
     Exec?: string,
     Environment?: string[],
     ReadOnly?: boolean,
+    Mount?: string[],
   };
 }

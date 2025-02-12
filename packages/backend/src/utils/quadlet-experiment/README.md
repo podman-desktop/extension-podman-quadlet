@@ -48,7 +48,7 @@ Source [podman-systemd.unit](https://docs.podman.io/en/latest/markdown/podman-sy
 | LogDriver | ❌ |
 | LogOpt | ❌ |
 | Mask | ❌ |
-| Mount | ❌ |
+| Mount | 🚩 |
 | Network | ❌ |
 | NetworkAlias | ❌ |
 | NoNewPrivileges | ❌ |

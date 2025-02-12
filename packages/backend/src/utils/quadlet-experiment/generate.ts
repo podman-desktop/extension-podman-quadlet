@@ -12,6 +12,7 @@ import { Entrypoint } from './builders/entrypoint';
 import { Environment } from './builders/environment';
 import { Exec } from './builders/exec';
 import { ReadOnly } from './builders/read-only';
+import { Mount } from './builders/mount';
 
 interface Dependencies {
   container: ContainerInspectInfo;
@@ -51,6 +52,7 @@ export class Generate {
       Exec,
       Environment,
       ReadOnly,
+      Mount,
     ];
 
     const containerQuadlet: ContainerQuadlet = builders.reduce((accumulator, current) => {
