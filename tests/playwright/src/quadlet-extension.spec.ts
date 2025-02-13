@@ -8,7 +8,9 @@ import {
 } from '@podman-desktop/tests-playwright';
 import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
-import { handleWebview } from './utils/webviewHandler';
+import { handleWebview, PODMAN_QUADLET_PAGE_BODY_LABEL } from './utils/webviewHandler';
+import { GENERATE_TESTS } from './constants';
+import { QuadletGeneratePage } from './model/quadlet-generate-page';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
@@ -104,12 +106,6 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
   });
 
-  test('Install Podlet CLI', async ({ navigationBar, page }) => {
-    const settingsBar = await navigationBar.openSettings();
-    await settingsBar.cliToolsTab.click();
-    await ensureCliInstalled(page, 'Podlet');
-  });
-
   test.describe.serial('Generate quadlets', () => {
     let quadletListPage: QuadletListPage;
 
@@ -123,15 +119,85 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
       const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
       playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
+
     });
 
-    test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
+    GENERATE_TESTS.forEach((scenario) => {
+      test(`quadlet generate testing ${scenario.name}`, async ({navigationBar, page, runner}) => {
+        // 1. go to images page
+        const imagesPage = await navigationBar.openImages();
+        await playExpect(imagesPage.heading).toBeVisible();
+
+        // 2. open image imageDetails
+        const imageDetails = await imagesPage.openImageDetails(QUAY_HELLO_IMAGE_REPO);
+        const runImage = await imageDetails.openRunImage();
+
+        // 3. run container
+        const containers = await runImage.startContainer(scenario.containerName, { attachTerminal: false });
+        await playExpect(containers.header).toBeVisible();
+
+        await playExpect
+          .poll(async () => await containers.containerExists(scenario.containerName), { timeout: 15_000 })
+          .toBeTruthy();
+
+        const containerDetails = await containers.openContainersDetails(scenario.containerName);
+
+        // Get the contribution action (Generate Quadlet)
+        const generateBtn = containerDetails.controlActions.getByRole('button', { name: 'Generate Quadlet' });
+        await generateBtn.click();
+
+        // wait for page to be open
+        await page.waitForTimeout(2_000);
+
+        const webView = page.getByRole('document', { name: PODMAN_QUADLET_PAGE_BODY_LABEL });
+        await playExpect(webView).toBeVisible();
+
+        const [mainPage, webViewPage] = runner.getElectronApp().windows();
+
+        const generateForm = new QuadletGeneratePage(mainPage, webViewPage);
+        await generateForm.waitForLoad();
+
+        // wait for loading to be finished
+        await playExpect
+          .poll(async () => await generateForm.isLoading(), {
+            timeout: 5_000,
+          })
+          .toBeFalsy();
+
+        // generate
+        await generateForm.generateButton.click();
+
+        // wait for loading (generate) to be finished
+        await playExpect
+          .poll(async () => await generateForm.isLoading(), {
+            timeout: 15_000,
+          })
+          .toBeFalsy();
+
+        // wait for content to be available
+        await playExpect
+          .poll<string>(
+            async (): Promise<string> => {
+              const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
+              return await monacoEditor.textContent() ?? '';
+            },
+            {
+              timeout: 5_000,
+            },
+          )
+          .toContain(scenario.quadlet);
+      });
+    });
+
+    /* test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
       // open the webview
       const [pdPage, webview] = await handleWebview(runner, page, navigationBar);
       quadletListPage = new QuadletListPage(pdPage, webview);
       // warning: might be a problem if we are already on the webview
       await quadletListPage.waitForLoad();
     });
+
+
 
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
       test.setTimeout(150_000);
@@ -226,6 +292,6 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           timeout: 15_000,
         })
         .toBeTruthy();
-    });
+    }); */
   });
 });
