@@ -11,17 +11,19 @@ describe('compose', async () => {
   test.each(folders)('should generate correct output for %s', async (folder) => {
     const folderPath = join(assetsDir, folder);
     const composeYaml = join(folderPath, 'compose.yaml');
+    const expectYaml = join(folderPath, 'expect.yaml');
 
-    await Promise.all([composeYaml].map(async (file) => {
+    await Promise.all([composeYaml, expectYaml].map(async (file) => {
       await access(file);
     }));
 
-    const [ composeRaw ] = await Promise.all([
+    const [ composeRaw, expectRaw ] = await Promise.all([
       readFile(composeYaml, 'utf-8'),
+      readFile(expectYaml, 'utf-8'),
     ]);
 
-    const services = Compose.fromString(composeRaw).getServices();
-    expect(Object.entries(services)).toHaveLength(1);
+    const compose = Compose.fromString(composeRaw);
+    expect(compose.toKubePlay()).toStrictEqual(expectRaw);
   });
 
 });
