@@ -1,7 +1,7 @@
 import { readdir, readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
 import { test, expect, describe } from 'vitest';
-import { Generate } from './generate';
+import { ContainerGenerator } from './container-generator';
 
 const assetsDir = join(__dirname, './tests');
 
@@ -26,7 +26,7 @@ describe('generate', async () => {
       readFile(expectedPath, 'utf-8'),
     ]);
 
-    const result = new Generate({
+    const result = new ContainerGenerator({
       container: JSON.parse(container),
       image: JSON.parse(image),
     }).generate();

@@ -1,4 +1,5 @@
-import { Generate } from './containers/generate';
+import { ContainerGenerator } from './containers/container-generator';
 import { Compose } from './compose/compose';
+import { ImageGenerator } from './images/image-generator';
 
-export { Generate, Compose };
+export { ContainerGenerator, ImageGenerator, Compose };

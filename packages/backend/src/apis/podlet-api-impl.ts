@@ -20,16 +20,7 @@ export class PodletApiImpl extends PodletApi {
     type: QuadletType;
     resourceId: string;
   }): Promise<string> {
-    switch (options.type) {
-      case QuadletType.CONTAINER:
-        return this.dependencies.podletJS.generate(options);
-      case QuadletType.IMAGE:
-      case QuadletType.POD:
-      case QuadletType.VOLUME:
-      case QuadletType.NETWORK:
-      case QuadletType.KUBE:
-        throw new Error(`unsupported type: ${options.type}`);
-    }
+    return this.dependencies.podletJS.generate(options);
   }
 
   override async compose(options: {
