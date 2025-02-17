@@ -5,8 +5,4 @@ export const IGNORED_ANNOTATIONS: Set<string> = new Set([
   'org.systemd.property.TimeoutStopUSec',
 ]);
 
-export const IGNORED_ENVIRONMENTS: Set<string> = new Set([
-  'container',
-  'HOME',
-  'HOSTNAME',
-]);
+export const IGNORED_ENVIRONMENTS: Set<string> = new Set(['container', 'HOME', 'HOSTNAME']);

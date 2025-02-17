@@ -7,16 +7,18 @@ import { IGNORED_ANNOTATIONS } from '../constants';
  */
 export class Annotation extends ContainerQuadletBuilder {
   override build(from: ContainerQuadlet): ContainerQuadlet {
-    if(!('Annotations' in this.container.HostConfig)) return from;
+    if (!('Annotations' in this.container.HostConfig)) return from;
 
-    const containerAnnotations: Map<string, string> = this.toMap(this.container.HostConfig.Annotations as Record<string, string>);
+    const containerAnnotations: Map<string, string> = this.toMap(
+      this.container.HostConfig.Annotations as Record<string, string>,
+    );
     const imageAnnotations: Map<string, string> = this.toMap(
-      ('Annotations' in this.image)?this.image.Annotations as Record<string, string>:{},
+      'Annotations' in this.image ? (this.image.Annotations as Record<string, string>) : {},
     );
 
     // we can have multiple annotations
     from.Container.Annotation = Array.from(containerAnnotations.entries()).reduce((accumulator, [key, value]) => {
-      if(imageAnnotations.get(key) !== value && !IGNORED_ANNOTATIONS.has(key)) {
+      if (imageAnnotations.get(key) !== value && !IGNORED_ANNOTATIONS.has(key)) {
         accumulator.push(`${key}=${value}`);
       }
 

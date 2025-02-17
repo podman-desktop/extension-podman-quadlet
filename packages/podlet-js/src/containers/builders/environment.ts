@@ -7,16 +7,15 @@ import { IGNORED_ENVIRONMENTS } from '../constants';
  */
 export class Environment extends ContainerQuadletBuilder {
   override build(from: ContainerQuadlet): ContainerQuadlet {
-    if(!('Env' in this.container.Config)) return from;
+    if (!('Env' in this.container.Config)) return from;
 
     const imageEnvironements: Set<string> = new Set(this.image.Config.Env ?? []);
 
     // we can have multiple annotations
     from.Container.Environment = this.container.Config.Env.reduce((accumulator, env) => {
-
       const [key] = env.split('=');
 
-      if(!imageEnvironements.has(env) && !IGNORED_ENVIRONMENTS.has(key)) {
+      if (!imageEnvironements.has(env) && !IGNORED_ENVIRONMENTS.has(key)) {
         accumulator.push(env);
       }
 

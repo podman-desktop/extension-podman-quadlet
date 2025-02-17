@@ -2,8 +2,9 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
-import type { ContainerInspectInfo, ImageInspectInfo, RunResult } from '@podman-desktop/api';
-import {Generate} from 'podlet-js';
+import type { ContainerInspectInfo, ImageInspectInfo } from '@podman-desktop/api';
+import { Generate, Compose } from 'podlet-js';
+import { readFile } from 'node:fs/promises';
 
 interface Dependencies {
   containers: ContainerService;
@@ -17,7 +18,7 @@ export class PodletJsService {
     connection: ProviderContainerConnectionIdentifierInfo;
     type: QuadletType;
     resourceId: string;
-  }): Promise<RunResult> {
+  }): Promise<string> {
     if (options.type !== QuadletType.CONTAINER) throw new Error('not implemented yet');
 
     // Get the engine id
@@ -30,13 +31,17 @@ export class PodletJsService {
 
     const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, container.Image);
 
-    return {
-      stdout: new Generate({
-        container,
-        image,
-      }).generate(),
-      stderr: '',
-      command: 'internal',
-    };
+    return new Generate({
+      container,
+      image,
+    }).generate();
+  }
+
+  public async compose(options: {
+    filepath: string;
+    type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
+  }): Promise<string> {
+    const content = await readFile(options.filepath, { encoding: 'utf8' });
+    return Compose.fromString(content).toKubePlay();
   }
 }

@@ -6,7 +6,7 @@ import { ContainerQuadletBuilder } from './container-quadlet-builder';
  */
 export class ReadOnly extends ContainerQuadletBuilder {
   override build(from: ContainerQuadlet): ContainerQuadlet {
-    if(this.container.HostConfig.ReadonlyRootfs) {
+    if (this.container.HostConfig.ReadonlyRootfs) {
       from.Container.ReadOnly = true;
     }
     return from;

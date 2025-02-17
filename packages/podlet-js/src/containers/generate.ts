@@ -37,8 +37,8 @@ export class Generate {
         return [
           key,
           Object.entries(value).reduce((accumulator, [item, content]) => {
-            if(Array.isArray(content)) {
-              accumulator.push(...content.map((v) => `${item}=${v}`));
+            if (Array.isArray(content)) {
+              accumulator.push(...content.map(v => `${item}=${v}`));
             } else {
               accumulator.push(`${item}=${content}`);
             }
@@ -64,11 +64,14 @@ export class Generate {
       Mount,
     ];
 
-    const containerQuadlet: ContainerQuadlet = builders.reduce((accumulator, current) => {
-      return new current(this.dependencies).build(accumulator);
-    }, {
-      Container: {},
-    } as ContainerQuadlet);
+    const containerQuadlet: ContainerQuadlet = builders.reduce(
+      (accumulator, current) => {
+        return new current(this.dependencies).build(accumulator);
+      },
+      {
+        Container: {},
+      } as ContainerQuadlet,
+    );
 
     return stringify(this.format(containerQuadlet));
   }

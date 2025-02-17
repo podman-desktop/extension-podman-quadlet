@@ -69,7 +69,7 @@ vi.mock('./podman-service');
 vi.mock('./systemd-service');
 vi.mock('./quadlet-service');
 vi.mock('./provider-service');
-vi.mock('./podlet-cli-service');
+vi.mock('./podlet-js-service');
 vi.mock('./command-service');
 vi.mock('./routing-service');
 vi.mock('./container-service');

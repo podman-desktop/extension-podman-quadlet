@@ -6,8 +6,7 @@ import { ContainerQuadletBuilder } from './container-quadlet-builder';
  */
 export class Exec extends ContainerQuadletBuilder {
   override build(from: ContainerQuadlet): ContainerQuadlet {
-
-    if(this.container.Config.Cmd && !this.arraysEqual(this.container.Config.Cmd, this.image.Config.Cmd)) {
+    if (this.container.Config.Cmd && !this.arraysEqual(this.container.Config.Cmd, this.image.Config.Cmd)) {
       from.Container.Exec = this.container.Config.Cmd.join(' ');
     }
     return from;

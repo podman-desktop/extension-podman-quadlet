@@ -8,15 +8,17 @@ const assetsDir = join(__dirname, './tests');
 describe('generate', async () => {
   const folders = await readdir(assetsDir);
 
-  test.each(folders)('should generate correct output for %s', async (folder) => {
+  test.each(folders)('should generate correct output for %s', async folder => {
     const folderPath = join(assetsDir, folder);
     const containerPath = join(folderPath, 'container-inspect.json');
     const imagePath = join(folderPath, 'image-inspect.json');
     const expectedPath = join(folderPath, 'expect.ini');
 
-    await Promise.all([containerPath, imagePath, expectedPath].map(async (file) => {
-      await access(file);
-    }));
+    await Promise.all(
+      [containerPath, imagePath, expectedPath].map(async file => {
+        await access(file);
+      }),
+    );
 
     const [container, image, expected] = await Promise.all([
       readFile(containerPath, 'utf-8'),
@@ -25,7 +27,7 @@ describe('generate', async () => {
     ]);
 
     const result = new Generate({
-      container:JSON.parse(container),
+      container: JSON.parse(container),
       image: JSON.parse(image),
     }).generate();
     expect(result.trim()).toBe(expected.trim());

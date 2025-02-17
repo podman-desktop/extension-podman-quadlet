@@ -56,9 +56,7 @@ export class ContainerService extends EngineHelper<Dependencies> implements Disp
     throw new Error('connection not found');
   }
 
-  public async getEngineId(
-    connection: ProviderContainerConnectionIdentifierInfo,
-  ): Promise<string> {
+  public async getEngineId(connection: ProviderContainerConnectionIdentifierInfo): Promise<string> {
     const provider = this.dependencies.providers.getProviderContainerConnection(connection);
 
     const info = await this.getEngineInfo(provider.connection);

@@ -6,16 +6,16 @@ export interface PodContainerPort {
 export interface PodContainer {
   image: string;
   name: string;
-  ports?: Array<PodContainerPort>
+  ports?: Array<PodContainerPort>;
 }
 
 export interface PodmanPod {
-  apiVersion: 'v1',
-  kind: 'Pod',
+  apiVersion: 'v1';
+  kind: 'Pod';
   metadata: {
     name: string;
-  },
+  };
   spec: {
     containers: Array<PodContainer>;
-  },
+  };
 }

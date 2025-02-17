@@ -1,6 +1,6 @@
 import type { ComposeSpecification, DefinitionsService, PropertiesServices } from 'compose-spec-ts';
 import { load, dump } from 'js-yaml';
-import { PodContainer, PodContainerPort, PodmanPod } from './models/podman-pod';
+import type { PodContainer, PodContainerPort, PodmanPod } from './models/podman-pod';
 
 export const COMPOSE_SPECIFICATION_SUPPORTED: Set<keyof ComposeSpecification> = new Set([
   'services',
@@ -8,10 +8,7 @@ export const COMPOSE_SPECIFICATION_SUPPORTED: Set<keyof ComposeSpecification> = 
   'version',
 ]);
 
-export const SERVICE_SUPPORTED: Set<keyof DefinitionsService> = new Set([
-  'image',
-  'ports',
-]);
+export const SERVICE_SUPPORTED: Set<keyof DefinitionsService> = new Set(['image', 'ports']);
 
 export class Compose {
   #spec: ComposeSpecification;
@@ -31,18 +28,18 @@ export class Compose {
   // todo: move to dedicated file
   private toPodContainer([name, service]: [string, DefinitionsService]): PodContainer {
     Object.keys(service).forEach((key: string) => {
-      if(!SERVICE_SUPPORTED.has(key)) throw new Error(`unsupported option ${key} for service ${name}`);
+      if (!SERVICE_SUPPORTED.has(key)) throw new Error(`unsupported option ${key} for service ${name}`);
     });
 
-    if(!service.image) throw new Error('missing image');
+    if (!service.image) throw new Error('missing image');
 
-    const ports: Array<PodContainerPort> | undefined = service.ports?.map((port) => {
-      if(typeof port === 'number') {
+    const ports: Array<PodContainerPort> | undefined = service.ports?.map(port => {
+      if (typeof port === 'number') {
         return {
           containerPort: port,
           hostPort: port,
         };
-      } else if(typeof port === 'string') {
+      } else if (typeof port === 'string') {
         const [containerPort, hostPort] = port.split(':');
         return {
           containerPort: Number(containerPort),
@@ -66,7 +63,7 @@ export class Compose {
   toKubePlay(): string {
     // check for unsupported option at root level
     Object.keys(this.#spec).forEach((key: string) => {
-      if(!COMPOSE_SPECIFICATION_SUPPORTED.has(key)) throw new Error(`unsupported option ${key}`);
+      if (!COMPOSE_SPECIFICATION_SUPPORTED.has(key)) throw new Error(`unsupported option ${key}`);
     });
 
     const services: PropertiesServices = this.getServices();
