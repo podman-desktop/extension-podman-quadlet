@@ -73,6 +73,8 @@ export class PodletJsService {
     filepath: string;
     type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
   }): Promise<string> {
+    if(options.type !== QuadletType.KUBE) throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
+
     const content = await readFile(options.filepath, { encoding: 'utf8' });
     return Compose.fromString(content).toKubePlay();
   }

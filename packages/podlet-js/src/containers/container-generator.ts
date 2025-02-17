@@ -13,6 +13,7 @@ import { Exec } from './builders/exec';
 import { ReadOnly } from './builders/read-only';
 import { Mount } from './builders/mount';
 import { Generator } from '../utils/generator';
+import { Restart } from './builders/restart';
 
 interface Dependencies {
   container: ContainerInspectInfo;
@@ -33,6 +34,7 @@ export class ContainerGenerator extends Generator<Dependencies> {
       Environment,
       ReadOnly,
       Mount,
+      Restart,
     ];
 
     const containerQuadlet: ContainerQuadlet = builders.reduce(

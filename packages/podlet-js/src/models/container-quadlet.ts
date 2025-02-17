@@ -1,7 +1,10 @@
+import type { ServiceQuadlet } from './service-quadlet';
+
 /**
  * Learn more about Container Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#container-units-container
  */
 export interface ContainerQuadlet {
+  Service?: ServiceQuadlet,
   Container: {
     /**
      * Add these capabilities, in addition to the default Podman capability set, to the container.
