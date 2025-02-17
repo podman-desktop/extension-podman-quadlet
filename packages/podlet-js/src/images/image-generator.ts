@@ -1,7 +1,7 @@
 import { Generator } from '../utils/generator';
 import type { ImageInspectInfo } from '@podman-desktop/api';
 import { stringify } from 'js-ini';
-import type { ImageQuadlet } from '../containers/models/image-quadlet';
+import type { ImageQuadlet } from '../models/image-quadlet';
 
 interface Dependencies {
   image: ImageInspectInfo;

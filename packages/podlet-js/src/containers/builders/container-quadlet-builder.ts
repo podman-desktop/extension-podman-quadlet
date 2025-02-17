@@ -1,4 +1,4 @@
-import type { ContainerQuadlet } from '../models/container-quadlet';
+import type { ContainerQuadlet } from '../../models/container-quadlet';
 import type { ContainerInspectInfo, ImageInspectInfo } from '@podman-desktop/api';
 
 export interface Dependencies {

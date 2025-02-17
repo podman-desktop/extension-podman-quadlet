@@ -1,7 +1,7 @@
 import type { ContainerInspectInfo, ImageInspectInfo } from '@podman-desktop/api';
 import { stringify } from 'js-ini';
 import type { ContainerQuadletBuilder } from './builders/container-quadlet-builder';
-import type { ContainerQuadlet } from './models/container-quadlet';
+import type { ContainerQuadlet } from '../models/container-quadlet';
 import { AddHost } from './builders/add-host';
 import { Annotation } from './builders/annotation';
 import { PublishPort } from './builders/publish-port';

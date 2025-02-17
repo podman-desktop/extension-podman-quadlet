@@ -1,4 +1,4 @@
-import type { ContainerQuadlet } from '../models/container-quadlet';
+import type { ContainerQuadlet } from '../../models/container-quadlet';
 import { ContainerQuadletBuilder } from './container-quadlet-builder';
 import { IGNORED_ANNOTATIONS } from '../constants';
 
