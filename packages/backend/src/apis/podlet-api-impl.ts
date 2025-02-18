@@ -3,7 +3,7 @@
  */
 import { PodletApi } from '/@shared/src/apis/podlet-api';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { PodletJsService } from '../services/podlet-js-service';
 
 interface Dependencies {

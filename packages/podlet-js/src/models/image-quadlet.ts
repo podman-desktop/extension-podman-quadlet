@@ -1,4 +1,4 @@
-import { ServiceQuadlet } from './service-quadlet';
+import type { ServiceQuadlet } from './service-quadlet';
 
 /**
  * Learn more about Image Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#image-units-image
