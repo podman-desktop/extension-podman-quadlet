@@ -49,6 +49,11 @@ const columns = [
 const row = new TableRow<QuadletInfo>({ selectable: (_service): boolean => true });
 
 let loading: boolean = $state(false);
+// considered disable if there is no connection running or loading
+let disabled: boolean = $derived(
+  loading || !$providerConnectionsInfo.some(({ status }) => status === 'started'),
+);
+
 async function refreshQuadlets(): Promise<void> {
   loading = true;
   try {
@@ -123,12 +128,12 @@ async function deleteSelected(): Promise<void> {
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
   <svelte:fragment slot="additional-actions">
-    <Button icon={faCode} disabled={loading} title="Generate Quadlet" on:click={navigateToGenerate}
+    <Button icon={faCode} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
       >Generate Quadlet</Button>
     <Button
       icon={faArrowsRotate}
       inProgress={loading}
-      disabled={loading}
+      disabled={disabled}
       title="Refresh Quadlets"
       on:click={refreshQuadlets}>Refresh</Button>
   </svelte:fragment>
@@ -161,7 +166,7 @@ async function deleteSelected(): Promise<void> {
         bind:selectedItemsNumber={selectedItemsNumber}
         defaultSortColumn="Environment" />
     {:else}
-      <EmptyQuadletList connection={containerProviderConnection} refreshQuadlets={refreshQuadlets} loading={loading} />
+      <EmptyQuadletList connection={containerProviderConnection} refreshQuadlets={refreshQuadlets} loading={loading} disabled={disabled} />
     {/if}
   </svelte:fragment>
 </NavPage>

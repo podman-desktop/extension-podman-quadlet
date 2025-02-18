@@ -117,3 +117,24 @@ test('refresh button should call provider callback', async () => {
     expect(refreshMock).toHaveBeenCalledOnce();
   });
 });
+
+test('refresh button should be disabled if disable props is true', async () => {
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_STOPPED_PROVIDER_DETAILED_INFO]);
+  vi.mocked(synchronisationStore).synchronisation = readable([]);
+
+  const { getByRole } = render(EmptyQuadletList, {
+    refreshQuadlets: vi.fn(),
+    disabled: true,
+  });
+
+  const button = await vi.waitFor(() => {
+    const element = getByRole('button', { name: 'Refresh' });
+    expect(element).toBeDefined();
+    return element;
+  });
+
+  await vi.waitFor(() => {
+    expect(button).toBeDisabled();
+  });
+});
+

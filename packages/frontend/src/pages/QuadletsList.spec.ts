@@ -61,8 +61,11 @@ vi.mock('/@/api/client', () => ({
 // mock stores
 vi.mock('/@store/connections');
 vi.mock('/@store/quadlets');
+vi.mock('/@store/synchronisation');
 // mock utils
 vi.mock('tinro');
+// mock components
+vi.mock('/@/lib/empty-screen/EmptyQuadletList.svelte');
 
 const QUADLETS_MOCK: QuadletInfo[] = Array.from({ length: 10 }, (_, index) => ({
   // either WSL either QEMU
@@ -102,6 +105,37 @@ test('Generate Quadlet button should redirect to generate form', async () => {
 });
 
 test('Refresh Quadlet button should call ', async () => {
+  const { getByRole } = render(QuadletsList);
+
+  const refreshBtn = getByRole('button', { name: 'Refresh' });
+  await fireEvent.click(refreshBtn);
+
+  expect(quadletAPI.refresh).toHaveBeenCalled();
+});
+
+test('Refresh Quadlet button should be disabled if no provider is available', async () => {
+  // mock no quadlets
+  vi.mocked(quadletStore).quadletsInfo = readable([]);
+  // mock no providers
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([]);
+
+  const { getByRole } = render(QuadletsList);
+
+  const refreshBtn = getByRole('button', { name: 'Refresh' });
+  await fireEvent.click(refreshBtn);
+
+  expect(quadletAPI.refresh).toHaveBeenCalled();
+});
+
+test('Refresh Quadlet button should be disabled if only stopped provider are available', async () => {
+  // mock no quadlets
+  vi.mocked(quadletStore).quadletsInfo = readable([]);
+  // mock no providers
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([{
+    ...WSL_PROVIDER_DETAILED_INFO,
+    status: 'stopped',
+  }]);
+
   const { getByRole } = render(QuadletsList);
 
   const refreshBtn = getByRole('button', { name: 'Refresh' });
