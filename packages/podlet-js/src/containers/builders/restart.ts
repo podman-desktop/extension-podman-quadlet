@@ -7,7 +7,6 @@ import type { ServiceRestartPolicy } from '../../models/service-quadlet';
  * Detect if user used `--restart` option
  */
 export class Restart extends ContainerQuadletBuilder {
-
   private getCorresponding(policy: HostRestartPolicy): ServiceRestartPolicy {
     switch (policy.Name) {
       case 'always':
@@ -17,7 +16,9 @@ export class Restart extends ContainerQuadletBuilder {
       case 'never':
         return 'no';
     }
-    throw new Error(`cannot generate systemd restart policy from the container host config: unknown policy ${policy.Name}`);
+    throw new Error(
+      `cannot generate systemd restart policy from the container host config: unknown policy ${policy.Name}`,
+    );
   }
 
   override build(from: ContainerQuadlet): ContainerQuadlet {

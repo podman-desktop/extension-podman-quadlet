@@ -21,10 +21,7 @@ export class PodletJsService {
    * @protected
    */
   protected async generateContainer(engineId: string, containerId: string): Promise<string> {
-    const container: ContainerInspectInfo = await this.dependencies.containers.inspectContainer(
-      engineId,
-      containerId,
-    );
+    const container: ContainerInspectInfo = await this.dependencies.containers.inspectContainer(engineId, containerId);
 
     const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, container.Image);
 
@@ -73,7 +70,7 @@ export class PodletJsService {
     filepath: string;
     type: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD;
   }): Promise<string> {
-    if(options.type !== QuadletType.KUBE) throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
+    if (options.type !== QuadletType.KUBE) throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
 
     const content = await readFile(options.filepath, { encoding: 'utf8' });
     return Compose.fromString(content).toKubePlay();

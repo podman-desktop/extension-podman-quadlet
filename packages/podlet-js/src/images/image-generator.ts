@@ -9,7 +9,7 @@ interface Dependencies {
 
 export class ImageGenerator extends Generator<Dependencies> {
   override generate(): string {
-    if(this.dependencies.image.RepoTags.length === 0) throw new Error('image selected does not have any repo tags.');
+    if (this.dependencies.image.RepoTags.length === 0) throw new Error('image selected does not have any repo tags.');
 
     const image: ImageQuadlet = {
       Image: {

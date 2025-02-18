@@ -4,7 +4,7 @@ import type { ServiceQuadlet } from './service-quadlet';
  * Learn more about Container Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#container-units-container
  */
 export interface ContainerQuadlet {
-  Service?: ServiceQuadlet,
+  Service?: ServiceQuadlet;
   Container: {
     /**
      * Add these capabilities, in addition to the default Podman capability set, to the container.
@@ -144,7 +144,7 @@ export interface ContainerQuadlet {
      *
      * Equivalent to the Podman `--Health-max-log-count` option.
      */
-    HealthMaxLogCount?: number
+    HealthMaxLogCount?: number;
     /**
      * Action to take once the container transitions to an unhealthy state. The “kill” action in combination integrates best with systemd. Once the container turns unhealthy, it gets killed, and systemd restarts the service.
      *
@@ -180,7 +180,7 @@ export interface ContainerQuadlet {
      *
      * Equivalent to the Podman --health-startup-retries option.
      */
-    HealthStartupRetries?: number
+    HealthStartupRetries?: number;
     /**
      * The number of successful runs required before the startup healthcheck succeeds and the regular healthcheck begins.
      *

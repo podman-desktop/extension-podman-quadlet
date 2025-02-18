@@ -3,7 +3,6 @@ import type { IIniObject } from 'js-ini/src/interfaces/ini-object';
 export abstract class Generator<T> {
   constructor(protected dependencies: T) {}
 
-
   /**
    * The object is under the format `{ Container: { Annotation: Array<string>, ... } }` but js-ini
    * need to have `{ Container: Array<string> }` to convert it to ini.
@@ -14,7 +13,7 @@ export abstract class Generator<T> {
    * @param obj
    */
   protected format(obj: unknown): IIniObject {
-    if(!obj || typeof obj !== 'object') throw new Error(`cannot format object of type ${typeof obj}`);
+    if (!obj || typeof obj !== 'object') throw new Error(`cannot format object of type ${typeof obj}`);
 
     return Object.fromEntries(
       Object.entries(obj).map(([key, value]) => {

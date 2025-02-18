@@ -4,7 +4,7 @@ import type { ServiceQuadlet } from './service-quadlet';
  * Learn more about Image Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#image-units-image
  */
 export interface ImageQuadlet {
-  Service?: ServiceQuadlet,
+  Service?: ServiceQuadlet;
   Image: {
     /**
      * All tagged images in the repository are pulled.
