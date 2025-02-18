@@ -137,4 +137,3 @@ test('refresh button should be disabled if disable props is true', async () => {
     expect(button).toBeDisabled();
   });
 });
-

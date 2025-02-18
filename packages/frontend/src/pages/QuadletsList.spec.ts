@@ -131,10 +131,12 @@ test('Refresh Quadlet button should be disabled if only stopped provider are ava
   // mock no quadlets
   vi.mocked(quadletStore).quadletsInfo = readable([]);
   // mock no providers
-  vi.mocked(connectionStore).providerConnectionsInfo = readable([{
-    ...WSL_PROVIDER_DETAILED_INFO,
-    status: 'stopped',
-  }]);
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([
+    {
+      ...WSL_PROVIDER_DETAILED_INFO,
+      status: 'stopped',
+    },
+  ]);
 
   const { getByRole } = render(QuadletsList);
 
