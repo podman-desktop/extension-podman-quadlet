@@ -58,10 +58,7 @@ export class PodletJsService {
         return await this.generateContainer(engineId, options.resourceId);
       case QuadletType.IMAGE:
         return await this.generateImage(engineId, options.resourceId);
-      case QuadletType.POD:
-      case QuadletType.VOLUME:
-      case QuadletType.NETWORK:
-      case QuadletType.KUBE:
+      default:
         throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
     }
   }

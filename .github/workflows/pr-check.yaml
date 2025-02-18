@@ -46,6 +46,10 @@ jobs:
       - name: Run formatter
         run: pnpm format:check
 
+      # This step is needed to ensure the backend package can properly infer podlet-js types
+      - name: Build podlet-js
+        run: pnpm build:podlet-js
+
       - name: Run typecheck
         run: pnpm typecheck
 
