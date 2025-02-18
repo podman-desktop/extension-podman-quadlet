@@ -139,11 +139,22 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
         }
 
         // 3. run container
-        const containers = await runImage.startContainer(scenario.containerName, {
-          attachTerminal: false,
-          interactive: false,
+        const containers = await test.step('starting container', async () => {
+          // little trick bellow is needed
+          // TODO: remove after a release including (https://github.com/podman-desktop/podman-desktop/pull/11159)
+          await runImage.activateTab('Advanced');
+          const checkbox = runImage.getPage().getByRole('checkbox', {
+            name: 'Use interactive',
+          });
+          await checkbox.uncheck();
+
+          const containers = await runImage.startContainer(scenario.containerName, {
+            attachTerminal: false,
+          });
+          await playExpect(containers.header).toBeVisible();
+
+          return containers;
         });
-        await playExpect(containers.header).toBeVisible();
 
         await playExpect
           .poll(async () => await containers.containerExists(scenario.containerName), { timeout: 15_000 })
