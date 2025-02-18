@@ -48,5 +48,6 @@ function onValidate(nContent: string): void {
   glyphs={glyphs}
   onChange={debounce(onValidate)}
   readOnly={readOnly}
+  noMinimap
   bind:content={content}
   language="ini" />
