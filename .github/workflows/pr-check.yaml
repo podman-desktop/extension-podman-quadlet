@@ -76,6 +76,10 @@ jobs:
       - name: Execute pnpm
         run: pnpm install
 
+      # This step is needed to ensure the backend package can use the podlet-js import
+      - name: Build podlet-js
+        run: pnpm build:podlet-js
+
       - name: Run unit tests
         run: pnpm test:unit
 
