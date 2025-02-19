@@ -10,6 +10,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   content: string;
   language: string;
   readOnly?: boolean;
+  noMinimap?: boolean;
   glyphs?: Glyph[];
   onChange?: (content: string) => void;
 }
@@ -20,6 +21,7 @@ let {
   readOnly = false,
   glyphs = [],
   onChange,
+  noMinimap,
   class: className,
   ...restProps
 }: Props = $props();
@@ -111,6 +113,9 @@ onMount(async () => {
         readOnly: readOnly,
         theme: 'podmanDesktopTheme',
         glyphMargin: true, // Enable glyph margin
+        minimap: {
+          enabled: !noMinimap,
+        },
       });
 
       editorInstance.onDidChangeModelContent(() => {
