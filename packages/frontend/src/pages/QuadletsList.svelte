@@ -28,7 +28,7 @@ const columns = [
     renderer: TableSimpleColumn,
     align: 'left',
     width: '200px',
-    renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.id,
+    renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.service ?? 'unknown',
     comparator: (a, b): number => a.id.localeCompare(b.id),
   }),
   new TableColumn<QuadletInfo, ProviderContainerConnectionIdentifierInfo>('Environment', {

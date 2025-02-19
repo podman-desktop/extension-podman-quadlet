@@ -46,6 +46,7 @@ test('expect path to be properly extracted', async () => {
     expect.objectContaining({
       path: '/home/user/.config/containers/systemd/nginx2.container',
       type: QuadletType.CONTAINER,
+      service: DUMMY_SERVICE_NAME,
     }),
   );
 });
@@ -57,6 +58,7 @@ test('expect content to be identical to input', async () => {
   expect(result).toStrictEqual(
     expect.objectContaining({
       content: CONTAINER_QUADLET_EXAMPLE,
+      service: DUMMY_SERVICE_NAME,
     }),
   );
 });

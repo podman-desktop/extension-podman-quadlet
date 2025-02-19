@@ -64,10 +64,11 @@ vi.mock('/@store/quadlets');
 // mock utils
 vi.mock('tinro');
 
-const QUADLETS_MOCK: QuadletInfo[] = Array.from({ length: 10 }, (_, index) => ({
+const QUADLETS_MOCK: Array<QuadletInfo & { service: string }> = Array.from({ length: 10 }, (_, index) => ({
   // either WSL either QEMU
   connection: index % 2 === 0 ? WSL_PROVIDER_DETAILED_INFO : QEMU_PROVIDER_DETAILED_INFO,
-  id: `foo-${index}.container`,
+  id: `random-${index}`,
+  service: `foo-${index}.service`,
   content: 'dummy-content',
   state: 'active',
   path: `bar/foo-${index}.container`,
@@ -87,7 +88,7 @@ test('all quadlets should be visible', async () => {
   const { getByText } = render(QuadletsList);
 
   for (const quadlet of QUADLETS_MOCK) {
-    const div = getByText(quadlet.id);
+    const div = getByText(quadlet.service);
     expect(div).toBeInTheDocument();
   }
 });
