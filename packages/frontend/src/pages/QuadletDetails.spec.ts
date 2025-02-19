@@ -18,9 +18,9 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { render } from '@testing-library/svelte';
+import { render, within } from '@testing-library/svelte';
 import * as quadletStore from '/@store/quadlets';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi, describe } from 'vitest';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { readable } from 'svelte/store';
@@ -47,19 +47,31 @@ const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
   status: 'started',
 };
 
-const CONTAINER_QUADLET_MOCK: QuadletInfo = {
+const CONTAINER_QUADLET_MOCK: QuadletInfo & { service: string } = {
   connection: WSL_PROVIDER_DETAILED_INFO,
-  id: `foo.container`,
+  id: `foo-container-id`,
+  service: 'foo-container.service',
   content: 'dummy-content',
   state: 'active',
   path: `bar/foo.container`,
   type: QuadletType.CONTAINER,
 };
 
-const IMAGE_QUADLET_MOCK: QuadletInfo = {
+const IMAGE_QUADLET_MOCK: QuadletInfo & { service: string } = {
   // either WSL either QEMU
   connection: WSL_PROVIDER_DETAILED_INFO,
-  id: `foo.image`,
+  id: `foo-image-id`,
+  service: 'foo-image.service',
+  content: 'dummy-content',
+  state: 'active',
+  path: `bar/foo.image`,
+  type: QuadletType.IMAGE,
+};
+
+const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
+  // either WSL either QEMU
+  connection: WSL_PROVIDER_DETAILED_INFO,
+  id: `foo-invalid-image-id`,
   content: 'dummy-content',
   state: 'active',
   path: `bar/foo.image`,
@@ -78,7 +90,12 @@ const KUBE_QUADLET_MOCK: QuadletInfo = {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(quadletStore).quadletsInfo = readable([CONTAINER_QUADLET_MOCK, IMAGE_QUADLET_MOCK, KUBE_QUADLET_MOCK]);
+  vi.mocked(quadletStore).quadletsInfo = readable([
+    CONTAINER_QUADLET_MOCK,
+    IMAGE_QUADLET_MOCK,
+    KUBE_QUADLET_MOCK,
+    INVALID_IMAGE_QUADLET_MOCK,
+  ]);
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
 });
 
@@ -106,4 +123,36 @@ test('kube quadlet should have kube yaml tab', async () => {
 
   const kubeTab = getByText('kube yaml');
   expect(kubeTab).toBeInTheDocument();
+});
+
+describe('title', () => {
+  test('should use quadlet#service if defined', async () => {
+    const { getByRole } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: CONTAINER_QUADLET_MOCK.id,
+    });
+
+    const navigation = getByRole('navigation', {
+      name: 'Breadcrumb',
+    });
+    const breadcrumb = within(navigation).getByLabelText('Page Name');
+    expect(breadcrumb.textContent).toBe(CONTAINER_QUADLET_MOCK.service);
+  });
+
+  test('should use quadlet#path if service is undefined', async () => {
+    const { getByRole } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: INVALID_IMAGE_QUADLET_MOCK.id,
+    });
+    // ensure the service is undefined
+    expect(INVALID_IMAGE_QUADLET_MOCK.service).toBeUndefined();
+
+    const navigation = getByRole('navigation', {
+      name: 'Breadcrumb',
+    });
+    const breadcrumb = within(navigation).getByLabelText('Page Name');
+    expect(breadcrumb.textContent).toBe('foo.image');
+  });
 });

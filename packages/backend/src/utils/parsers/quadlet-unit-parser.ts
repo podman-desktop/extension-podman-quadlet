@@ -6,6 +6,7 @@ import { Parser } from './iparser';
 import { parse } from 'js-ini';
 import type { Quadlet } from '../../models/quadlet';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { randomUUID } from 'node:crypto';
 
 interface Unit {
   SourcePath: string;
@@ -27,6 +28,10 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     };
   }
 
+  protected generateUUID(): string {
+    return randomUUID();
+  }
+
   override parse(): Quadlet {
     const raw = parse(this.content, {
       comment: ['#', ';'],
@@ -39,7 +44,8 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
 
     return {
       path: unit.SourcePath,
-      id: this.serviceName,
+      service: this.serviceName,
+      id: this.generateUUID(),
       content: this.content,
       state: 'unknown',
       type: type,

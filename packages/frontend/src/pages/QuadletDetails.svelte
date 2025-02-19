@@ -39,6 +39,8 @@ let quadlet: QuadletInfo | undefined = $derived(
       quadlet.id === id && quadlet.connection.name === connection && quadlet.connection.providerId === providerId,
   ),
 );
+// the title is either the systemd service name or if undefined the last part of the path (E.g. /foo/bar.container => bar.container)
+let title: string = $derived(quadlet?.service ?? quadlet?.path.split('/').pop() ?? 'none');
 
 export function close(): void {
   router.goto('/');
@@ -127,10 +129,10 @@ function onchange(content: string): void {
 
 {#if quadlet}
   <DetailsPage
-    title={quadlet.id}
+    title={title}
     onclose={close}
     breadcrumbLeftPart="Quadlets"
-    breadcrumbRightPart={quadlet.id}
+    breadcrumbRightPart={title}
     breadcrumbTitle="Go back to quadlets page"
     onbreadcrumbClick={close}>
     <svelte:fragment slot="actions">
