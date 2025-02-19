@@ -8,11 +8,12 @@ import { synchronisation } from '/@store/synchronisation';
 interface Props {
   connection?: ProviderContainerConnectionDetailedInfo;
   loading?: boolean;
+  disabled?: boolean;
   // actions
   refreshQuadlets: () => void;
 }
 
-let { connection, loading, refreshQuadlets }: Props = $props();
+let { connection, loading, disabled, refreshQuadlets }: Props = $props();
 
 let runningConnection: number = $derived(
   $providerConnectionsInfo.reduce((accumulator, connection) => {
@@ -59,7 +60,7 @@ let message: string = $derived.by(() => {
       <Button
         icon={faArrowsRotate}
         inProgress={loading}
-        disabled={loading}
+        disabled={disabled}
         title="Refresh Quadlets"
         on:click={refreshQuadlets}>Refresh</Button>
     </div>
