@@ -20,10 +20,10 @@ import type { Page } from '@playwright/test';
 import type { NavigationBar, Runner } from '@podman-desktop/tests-playwright';
 import { expect as playExpect } from '@podman-desktop/tests-playwright';
 
-export async function handleWebview(runner: Runner, page: Page, navigationBar: NavigationBar): Promise<[Page, Page]> {
-  const PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL: string = 'Quadlet';
-  const PODMAN_QUADLET_PAGE_BODY_LABEL: string = `Webview ${PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL}`;
+export const PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL: string = 'Quadlet';
+export const PODMAN_QUADLET_PAGE_BODY_LABEL: string = `Webview ${PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL}`;
 
+export async function handleWebview(runner: Runner, page: Page, navigationBar: NavigationBar): Promise<[Page, Page]> {
   const navButton = navigationBar.navigationLocator.getByRole('link', {
     name: PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL,
   });

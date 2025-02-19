@@ -1,0 +1,278 @@
+{
+  "Id": "4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f",
+  "Created": "2025-02-12T12:03:38.877979502+01:00",
+  "Path": "echo",
+  "Args": [
+    "world"
+  ],
+  "State": {
+    "OciVersion": "1.2.0",
+    "Status": "exited",
+    "Running": false,
+    "Paused": false,
+    "Restarting": false,
+    "OOMKilled": false,
+    "Dead": false,
+    "Pid": 0,
+    "ExitCode": 0,
+    "Error": "",
+    "StartedAt": "2025-02-12T12:03:39.053482484+01:00",
+    "FinishedAt": "2025-02-12T12:03:39.054244761+01:00",
+    "CheckpointedAt": "0001-01-01T00:00:00Z",
+    "RestoredAt": "0001-01-01T00:00:00Z"
+  },
+  "Image": "9bea9f2796e236cb18c2b3ad561ff29f655d1001f9ec7247a0bc5e08d25652a1",
+  "ImageDigest": "sha256:0a399eb16751829e1af26fea27b20c3ec28d7ab1fb72182879dcae1cca21206a",
+  "ImageName": "docker.io/library/nginx:latest",
+  "Rootfs": "",
+  "Pod": "",
+  "ResolvConfPath": "/run/user/1000/containers/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/resolv.conf",
+  "HostnamePath": "/run/user/1000/containers/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/hostname",
+  "HostsPath": "/run/user/1000/containers/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/hosts",
+  "StaticDir": "/home/axel7083/.local/share/containers/storage/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata",
+  "OCIConfigPath": "/home/axel7083/.local/share/containers/storage/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/config.json",
+  "OCIRuntime": "crun",
+  "ConmonPidFile": "/run/user/1000/containers/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/conmon.pid",
+  "PidFile": "/run/user/1000/containers/overlay-containers/4ff10a86fa7bd0e8856591082ac78e2315e8119a2d6b03d4fcca1eb30e514b7f/userdata/pidfile",
+  "Name": "crazy_raman",
+  "RestartCount": 0,
+  "Driver": "overlay",
+  "MountLabel": "system_u:object_r:container_file_t:s0:c92,c757",
+  "ProcessLabel": "system_u:system_r:container_t:s0:c92,c757",
+  "AppArmorProfile": "",
+  "EffectiveCaps": [
+    "CAP_CHOWN",
+    "CAP_DAC_OVERRIDE",
+    "CAP_FOWNER",
+    "CAP_FSETID",
+    "CAP_KILL",
+    "CAP_NET_BIND_SERVICE",
+    "CAP_SETFCAP",
+    "CAP_SETGID",
+    "CAP_SETPCAP",
+    "CAP_SETUID",
+    "CAP_SYS_CHROOT"
+  ],
+  "BoundingCaps": [
+    "CAP_CHOWN",
+    "CAP_DAC_OVERRIDE",
+    "CAP_FOWNER",
+    "CAP_FSETID",
+    "CAP_KILL",
+    "CAP_NET_BIND_SERVICE",
+    "CAP_SETFCAP",
+    "CAP_SETGID",
+    "CAP_SETPCAP",
+    "CAP_SETUID",
+    "CAP_SYS_CHROOT"
+  ],
+  "ExecIDs": [],
+  "GraphDriver": {
+    "Name": "overlay",
+    "Data": {
+      "LowerDir": "/home/axel7083/.local/share/containers/storage/overlay/8eb798f76eddf8df37c7f39a47bb2f9ca6eb929ae1d2224b265958d81d6cd92b/diff:/home/axel7083/.local/share/containers/storage/overlay/ef166b6393d49f23cddd039aaa88ee02583a61ebfed83afe923730b51a43a7db/diff:/home/axel7083/.local/share/containers/storage/overlay/f9ae406619e482630b5fac194b9d30810e6beb254880b2122155ce4603203d08/diff:/home/axel7083/.local/share/containers/storage/overlay/0a65c2ad8264f4a8c1052e02aa28e56d7829f0d771b3e3a3af395c217d3df032/diff:/home/axel7083/.local/share/containers/storage/overlay/ef8d96358bf8667c3b99fc77805155cb61c1a364422d033f7348da66d1047d8c/diff:/home/axel7083/.local/share/containers/storage/overlay/66c1639cbd8b26b2e2c2b5a6230846ee12e7c98df91b8b877c7c260efbbb31ae/diff:/home/axel7083/.local/share/containers/storage/overlay/f5fe472da25334617e6e6467c7ebce41e0ae5580e5bd0ecbf0d573bacd560ecb/diff",
+      "UpperDir": "/home/axel7083/.local/share/containers/storage/overlay/f23c01430ebbbcfa9b925be1e8511d30111f1cfe635a5e33cf17843ddb631cfc/diff",
+      "WorkDir": "/home/axel7083/.local/share/containers/storage/overlay/f23c01430ebbbcfa9b925be1e8511d30111f1cfe635a5e33cf17843ddb631cfc/work"
+    }
+  },
+  "Mounts": [],
+  "Dependencies": [],
+  "NetworkSettings": {
+    "EndpointID": "",
+    "Gateway": "",
+    "IPAddress": "",
+    "IPPrefixLen": 0,
+    "IPv6Gateway": "",
+    "GlobalIPv6Address": "",
+    "GlobalIPv6PrefixLen": 0,
+    "MacAddress": "",
+    "Bridge": "",
+    "SandboxID": "",
+    "HairpinMode": false,
+    "LinkLocalIPv6Address": "",
+    "LinkLocalIPv6PrefixLen": 0,
+    "Ports": {
+      "80/tcp": null
+    },
+    "SandboxKey": "",
+    "Networks": {
+      "pasta": {
+        "EndpointID": "",
+        "Gateway": "",
+        "IPAddress": "",
+        "IPPrefixLen": 0,
+        "IPv6Gateway": "",
+        "GlobalIPv6Address": "",
+        "GlobalIPv6PrefixLen": 0,
+        "MacAddress": "",
+        "NetworkID": "pasta",
+        "DriverOpts": null,
+        "IPAMConfig": null,
+        "Links": null
+      }
+    }
+  },
+  "Namespace": "",
+  "IsInfra": false,
+  "IsService": false,
+  "KubeExitCodePropagation": "invalid",
+  "lockNumber": 41,
+  "Config": {
+    "Hostname": "4ff10a86fa7b",
+    "Domainname": "",
+    "User": "",
+    "AttachStdin": false,
+    "AttachStdout": false,
+    "AttachStderr": false,
+    "Tty": false,
+    "OpenStdin": false,
+    "StdinOnce": false,
+    "Env": [
+      "PKG_RELEASE=1~bookworm",
+      "DYNPKG_RELEASE=1~bookworm",
+      "NGINX_VERSION=1.27.3",
+      "container=podman",
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "NJS_VERSION=0.8.7",
+      "NJS_RELEASE=1~bookworm",
+      "HOME=/root",
+      "HOSTNAME=4ff10a86fa7b"
+    ],
+    "Cmd": [
+      "world"
+    ],
+    "Image": "docker.io/library/nginx:latest",
+    "Volumes": null,
+    "WorkingDir": "/",
+    "Entrypoint": [
+      "echo"
+    ],
+    "OnBuild": null,
+    "Labels": {
+      "maintainer": "NGINX Docker Maintainers \u003cdocker-maint@nginx.com\u003e"
+    },
+    "Annotations": {
+      "io.container.manager": "libpod",
+      "org.opencontainers.image.stopSignal": "3",
+      "org.systemd.property.KillSignal": "3",
+      "org.systemd.property.TimeoutStopUSec": "uint64 10000000"
+    },
+    "StopSignal": "SIGQUIT",
+    "HealthcheckOnFailureAction": "none",
+    "HealthLogDestination": "local",
+    "HealthcheckMaxLogCount": 5,
+    "HealthcheckMaxLogSize": 500,
+    "CreateCommand": [
+      "podman",
+      "run",
+      "--entrypoint=echo",
+      "nginx",
+      "world"
+    ],
+    "Umask": "0022",
+    "Timeout": 0,
+    "StopTimeout": 10,
+    "Passwd": true,
+    "sdNotifyMode": "container",
+    "ExposedPorts": {
+      "80/tcp": {}
+    }
+  },
+  "HostConfig": {
+    "Binds": [],
+    "CgroupManager": "systemd",
+    "CgroupMode": "private",
+    "ContainerIDFile": "",
+    "LogConfig": {
+      "Type": "journald",
+      "Config": null,
+      "Path": "",
+      "Tag": "",
+      "Size": "0B"
+    },
+    "NetworkMode": "pasta",
+    "PortBindings": {},
+    "RestartPolicy": {
+      "Name": "no",
+      "MaximumRetryCount": 0
+    },
+    "AutoRemove": false,
+    "AutoRemoveImage": false,
+    "Annotations": {
+      "io.container.manager": "libpod",
+      "org.opencontainers.image.stopSignal": "3",
+      "org.systemd.property.KillSignal": "3",
+      "org.systemd.property.TimeoutStopUSec": "uint64 10000000"
+    },
+    "VolumeDriver": "",
+    "VolumesFrom": null,
+    "CapAdd": [],
+    "CapDrop": [],
+    "Dns": [],
+    "DnsOptions": [],
+    "DnsSearch": [],
+    "ExtraHosts": [],
+    "GroupAdd": [],
+    "IpcMode": "shareable",
+    "Cgroup": "",
+    "Cgroups": "default",
+    "Links": null,
+    "OomScoreAdj": 0,
+    "PidMode": "private",
+    "Privileged": false,
+    "PublishAllPorts": false,
+    "ReadonlyRootfs": false,
+    "SecurityOpt": [],
+    "Tmpfs": {},
+    "UTSMode": "private",
+    "UsernsMode": "",
+    "ShmSize": 65536000,
+    "Runtime": "oci",
+    "ConsoleSize": [
+      0,
+      0
+    ],
+    "Isolation": "",
+    "CpuShares": 0,
+    "Memory": 0,
+    "NanoCpus": 0,
+    "CgroupParent": "user.slice",
+    "BlkioWeight": 0,
+    "BlkioWeightDevice": null,
+    "BlkioDeviceReadBps": null,
+    "BlkioDeviceWriteBps": null,
+    "BlkioDeviceReadIOps": null,
+    "BlkioDeviceWriteIOps": null,
+    "CpuPeriod": 0,
+    "CpuQuota": 0,
+    "CpuRealtimePeriod": 0,
+    "CpuRealtimeRuntime": 0,
+    "CpusetCpus": "",
+    "CpusetMems": "",
+    "Devices": [],
+    "DiskQuota": 0,
+    "KernelMemory": 0,
+    "MemoryReservation": 0,
+    "MemorySwap": 0,
+    "MemorySwappiness": 0,
+    "OomKillDisable": false,
+    "PidsLimit": 2048,
+    "Ulimits": [
+      {
+        "Name": "RLIMIT_NOFILE",
+        "Soft": 524288,
+        "Hard": 524288
+      },
+      {
+        "Name": "RLIMIT_NPROC",
+        "Soft": 255410,
+        "Hard": 255410
+      }
+    ],
+    "CpuCount": 0,
+    "CpuPercent": 0,
+    "IOMaximumIOps": 0,
+    "IOMaximumBandwidth": 0,
+    "CgroupConf": null
+  }
+}

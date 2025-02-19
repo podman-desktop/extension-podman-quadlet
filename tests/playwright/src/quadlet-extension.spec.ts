@@ -1,14 +1,15 @@
 import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import {
-  ensureCliInstalled,
   expect as playExpect,
   test,
   RunnerOptions,
   waitForPodmanMachineStartup,
+  deleteContainer,
 } from '@podman-desktop/tests-playwright';
 import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
-import { QuadletListPage } from './model/quadlet-list-page';
-import { handleWebview } from './utils/webviewHandler';
+import { PODMAN_QUADLET_PAGE_BODY_LABEL } from './utils/webviewHandler';
+import { GENERATE_TESTS } from './constants';
+import { QuadletGeneratePage } from './model/quadlet-generate-page';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
@@ -17,9 +18,9 @@ const PODMAN_QUADLET_CATALOG_EXTENSION_LABEL: string = 'podman-desktop.quadlet';
 const PODMAN_QUADLET_CATALOG_EXTENSION_NAME: string = 'Podman Quadlet';
 const PODMAN_QUADLET_CATALOG_STATUS_ACTIVE: string = 'ACTIVE';
 
-const QUAY_HELLO_IMAGE_REPO = 'quay.io/podman/hello';
-const QUAY_HELLO_IMAGE_TAG = 'latest';
-const QUAY_HELLO_IMAGE = `${QUAY_HELLO_IMAGE_REPO}:${QUAY_HELLO_IMAGE_TAG}`;
+const ALPINE_IMAGE_REPO = 'docker.io/library/alpine';
+const ALPINE_IMAGE_TAG = 'latest';
+const ALPINE_IMAGE = `${ALPINE_IMAGE_REPO}:${ALPINE_IMAGE_TAG}`;
 
 test.use({
   runnerOptions: new RunnerOptions({
@@ -51,8 +52,14 @@ test.beforeAll(async ({ runner, welcomePage, page }) => {
   await waitForPodmanMachineStartup(page, 80_000); // default is 30s let's increase that to 80s
 });
 
-test.afterAll(async ({ runner }) => {
+test.afterAll(async ({ runner, page }) => {
   test.setTimeout(200_000);
+
+  // delete all containers
+  for (const container of GENERATE_TESTS.map(scenario => scenario.name)) {
+    await deleteContainer(page, container);
+  }
+
   await runner.close();
 });
 
@@ -104,128 +111,105 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
   });
 
-  test('Install Podlet CLI', async ({ navigationBar, page }) => {
-    const settingsBar = await navigationBar.openSettings();
-    await settingsBar.cliToolsTab.click();
-    await ensureCliInstalled(page, 'Podlet');
-  });
-
   test.describe.serial('Generate quadlets', () => {
-    let quadletListPage: QuadletListPage;
-
-    test.beforeAll('Pull Images & Start Hello Container', async ({ navigationBar }) => {
-      // let's pull QUAY_HELLO_IMAGE image
+    test.beforeAll('Pull Images', async ({ navigationBar }) => {
+      // let's pull ALPINE_IMAGE image
       const imagesPage = await navigationBar.openImages();
       await playExpect(imagesPage.heading).toBeVisible();
 
       const pullImagePage = await imagesPage.openPullImage();
-      const updatedImages = await pullImagePage.pullImage(QUAY_HELLO_IMAGE);
+      const updatedImages = await pullImagePage.pullImage(ALPINE_IMAGE);
 
-      const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
-      playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
+      const exists = await updatedImages.waitForImageExists(ALPINE_IMAGE_REPO);
+      playExpect(exists, `${ALPINE_IMAGE} image not present in the list of images\`).toBeTruthy();`);
     });
 
-    test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
-      // open the webview
-      const [pdPage, webview] = await handleWebview(runner, page, navigationBar);
-      quadletListPage = new QuadletListPage(pdPage, webview);
-      // warning: might be a problem if we are already on the webview
-      await quadletListPage.waitForLoad();
-    });
+    for (const scenario of GENERATE_TESTS) {
+      test(`quadlet generate testing ${scenario.name}`, async ({ navigationBar, page, runner }) => {
+        // 1. go to images page
+        const imagesPage = await navigationBar.openImages();
+        await playExpect(imagesPage.heading).toBeVisible();
 
-    test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
-      test.setTimeout(150_000);
+        // 2. open image imageDetails
+        const imageDetails = await imagesPage.openImageDetails(ALPINE_IMAGE_REPO);
+        const runImage = await imageDetails.openRunImage();
 
-      const generateForm = await quadletListPage.navigateToGenerateForm();
-      await generateForm.waitForLoad();
+        if (scenario.options.entrypoint) {
+          await runImage.containerEntryPointInput.fill(scenario.options.entrypoint);
+        }
 
-      await playExpect(generateForm.cancelButton).toBeEnabled();
-      await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
+        // 3. run container
+        const containers = await test.step('starting container', async () => {
+          // little trick bellow is needed
+          // TODO: remove after a release including (https://github.com/podman-desktop/podman-desktop/pull/11159)
+          await runImage.activateTab('Advanced');
+          const checkbox = runImage.getPage().getByRole('checkbox', {
+            name: 'Use interactive',
+          });
+          await checkbox.uncheck();
 
-      // open the select dropdown
-      const podmanProviders = await generateForm.containerEngineSelect.getOptions();
-      playExpect(podmanProviders.length).toBeGreaterThan(0);
+          const containers = await runImage.startContainer(scenario.containerName, {
+            attachTerminal: false,
+          });
+          await playExpect(containers.header).toBeVisible();
 
-      const sorted = podmanProviders.find(provider => provider.toLowerCase().includes('podman'));
-      if (!sorted) throw new Error('cannot found podman provider');
+          return containers;
+        });
 
-      // Value can be `podman-machine-default (WSL)`
-      const machine = sorted.split(' ')[0];
-      console.log(`Trying to use provider ${machine}`);
-      await generateForm.containerEngineSelect.set(machine);
+        await playExpect
+          .poll(async () => await containers.containerExists(scenario.containerName), { timeout: 15_000 })
+          .toBeTruthy();
 
-      // wait for loading to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 5_000,
-        })
-        .toBeFalsy();
+        const containerDetails = await containers.openContainersDetails(scenario.containerName);
 
-      // select the image
-      const options = await generateForm.quadletType.getOptions();
-      playExpect(options).toContain('image');
-      await generateForm.quadletType.select('image');
+        // Get the contribution action (Generate Quadlet)
+        const generateBtn = containerDetails.controlActions.getByRole('button', { name: 'Generate Quadlet' });
+        await generateBtn.click();
 
-      // wait for loading to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 5_000,
-        })
-        .toBeFalsy();
+        // wait for page to be open
+        await page.waitForTimeout(2_000);
 
-      // select hello world image
-      const images = await generateForm.imageSelect.getOptions();
-      playExpect(images.length).toBeGreaterThan(0);
-      playExpect(images).toContain(QUAY_HELLO_IMAGE);
-      await generateForm.imageSelect.set(QUAY_HELLO_IMAGE);
+        const webView = page.getByRole('document', { name: PODMAN_QUADLET_PAGE_BODY_LABEL });
+        await playExpect(webView).toBeVisible();
 
-      // wait for generateButton to be enabled
-      await playExpect
-        .poll(async () => await generateForm.generateButton.isEnabled(), {
-          timeout: 5_000,
-        })
-        .toBeTruthy();
+        const [mainPage, webViewPage] = runner.getElectronApp().windows();
 
-      // generate
-      await generateForm.generateButton.click();
+        const generateForm = new QuadletGeneratePage(mainPage, webViewPage);
+        await generateForm.waitForLoad();
 
-      // wait for loading (generate) to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 15_000,
-        })
-        .toBeFalsy();
-
-      // wait for content to be available
-      await playExpect
-        .poll(
-          async (): Promise<boolean> => {
-            const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
-            const content = await monacoEditor.textContent();
-            return content?.includes('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux') ?? false;
-          },
-          {
+        // wait for loading to be finished
+        await playExpect
+          .poll(async () => await generateForm.isLoading(), {
             timeout: 5_000,
-          },
-        )
-        .toBeTruthy();
+          })
+          .toBeFalsy();
 
-      // wait for saveIntoMachine button to be enabled
-      await playExpect
-        .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
-          timeout: 5_000,
-        })
-        .toBeTruthy();
+        // generate
+        await generateForm.generateButton.click();
 
-      // start save into machine
-      await generateForm.saveIntoMachine.click();
+        // wait for loading (generate) to be finished
+        await playExpect
+          .poll(async () => await generateForm.isLoading(), {
+            timeout: 15_000,
+          })
+          .toBeFalsy();
 
-      // wait for complete button to appear
-      await playExpect
-        .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
-          timeout: 15_000,
-        })
-        .toBeTruthy();
-    });
+        // wait for content to be available
+        await playExpect
+          .poll<string>(
+            async (): Promise<string> => {
+              const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
+              // get all lines
+              const content = await monacoEditor.locator('.view-line').allTextContents();
+              // join lines with new line separator
+              return content.join('\n').trim();
+            },
+            {
+              timeout: 5_000,
+            },
+          )
+          .toStrictEqual(scenario.quadlet);
+      });
+    }
   });
 });
