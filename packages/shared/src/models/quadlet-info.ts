@@ -33,7 +33,7 @@ export interface QuadletInfo {
    */
   connection: ProviderContainerConnectionIdentifierInfo;
   /**
-   * quadlet can have multiple type (container, image etc.)
+   * quadlet have a type based on their extension (.container, .image etc.)
    */
   type: QuadletType;
 }
