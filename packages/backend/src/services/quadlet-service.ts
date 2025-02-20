@@ -225,9 +225,12 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
       // update each quadlets
       for (const quadlet of quadlets) {
+        // skip quadlet without associated service
+        if (!quadlet.service) continue;
+
         // only update service we have information about
-        if (quadlet.id in statuses) {
-          quadlet.state = statuses[quadlet.id] ? 'active' : 'inactive';
+        if (quadlet.service in statuses) {
+          quadlet.state = statuses[quadlet.service] ? 'active' : 'inactive';
         }
       }
 
