@@ -205,7 +205,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
         admin: false,
-        services: quadlets.filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service).map(quadlet => quadlet.service),
+        services: quadlets
+          .filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service)
+          .map(quadlet => quadlet.service),
       });
 
       // update each quadlets

@@ -275,9 +275,11 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
     await quadlet.collectPodmanQuadlet();
 
     // should have been called only with the quadlet with a corresponding service
-    expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).toHaveBeenCalledWith(expect.objectContaining({
-      services: [QUADLET_MOCK.service],
-    }));
+    expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        services: [QUADLET_MOCK.service],
+      }),
+    );
   });
 
   test('should use result from SystemdService#getActiveStatus', async () => {
@@ -294,8 +296,8 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
 
     const quadlets = quadlet.all();
 
-    const validQuadlet = quadlets.find((quadlet) => quadlet.path === QUADLET_MOCK.path);
-    const serviceLessQuadlet = quadlets.find((quadlet) => quadlet.path === SERVICE_LESS_QUADLET_MOCK.path);
+    const validQuadlet = quadlets.find(quadlet => quadlet.path === QUADLET_MOCK.path);
+    const serviceLessQuadlet = quadlets.find(quadlet => quadlet.path === SERVICE_LESS_QUADLET_MOCK.path);
 
     // should update known service
     expect(validQuadlet?.state).toStrictEqual('inactive');
