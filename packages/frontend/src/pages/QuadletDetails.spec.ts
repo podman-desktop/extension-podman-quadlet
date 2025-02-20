@@ -27,17 +27,25 @@ import { readable } from 'svelte/store';
 import * as connectionStore from '/@store/connections';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';
+import { router } from 'tinro';
 
 // mock clients
 vi.mock('/@/api/client', () => ({
   providerAPI: {},
-  quadletAPI: {},
+  quadletAPI: {
+    createQuadletLogger: vi.fn(),
+    read: vi.fn(),
+  },
+  loggerAPI: {},
+  rpcBrowser: {},
 }));
 // mock stores
 vi.mock('/@store/connections');
 vi.mock('/@store/quadlets');
+vi.mock('/@store/logger-store');
 // mock component
 vi.mock('/@/lib/monaco-editor/MonacoEditor.svelte');
+vi.mock('/@/lib/terminal/XTerminal.svelte');
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -154,5 +162,21 @@ describe('title', () => {
     });
     const breadcrumb = within(navigation).getByLabelText('Page Name');
     expect(breadcrumb.textContent).toBe('foo.image');
+  });
+});
+
+test('logs tab should have expected journalctl command', async () => {
+  const { getByRole } = render(QuadletDetails, {
+    connection: WSL_PROVIDER_DETAILED_INFO.name,
+    providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+    id: CONTAINER_QUADLET_MOCK.id,
+  });
+
+  // go to logs tab
+  router.goto('/logs');
+
+  await vi.waitFor(() => {
+    const command = getByRole('banner', { name: 'journactl command' });
+    expect(command.textContent).toBe(`journalctl --user --follow --unit=${CONTAINER_QUADLET_MOCK.service}`);
   });
 });

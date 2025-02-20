@@ -212,8 +212,10 @@ function onchange(content: string): void {
         <Route path="/logs">
           <div class="flex py-2 h-[40px]">
             <span
+              role="banner"
+              aria-label="journactl command"
               class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-              journalctl --user --follow --unit={quadlet.id}
+              journalctl --user --follow --unit={quadlet.service}
             </span>
           </div>
           {#if logger}
