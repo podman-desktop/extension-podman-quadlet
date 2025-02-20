@@ -93,9 +93,18 @@ const RUN_RESULT_MOCK: RunResult = {
   stderr: 'dummy-stderr',
 };
 
-const QUADLET_MOCK: Quadlet = {
-  id: 'foo.service',
-  path: 'foo/bar',
+const QUADLET_MOCK: Quadlet & { service: string } = {
+  id: 'foo-id',
+  service: 'foo.service',
+  path: 'foo/valid.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+};
+
+const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
+  id: 'service-less-id',
+  path: 'foo/invalid.container',
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
@@ -116,7 +125,7 @@ beforeEach(() => {
   });
 
   vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
-  vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([QUADLET_MOCK]);
+  vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([QUADLET_MOCK, SERVICE_LESS_QUADLET_MOCK]);
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
   vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
@@ -146,7 +155,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
       args: ['-dryrun', '-user'],
     });
 
-    expect(quadlet.all()).toHaveLength(1);
+    expect(quadlet.all()).toHaveLength(2);
   });
 });
 
@@ -261,19 +270,39 @@ describe('QuadletService#saveIntoMachine', () => {
 });
 
 describe('QuadletService#refreshQuadletsStatuses', () => {
+  test('should only provide quadlet with corresponding service', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    // should have been called only with the quadlet with a corresponding service
+    expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        services: [QUADLET_MOCK.service],
+      }),
+    );
+  });
+
   test('should use result from SystemdService#getActiveStatus', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
     expect(quadlet.all()[0].state).toStrictEqual('active');
 
+    // mock status of quadlet inactive
     vi.mocked(SYSTEMD_SERVICE_MOCK.getActiveStatus).mockResolvedValue({
       [QUADLET_MOCK.id]: false,
     });
-
     await quadlet.refreshQuadletsStatuses();
 
-    expect(quadlet.all()[0].state).toStrictEqual('inactive');
+    const quadlets = quadlet.all();
+
+    const validQuadlet = quadlets.find(quadlet => quadlet.path === QUADLET_MOCK.path);
+    const serviceLessQuadlet = quadlets.find(quadlet => quadlet.path === SERVICE_LESS_QUADLET_MOCK.path);
+
+    // should update known service
+    expect(validQuadlet?.state).toStrictEqual('inactive');
+    // should not update service
+    expect(serviceLessQuadlet?.state).toStrictEqual('unknown');
   });
 });
 

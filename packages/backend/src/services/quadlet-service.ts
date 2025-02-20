@@ -192,28 +192,29 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   }
 
   /**
-   * @remarks only refresh the statuses of ***known** quadlets, do not catch new ones.
+   * @remarks only refresh the statuses of ***known** quadlets with associate service name, do not catch new ones.
    * todo: optimise ? paralele ?
    */
   async refreshQuadletsStatuses(notify = true): Promise<void> {
     for (const [symbol, quadlets] of Array.from(this.#value.entries())) {
-      // retreive the provider from the symbol
+      // retrieve the provider from the symbol
       const providerIdentifier = this.fromSymbol(symbol);
       const provider = this.providers.getProviderContainerConnection(providerIdentifier);
 
-      // get the statuses of the quadlets
+      // get the statuses of the quadlets with a corresponding service
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
         admin: false,
-        services: quadlets.map(quadlet => quadlet.id),
+        services: quadlets
+          .filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service)
+          .map(quadlet => quadlet.service),
       });
 
       // update each quadlets
       for (const quadlet of quadlets) {
+        // only update service we have information about
         if (quadlet.id in statuses) {
           quadlet.state = statuses[quadlet.id] ? 'active' : 'inactive';
-        } else {
-          quadlet.state = 'unknown';
         }
       }
 
