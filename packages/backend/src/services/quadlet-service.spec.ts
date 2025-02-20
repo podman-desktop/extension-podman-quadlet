@@ -444,3 +444,24 @@ describe('QuadletService#getSynchronisationInfo', () => {
     expect(sync).toHaveLength(1);
   });
 });
+
+describe('QuadletService#getQuadlet', () => {
+  test('should throw an error for unknown id', async () => {
+    const quadlet = getQuadletService();
+    expect(() => {
+      quadlet.getQuadlet('invalid-id');
+    }).toThrowError('cannot found quadlet with id invalid-id');
+  });
+
+  test('should contain provider synchronisation', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    const quadlets = quadlet.all();
+    for (const item of quadlets) {
+      const result = quadlet.getQuadlet(item.id);
+      expect(result).toBeDefined();
+      expect(result.id).toStrictEqual(item.id);
+    }
+  });
+});
