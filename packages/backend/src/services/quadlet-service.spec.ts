@@ -121,7 +121,7 @@ beforeEach(() => {
   vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
   vi.mocked(SYSTEMD_SERVICE_MOCK.getSystemctlVersion).mockResolvedValue('systemd 255 (255.13-1.fc40)');
   vi.mocked(SYSTEMD_SERVICE_MOCK.getActiveStatus).mockResolvedValue({
-    [QUADLET_MOCK.id]: true,
+    [QUADLET_MOCK.service]: true,
   });
 
   vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
@@ -290,7 +290,7 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
 
     // mock status of quadlet inactive
     vi.mocked(SYSTEMD_SERVICE_MOCK.getActiveStatus).mockResolvedValue({
-      [QUADLET_MOCK.id]: false,
+      [QUADLET_MOCK.service]: false,
     });
     await quadlet.refreshQuadletsStatuses();
 
