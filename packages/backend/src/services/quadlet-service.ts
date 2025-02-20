@@ -31,6 +31,19 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   }
 
   /**
+   * Get a {@link Quadlet} object given an id.
+   * @remarks throw an error if the quadlet does not exist
+   * @param quadletId
+   */
+  public getQuadlet(quadletId: string): Quadlet {
+    for (const quadlets of this.#value.values()) {
+      const result = quadlets.find(quadlet => quadlet.id === quadletId);
+      if (result) return result;
+    }
+    throw new Error(`cannot found quadlet with id ${quadletId}`);
+  }
+
+  /**
    * Transform the Map<ProviderContainerConnection, Quadlet[]> to a flat {@link QuadletInfo} array
    */
   override all(): QuadletInfo[] {

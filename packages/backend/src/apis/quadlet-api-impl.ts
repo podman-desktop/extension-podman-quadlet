@@ -36,10 +36,16 @@ export class QuadletApiImpl extends QuadletApi {
   }
 
   override async start(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean> {
+    // ensure the quadlet exists & have an associated systemd service
+    const quadlet = this.dependencies.quadlet.getQuadlet(id);
+    if (!quadlet.service)
+      throw new Error(`cannot start quadlet: quadlet with id ${id} does not have an associated systemd service`);
+
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
+
     try {
       return await this.dependencies.systemd.start({
-        service: id,
+        service: quadlet.service,
         provider: providerConnection,
         admin: false,
       });
@@ -49,10 +55,16 @@ export class QuadletApiImpl extends QuadletApi {
   }
 
   override async stop(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean> {
+    // ensure the quadlet exists & have an associated systemd service
+    const quadlet = this.dependencies.quadlet.getQuadlet(id);
+    if (!quadlet.service)
+      throw new Error(`cannot stop quadlet: quadlet with id ${id} does not have an associated systemd service`);
+
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
+
     try {
       return await this.dependencies.systemd.stop({
-        service: id,
+        service: quadlet.service,
         provider: providerConnection,
         admin: false,
       });
@@ -89,6 +101,13 @@ export class QuadletApiImpl extends QuadletApi {
     connection: ProviderContainerConnectionIdentifierInfo;
     quadletId: string;
   }): Promise<string> {
+    // ensure the quadlet exists & have an associated systemd service
+    const quadlet = this.dependencies.quadlet.getQuadlet(options.quadletId);
+    if (!quadlet.service)
+      throw new Error(
+        `cannot create quadlet logger quadlet: quadlet with id ${options.quadletId} does not have an associated systemd service`,
+      );
+
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
 
     const logger = this.dependencies.loggerService.createLogger();
@@ -97,7 +116,7 @@ export class QuadletApiImpl extends QuadletApi {
     this.dependencies.podman
       .journalctlExec({
         connection: providerConnection,
-        args: ['--user', '--follow', `--unit=${options.quadletId}`, '--output=cat'],
+        args: ['--user', '--follow', `--unit=${quadlet.service}`, '--output=cat'],
         env: {
           SYSTEMD_COLORS: 'true',
           DBUS_SESSION_BUS_ADDRESS: 'unix:path=/run/user/1000/bus',
