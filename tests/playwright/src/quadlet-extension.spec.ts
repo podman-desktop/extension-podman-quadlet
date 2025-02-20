@@ -5,10 +5,12 @@ import {
   test,
   RunnerOptions,
   waitForPodmanMachineStartup,
+  handleConfirmationDialog,
 } from '@podman-desktop/tests-playwright';
 import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
 import { handleWebview } from './utils/webviewHandler';
+import { QuadletDetailsPage } from './model/quadlet-details-page';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
@@ -223,6 +225,61 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for complete button to appear
       await playExpect
         .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
+          timeout: 15_000,
+        })
+        .toBeTruthy();
+
+      // return to home page
+      await generateForm.gotoPageButton.click();
+
+      // let's get the new row we added
+      const row = await quadletListPage.getQuadletRow('hello-image.service');
+
+      // get the status locator
+      const status = row.getByRole('status');
+      // read the title (either 'RUNNING' or '')
+      const title = await status.getAttribute('title');
+      playExpect(title).not.toBe('RUNNING');
+
+      // open the details page
+      await status.click();
+
+      // Create quadlet details page
+      const details = new QuadletDetailsPage(quadletListPage.page, quadletListPage.webview, 'hello-image.service');
+      await details.waitForLoad();
+
+      // start the quadlet
+      await details.start.click();
+
+      // wait for active status to appear
+      await playExpect
+        .poll(async () => await details.isActive(), {
+          timeout: 15_000,
+        })
+        .toBeTruthy();
+
+      // stop the quadlet
+      await details.stop.click();
+
+      // wait for inactive status
+      await playExpect
+        .poll(async () => !(await details.isActive()), {
+          timeout: 15_000,
+        })
+        .toBeTruthy();
+
+      // remove the quadlet
+      await details.remove.click();
+
+      // confirm removal
+      await handleConfirmationDialog(details.page, 'Podman Quadlet', true, 'Confirm');
+
+      // wait to be redirected to list page
+      await quadletListPage.waitForLoad();
+
+      // ensure the page is empty
+      await playExpect
+        .poll(async () => await quadletListPage.pageIsEmpty(), {
           timeout: 15_000,
         })
         .toBeTruthy();
