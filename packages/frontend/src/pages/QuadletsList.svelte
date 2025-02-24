@@ -16,6 +16,7 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
+import QuadletName from '/@/lib/table/QuadletName.svelte';
 
 const columns = [
   new TableColumn<QuadletInfo>('Status', {
@@ -24,11 +25,10 @@ const columns = [
     align: 'center',
     comparator: (a, b): number => a.state.localeCompare(b.state),
   }),
-  new TableColumn<QuadletInfo, string>('Service name', {
-    renderer: TableSimpleColumn,
+  new TableColumn<QuadletInfo>('Service name', {
+    renderer: QuadletName,
     align: 'left',
     width: '200px',
-    renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.service ?? 'unknown',
     comparator: (a, b): number => a.id.localeCompare(b.id),
   }),
   new TableColumn<QuadletInfo, ProviderContainerConnectionIdentifierInfo>('Environment', {
