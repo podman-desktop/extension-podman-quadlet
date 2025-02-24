@@ -16,16 +16,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-
 import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type {
-  ProviderContainerConnectionIdentifierInfo
-} from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 import { router } from 'tinro';
 
@@ -84,6 +81,8 @@ test('clicking on quadlet name should redirect to details page', async () => {
   await fireEvent.click(btn);
 
   await vi.waitFor(() => {
-    expect(router.goto).toHaveBeenCalledWith(`/quadlets/${PROVIDER_MOCK.providerId}/${PROVIDER_MOCK.name}/${QUADLET_MOCK.id}`);
+    expect(router.goto).toHaveBeenCalledWith(
+      `/quadlets/${PROVIDER_MOCK.providerId}/${PROVIDER_MOCK.name}/${QUADLET_MOCK.id}`,
+    );
   });
 });
