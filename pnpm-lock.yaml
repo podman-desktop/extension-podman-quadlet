@@ -262,23 +262,7 @@ importers:
         version: 2.1.6(@types/node@20.17.19)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.1)(yaml@2.6.1)
 
   packages/podlet-js:
-    dependencies:
-      compose-spec-ts:
-        specifier: ^0.3.2
-        version: 0.3.2
-      js-ini:
-        specifier: ^1.6.0
-        version: 1.6.0
-      js-yaml:
-        specifier: ^4.1.0
-        version: 4.1.0
     devDependencies:
-      '@podman-desktop/api':
-        specifier: ^1.16.2
-        version: 1.16.2
-      '@types/js-yaml':
-        specifier: ^4.0.9
-        version: 4.0.9
       typescript:
         specifier: 5.7.3
         version: 5.7.3
@@ -1810,9 +1794,6 @@ packages:
 
   compare-versions@6.1.1:
     resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
-
-  compose-spec-ts@0.3.2:
-    resolution: {integrity: sha512-+SyLdwbWOhK+imI0S6fAShB8qRdWInBMHe20rtq1bKQwaJnkQDhLAu23DEFma5BmrssNpAGQ/EtsxzWnGYqYOw==}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -5842,8 +5823,6 @@ snapshots:
       delayed-stream: 1.0.0
 
   compare-versions@6.1.1: {}
-
-  compose-spec-ts@0.3.2: {}
 
   concat-map@0.0.1: {}
 
