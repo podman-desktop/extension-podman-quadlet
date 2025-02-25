@@ -2,6 +2,7 @@
  * @author axel7083
  */
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { QuadletState } from '/@shared/src/models/quadlet-info';
 
 export interface Quadlet {
   /**
@@ -26,7 +27,7 @@ export interface Quadlet {
   /**
    * State of the quadlet
    */
-  state: 'active' | 'inactive' | 'deleting' | 'unknown';
+  state: QuadletState;
   /**
    * quadlet have a type based on their extension (.container, .image etc.)
    */
