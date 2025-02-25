@@ -15,6 +15,9 @@ function openDetails(quadlet: QuadletInfo): void {
 }
 </script>
 
-<button class="hover:cursor-pointer" aria-label="quadlet name" onclick={openDetails.bind(undefined, object)}>
+<button
+  class="hover:cursor-pointer w-full overflow-hidden text-ellipsis"
+  aria-label="quadlet name"
+  onclick={openDetails.bind(undefined, object)}>
   {name}
 </button>
