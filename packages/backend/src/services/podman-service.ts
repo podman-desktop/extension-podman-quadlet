@@ -5,9 +5,9 @@ import type {
   CancellationToken,
   Logger,
   ProviderContainerConnection,
-  RunError,
   RunResult,
   Disposable,
+  RunError,
 } from '@podman-desktop/api';
 import { CancellationTokenSource } from '@podman-desktop/api';
 import type { PodmanDependencies } from './podman-helper';
@@ -16,6 +16,7 @@ import type { AsyncInit } from '../utils/async-init';
 import { dirname } from 'node:path/posix';
 import { writeFile, mkdir, readFile, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
+import { isRunError } from '../utils/run-error';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -233,16 +234,14 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     logger?: Logger;
     token?: CancellationToken;
     env?: Record<string, string>;
-  }): Promise<RunResult> {
+  }): Promise<RunResult | RunError> {
     return this.executeWrapper({
       ...options,
       command: 'systemctl',
     }).catch((err: unknown) => {
       // check err is an RunError
-      if (!err || typeof err !== 'object' || !('exitCode' in err)) {
-        throw err;
-      }
-      return err as RunError;
+      if (isRunError(err)) return err;
+      throw err;
     });
   }
 
