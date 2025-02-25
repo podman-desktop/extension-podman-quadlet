@@ -5,7 +5,8 @@
 import { Parser } from './iparser';
 import { parse } from 'js-ini';
 import type { Quadlet } from '../../models/quadlet';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
 
 interface Unit {
@@ -37,10 +38,8 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       comment: ['#', ';'],
     });
     const unit = this.toUnit(raw['Unit'] as Record<string, string>);
-
-    const extension = unit.SourcePath.split('.').pop();
-    const type: QuadletType | undefined = Object.values(QuadletType).find(type => extension === type.toLowerCase());
-    if (!type) throw new Error(`cannot found quadlet type for file ${unit.SourcePath}`);
+    // extract the type from the path
+    const type: QuadletType = new QuadletExtensionParser(unit.SourcePath).parse();
 
     return {
       path: unit.SourcePath,
