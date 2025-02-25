@@ -262,7 +262,14 @@ importers:
         version: 2.1.6(@types/node@20.17.19)(jiti@2.4.2)(jsdom@26.0.0)(lightningcss@1.29.1)(yaml@2.6.1)
 
   packages/podlet-js:
+    dependencies:
+      js-ini:
+        specifier: ^1.6.0
+        version: 1.6.0
     devDependencies:
+      '@podman-desktop/api':
+        specifier: ^1.16.2
+        version: 1.16.2
       typescript:
         specifier: 5.7.3
         version: 5.7.3
