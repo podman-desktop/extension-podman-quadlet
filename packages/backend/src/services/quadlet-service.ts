@@ -123,6 +123,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       connection: provider,
       args: ['-version'],
     });
+    if (result.exitCode) throw new Error(`cannot get quadlet version (${result.exitCode}): ${result.stdout}`);
     return result.stdout;
   }
 
@@ -142,7 +143,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       args,
     });
 
-    const parser = new QuadletDryRunParser(result.stdout);
+    const parser = new QuadletDryRunParser(result);
     return parser.parse();
   }
 
