@@ -4,6 +4,8 @@
 import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
 import type { QuadletType } from '../utils/quadlet-type';
 
+export type QuadletState = 'active' | 'inactive' | 'deleting' | 'unknown' | 'error';
+
 export interface QuadletInfo {
   /**
    * UUID to internally identify the quadlet
@@ -27,7 +29,7 @@ export interface QuadletInfo {
   /**
    * State of the quadlet
    */
-  state: 'active' | 'inactive' | 'deleting' | 'error' | 'unknown';
+  state: QuadletState;
   /**
    * Associate connection to the quadlet
    */
