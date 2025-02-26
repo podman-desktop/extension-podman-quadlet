@@ -204,10 +204,14 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     logger?: Logger;
     token?: CancellationToken;
     env?: Record<string, string>;
-  }): Promise<RunResult> {
+  }): Promise<RunResult | RunError> {
     return this.executeWrapper({
       ...options,
       command: '/usr/libexec/podman/quadlet',
+    }).catch((err: unknown) => {
+      // check err is an RunError
+      if (isRunError(err)) return err;
+      throw err;
     });
   }
 
