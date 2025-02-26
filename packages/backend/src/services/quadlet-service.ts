@@ -17,6 +17,7 @@ import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletKubeParser } from '../utils/parsers/quadlet-kube-parser';
+import { isRunError } from '../utils/run-error';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -123,7 +124,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       connection: provider,
       args: ['-version'],
     });
-    if (result.exitCode) throw new Error(`cannot get quadlet version (${result.exitCode}): ${result.stdout}`);
+    if (isRunError(result)) throw new Error(`cannot get quadlet version (${result.exitCode}): ${result.stderr}`);
     return result.stdout;
   }
 

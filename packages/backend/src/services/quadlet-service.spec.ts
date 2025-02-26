@@ -22,6 +22,7 @@ import type {
   env,
   Progress,
   ProviderContainerConnection,
+  RunError,
   RunResult,
   TelemetryLogger,
   Webview,
@@ -133,8 +134,14 @@ beforeEach(() => {
   });
 });
 
-function getQuadletService(): QuadletService {
-  return new QuadletService({
+class QuadletServiceTest extends QuadletService {
+  public override async getQuadletVersion(provider: ProviderContainerConnection): Promise<string> {
+    return super.getQuadletVersion(provider);
+  }
+}
+
+function getQuadletService(): QuadletServiceTest {
+  return new QuadletServiceTest({
     providers: PROVIDER_SERVICE_MOCK,
     env: ENV_MOCK,
     webview: WEBVIEW_MOCK,
@@ -156,6 +163,50 @@ describe('QuadletService#collectPodmanQuadlet', () => {
     });
 
     expect(quadlet.all()).toHaveLength(2);
+  });
+});
+
+describe('QuadletService#getQuadletVersion', () => {
+  const VERSION_RUN_RESULT: RunResult = {
+    stdout: '5.3.2',
+    command: '/usr/libexec/podman/quadlet -version',
+    stderr: '',
+  };
+
+  const VERSION_RUN_ERROR: RunError = {
+    stdout: '5.3.2',
+    command: '/usr/libexec/podman/quadlet -version',
+    stderr: 'stderr content',
+    exitCode: 1,
+    name: 'error',
+    message: 'error',
+    killed: false,
+    cancelled: false,
+  };
+
+  test('should use PodmanService#quadletExec to get quadlet version', async () => {
+    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_RESULT);
+
+    const quadlet = getQuadletService();
+    const result = await quadlet.getQuadletVersion(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+
+    // should return stdout
+    expect(result).toBe('5.3.2');
+
+    expect(PODMAN_SERVICE_MOCK.quadletExec).toHaveBeenCalledWith({
+      connection: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      args: ['-version'],
+    });
+  });
+
+  test('PodmanService#quadletExec resolving RunError should throw an error', async () => {
+    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_ERROR);
+
+    const quadlet = getQuadletService();
+
+    await expect(() => {
+      return quadlet.getQuadletVersion(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+    }).rejects.toThrowError('cannot get quadlet version (1): stderr content');
   });
 });
 
