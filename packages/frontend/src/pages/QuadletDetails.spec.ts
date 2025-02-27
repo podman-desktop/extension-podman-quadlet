@@ -114,7 +114,7 @@ test('container quadlet should have generated and source tab', async () => {
     id: CONTAINER_QUADLET_MOCK.id,
   });
 
-  const generateTab = getByText('Generated');
+  const generateTab = getByText('Systemd Service');
   expect(generateTab).toBeInTheDocument();
   const sourceTab = getByText('Source');
   expect(sourceTab).toBeInTheDocument();

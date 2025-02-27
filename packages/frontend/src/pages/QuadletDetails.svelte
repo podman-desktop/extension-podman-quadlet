@@ -139,16 +139,16 @@ function onchange(content: string): void {
       <QuadletActions object={quadlet} />
     </svelte:fragment>
     <svelte:fragment slot="tabs">
-      <!-- generated tab -->
-      <Tab
-        title="Generated"
-        url="/quadlets/{providerId}/{connection}/{id}"
-        selected={$router.path === `/quadlets/${providerId}/${connection}/${id}`} />
       <!-- source tab -->
       <Tab
         title="Source"
-        url="/quadlets/{providerId}/{connection}/{id}/source"
-        selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/source`} />
+        url="/quadlets/{providerId}/{connection}/{id}"
+        selected={$router.path === `/quadlets/${providerId}/${connection}/${id}`} />
+      <!-- systemd-service tab -->
+      <Tab
+        title="Systemd Service"
+        url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
+        selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/systemd-service`} />
       <!-- kube yaml tab -->
       {#if quadlet.type === QuadletType.KUBE}
         <Tab
@@ -177,8 +177,22 @@ function onchange(content: string): void {
           {/if}
         </div>
 
-        <!-- quadlet -dryrun output -->
+        <!-- content of the path -->
         <Route path="/">
+          {#if quadletSource}
+            <div class="flex py-2 h-[40px]">
+              <span
+                class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
+                {quadlet.path}
+              </span>
+            </div>
+            <EditorOverlay save={save} loading={loading} changed={changed} />
+            <MonacoEditor class="h-full" onChange={onchange} content={quadletSource} language="ini" />
+          {/if}
+        </Route>
+
+        <!-- quadlet -dryrun output -->
+        <Route path="/systemd-service">
           <div class="flex py-2 h-[40px]">
             <span
               class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
@@ -188,18 +202,6 @@ function onchange(content: string): void {
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
           <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
-        </Route>
-
-        <!-- content of the path -->
-        <Route path="/source">
-          <div class="flex py-2 h-[40px]">
-            <span
-              class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-              {quadlet.path}
-            </span>
-          </div>
-          <EditorOverlay save={save} loading={loading} changed={changed} />
-          <MonacoEditor class="h-full" onChange={onchange} content={quadletSource ?? '<unknown>'} language="ini" />
         </Route>
 
         <Route path="/yaml">
