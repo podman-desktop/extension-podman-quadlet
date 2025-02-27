@@ -5,13 +5,9 @@ import { expect, test, vi, beforeEach } from 'vitest';
 import type { WebviewPanel, window as windowsApi } from '@podman-desktop/api';
 import { Uri } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
-import { promises } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 
-vi.mock('node:fs', () => ({
-  promises: {
-    readFile: vi.fn(),
-  },
-}));
+vi.mock(import('node:fs/promises'));
 
 vi.mock('@podman-desktop/api', () => ({
   Uri: {
@@ -47,7 +43,7 @@ beforeEach(() => {
     fsPath: '',
   } as unknown as Uri);
 
-  vi.mocked(promises.readFile).mockResolvedValue(mockedHTML);
+  vi.mocked(readFile).mockResolvedValue(mockedHTML);
 });
 
 test('non-init service should throw an error trying to access webview', async () => {
