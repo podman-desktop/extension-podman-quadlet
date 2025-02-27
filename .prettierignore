@@ -1,0 +1,9 @@
+# ignore vite build output
+packages/**/dist/*
+packages/backend/media/*
+
+# ignore vitest coverage
+packages/**/coverage/*
+
+# ignore node_modules
+**/**/node_modules/**

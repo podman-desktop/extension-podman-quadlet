@@ -22,5 +22,7 @@
   "dependencies": {
     "js-ini": "^1.6.0"
   },
-  "files": ["dist"]
+  "files": [
+    "dist"
+  ]
 }

@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict":true,
+    "strict": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "Node",
@@ -9,21 +9,13 @@
     "outDir": "dist",
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "types": [
-      "node",
-    ],
+    "types": ["node"],
     "paths": {
       "/@shared/*": ["../shared/*"]
     },
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": true
   },
-  "include": [
-    "src",
-    "types/*.d.ts",
-    "../../types/*.d.ts",
-    "../shared/*.ts",
-    "../shared/**/*.ts"
-  ],
+  "include": ["src", "types/*.d.ts", "../../types/*.d.ts", "../shared/*.ts", "../shared/**/*.ts"]
 }

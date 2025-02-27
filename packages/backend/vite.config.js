@@ -1,5 +1,5 @@
-import {join} from 'path';
-import {builtinModules} from 'module';
+import { join } from 'path';
+import { builtinModules } from 'module';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -41,10 +41,7 @@ const config = {
       formats: ['cjs'],
     },
     rollupOptions: {
-      external: [
-        '@podman-desktop/api',
-        ...builtinModules.flatMap(p => [p, `node:${p}`]),
-      ],
+      external: ['@podman-desktop/api', ...builtinModules.flatMap(p => [p, `node:${p}`])],
       output: {
         entryFileNames: '[name].cjs',
       },

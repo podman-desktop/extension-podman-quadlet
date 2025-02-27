@@ -1,10 +1,7 @@
-
 {
   "Id": "9bea9f2796e236cb18c2b3ad561ff29f655d1001f9ec7247a0bc5e08d25652a1",
   "Digest": "sha256:2426c815287ed75a3a33dd28512eba4f0f783946844209ccf3fa8990817a4eb9",
-  "RepoTags": [
-    "docker.io/library/nginx:latest"
-  ],
+  "RepoTags": ["docker.io/library/nginx:latest"],
   "RepoDigests": [
     "docker.io/library/nginx@sha256:0a399eb16751829e1af26fea27b20c3ec28d7ab1fb72182879dcae1cca21206a",
     "docker.io/library/nginx@sha256:2426c815287ed75a3a33dd28512eba4f0f783946844209ccf3fa8990817a4eb9"
@@ -24,14 +21,8 @@
       "PKG_RELEASE=1~bookworm",
       "DYNPKG_RELEASE=1~bookworm"
     ],
-    "Entrypoint": [
-      "/docker-entrypoint.sh"
-    ],
-    "Cmd": [
-      "nginx",
-      "-g",
-      "daemon off;"
-    ],
+    "Entrypoint": ["/docker-entrypoint.sh"],
+    "Cmd": ["nginx", "-g", "daemon off;"],
     "Labels": {
       "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
     },
@@ -175,7 +166,5 @@
       "empty_layer": true
     }
   ],
-  "NamesHistory": [
-    "docker.io/library/nginx:latest"
-  ]
+  "NamesHistory": ["docker.io/library/nginx:latest"]
 }
