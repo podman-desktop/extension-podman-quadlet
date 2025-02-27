@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "strict":true,
+    "strict": true,
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "Node",
@@ -10,15 +10,11 @@
     "allowSyntheticDefaultImports": true,
     "isolatedModules": true,
     "skipLibCheck": true,
-    "types": [
-      "node",
-    ],
+    "types": ["node"],
     "paths": {},
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true,
+    "noUnusedLocals": true
   },
-  "include": [
-    "src",
-  ],
+  "include": ["src"]
 }
