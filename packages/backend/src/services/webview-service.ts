@@ -3,7 +3,7 @@
  */
 import { Uri } from '@podman-desktop/api';
 import type { Disposable, WebviewOptions, WebviewPanel, window } from '@podman-desktop/api';
-import { promises } from 'node:fs';
+import { readFile } from 'node:fs/promises';
 import type { AsyncInit } from '../utils/async-init';
 
 interface Dependencies {
@@ -32,7 +32,7 @@ export class WebviewService implements Disposable, AsyncInit {
     const indexHtmlUri = Uri.joinPath(this.#mediaPath, 'index.html');
     const indexHtmlPath = indexHtmlUri.fsPath;
 
-    let indexHtml = await promises.readFile(indexHtmlPath, 'utf8');
+    let indexHtml = await readFile(indexHtmlPath, 'utf8');
 
     // replace links with webView Uri links
     // in the content <script type="module" crossorigin src="./index-RKnfBG18.js"></script> replace src with webview.asWebviewUri
