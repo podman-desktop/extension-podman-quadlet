@@ -57,7 +57,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 40
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [windows-2022, ubuntu-24.04, macos-15]
     steps:
@@ -105,7 +105,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     needs: build-container
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
         os: [ windows-2022, ubuntu-24.04 ]
     env:
