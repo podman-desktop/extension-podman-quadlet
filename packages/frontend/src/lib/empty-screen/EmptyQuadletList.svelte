@@ -54,7 +54,7 @@ let message: string = $derived.by(() => {
 });
 </script>
 
-<EmptyScreen icon={faArrowsRotate} title={'No Quadlets'} message={message}>
+<EmptyScreen icon={faArrowsRotate} title="No Quadlets" message={message}>
   {#if outOfSync}
     <div class="flex flex-col">
       <Button
