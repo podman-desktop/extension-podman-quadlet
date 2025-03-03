@@ -116,8 +116,8 @@ importers:
         version: 0.11.6
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.16.2
-        version: 1.16.2
+        specifier: ^1.17.0
+        version: 1.17.0
       '@podman-desktop/podman-extension-api':
         specifier: ^1.16.0
         version: 1.16.0
@@ -268,8 +268,8 @@ importers:
         version: 1.6.0
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.16.2
-        version: 1.16.2
+        specifier: ^1.17.0
+        version: 1.17.0
       typescript:
         specifier: 5.7.3
         version: 5.7.3
@@ -938,8 +938,8 @@ packages:
   '@podman-desktop/api@1.16.0':
     resolution: {integrity: sha512-ZgSN3oJkwzoz2oMBO77EA+7rugt7R7kL6JmVtq5siXrRqj2Nn9tj0KYMv/jzz9KhlaHI2/ELN0qLWLNFuvxu0Q==}
 
-  '@podman-desktop/api@1.16.2':
-    resolution: {integrity: sha512-DwcMvKFSBrmlPuXaFssHhlhBruFfVH5261R9TxyjeLWjEUwefggK72TrP5ndZPl3N25il202fQazkecRE94Qhw==}
+  '@podman-desktop/api@1.17.0':
+    resolution: {integrity: sha512-i+CxiZpEnMHpNrGdLLkA4zbRpYjm6P4iJE1nDTehyGBnBum6nQuUDqIplW+LQJsO8vK/z4Tc5I8lI2ObMWnaUg==}
 
   '@podman-desktop/podman-extension-api@1.16.0':
     resolution: {integrity: sha512-4WPJesH/ySVmaniWgQLAe8YHcwtdTZ7vT0GITAcZozBrvOWLPQBbef5+GcMN7RSHUELF+g/aSwO9/cdKpGLY2A==}
@@ -4843,7 +4843,7 @@ snapshots:
 
   '@podman-desktop/api@1.16.0': {}
 
-  '@podman-desktop/api@1.16.2': {}
+  '@podman-desktop/api@1.17.0': {}
 
   '@podman-desktop/podman-extension-api@1.16.0':
     dependencies:
