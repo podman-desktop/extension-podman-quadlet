@@ -145,10 +145,12 @@ function onchange(content: string): void {
         url="/quadlets/{providerId}/{connection}/{id}"
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}`} />
       <!-- systemd-service tab -->
-      <Tab
-        title="Systemd Service"
-        url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
-        selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/systemd-service`} />
+      {#if quadlet.content}
+        <Tab
+          title="Systemd Service"
+          url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
+          selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/systemd-service`} />
+      {/if}
       <!-- kube yaml tab -->
       {#if quadlet.type === QuadletType.KUBE}
         <Tab
@@ -201,7 +203,9 @@ function onchange(content: string): void {
           </div>
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
-          <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
+          {#if quadlet.content}
+            <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
+          {/if}
         </Route>
 
         <Route path="/yaml">

@@ -103,6 +103,15 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   type: QuadletType.CONTAINER,
 };
 
+const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
+  id: 'foo-kube-id',
+  service: 'foo.service',
+  path: 'foo/valid.kube',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.KUBE,
+};
+
 const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   id: 'service-less-id',
   path: 'foo/invalid.container',
@@ -126,7 +135,11 @@ beforeEach(() => {
   });
 
   vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
-  vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([QUADLET_MOCK, SERVICE_LESS_QUADLET_MOCK]);
+  vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([
+    QUADLET_MOCK,
+    SERVICE_LESS_QUADLET_MOCK,
+    KUBE_QUADLET_MOCK,
+  ]);
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
   vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
@@ -512,6 +525,32 @@ describe('QuadletService#read', () => {
       WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
       QUADLET_MOCK.path,
     );
+  });
+});
+
+describe('QuadletService#getKubeYAML', () => {
+  let quadlet: QuadletService;
+  beforeEach(async () => {
+    quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+  });
+
+  test('should throw an error for unknown id', async () => {
+    await expect(() => {
+      return quadlet.getKubeYAML({
+        id: 'invalid-id',
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      });
+    }).rejects.toThrowError('quadlet with id invalid-id not found');
+  });
+
+  test('quadlet with non-kube type should throw an error', async () => {
+    await expect(() => {
+      return quadlet.getKubeYAML({
+        id: QUADLET_MOCK.id,
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      });
+    }).rejects.toThrowError('cannot get kube yaml of non-kube quadlet: quadlet foo-id type is Container');
   });
 });
 
