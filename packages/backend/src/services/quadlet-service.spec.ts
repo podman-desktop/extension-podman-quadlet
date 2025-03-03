@@ -175,7 +175,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
       args: ['-dryrun', '-user'],
     });
 
-    expect(quadlet.all()).toHaveLength(2);
+    expect(quadlet.all()).toHaveLength(3);
   });
 });
 
@@ -341,7 +341,7 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
     // should have been called only with the quadlet with a corresponding service
     expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).toHaveBeenCalledWith(
       expect.objectContaining({
-        services: [QUADLET_MOCK.service],
+        services: [QUADLET_MOCK.service, KUBE_QUADLET_MOCK.service],
       }),
     );
   });
