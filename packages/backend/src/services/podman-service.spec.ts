@@ -22,16 +22,8 @@ import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path/posix';
 
-vi.mock('node:fs/promises', () => ({
-  writeFile: vi.fn(),
-  mkdir: vi.fn(),
-  readFile: vi.fn(),
-  rm: vi.fn(),
-}));
-
-vi.mock('node:os', () => ({
-  homedir: vi.fn(),
-}));
+vi.mock(import('node:fs/promises'));
+vi.mock(import('node:os'));
 
 vi.mock('@podman-desktop/api', () => ({
   Disposable: {
