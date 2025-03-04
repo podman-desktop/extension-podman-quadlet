@@ -15,7 +15,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
+import type { ContainerQuadlet } from '../../models/container-quadlet';
+import { ContainerQuadletBuilder } from './container-quadlet-builder';
 
-export { ImageGenerator, ContainerGenerator };
+/**
+ * Detect which name is used
+ */
+export class Name extends ContainerQuadletBuilder {
+  override build(from: ContainerQuadlet): ContainerQuadlet {
+    if (this.container.Name.startsWith('/')) {
+      from.Container.ContainerName = this.container.Name.substring(1);
+    } else {
+      from.Container.ContainerName = this.container.Name;
+    }
+    return from;
+  }
+}
