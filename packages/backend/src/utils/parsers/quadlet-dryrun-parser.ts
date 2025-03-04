@@ -69,7 +69,6 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         service: undefined, // do not have corresponding service
         id: randomUUID(),
         path: path,
-        content: '',
         state: 'error',
         type: new QuadletExtensionParser(path).parse(),
       });

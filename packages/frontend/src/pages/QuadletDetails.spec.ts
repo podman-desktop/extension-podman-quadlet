@@ -80,7 +80,6 @@ const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
   // either WSL either QEMU
   connection: WSL_PROVIDER_DETAILED_INFO,
   id: `foo-invalid-image-id`,
-  content: 'dummy-content',
   state: 'active',
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
@@ -120,6 +119,22 @@ test('container quadlet should have generated and source tab', async () => {
   expect(sourceTab).toBeInTheDocument();
   const kubeTab = queryByText('kube yaml');
   expect(kubeTab).toBeNull();
+});
+
+test('invalid quadlet should not have generated tab', async () => {
+  const { getByText, queryByText } = render(QuadletDetails, {
+    connection: WSL_PROVIDER_DETAILED_INFO.name,
+    providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+    id: INVALID_IMAGE_QUADLET_MOCK.id,
+  });
+
+  // generate should not be in the visible
+  const generateTab = queryByText('Systemd Service');
+  expect(generateTab).toBeNull();
+
+  // source should be visible
+  const sourceTab = getByText('Source');
+  expect(sourceTab).toBeInTheDocument();
 });
 
 test('kube quadlet should have kube yaml tab', async () => {

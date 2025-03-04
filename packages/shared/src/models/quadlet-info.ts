@@ -24,8 +24,9 @@ export interface QuadletInfo {
   path: string;
   /**
    * raw content (generate) of the service file
+   * @remarks this may be undefined if no associated systemd could be found
    */
-  content: string;
+  content?: string;
   /**
    * State of the quadlet
    */
