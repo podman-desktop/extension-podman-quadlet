@@ -28,7 +28,7 @@ export class Entrypoint extends ContainerQuadletBuilder {
       if (
         typeof this.container.Config.Entrypoint === 'string' &&
         this.container.Config.Entrypoint !== this.image.Config.Entrypoint &&
-        this.container.Config.Entrypoint.length > 0
+        this.container.Config.Entrypoint.length
       ) {
         from.Container.Entrypoint = this.container.Config.Entrypoint;
       } else if (
