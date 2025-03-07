@@ -517,6 +517,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (quadlet.type !== QuadletType.KUBE)
       throw new Error(`cannot get kube yaml of non-kube quadlet: quadlet ${quadlet.id} type is ${quadlet.type}`);
 
+    if (!quadlet.content || !quadlet.service)
+      throw new Error('cannot get kube yaml: quadlet without associated systemd service cannot be parsed.');
+
     // extract the yaml file from
     const { yaml } = new QuadletKubeParser(quadlet.content).parse();
 
