@@ -15,7 +15,20 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
 
-export { ImageGenerator, ContainerGenerator };
+import { vi, test, expect, beforeEach } from 'vitest';
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.resetModules();
+});
+
+test('expect ImageGenerator to properly be exported', async () => {
+  const { ImageGenerator } = await import('./index');
+  expect(ImageGenerator).toBeDefined();
+});
+
+test('expect ContainerGenerator to properly be exported', async () => {
+  const { ContainerGenerator } = await import('./index');
+  expect(ContainerGenerator).toBeDefined();
+});
