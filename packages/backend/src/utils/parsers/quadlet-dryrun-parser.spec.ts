@@ -106,9 +106,11 @@ test('should parse stderr properly and properly set state', async () => {
 
   expect(container.path).toBe('/home/user/.config/containers/systemd/nginx.container');
   expect(container.state).toBe('error');
+  expect(container.content).toBeUndefined();
 
   expect(image.path).toBe('/home/user/.config/containers/systemd/nginx.image');
   expect(image.state).toBe('error');
+  expect(image.content).toBeUndefined();
 });
 
 test('overlapping stderr should be overwritten by stdout', async () => {
