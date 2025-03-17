@@ -15,7 +15,21 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
+import type { ContainerQuadlet } from '../../models/container-quadlet';
+import { ContainerQuadletBuilder } from './container-quadlet-builder';
 
-export { ImageGenerator, ContainerGenerator };
+/**
+ * Detect if user used arguments `podman <image> <arguments>`
+ */
+export class Exec extends ContainerQuadletBuilder {
+  override build(from: ContainerQuadlet): ContainerQuadlet {
+    if (
+      this.container.Config.Cmd &&
+      this.container.Config.Cmd.length > 0 &&
+      !this.arraysEqual(this.container.Config.Cmd, this.image.Config.Cmd)
+    ) {
+      from.Container.Exec = this.container.Config.Cmd.join(' ');
+    }
+    return from;
+  }
+}

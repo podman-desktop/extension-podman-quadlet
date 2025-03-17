@@ -15,7 +15,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
+import type { ContainerQuadlet } from '../../models/container-quadlet';
+import { ContainerQuadletBuilder } from './container-quadlet-builder';
 
-export { ImageGenerator, ContainerGenerator };
+/**
+ * Detect which image is used
+ */
+export class Image extends ContainerQuadletBuilder {
+  override build(from: ContainerQuadlet): ContainerQuadlet {
+    from.Container.Image = this.container.Config.Image;
+    return from;
+  }
+}
