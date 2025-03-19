@@ -16,5 +16,6 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["vite.config.ts", "vitest.config.ts"]
 }
