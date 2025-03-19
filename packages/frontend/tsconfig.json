@@ -28,6 +28,8 @@
     "src/**/*.js",
     "src/**/*.svelte",
     "../../types/**/*.d.ts",
-    "../shared/**/*.ts"
-  ]
+    "../shared/**/*.ts",
+    "vite.tests.setup.ts"
+  ],
+  "exclude": ["vite.config.ts", "vitest.config.ts"]
 }

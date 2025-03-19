@@ -15,51 +15,38 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { join } from 'path';
-import { builtinModules } from 'module';
-import dts from 'vite-plugin-dts';
+import { defineProject } from 'vitest/config';
+import { join } from 'node:path';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelteTesting } from '@testing-library/svelte/vite';
 
 const PACKAGE_ROOT = __dirname;
+const WORKSPACE_ROOT = join(PACKAGE_ROOT, '..', '..');
 
-/**
- * @type {import('vite').UserConfig}
- * @see https://vitejs.dev/config/
- */
-const config = {
-  mode: process.env.MODE,
+export default defineProject({
   root: PACKAGE_ROOT,
-  envDir: process.cwd(),
   resolve: {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
+      '/@store/': join(PACKAGE_ROOT, 'src', 'stores') + '/',
+      '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
-  plugins: [dts()],
+  plugins: [svelte({ hot: !process.env.VITEST }), svelteTesting()],
   test: {
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globals: true,
-    environment: 'node',
-    alias: [],
-  },
-  build: {
-    sourcemap: 'inline',
-    target: 'esnext',
-    outDir: 'dist',
-    assetsDir: '.',
-    minify: process.env.MODE === 'production' ? 'esbuild' : false,
-    lib: {
-      entry: 'src/index.ts',
-      formats: ['cjs'],
-    },
-    rollupOptions: {
-      external: ['@podman-desktop/api', ...builtinModules.flatMap(p => [p, `node:${p}`])],
-      output: {
-        entryFileNames: '[name].cjs',
+    environment: 'jsdom',
+    alias: [
+      { find: '@testing-library/svelte', replacement: '@testing-library/svelte/svelte5' },
+      {
+        find: /^monaco-editor$/,
+        replacement: `${WORKSPACE_ROOT}/node_modules/monaco-editor/esm/vs/editor/editor.api`,
       },
+    ],
+    deps: {
+      inline: [],
     },
-    emptyOutDir: true,
-    reportCompressedSize: false,
+    setupFiles: ['./vite.tests.setup.ts'],
   },
-};
-
-export default config;
+});

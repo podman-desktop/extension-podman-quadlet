@@ -42,7 +42,7 @@ const compat = new FlatCompat({
   allConfig: js.configs.all,
 });
 
-const TYPESCRIPT_PROJECTS = ['packages/*/tsconfig.json', 'tests/*/tsconfig.json'];
+const TYPESCRIPT_PROJECTS = ['packages/*/tsconfig.json', 'tests/*/tsconfig.json', 'tsconfig.json'];
 
 export default [
   {
@@ -59,7 +59,6 @@ export default [
       '**/src-generated/',
       'tests/playwright/output/**',
       'tests/playwright/tests/**',
-      '**/vite.*.js'
     ],
   },
   js.configs.recommended,
