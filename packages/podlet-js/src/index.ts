@@ -17,5 +17,6 @@
  ***********************************************************************/
 import { ContainerGenerator } from './containers/container-generator';
 import { ImageGenerator } from './images/image-generator';
+import { Compose } from './compose/compose';
 
-export { ImageGenerator, ContainerGenerator };
+export { ImageGenerator, Compose, ContainerGenerator };
