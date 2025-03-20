@@ -40,6 +40,9 @@ jobs:
       - name: Execute pnpm
         run: pnpm install --frozen-lockfile
 
+      - name: Execute Build
+        run: pnpm build
+
       - name: Run linter
         run: pnpm lint:check
 
@@ -73,11 +76,11 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Execute Build
-        run: pnpm build
-
       - name: Execute pnpm
         run: pnpm install
+
+      - name: Execute Build
+        run: pnpm build
 
       - name: Run unit tests
         run: pnpm test:unit
