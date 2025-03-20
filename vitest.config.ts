@@ -25,7 +25,7 @@ export default defineConfig({
     coverage: {
       excludeAfterRemap: true,
       provider: 'v8',
-      reporter: [process.env.GITHUB_ACTIONS?'html':'default'],
+      reporter: [process.env.GITHUB_ACTIONS?'html':'text'],
     },
   },
 });
