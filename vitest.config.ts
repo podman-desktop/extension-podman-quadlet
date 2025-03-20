@@ -15,8 +15,17 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { defineWorkspace } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 
-export default defineWorkspace([
-  'packages/**/vitest.config.{js,ts}',
-]);
+export default defineConfig({
+  test: {
+    workspace: ['packages/*/vitest.config.ts'],
+    // use GitHub action reporters when running in CI
+    reporters: process.env.GITHUB_ACTIONS?['github-actions', 'default']:['default'],
+    coverage: {
+      excludeAfterRemap: true,
+      provider: 'v8',
+      reporter: [process.env.GITHUB_ACTIONS?'html':'default'],
+    },
+  },
+});
