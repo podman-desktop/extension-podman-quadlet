@@ -76,9 +76,6 @@ jobs:
           node-version: 22
           cache: 'pnpm'
 
-      - name: Execute Build
-        run: pnpm build
-
       - name: Execute pnpm
         run: pnpm install
 
