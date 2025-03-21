@@ -258,5 +258,7 @@ jobs:
         if: always()
         with:
           name: e2e-pr-check-${{ matrix.os }}
-          path: ./**/tests/**/output/
+          path: |
+            tests/playwright/output/
+            tests/playwright/tests/
 
