@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { Disposable, ImageInfo } from '@podman-desktop/api';
+import type { Disposable, ImageInfo, ImageInspectInfo } from '@podman-desktop/api';
 import type { AsyncInit } from '../utils/async-init';
 import type { ProviderService } from './provider-service';
 import type { EngineHelperDependencies } from './engine-helper';
@@ -29,6 +29,10 @@ export class ImageService extends EngineHelper<Dependencies> implements Disposab
     });
 
     return images.map(image => this.toSimpleImageInfo(image, providerConnection));
+  }
+
+  public inspectImage(engineId: string, imageId: string): Promise<ImageInspectInfo> {
+    return this.dependencies.containers.getImageInspect(engineId, imageId);
   }
 
   protected toSimpleImageInfo(
