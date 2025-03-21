@@ -258,5 +258,7 @@ jobs:
         if: always()
         with:
           name: e2e-pr-check-${{ matrix.os }}
-          path: ./**/tests/**/output/
+          path: |
+            ./**/tests/**/output/
+            !podman-desktop/**
 
