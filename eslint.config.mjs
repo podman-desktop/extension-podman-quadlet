@@ -53,6 +53,7 @@ export default [
       '**/test-resources',
       '**/__mocks__/',
       '**/coverage/',
+      '**/html/',
       'packages/backend/media/**',
       '**/.svelte-kit/',
       'scripts/**',

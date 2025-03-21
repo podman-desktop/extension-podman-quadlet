@@ -44,9 +44,6 @@ export default defineProject({
         replacement: `${WORKSPACE_ROOT}/node_modules/monaco-editor/esm/vs/editor/editor.api`,
       },
     ],
-    deps: {
-      inline: [],
-    },
     setupFiles: ['./vite.tests.setup.ts'],
   },
 });

@@ -24,7 +24,7 @@ const WORKSPACE_ROOT = join(PACKAGE_ROOT, '..', '..');
 export default defineProject({
   root: PACKAGE_ROOT,
   test: {
-    include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)', '../shared/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     alias: {
       '@podman-desktop/api': resolve(WORKSPACE_ROOT, '__mocks__/@podman-desktop/api.js'),
       '/@/': join(PACKAGE_ROOT, 'src') + '/',

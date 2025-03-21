@@ -26,7 +26,7 @@ export default defineProject({
   test: {
     globals: true,
     environment: 'node',
-    include: ['**/*.{test,spec}.?(c|m)[jt]s?(x)', '../shared/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
+    include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)'],
     alias: {
       '@podman-desktop/api': resolve(WORKSPACE_ROOT, '__mocks__/@podman-desktop/api.js'),
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
