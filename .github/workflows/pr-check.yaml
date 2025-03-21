@@ -259,6 +259,6 @@ jobs:
         with:
           name: e2e-pr-check-${{ matrix.os }}
           path: |
-            ./**/tests/**/output/
-            !podman-desktop/**
+            tests/playwright/output/
+            tests/playwright/tests/
 
