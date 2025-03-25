@@ -71,7 +71,7 @@
     "@vitest/coverage-v8": "^3.0.9",
     "prettier": "^3.5.3",
     "typescript": "5.8.2",
-    "vite": "^6.2.2",
+    "vite": "^6.2.3",
     "vitest": "^3.0.9",
     "xz-decompress": "^0.2.2",
     "@types/js-yaml": "^4.0.9"
