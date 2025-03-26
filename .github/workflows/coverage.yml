@@ -46,7 +46,7 @@ jobs:
         run: pnpm build
 
       - name: Generate Coverage Report
-        run: pnpm test:unit --coverage --coverage.reporter=html-spa -coverage.reporter=json
+        run: pnpm test:unit --coverage --coverage.reporter=html-spa --coverage.reporter=json
 
       - name: publish codecov report
         uses: codecov/codecov-action@v5
