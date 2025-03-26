@@ -1,5 +1,7 @@
 # Podman Desktop Quadlet Extension
 
+[![codecov](https://codecov.io/github/podman-desktop/extension-podman-quadlet/graph/badge.svg?token=P885ZCDJA7)](https://codecov.io/github/podman-desktop/extension-podman-quadlet)
+
 ## Overview
 
 ![quadlet-list.png](images/quadlet-list.png)
