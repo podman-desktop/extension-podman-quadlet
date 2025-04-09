@@ -37,6 +37,7 @@ test.each(Object.values(QuadletType).filter(type => type !== QuadletType.KUBE))(
         content: 'dummy-content',
         state: 'active',
         connection: PODMAN_MACHINE_DEFAULT,
+        requires: [],
       }),
     ).toBeFalsy();
   },
@@ -51,6 +52,7 @@ test(`expect ${QuadletType.KUBE} to be recognised`, () => {
       content: 'dummy-content',
       state: 'active',
       connection: PODMAN_MACHINE_DEFAULT,
+      requires: [],
     }),
   ).toBeTruthy();
 });

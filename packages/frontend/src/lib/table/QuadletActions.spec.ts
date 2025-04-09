@@ -51,6 +51,7 @@ const QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 test('expect active quadlet to have stop enabled', async () => {

@@ -76,6 +76,7 @@ const QUADLETS_MOCK: Array<QuadletInfo & { service: string }> = Array.from({ len
   state: 'active',
   path: `bar/foo-${index}.container`,
   type: QuadletType.CONTAINER,
+  requires: [],
 }));
 
 beforeEach(() => {

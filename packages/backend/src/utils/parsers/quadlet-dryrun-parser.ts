@@ -71,6 +71,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         path: path,
         state: 'error',
         type: new QuadletExtensionParser(path).parse(),
+        requires: [], // cannot detect requires
       });
 
       return accumulator;

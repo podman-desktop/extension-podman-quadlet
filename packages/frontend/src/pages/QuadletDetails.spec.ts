@@ -63,6 +63,7 @@ const CONTAINER_QUADLET_MOCK: QuadletInfo & { service: string } = {
   state: 'active',
   path: `bar/foo.container`,
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 const IMAGE_QUADLET_MOCK: QuadletInfo & { service: string } = {
@@ -74,6 +75,7 @@ const IMAGE_QUADLET_MOCK: QuadletInfo & { service: string } = {
   state: 'active',
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
+  requires: [],
 };
 
 const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
@@ -83,6 +85,7 @@ const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
   state: 'active',
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
+  requires: [],
 };
 
 const KUBE_QUADLET_MOCK: QuadletInfo = {
@@ -93,6 +96,7 @@ const KUBE_QUADLET_MOCK: QuadletInfo = {
   state: 'active',
   path: `bar/foo.kube`,
   type: QuadletType.KUBE,
+  requires: [],
 };
 
 beforeEach(() => {

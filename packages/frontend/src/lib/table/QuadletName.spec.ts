@@ -46,6 +46,7 @@ const QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 test('expect quadlet with service name to use it', () => {

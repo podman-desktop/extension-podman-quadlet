@@ -41,6 +41,7 @@ const QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 type TestCase = {

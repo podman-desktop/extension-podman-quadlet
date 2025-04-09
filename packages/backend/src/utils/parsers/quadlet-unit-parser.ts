@@ -3,7 +3,7 @@
  */
 
 import { Parser } from './iparser';
-import { parse } from 'js-ini';
+import { type IIniObject, parse } from 'js-ini';
 import type { Quadlet } from '../../models/quadlet';
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
@@ -11,6 +11,7 @@ import { randomUUID } from 'node:crypto';
 
 interface Unit {
   SourcePath: string;
+  Requires: Array<string>;
 }
 
 export class QuadletUnitParser extends Parser<string, Quadlet> {
@@ -21,11 +22,22 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     super(content);
   }
 
-  protected toUnit(unit: Record<string, string>): Unit {
-    if (!('SourcePath' in unit)) throw new Error('missing SourcePath in systemd unit section');
+  protected toUnit(unit: IIniObject): Unit {
+    if (!('SourcePath' in unit) || typeof unit['SourcePath'] !== 'string')
+      throw new Error('missing SourcePath in systemd unit section');
+
+    const requires: Array<string> = [];
+    if ('Requires' in unit) {
+      if (Array.isArray(unit['Requires'])) {
+        requires.push(...unit['Requires']);
+      } else if (typeof unit['Requires'] === 'string') {
+        requires.push(unit['Requires']);
+      }
+    }
 
     return {
       SourcePath: unit['SourcePath'],
+      Requires: requires,
     };
   }
 
@@ -36,6 +48,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
   override parse(): Quadlet {
     const raw = parse(this.content, {
       comment: ['#', ';'],
+      keyMergeStrategy: 'join-to-array',
     });
     const unit = this.toUnit(raw['Unit'] as Record<string, string>);
     // extract the type from the path
@@ -48,6 +61,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       content: this.content,
       state: 'unknown',
       type: type,
+      requires: unit.Requires,
     };
   }
 }
