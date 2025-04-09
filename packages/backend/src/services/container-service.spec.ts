@@ -27,6 +27,7 @@ const PROVIDER_SERVICE_MOCK: ProviderService = {
 
 const CONTAINER_ENGINE_MOCK: typeof containerEngine = {
   listInfos: vi.fn(),
+  inspectContainer: vi.fn(),
 } as unknown as typeof containerEngine;
 
 const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
@@ -89,4 +90,14 @@ test('getRunningProviderContainerConnectionByEngineId should throw an error if n
     await container.getRunningProviderContainerConnectionByEngineId('dummy engine id');
   }).rejects.toThrowError('connection not found');
   expect(CONTAINER_ENGINE_MOCK.listInfos).not.toHaveBeenCalled();
+});
+
+test('ContainerService#inspectContainer should use api inspectContainer', async () => {
+  const container = new ContainerService({
+    providers: PROVIDER_SERVICE_MOCK,
+    containers: CONTAINER_ENGINE_MOCK,
+  });
+
+  await container.inspectContainer('dummy-engine-id', 'dummy-container-id');
+  expect(CONTAINER_ENGINE_MOCK.inspectContainer).toHaveBeenCalledWith('dummy-engine-id', 'dummy-container-id');
 });
