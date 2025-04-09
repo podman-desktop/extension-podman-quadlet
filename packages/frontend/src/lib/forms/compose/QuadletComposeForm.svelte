@@ -14,9 +14,6 @@ import { router } from 'tinro';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import Fa from 'svelte-fa';
-import type { RunResult } from '/@shared/src/models/run-result';
-import { toStore } from 'svelte/store';
-import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 
 interface Props {
   filepath?: string;
@@ -41,24 +38,14 @@ let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit
 let quadletType: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD = $state(QuadletType.CONTAINER);
 
 let error: string | undefined = $state();
-let stderr: string | undefined = $state();
 
 function onError(err: string): void {
   error = err;
 }
 
-function onGenerated(value: RunResult): void {
-  // if exitCode is defined or non-zero: something went wrong
-  if (value.exitCode) {
-    stderr = value.stderr;
-    onError(
-      `Something went wrong while generating quadlet for provider ${selectedContainerProviderConnection?.providerId} (${value.exitCode})`,
-    );
-    return;
-  }
-
+function onGenerated(value: string): void {
   error = undefined;
-  quadlet = value.stdout;
+  quadlet = value;
 
   const comment = quadlet.split('\n')[0];
   if (comment.startsWith('#')) {
@@ -137,10 +124,6 @@ function close(): void {
 <!-- form -->
 <div class="bg-[var(--pd-content-card-bg)] m-5 space-y-6 px-8 sm:pb-6 xl:pb-8 rounded-lg h-fit">
   <div class="w-full">
-    {#if stderr}
-      <XTerminal readonly store={toStore(() => stderr ?? '')} />
-    {/if}
-
     <Stepper
       value={step}
       steps={[
