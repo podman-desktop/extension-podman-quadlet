@@ -19,15 +19,20 @@
 import '@testing-library/jest-dom/vitest';
 
 import { render } from '@testing-library/svelte';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi, assert, describe } from 'vitest';
 import type { QuadletState, QuadletInfo } from '/@shared/src/models/quadlet-info';
 
 import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
+import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
+import { faFileLines } from '@fortawesome/free-solid-svg-icons';
+import Fa from 'svelte-fa';
+import type { Snippet } from 'svelte';
 
 vi.mock('@podman-desktop/ui-svelte');
+vi.mock('svelte-fa');
 
 const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
   name: 'podman-machine-default',
@@ -87,6 +92,58 @@ test.each<TestCase>([
       expect.anything(),
       expect.objectContaining({
         status: status,
+      }),
+    );
+  });
+});
+
+describe('parent', () => {
+  // utility function to get the icon snippet that will be renderer inside the StatusIcon component
+  function getIconSnippet(quadlet: QuadletInfo & { parent?: string }): Snippet {
+    // render the quadlet status
+    render(QuadletStatus, {
+      object: quadlet,
+    });
+
+    // ensure the StatusIcon has been called (mocked)
+    expect(StatusIcon).toHaveBeenCalledOnce();
+
+    // extract the icon snippet provided
+    const props = vi.mocked(StatusIcon).mock.calls[0]?.[1];
+    assert(props.icon, 'status icon should have been called with status snippet');
+
+    return props.icon;
+  }
+
+  test('object without parent property should render paper element', () => {
+    const icon: Snippet = getIconSnippet(QUADLET_MOCK);
+
+    // render the icon snippet
+    render(icon);
+
+    // ensure the <Fa> component has received the proper icon
+    expect(Fa).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        icon: faFileLines,
+      }),
+    );
+  });
+
+  test('object with parent property should render link element', () => {
+    const icon: Snippet = getIconSnippet({
+      ...QUADLET_MOCK,
+      parent: 'foo.container',
+    });
+
+    // render the icon snippet
+    render(icon);
+
+    // ensure the <Fa> component has received the proper icon
+    expect(Fa).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        icon: faLink,
       }),
     );
   });
