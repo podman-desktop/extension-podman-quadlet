@@ -17,7 +17,8 @@ export class QuadletGeneratePage extends QuadletBasePage {
   readonly imageSelect: SvelteSelect;
 
   // step 2 (edit monaco)
-  readonly saveIntoMachine: Locator;
+  readonly quadletName: Locator; // input
+  readonly saveIntoMachine: Locator; // button
 
   // step 3 (complete)
   readonly gotoPageButton: Locator;
@@ -35,6 +36,7 @@ export class QuadletGeneratePage extends QuadletBasePage {
     this.imageSelect = new SvelteSelect(this.webview, 'Select Image');
 
     // step 2
+    this.quadletName = this.webview.getByRole('textbox', { name: 'quadlet name' });
     this.saveIntoMachine = this.webview.getByRole('button', { name: 'Load into machine' });
 
     // step 3
