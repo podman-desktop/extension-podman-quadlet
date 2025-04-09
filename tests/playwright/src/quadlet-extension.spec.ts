@@ -1,6 +1,5 @@
 import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import {
-  ensureCliInstalled,
   expect as playExpect,
   test,
   RunnerOptions,
