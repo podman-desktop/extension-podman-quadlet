@@ -68,6 +68,7 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 beforeEach(() => {

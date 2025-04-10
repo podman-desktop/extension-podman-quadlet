@@ -101,6 +101,7 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
@@ -110,6 +111,7 @@ const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.KUBE,
+  requires: [],
 };
 
 const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
@@ -118,6 +120,7 @@ const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
+  requires: [],
 };
 
 const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
@@ -377,6 +380,7 @@ describe('QuadletService#remove', () => {
     path: `config/quadlet-${index}.container`,
     content: 'dummy-content',
     type: QuadletType.CONTAINER,
+    requires: [],
   }));
 
   beforeEach(() => {
