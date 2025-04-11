@@ -4,9 +4,10 @@ import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { faFileLines } from '@fortawesome/free-solid-svg-icons';
 import Fa from 'svelte-fa';
 import { router } from 'tinro';
+import { faLink } from '@fortawesome/free-solid-svg-icons/faLink';
 
 interface Props {
-  object: QuadletInfo;
+  object: QuadletInfo | (QuadletInfo & { parent: string });
 }
 
 let { object }: Props = $props();
@@ -31,7 +32,7 @@ function openDetails(quadlet: QuadletInfo): void {
 </script>
 
 {#snippet icon()}
-  <Fa size="1.125x" icon={faFileLines} />
+  <Fa size="1.125x" icon={'parent' in object ? faLink : faFileLines} />
 {/snippet}
 
 <button onclick={openDetails.bind(undefined, object)}>

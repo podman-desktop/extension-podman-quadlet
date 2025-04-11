@@ -18,10 +18,10 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { fireEvent, render } from '@testing-library/svelte';
+import { fireEvent, render, within } from '@testing-library/svelte';
 
 import * as connectionStore from '/@store/connections';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi, describe } from 'vitest';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { readable } from 'svelte/store';
@@ -187,4 +187,47 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
     WSL_PROVIDER_DETAILED_INFO,
     ...QUADLETS_MOCK.filter(quadlet => quadlet.connection === WSL_PROVIDER_DETAILED_INFO).map(({ id }) => id),
   );
+});
+
+describe('table with children', () => {
+  const QUADLETS_COMPLEX: Array<QuadletInfo> = [
+    {
+      connection: WSL_PROVIDER_DETAILED_INFO,
+      id: `foo`,
+      service: `foo.service`,
+      content: 'foo-content',
+      state: 'active',
+      path: `foo.container`,
+      type: QuadletType.CONTAINER,
+      requires: [],
+    },
+    {
+      connection: WSL_PROVIDER_DETAILED_INFO,
+      id: `bar`,
+      service: `bar.service`,
+      content: 'bar-content',
+      state: 'active',
+      path: `bar.container`,
+      type: QuadletType.CONTAINER,
+      requires: [`foo.service`],
+    },
+  ];
+
+  beforeEach(() => {
+    vi.mocked(quadletStore).quadletsInfo = readable(QUADLETS_COMPLEX);
+  });
+
+  test('foo should be renderer twice', async () => {
+    const { getAllByRole } = render(QuadletsList);
+
+    const rows = await vi.waitFor(() => {
+      const result = getAllByRole('row');
+      // the headers, the parent and twice the child
+      expect(result).toHaveLength(4);
+      return result;
+    });
+
+    const childServiceRows = rows.filter(row => !!within(row).queryByText(`foo.service`));
+    expect(childServiceRows).toHaveLength(2);
+  });
 });
