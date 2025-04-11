@@ -250,7 +250,7 @@ function resetGenerate(): void {
         id="quadlet-name" />
 
       <div class="h-[400px] pt-4">
-        <QuadletEditor validate bind:content={quadlet} />
+        <QuadletEditor bind:content={quadlet} />
       </div>
       {#if error}
         <ErrorMessage error={error} />
