@@ -18,9 +18,6 @@ You can install the Podman Quadlet Extension from the extension page and use `gh
 
 This extension will allow you to list, generate, enable and delete podman quadlet in a given Podman Machine.
 
-This extension integrate the [Podlet](https://github.com/containers/podlet) tool, allowing you to generate Quadlet file from 
-an existing resource such as a Container or an Image.
-
 ### Containers
 
 You can generate Quadlet from the Podman Desktop containers page, as visible bellow
@@ -29,13 +26,13 @@ You can generate Quadlet from the Podman Desktop containers page, as visible bel
 
 ![quadlet-generate-container.png](images/quadlet-generate-container.png)
 
-Once generated, the podlet output can be edited before being loaded into the Podman Machine
+Once generated, the output can be edited before being loaded into the Podman Machine
 
 ![edit-podlet-output.png](images/edit-podlet-output.png)
 
 ### Compose
 
-Podlet has a support for create quadlet from an existing compose specification
+The extension has a partial support for create quadlet from an existing compose specification
 
 > Podman Desktop group containers in the same compose project. 
 > This allows us to determine which spec has been used by looking at the `com.docker.compose.project.config_files` containers label

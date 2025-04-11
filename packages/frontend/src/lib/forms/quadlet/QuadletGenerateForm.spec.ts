@@ -26,7 +26,6 @@ import { readable } from 'svelte/store';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { containerAPI, podletAPI } from '/@/api/client';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type { RunResult } from '/@shared/src/models/run-result';
 
 // mock clients
 vi.mock('/@/api/client', () => ({
@@ -53,14 +52,9 @@ const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
   status: 'started',
 };
 
-const PODLET_GENERATE_RUN_RESULT: RunResult = {
-  exitCode: 0,
-  command: 'podlet generate container dummy-container-id',
-  stderr: '',
-  stdout: `
+const PODLET_GENERATE_RUN_RESULT: string = `
   # dummy quadlet
-  `,
-};
+`;
 
 beforeEach(() => {
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);

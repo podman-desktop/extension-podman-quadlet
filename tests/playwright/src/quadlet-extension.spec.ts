@@ -1,6 +1,5 @@
 import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import {
-  ensureCliInstalled,
   expect as playExpect,
   test,
   RunnerOptions,
@@ -106,12 +105,6 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
   });
 
-  test('Install Podlet CLI', async ({ navigationBar, page }) => {
-    const settingsBar = await navigationBar.openSettings();
-    await settingsBar.cliToolsTab.click();
-    await ensureCliInstalled(page, 'Podlet');
-  });
-
   test.describe.serial('Generate quadlets', () => {
     let quadletListPage: QuadletListPage;
 
@@ -204,13 +197,16 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           async (): Promise<boolean> => {
             const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
             const content = await monacoEditor.textContent();
-            return content?.includes('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux') ?? false;
+            return content?.includes('[Image]Arch=amd64OS=linuxImage=quay.io/podman/hello:latest') ?? false;
           },
           {
             timeout: 5_000,
           },
         )
         .toBeTruthy();
+
+      // put the title
+      await generateForm.quadletName.fill('hello');
 
       // wait for saveIntoMachine button to be enabled
       await playExpect
