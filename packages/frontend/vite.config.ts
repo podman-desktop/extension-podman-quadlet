@@ -47,6 +47,7 @@ export default defineConfig({
     },
   },
   build: {
+    modulePreload: false,
     sourcemap: true,
     outDir: '../backend/media',
     assetsDir: '.',
