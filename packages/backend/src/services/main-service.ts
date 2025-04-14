@@ -25,8 +25,6 @@ import type { AsyncInit } from '../utils/async-init';
 import { ProviderApiImpl } from '../apis/provider-api-impl';
 import { ProviderApi } from '/@shared/src/apis/provide-api';
 import { ProviderService } from './provider-service';
-import { PodletCliService } from './podlet-cli-service';
-import { Octokit } from '@octokit/rest';
 import { CommandService } from './command-service';
 import { RoutingService } from './routing-service';
 import { RoutingApiImpl } from '../apis/routing-api-impl';
@@ -45,6 +43,7 @@ import { LoggerApi } from '/@shared/src/apis/logger-api';
 import { DialogService } from './dialog-service';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
+import { PodletJsService } from './podlet-js-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -132,21 +131,6 @@ export class MainService implements Disposable, AsyncInit {
     await podman.init();
     this.#disposables.push(podman);
 
-    // Responsible for managing the Podlet cli tool
-    const podletCli = new PodletCliService({
-      cliApi: this.dependencies.cliApi,
-      env: this.dependencies.env,
-      window: this.dependencies.window,
-      processApi: this.dependencies.processApi,
-      storagePath: this.dependencies.extensionContext.storagePath,
-      octokit: new Octokit(),
-      providers: providers,
-      podman: podman,
-      telemetry: this.#telemetry,
-    });
-    await podletCli.init();
-    this.#disposables.push(podletCli);
-
     // systemd service is responsible for communicating with the systemd in the podman machine
     const systemd = new SystemdService({
       podman,
@@ -185,6 +169,12 @@ export class MainService implements Disposable, AsyncInit {
     });
     await command.init();
     this.#disposables.push(command);
+
+    // Replacement of PodletCli
+    const podletJS = new PodletJsService({
+      containers: containers,
+      images: images,
+    });
 
     /**
      * Creating the api for the frontend IPCs
@@ -227,7 +217,7 @@ export class MainService implements Disposable, AsyncInit {
 
     // podlet api
     const podletApiImpl = new PodletApiImpl({
-      podlet: podletCli,
+      podletJS: podletJS,
     });
     rpcExtension.registerInstance<PodletApi>(PodletApi, podletApiImpl);
 
