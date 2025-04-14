@@ -9,8 +9,6 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import type { SystemdService } from '../services/systemd-service';
 import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
-import type { QuadletCheck } from '/@shared/src/models/quadlet-check';
-import { QuadletValidator } from '../utils/validators/quadlet-validator';
 import type { LoggerService } from '../services/logger-service';
 import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 
@@ -172,9 +170,5 @@ export class QuadletApiImpl extends QuadletApi {
       provider: providerConnection,
       id: id,
     });
-  }
-
-  override async validate(content: string): Promise<QuadletCheck[]> {
-    return new QuadletValidator().validate(content);
   }
 }
