@@ -3,7 +3,6 @@
  */
 import type { QuadletInfo } from '../models/quadlet-info';
 import type { ProviderContainerConnectionIdentifierInfo } from '../models/provider-container-connection-identifier-info';
-import type { QuadletCheck } from '../models/quadlet-check';
 import type { SynchronisationInfo } from '../models/synchronisation';
 
 export abstract class QuadletApi {
@@ -39,8 +38,6 @@ export abstract class QuadletApi {
     quadletId: string;
   }): Promise<string>;
   abstract disposeLogger(loggerId: string): Promise<void>;
-
-  abstract validate(content: string): Promise<QuadletCheck[]>;
 
   abstract saveIntoMachine(options: {
     connection: ProviderContainerConnectionIdentifierInfo;

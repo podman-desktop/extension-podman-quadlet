@@ -201,7 +201,7 @@ function close(): void {
         id="quadlet-name" />
 
       <div class="h-[400px] pt-4">
-        <QuadletEditor validate bind:content={quadlet} />
+        <QuadletEditor bind:content={quadlet} />
       </div>
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
