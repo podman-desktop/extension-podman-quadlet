@@ -26,6 +26,8 @@ import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 // mock all monaco core component
 vi.mock('monaco-editor');
 vi.mock('monaco-editor/esm/vs/editor/editor.api');
+vi.mock('monaco-editor/esm/vs/basic-languages/ini/ini.contribution');
+vi.mock('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution');
 
 const EDITOR_MOCK: editor.IStandaloneCodeEditor = {
   dispose: vi.fn(),

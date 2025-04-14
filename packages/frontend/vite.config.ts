@@ -47,6 +47,10 @@ export default defineConfig({
     },
   },
   build: {
+    // vite module preload option create dynamically a <link rel="modulepreload" ../>
+    // preloading a module do not send referrer header
+    // due to limitation with how podman-desktop serve static content, we cannot make request without referrer
+    modulePreload: false,
     sourcemap: true,
     outDir: '../backend/media',
     assetsDir: '.',
