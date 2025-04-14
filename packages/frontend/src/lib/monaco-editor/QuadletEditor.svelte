@@ -9,9 +9,4 @@ interface Props {
 let { content = $bindable(), readOnly }: Props = $props();
 </script>
 
-<MonacoEditor
-  class="h-full"
-  readOnly={readOnly}
-  noMinimap
-  bind:content={content}
-  language="ini" />
+<MonacoEditor class="h-full" readOnly={readOnly} noMinimap bind:content={content} language="ini" />
