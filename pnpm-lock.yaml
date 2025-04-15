@@ -110,8 +110,8 @@ importers:
         version: 7.7.1
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.17.0
-        version: 1.17.0
+        specifier: ^1.18.0
+        version: 1.18.0
       '@podman-desktop/podman-extension-api':
         specifier: ^1.17.0
         version: 1.17.0
@@ -256,8 +256,8 @@ importers:
         version: 4.1.0
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.17.0
-        version: 1.17.0
+        specifier: ^1.18.0
+        version: 1.18.0
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -759,6 +759,9 @@ packages:
 
   '@podman-desktop/api@1.17.0':
     resolution: {integrity: sha512-i+CxiZpEnMHpNrGdLLkA4zbRpYjm6P4iJE1nDTehyGBnBum6nQuUDqIplW+LQJsO8vK/z4Tc5I8lI2ObMWnaUg==}
+
+  '@podman-desktop/api@1.18.0':
+    resolution: {integrity: sha512-+6MeXHxTPxcf0dT+Hmyer5o0QFQXYdBaZPoy68pd0Cx6O60EKeuWh7T4zcanf8m2cdZ63/iqfnrCwo26c3DZbg==}
 
   '@podman-desktop/podman-extension-api@1.17.0':
     resolution: {integrity: sha512-UR/6OHrzY1qu/OoEOIec7DGXx4xxE8rGdrFWj2oEBfVyGWhOfw+7Z4ZeW96AKVkydfPPAXCqivEqdsaq84DfbA==}
@@ -4418,6 +4421,8 @@ snapshots:
       playwright: 1.50.1
 
   '@podman-desktop/api@1.17.0': {}
+
+  '@podman-desktop/api@1.18.0': {}
 
   '@podman-desktop/podman-extension-api@1.17.0':
     dependencies:
