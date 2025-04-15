@@ -6,4 +6,3 @@ self.MonacoEnvironment = {
   },
 };
 
-console.log(self.MonacoEnvironment);
