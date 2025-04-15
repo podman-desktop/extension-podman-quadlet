@@ -22,15 +22,19 @@ import { MonacoManager } from '/@/lib/monaco-editor/monaco';
 
 const BG_BLACK_COLOR = '#000000';
 
-// mock all monaco core component
-vi.mock('monaco-editor', () => ({
+/**
+ * mock all monaco core component
+ *
+ * /!\ If your code is importing a mocked module, without any associated __mocks__ file or factory for this module,
+ * Vitest will mock the module itself by invoking it and mocking every export.
+ */
+vi.mock('monaco-editor/esm/vs/editor/editor.api', () => ({
   editor: {
     defineTheme: vi.fn(),
   },
 }));
-vi.mock('monaco-editor/esm/vs/editor/editor.api');
-vi.mock('monaco-editor/esm/vs/basic-languages/ini/ini.contribution');
-vi.mock('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution');
+vi.mock('monaco-editor/esm/vs/basic-languages/ini/ini.contribution', () => ({}));
+vi.mock('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution', () => ({}));
 
 beforeEach(() => {
   vi.resetAllMocks();
