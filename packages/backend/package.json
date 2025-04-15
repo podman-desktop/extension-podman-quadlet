@@ -63,8 +63,8 @@
     ]
   },
   "devDependencies": {
-    "@podman-desktop/api": "^1.17.0",
-    "@podman-desktop/podman-extension-api": "^1.17.0",
+    "@podman-desktop/api": "^1.18.0",
+    "@podman-desktop/podman-extension-api": "^1.18.0",
     "@types/node": "^22",
     "@vitest/coverage-v8": "^3.0.9",
     "prettier": "^3.5.3",
