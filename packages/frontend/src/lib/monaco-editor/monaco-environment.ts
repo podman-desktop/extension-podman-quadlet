@@ -5,4 +5,3 @@ self.MonacoEnvironment = {
     return new editorWorker();
   },
 };
-
