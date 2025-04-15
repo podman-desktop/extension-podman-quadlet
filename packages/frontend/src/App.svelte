@@ -12,6 +12,8 @@ import { Messages } from '/@shared/src/messages';
 import type { Unsubscriber } from 'svelte/store';
 import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
 import QuadletCompose from '/@/pages/QuadletCompose.svelte';
+// import globally the monaco environment
+import './lib/monaco-editor/monaco-environment';
 
 router.mode.hash();
 let isMounted = $state(false);
