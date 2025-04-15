@@ -135,10 +135,10 @@ function onchange(content: string): void {
     breadcrumbRightPart={title}
     breadcrumbTitle="Go back to quadlets page"
     onbreadcrumbClick={close}>
-    <svelte:fragment slot="actions">
+    {#snippet actionsSnippet()}
       <QuadletActions object={quadlet} />
-    </svelte:fragment>
-    <svelte:fragment slot="tabs">
+    {/snippet}
+    {#snippet tabsSnippet()}
       <!-- source tab -->
       <Tab
         title="Source"
@@ -165,11 +165,11 @@ function onchange(content: string): void {
           url="/quadlets/{providerId}/{connection}/{id}/logs"
           selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/logs`} />
       {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="icon">
+    {/snippet}
+    {#snippet iconSnippet()}
       <QuadletStatus object={quadlet} />
-    </svelte:fragment>
-    <svelte:fragment slot="content">
+    {/snippet}
+    {#snippet contentSnippet()}
       <div class="flex flex-col w-full h-full min-h-0">
         <!-- loading indicator -->
         <div class="h-0.5">
@@ -229,6 +229,6 @@ function onchange(content: string): void {
           {/if}
         </Route>
       </div>
-    </svelte:fragment>
+    {/snippet}
   </DetailsPage>
 {/if}
