@@ -12,6 +12,8 @@ import { Messages } from '/@shared/src/messages';
 import type { Unsubscriber } from 'svelte/store';
 import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
 import QuadletCompose from '/@/pages/QuadletCompose.svelte';
+import QuadletTemplates from '/@/pages/QuadletTemplates.svelte';
+import QuadletCreate from '/@/pages/QuadletCreate.svelte';
 // import globally the monaco environment
 import './lib/monaco-editor/monaco-environment';
 
@@ -45,7 +47,15 @@ onDestroy(() => {
         <QuadletsList />
       </Route>
 
-      <!-- create quadlet -->
+      <Route path="/quadlets/create/*" breadcrumb="Create" let:meta>
+        <QuadletCreate templateId={meta.query.templateId} modelId={meta.query.modelId} />
+      </Route>
+
+      <Route path="/quadlets/templates" breadcrumb="Templates" >
+        <QuadletTemplates />
+      </Route>
+
+      <!-- create quadlet from existing resources -->
       <Route path="/quadlets/generate/*" firstmatch let:meta>
         <QuadletGenerate
           providerId={meta.query.providerId}

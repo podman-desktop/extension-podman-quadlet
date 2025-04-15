@@ -1,0 +1,14 @@
+[
+  {
+    "id": "nginx-container",
+    "name": "Nginx Container",
+    "description": "Simple Nginx Container Quadlet template",
+    "files": [
+      {
+        "language": "ini",
+        "content": "# nginx.container\n[Container]\nImage=nginx\nPodmanArgs=--interactive --tty\nPublishPort=8888:80\n\n[Service]\nRestart=always",
+        "name": "nginx.container"
+      }
+    ]
+  }
+]
