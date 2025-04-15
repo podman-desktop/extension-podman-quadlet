@@ -32,6 +32,7 @@ import { editor } from 'monaco-editor/esm/vs/editor/editor.api';
 vi.mock('monaco-editor/esm/vs/editor/editor.api', () => ({
   editor: {
     defineTheme: vi.fn(),
+    create: vi.fn(),
   },
 }));
 vi.mock('monaco-editor/esm/vs/basic-languages/ini/ini.contribution', () => ({}));
