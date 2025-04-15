@@ -18,35 +18,64 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 
+type QuadletNode = QuadletInfo & { parent?: string; selected?: boolean };
+
 const columns = [
-  new TableColumn<QuadletInfo>('Status', {
+  new TableColumn<QuadletNode>('Status', {
     width: '70px',
     renderer: QuadletStatus,
     align: 'center',
     comparator: (a, b): number => a.state.localeCompare(b.state),
   }),
-  new TableColumn<QuadletInfo>('Service name', {
+  new TableColumn<QuadletNode>('Service name', {
     renderer: QuadletName,
     align: 'left',
     width: '200px',
     comparator: (a, b): number => a.id.localeCompare(b.id),
   }),
-  new TableColumn<QuadletInfo, ProviderContainerConnectionIdentifierInfo>('Environment', {
+  new TableColumn<QuadletNode, ProviderContainerConnectionIdentifierInfo>('Environment', {
     renderer: MachineBadge,
     renderMapping: (quadletsInfo: QuadletInfo): ProviderContainerConnectionIdentifierInfo => quadletsInfo.connection,
     comparator: (a, b): number => a.connection.name.localeCompare(b.connection.name),
     overflow: true,
     width: '250px',
   }),
-  new TableColumn<QuadletInfo, string>('Path', {
+  new TableColumn<QuadletNode, string>('Path', {
     renderer: TableSimpleColumn,
     align: 'left',
     width: '1fr',
     renderMapping: (quadletsInfo: QuadletInfo): string => quadletsInfo.path,
   }),
-  new TableColumn<QuadletInfo>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
+  new TableColumn<QuadletNode>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
 ];
-const row = new TableRow<QuadletInfo>({ selectable: (_service): boolean => true });
+
+let services: Map<string, QuadletNode> = $derived(
+  new Map(
+    $quadletsInfo
+      // remove quadlets without service
+      .filter((quadlet): quadlet is QuadletInfo & { service: string } => !!quadlet.service)
+      // map service name => quadlet info
+      .map(quadlet => [quadlet.service, quadlet]),
+  ),
+);
+const row = new TableRow<QuadletNode>({
+  // prevent from selecting children
+  selectable: (quadlet): boolean => !quadlet.parent,
+  children: (service: QuadletNode): Array<QuadletNode> => {
+    return service.requires.reduce((accumulator: Array<QuadletNode>, current: string) => {
+      const quadlet = services.get(current);
+      if (quadlet) {
+        accumulator.push({
+          ...quadlet,
+          parent: service.id,
+          selected: false,
+        });
+      }
+
+      return accumulator;
+    }, []);
+  },
+});
 
 let loading: boolean = $state(false);
 // considered disable if there is no connection running or loading
@@ -67,20 +96,25 @@ let searchTerm: string = $state('');
 let selectedItemsNumber: number = $state(0);
 
 let data: (QuadletInfo & { selected?: boolean })[] = $derived(
-  $quadletsInfo.filter(quadlet => {
-    let match = true;
-    if (containerProviderConnection) {
-      match =
-        quadlet.connection.providerId === containerProviderConnection.providerId &&
-        quadlet.connection.name === containerProviderConnection.name;
-    }
+  $quadletsInfo
+    .filter(quadlet => {
+      let match = true;
+      if (containerProviderConnection) {
+        match =
+          quadlet.connection.providerId === containerProviderConnection.providerId &&
+          quadlet.connection.name === containerProviderConnection.name;
+      }
 
-    if (match && searchTerm.length > 0) {
-      match = quadlet.id.includes(searchTerm);
-    }
+      if (match && searchTerm.length > 0) {
+        match = quadlet.id.includes(searchTerm);
+      }
 
-    return match;
-  }, [] as QuadletInfo[]),
+      return match;
+    }, [] as QuadletInfo[])
+    .map(quadlet => ({
+      ...quadlet,
+      name: quadlet.service ?? quadlet.path,
+    })),
 );
 
 let empty: boolean = $derived(data.length === 0);
