@@ -28,12 +28,12 @@ function close(): void {
   breadcrumbRightPart="Generate"
   breadcrumbTitle="Go back to quadlets page"
   onbreadcrumbClick={close}>
-  <svelte:fragment slot="icon">
+  {#snippet icon()}
     <div class="rounded-full w-8 h-8 flex items-center justify-center">
       <Fa size="1.125x" class="text-[var(--pd-content-header-icon)]" icon={faCode} />
     </div>
-  </svelte:fragment>
-  <svelte:fragment slot="content">
+  {/snippet}
+  {#snippet content()}
     <div class="flex flex-col w-full">
       <!-- loading indicator -->
       <div class="h-0.5">
@@ -45,5 +45,5 @@ function close(): void {
 
       <QuadletComposeForm bind:loading={loading} {...restProps} />
     </div>
-  </svelte:fragment>
+  {/snippet}
 </FormPage>
