@@ -38,17 +38,13 @@ export abstract class QuadletApi {
     quadletId: string;
   }): Promise<string>;
   abstract disposeLogger(loggerId: string): Promise<void>;
-
-  abstract saveIntoMachine(options: {
+  /**
+   * Write files into the configured folder for Quadlets.
+   * @param options
+   */
+  abstract writeIntoMachine(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
-    quadlet: string; // content
-    name: string; // filename
-  }): Promise<void>;
-
-  abstract updateIntoMachine(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    quadlet: string; // content
-    path: string;
+    files: Array<{ filename: string; content: string }>;
   }): Promise<void>;
 
   abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
