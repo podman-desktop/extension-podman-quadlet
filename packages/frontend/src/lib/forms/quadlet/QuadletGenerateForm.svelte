@@ -122,10 +122,14 @@ async function saveIntoMachine(): Promise<void> {
   if (!quadlet) throw new Error('generation invalid');
   loading = true;
   try {
-    await quadletAPI.saveIntoMachine({
+    await quadletAPI.writeIntoMachine({
       connection: $state.snapshot(selectedContainerProviderConnection),
-      name: quadletFilename,
-      quadlet: quadlet,
+      files: [
+        {
+          filename: quadletFilename,
+          content: quadlet,
+        },
+      ],
     });
     loaded = true;
   } catch (err: unknown) {
