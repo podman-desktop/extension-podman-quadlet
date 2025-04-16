@@ -3,13 +3,15 @@ import { FormPage } from '@podman-desktop/ui-svelte';
 import type { Template } from '/@shared/src/models/template';
 import { router } from 'tinro';
 import TemplateGrid from '/@/lib/templates/TemplateGrid.svelte';
+import { loadIntoLocalStorage } from '/@/utils/templates';
 
 function close(): void {
   router.goto('/');
 }
 
 function onImportTemplate(template: Template): void {
-  // todo: do something with it
+  loadIntoLocalStorage(template);
+  router.goto('/quadlets/create');
 }
 </script>
 

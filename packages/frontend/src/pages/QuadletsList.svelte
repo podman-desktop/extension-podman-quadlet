@@ -99,6 +99,8 @@ async function onCreateRequest(): Promise<void> {
   if(result === 'Using Template') {
     router.goto('/quadlets/templates/');
   } else {
+    // clear any existing
+    localStorage.clear();
     router.goto('/quadlets/create');
   }
 }

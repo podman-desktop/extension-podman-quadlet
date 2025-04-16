@@ -48,7 +48,7 @@ onDestroy(() => {
       </Route>
 
       <Route path="/quadlets/create/*" breadcrumb="Create" let:meta>
-        <QuadletCreate templateId={meta.query.templateId} modelId={meta.query.modelId} />
+        <QuadletCreate modelId={meta.query.modelId} />
       </Route>
 
       <Route path="/quadlets/templates" breadcrumb="Templates" >

@@ -1,5 +1,6 @@
 <script lang="ts">
 import { faPen } from '@fortawesome/free-solid-svg-icons/faPen';
+import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
 import Fa from 'svelte-fa';
 import { faTrash } from '@fortawesome/free-solid-svg-icons/faTrash';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
@@ -32,6 +33,7 @@ interface BtnProps {
   class:border-[var(--pd-tab-highlight)]={selected}
   class:border-transparent={!selected}
   class:hover:border-[var(--pd-tab-hover)]={!selected}>
+  <Fa size="sm" icon={faFile} />
   <a
     href={url}
     class="text-[var(--pd-tab-text)] no-underline"
