@@ -88,12 +88,6 @@ function onError(err: string): void {
 function onGenerated(value: string): void {
   error = undefined;
   quadlet = value;
-
-  const comment = quadlet.split('\n')[0];
-  if (comment.startsWith('#')) {
-    const [name] = comment.substring(2).split('.');
-    quadletFilename = name;
-  }
 }
 
 async function generate(): Promise<void> {
@@ -226,14 +220,14 @@ function resetGenerate(): void {
 
       <!-- step 2 edit -->
     {:else if step === 'edit' && quadlet !== undefined}
-      <label for="quadlet-name" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet name</label>
+      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Quadlet filename</label>
       <Input
         class="grow"
-        name="quadlet name"
-        placeholder="Quadlet name (E.g. nginx-quadlet)"
+        name="quadlet filename"
+        placeholder="Quadlet filename (E.g. nginx.container)"
         bind:value={quadletFilename}
-        id="quadlet-name" />
+        id="quadlet-filename" />
 
       <div class="h-[400px] pt-4">
         <QuadletEditor bind:content={quadlet} />
