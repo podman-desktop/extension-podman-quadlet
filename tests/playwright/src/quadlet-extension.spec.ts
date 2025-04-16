@@ -194,16 +194,15 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // wait for content to be available
       await playExpect
         .poll(
-          async (): Promise<boolean> => {
+          async (): Promise<string> => {
             const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
-            const content = await monacoEditor.textContent();
-            return content?.includes('[Image]Arch=amd64OS=linuxImage=quay.io/podman/hello:latest') ?? false;
+            return (await monacoEditor.textContent()) ?? '';
           },
           {
             timeout: 5_000,
           },
         )
-        .toBeTruthy();
+        .toContain('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux');
 
       // put the filename
       await generateForm.quadletName.fill('hello.image');
