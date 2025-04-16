@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { window } from '@podman-desktop/api';
+import type { InputBoxOptions, window } from '@podman-desktop/api';
 
 interface Dependencies {
   windowApi: typeof window;
@@ -26,5 +26,13 @@ export class DialogService {
 
   showWarningMessage(message: string, ...items: string[]): Promise<string | undefined> {
     return this.dependencies.windowApi.showWarningMessage(message, ...items);
+  }
+
+  showInputBox(options: InputBoxOptions): Promise<string | undefined> {
+    return this.dependencies.windowApi.showInputBox(options);
+  }
+
+  showInformationMessage(message: string, ...items: string[]): Promise<string | undefined> {
+    return this.dependencies.windowApi.showInformationMessage(message, ...items);
   }
 }

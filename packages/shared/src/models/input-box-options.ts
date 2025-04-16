@@ -15,12 +15,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { InputBoxOptions } from '../models/input-box-options';
 
-export abstract class DialogApi {
-  static readonly CHANNEL: string = 'dialog-api';
+export interface InputBoxOptions {
+  /**
+   * An optional string that represents the title of the input box.
+   */
+  title?: string;
 
-  abstract showWarningMessage(message: string, ...items: string[]): Promise<string | undefined>;
-  abstract showInformationMessage(message: string, ...items: string[]): Promise<string | undefined>;
-  abstract showInputBox(options: InputBoxOptions): Promise<string | undefined>;
+  /**
+   * The value to pre-fill in the input box.
+   */
+  value?: string;
 }

@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { window } from '@podman-desktop/api';
+import type { InputBoxOptions, window } from '@podman-desktop/api';
 
 import { beforeEach, vi, test, expect } from 'vitest';
 import { DialogService } from './dialog-service';
@@ -26,16 +26,45 @@ beforeEach(() => {
 
 const WINDOWS_API_MOCK: typeof window = {
   showWarningMessage: vi.fn(),
+  showInputBox: vi.fn(),
+  showInformationMessage: vi.fn(),
 } as unknown as typeof window;
+
+function getDialogService(): DialogService {
+  return new DialogService({
+    windowApi: WINDOWS_API_MOCK,
+  });
+}
 
 test('expect DialogService#showWarningMessage to use windowApi#showWarningMessage', async () => {
   vi.mocked(WINDOWS_API_MOCK.showWarningMessage).mockResolvedValue('hello');
 
-  const dialog = new DialogService({
-    windowApi: WINDOWS_API_MOCK,
-  });
+  const dialog = getDialogService();
   const result = await dialog.showWarningMessage('foo.bar', 'hello', 'world');
   expect(result).toStrictEqual('hello');
 
   expect(WINDOWS_API_MOCK.showWarningMessage).toHaveBeenCalledWith('foo.bar', 'hello', 'world');
+});
+
+test('expect DialogService#showInputBox to use windowApi#showInputBox', async () => {
+  vi.mocked(WINDOWS_API_MOCK.showInputBox).mockResolvedValue('hello');
+  const options: InputBoxOptions = {
+    title: 'Foo title',
+  };
+
+  const dialog = getDialogService();
+  const result = await dialog.showInputBox(options);
+  expect(result).toStrictEqual('hello');
+
+  expect(WINDOWS_API_MOCK.showInputBox).toHaveBeenCalledWith(options);
+});
+
+test('expect DialogService#showInformationMessage to use windowApi#showInformationMessage', async () => {
+  vi.mocked(WINDOWS_API_MOCK.showInformationMessage).mockResolvedValue('hello');
+
+  const dialog = getDialogService();
+  const result = await dialog.showInformationMessage('foo.bar', 'hello', 'world');
+  expect(result).toStrictEqual('hello');
+
+  expect(WINDOWS_API_MOCK.showInformationMessage).toHaveBeenCalledWith('foo.bar', 'hello', 'world');
 });
