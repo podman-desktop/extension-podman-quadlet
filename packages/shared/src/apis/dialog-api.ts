@@ -21,6 +21,6 @@ export abstract class DialogApi {
   static readonly CHANNEL: string = 'dialog-api';
 
   abstract showWarningMessage(message: string, ...items: string[]): Promise<string | undefined>;
-  abstract showInformationMessage(message: string, ...items: string[]): Promise<string | undefined> ;
+  abstract showInformationMessage(message: string, ...items: string[]): Promise<string | undefined>;
   abstract showInputBox(options: InputBoxOptions): Promise<string | undefined>;
 }
