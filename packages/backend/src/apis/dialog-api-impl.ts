@@ -17,6 +17,7 @@
  ***********************************************************************/
 import type { DialogService } from '../services/dialog-service';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
+import type { InputBoxOptions } from '/@shared/src/models/input-box-options';
 
 interface Dependencies {
   dialog: DialogService;
@@ -29,5 +30,13 @@ export class DialogApiImpl extends DialogApi {
 
   override showWarningMessage(message: string, ...items: string[]): Promise<string | undefined> {
     return this.dependencies.dialog.showWarningMessage(message, ...items);
+  }
+
+  override showInformationMessage(message: string, ...items: string[]): Promise<string | undefined> {
+    return this.dependencies.dialog.showInformationMessage(message, ...items);
+  }
+
+  override showInputBox(options: InputBoxOptions): Promise<string | undefined> {
+    return this.dependencies.dialog.showInputBox(options);
   }
 }

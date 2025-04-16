@@ -15,24 +15,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { InputBoxOptions, window } from '@podman-desktop/api';
 
-interface Dependencies {
-  windowApi: typeof window;
-}
+export interface InputBoxOptions {
+  /**
+   * An optional string that represents the title of the input box.
+   */
+  title?: string;
 
-export class DialogService {
-  constructor(protected dependencies: Dependencies) {}
-
-  showWarningMessage(message: string, ...items: string[]): Promise<string | undefined> {
-    return this.dependencies.windowApi.showWarningMessage(message, ...items);
-  }
-
-  showInputBox(options: InputBoxOptions): Promise<string | undefined> {
-    return this.dependencies.windowApi.showInputBox(options);
-  }
-
-  showInformationMessage(message: string, ...items: string[]): Promise<string | undefined> {
-    return this.dependencies.windowApi.showInformationMessage(message, ...items);
-  }
+  /**
+   * The value to pre-fill in the input box.
+   */
+  value?: string;
 }
