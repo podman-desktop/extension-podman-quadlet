@@ -202,7 +202,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
             timeout: 5_000,
           },
         )
-        .toContain('[Image]Arch=amd64Image=quay.io/podman/hello:latestOS=linux');
+        .toContain('[Image]Arch=amd64OS=linuxImage=quay.io/podman/hello:latest');
 
       // put the filename
       await generateForm.quadletName.fill('hello.image');
