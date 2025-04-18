@@ -292,3 +292,53 @@ describe('writeTextFile', () => {
     );
   });
 });
+
+describe('isMachineRootful', () => {
+  test('connection without vmType should throw an error', async () => {
+    const podman = getPodmanService();
+
+    await expect(() => {
+      return podman.isMachineRootful(NATIVE_PROVIDER_CONNECTION_MOCK);
+    }).rejects.toThrowError('connection provided is not a podman machine (native connection)');
+  });
+
+  test('connection should be forwarded to podman#exec', async () => {
+    const podman = getPodmanService();
+
+    await podman.isMachineRootful(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
+      ['machine', 'inspect', '--format', '{{.Rootful}}', WSL_PROVIDER_CONNECTION_MOCK.connection.name],
+      {
+        connection: WSL_PROVIDER_CONNECTION_MOCK,
+      },
+    );
+  });
+
+  test('stdout with string true should return true boolean', async () => {
+    const podman = getPodmanService();
+
+    // mock yes in stdout
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      command: 'dummy',
+      stderr: '',
+      stdout: 'true',
+    });
+
+    const result = await podman.isMachineRootful(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(result).toBeTruthy();
+  });
+
+  test('invalid string in stdout should return false', async () => {
+    const podman = getPodmanService();
+
+    // mock yes in stdout
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      command: 'dummy',
+      stderr: '',
+      stdout: 'potatoes',
+    });
+
+    const result = await podman.isMachineRootful(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(result).toBeFalsy();
+  });
+});
