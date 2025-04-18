@@ -266,6 +266,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
   /**
    * This method differ from {@link saveIntoMachine} it aims to update a single Quadlet file.
+   * @deprecated
    * @param options the options.quadlet cannot contain mutliple resources.
    */
   async updateIntoMachine(options: {
@@ -324,6 +325,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   /**
    * This method differ from {@link updateIntoMachine} it aims to create a new Quadlet file
    * @param options The options.quadlet can contain multiple resources.
+   * @deprecated
    */
   async saveIntoMachine(options: {
     quadlet: string;
@@ -391,6 +393,76 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       })
       .finally(() => {
         this.logUsage(TelemetryEvents.QUADLET_CREATE, telemetry);
+      });
+  }
+
+  /**
+   * @param options
+   */
+  async writeIntoMachine(options: {
+    provider: ProviderContainerConnection;
+    /**
+     * @default false (Run as systemd user)
+     */
+    admin?: boolean;
+    files: Array<{ filename: string; content: string }>;
+  }): Promise<void> {
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
+
+    // note the number of files we update
+    telemetry['files-length'] = options.files.length;
+
+    // create a progress task
+    return this.dependencies.window
+      .withProgress(
+        {
+          title: `Saving`,
+          location: ProgressLocation.TASK_WIDGET,
+        },
+        async () => {
+          // write all files sequentially - do not try to run them in parallel
+          for (const { filename, content } of options.files) {
+            // Only retain the basename (avoid path escape)
+            const base = basename(filename);
+
+            // basic path validation
+            if (base.length === 0) throw new Error('invalid filename: empty name not allowed');
+            if (!base.includes('.')) throw new Error('invalid filename: file without extension are not allowed');
+
+            let destination: string;
+            if (options.admin) {
+              destination = joinposix('/etc/containers/systemd', base);
+            } else {
+              destination = joinposix('~/.config/containers/systemd', base);
+            }
+
+            // write the file
+            try {
+              await this.dependencies.podman.writeTextFile(options.provider, destination, content);
+            } catch (err: unknown) {
+              console.error(`Something went wrong while trying to write file to ${destination}`, err);
+              throw err;
+            }
+          }
+
+          // reload
+          await this.dependencies.systemd.daemonReload({
+            admin: options.admin ?? false,
+            provider: options.provider,
+          });
+
+          // collect quadlets
+          await this.collectPodmanQuadlet();
+        },
+      )
+      .catch((err: unknown) => {
+        telemetry['error'] = err;
+        throw err;
+      })
+      .finally(() => {
+        this.logUsage(TelemetryEvents.QUADLET_WRITE, telemetry);
       });
   }
 

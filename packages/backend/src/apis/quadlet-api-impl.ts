@@ -133,34 +133,20 @@ export class QuadletApiImpl extends QuadletApi {
     return this.dependencies.loggerService.disposeLogger(loggerId);
   }
 
-  override saveIntoMachine(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    quadlet: string;
-    name: string;
-  }): Promise<void> {
-    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
-
-    return this.dependencies.quadlet.saveIntoMachine({
-      ...options,
-      provider: providerConnection,
-    });
-  }
-
-  override updateIntoMachine(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    quadlet: string; // content
-    path: string;
-  }): Promise<void> {
-    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
-
-    return this.dependencies.quadlet.updateIntoMachine({
-      ...options,
-      provider: providerConnection,
-    });
-  }
-
   override async getSynchronisationInfo(): Promise<SynchronisationInfo[]> {
     return this.dependencies.quadlet.getSynchronisationInfo();
+  }
+
+  override writeIntoMachine(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
+    files: Array<{ filename: string; content: string }>;
+  }): Promise<void> {
+    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
+
+    return this.dependencies.quadlet.writeIntoMachine({
+      ...options,
+      provider: providerConnection,
+    });
   }
 
   override async getKubeYAML(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string> {

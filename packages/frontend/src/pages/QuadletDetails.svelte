@@ -108,10 +108,14 @@ async function save(): Promise<void> {
 
   loading = true;
   try {
-    await quadletAPI.updateIntoMachine({
+    await quadletAPI.writeIntoMachine({
       connection: { providerId: providerId, name: connection },
-      quadlet: quadletSource,
-      path: quadlet.path,
+      files: [
+        {
+          filename: quadlet.path,
+          content: quadletSource,
+        },
+      ],
     });
     // we should be good to consider we updated it
     originalSource = quadletSource;
