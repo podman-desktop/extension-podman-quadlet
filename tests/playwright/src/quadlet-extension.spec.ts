@@ -205,8 +205,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
         )
         .toBeTruthy();
 
-      // put the title
-      await generateForm.quadletName.fill('hello');
+      // put the filename
+      await generateForm.quadletName.fill('hello.image');
 
       // wait for saveIntoMachine button to be enabled
       await playExpect

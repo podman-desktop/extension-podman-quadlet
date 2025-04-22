@@ -36,7 +36,7 @@ export class QuadletGeneratePage extends QuadletBasePage {
     this.imageSelect = new SvelteSelect(this.webview, 'Select Image');
 
     // step 2
-    this.quadletName = this.webview.getByRole('textbox', { name: 'quadlet name' });
+    this.quadletName = this.webview.getByRole('textbox', { name: 'quadlet filename' });
     this.saveIntoMachine = this.webview.getByRole('button', { name: 'Load into machine' });
 
     // step 3
