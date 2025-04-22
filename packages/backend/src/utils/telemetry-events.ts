@@ -4,8 +4,6 @@
 
 export enum TelemetryEvents {
   // quadlet
-  QUADLET_CREATE = 'quadlet-create',
-  QUADLET_UPDATE = 'quadlet-update',
   QUADLET_WRITE = 'quadlet-write',
   QUADLET_REMOVE = 'quadlet-remove',
   // systemd
