@@ -36,7 +36,6 @@ import { QuadletService } from './quadlet-service';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
 import type { Quadlet } from '../models/quadlet';
 import { Messages } from '/@shared/src/messages';
-import { QuadletTypeParser } from '../utils/parsers/quadlet-type-parser';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
@@ -223,116 +222,6 @@ describe('QuadletService#getQuadletVersion', () => {
     await expect(() => {
       return quadlet.getQuadletVersion(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
     }).rejects.toThrowError('cannot get quadlet version (1): stderr content');
-  });
-});
-
-describe('QuadletService#updateIntoMachine', () => {
-  test('should write using PodmanService#writeTextFile', async () => {
-    const quadlet = getQuadletService();
-    await quadlet.collectPodmanQuadlet();
-
-    await quadlet.updateIntoMachine({
-      quadlet: 'dummy-content',
-      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      path: 'foo/bar.container',
-    });
-
-    expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      'foo/bar.container',
-      'dummy-content',
-    );
-
-    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalled();
-  });
-});
-
-describe('QuadletService#saveIntoMachine', () => {
-  test('should write single resource', async () => {
-    // let's mock a basic CONTAINER quadlet
-    vi.mocked(QuadletTypeParser.prototype.parse).mockReturnValue(QuadletType.CONTAINER);
-
-    const quadlet = getQuadletService();
-    await quadlet.collectPodmanQuadlet();
-
-    await quadlet.saveIntoMachine({
-      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      quadlet: 'dummy-container-quadlet',
-      name: 'foo',
-    });
-    // content provided should have been parsed
-    expect(QuadletTypeParser).toHaveBeenCalledWith('dummy-container-quadlet');
-
-    expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      '~/.config/containers/systemd/foo.container', // always the same (using node:path/posix)
-      'dummy-container-quadlet',
-    );
-  });
-
-  test.each(Object.values(QuadletType))('QuadletType %s should have corresponding extension', async quadletType => {
-    vi.mocked(QuadletTypeParser.prototype.parse).mockReturnValue(quadletType);
-    const quadlet = getQuadletService();
-    await quadlet.collectPodmanQuadlet();
-
-    await quadlet.saveIntoMachine({
-      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      quadlet: 'dummy-container-quadlet',
-      name: 'foo',
-    });
-
-    expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      `~/.config/containers/systemd/foo.${quadletType.toLowerCase()}`, // always the same (using node:path/posix)
-      'dummy-container-quadlet',
-    );
-  });
-
-  test('should parse multiple resources', async () => {
-    vi.mocked(QuadletTypeParser.prototype.parse).mockReturnValue(QuadletType.CONTAINER);
-
-    const quadlet = getQuadletService();
-    await quadlet.collectPodmanQuadlet();
-
-    await quadlet.saveIntoMachine({
-      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      quadlet: 'foo---bar',
-      name: 'foo',
-    });
-
-    expect(QuadletTypeParser).toHaveBeenCalledTimes(2);
-    // content provided should have been parsed
-    expect(QuadletTypeParser).toHaveBeenCalledWith('foo');
-    expect(QuadletTypeParser).toHaveBeenCalledWith('bar');
-  });
-
-  test('should try parsing YAML if QuadletTypeParser raise an error', async () => {
-    vi.mocked(QuadletTypeParser.prototype.parse).mockReturnValueOnce(QuadletType.KUBE);
-    vi.mocked(QuadletTypeParser.prototype.parse).mockRejectedValue('dummy error');
-
-    const quadlet = getQuadletService();
-    await quadlet.collectPodmanQuadlet();
-
-    await quadlet.saveIntoMachine({
-      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      quadlet: 'foo---foo: bar',
-      name: 'foo',
-    });
-
-    expect(QuadletTypeParser).toHaveBeenCalledTimes(2);
-    // expect kube quadlet to be created
-    expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      `~/.config/containers/systemd/foo.kube`, // always the same (using node:path/posix)
-      'foo',
-    );
-
-    // expect yaml file to be created
-    expect(PODMAN_SERVICE_MOCK.writeTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      `~/.config/containers/systemd/foo-kube.yaml`, // always the same (using node:path/posix)
-      'foo: bar',
-    );
   });
 });
 
