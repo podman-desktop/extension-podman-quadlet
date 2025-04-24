@@ -17,7 +17,7 @@ onMount(async () => {
 });
 </script>
 
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+<div role="list" aria-label="templates" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">
   {#each templates as template (template.name)}
     <TemplateCard template={template} onImport={onImport.bind(undefined, template)} />
   {/each}

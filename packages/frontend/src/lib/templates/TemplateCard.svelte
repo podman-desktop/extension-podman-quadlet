@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { Template } from '/packages/shared/src/models/Template';
 import Fa from 'svelte-fa';
 import { faFileImport } from '@fortawesome/free-solid-svg-icons/faFileImport';
+import type { Template } from '/@shared/src/models/template';
 
 interface Props {
   template: Template;
@@ -11,7 +11,7 @@ interface Props {
 let { template, onImport }: Props = $props();
 </script>
 
-<div class="no-underline">
+<div role="listitem" aria-label={template.name}>
   <div
     class="bg-[var(--pd-content-card-bg)] hover:bg-[var(--pd-content-card-hover-bg)] grow p-4 rounded-md flex-nowrap flex flex-col"
     role="region"
@@ -28,6 +28,8 @@ let { template, onImport }: Props = $props();
         <div class="flex flex-col">
           <!-- Import -->
           <button
+            aria-label="import"
+            title="Import"
             onclick={onImport}
             class="justify-center relative rounded-xs text-[var(--pd-button-secondary)] hover:text-[var(--pd-button-text)] text-center cursor-pointer flex flex-row">
             <div class="flex flex-row items-center text-[var(--pd-link)]">

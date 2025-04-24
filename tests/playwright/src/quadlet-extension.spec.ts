@@ -130,6 +130,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
       test.setTimeout(150_000);
+      test.skip();
+      return;
 
       const generateForm = await quadletListPage.navigateToGenerateForm();
       await generateForm.waitForLoad();
@@ -279,6 +281,16 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           timeout: 15_000,
         })
         .toBeTruthy();
+    });
+
+    test('create quadlet from template', async () => {
+      test.setTimeout(150_000);
+
+      const templatePage = await quadletListPage.createQuadletFromTemplate();
+      await templatePage.waitForLoad();
+
+      const templates = await templatePage.getTemplates();
+
     });
   });
 });

@@ -18,6 +18,7 @@ import type {
 } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { providerConnectionsInfo } from '/@store/connections';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
+import { findLanguage } from '/@/utils/language-utils';
 
 interface Props {
   modelId?: string;
@@ -127,29 +128,10 @@ async function onNewFileRequest(): Promise<void> {
   }
 
   // Try to get the extension to determine the language to use
-  let language: string | undefined = undefined;
-
-  // Split with latest apparition of .
-  const separator = result.lastIndexOf('.');
-  if(separator !== -1) {
-    const extension = result.substring(separator);
-    switch (extension) {
-      case '.container':
-      case '.image':
-      case '.network':
-      case '.kube':
-      case '.build':
-      case '.volume':
-        language = 'ini';
-        break;
-      case '.yaml':
-        language = 'yaml';
-        break;
-    }
-  }
+  let language: string | undefined = findLanguage(result);
 
   const monaco = await MonacoManager.getMonaco();
-  const nModel = monaco.editor.createModel(result, language);
+  const nModel = monaco.editor.createModel('', language);
   files.set(result, nModel);
 
   // Open the new model tab

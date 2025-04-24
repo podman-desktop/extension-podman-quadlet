@@ -16,13 +16,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-export interface Template {
-  name: string;
-  id: string;
-  description: string;
-  files: Array<{
-    language: string;
-    content: string;
-    name: string;
-  }>
+export function findLanguage(filename: string): string | undefined {
+  // Split with latest apparition of .
+  const separator = filename.lastIndexOf('.');
+  if(separator !== -1) {
+    const extension = filename.substring(separator);
+    switch (extension) {
+      case '.container':
+      case '.image':
+      case '.network':
+      case '.kube':
+      case '.build':
+      case '.volume':
+        return 'ini';
+      case '.yaml':
+        return 'yaml';
+    }
+  }
 }

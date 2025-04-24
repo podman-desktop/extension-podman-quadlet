@@ -17,6 +17,7 @@
  ***********************************************************************/
 import { SvelteMap } from 'svelte/reactivity';
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import { findLanguage } from '/@/utils/language-utils';
 
 export const KEY_PREFIX = 'text-model-storage-';
 
@@ -40,8 +41,6 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
   }
 
   set(filename: string, value: Monaco.editor.ITextModel): this {
-    console.log(`[TextModelStorage] set ${filename}`);
-
     // when adding a text model, let's add an event to capture update
     this.listeners.set(
       filename,
@@ -56,7 +55,6 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
   }
 
   protected updateLocalStorage(filename: string, model: Monaco.editor.ITextModel): void {
-    console.log(`[TextModelStorage] updateLocalStorage ${filename}`);
     const pathKey = this.getKey(filename);
     localStorage.setItem(pathKey, model.getValue());
   }
@@ -82,7 +80,7 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
   restore(monaco: typeof Monaco): void {
     for (const [key, content] of Object.entries(localStorage)) {
       if(!key.startsWith(KEY_PREFIX)) continue;
-      const model = monaco.editor.createModel(content, 'ini');
+      const model = monaco.editor.createModel(content, findLanguage(key));
       this.set(key.substring(KEY_PREFIX.length), model);
     }
   }
