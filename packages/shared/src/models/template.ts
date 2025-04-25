@@ -24,5 +24,5 @@ export interface Template {
     language: string;
     content: string;
     name: string;
-  }>
+  }>;
 }

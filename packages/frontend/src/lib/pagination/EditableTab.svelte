@@ -1,4 +1,5 @@
 <script lang="ts">
+/* eslint-disable sonarjs/no-use-of-empty-return-value */
 import { faPen } from '@fortawesome/free-solid-svg-icons/faPen';
 import { faFile } from '@fortawesome/free-solid-svg-icons/faFile';
 import Fa from 'svelte-fa';
@@ -16,19 +17,24 @@ interface Props {
 let { url, selected, title, onEdit, onDelete }: Props = $props();
 
 interface BtnProps {
-  icon: IconDefinition,
-  title: string
+  icon: IconDefinition;
+  title: string;
   onclick: () => void;
 }
 </script>
 
 {#snippet btn({ icon, title, onclick }: BtnProps)}
-  <button class="cursor-pointer hover:bg-[var(--pd-link-hover-bg)] w-4 h-4 rounded-full items-center justify-center flex" title={title} onclick={onclick}>
+  <button
+    role="tab"
+    class="cursor-pointer hover:bg-[var(--pd-link-hover-bg)] w-4 h-4 rounded-full items-center justify-center flex"
+    title={title}
+    onclick={onclick}>
     <Fa size="xs" icon={icon} />
   </button>
 {/snippet}
 
 <div
+  role="tablist"
   class="pb-1 border-b-[3px] whitespace-nowrap hover:cursor-pointer focus:outline-[var(--pd-tab-highlight)] px-4 flex gap-x-3 items-center"
   class:border-[var(--pd-tab-highlight)]={selected}
   class:border-transparent={!selected}
@@ -42,6 +48,6 @@ interface BtnProps {
     id="open-tabs-list-{title.toLowerCase()}-link">
     {title}
   </a>
-  {@render btn({ icon: faPen, title: 'Rename', onclick: onEdit})}
-  {@render btn({ icon: faTrash, title: 'Remove', onclick: onDelete})}
+  {@render btn({ icon: faPen, title: 'Rename', onclick: onEdit })}
+  {@render btn({ icon: faTrash, title: 'Remove', onclick: onDelete })}
 </div>

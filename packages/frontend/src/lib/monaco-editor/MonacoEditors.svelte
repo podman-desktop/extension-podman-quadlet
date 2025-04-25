@@ -11,14 +11,7 @@ interface Props extends HTMLAttributes<HTMLElement> {
   modelId?: string;
 }
 
-let {
-  readOnly = false,
-  noMinimap,
-  class: className,
-  models: modelsArray,
-  modelId,
-  ...restProps
-}: Props = $props();
+let { readOnly = false, noMinimap, class: className, models: modelsArray, modelId, ...restProps }: Props = $props();
 
 let editorInstance: Monaco.editor.IStandaloneCodeEditor | undefined;
 let editorContainer: HTMLElement;

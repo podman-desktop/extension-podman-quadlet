@@ -42,12 +42,7 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
 
   set(filename: string, value: Monaco.editor.ITextModel): this {
     // when adding a text model, let's add an event to capture update
-    this.listeners.set(
-      filename,
-      value.onDidChangeContent(
-        this.updateLocalStorage.bind(this, filename, value),
-      ),
-    );
+    this.listeners.set(filename, value.onDidChangeContent(this.updateLocalStorage.bind(this, filename, value)));
     // call once to create the entry inside the local storage
     this.updateLocalStorage(filename, value);
 
@@ -61,14 +56,14 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
 
   getName(model: Monaco.editor.ITextModel): string {
     const filename = this.entries().find(([, { id }]) => id === model.id)?.[0];
-    if(!filename) throw new Error(`cannot found corresponding filename for model with id ${model.id}`);
+    if (!filename) throw new Error(`cannot found corresponding filename for model with id ${model.id}`);
     return filename;
   }
 
   rename(from: string, to: string): void {
     // check fromKey has corresponding models
     const fromRaw = this.get(from);
-    if(!fromRaw) throw new Error(`cannot rename file ${from}: not found`);
+    if (!fromRaw) throw new Error(`cannot rename file ${from}: not found`);
 
     // delete existing mapping
     this.delete(from);
@@ -79,7 +74,7 @@ export class TextModelStorage extends SvelteMap<string, Monaco.editor.ITextModel
 
   restore(monaco: typeof Monaco): void {
     for (const [key, content] of Object.entries(localStorage)) {
-      if(!key.startsWith(KEY_PREFIX)) continue;
+      if (!key.startsWith(KEY_PREFIX)) continue;
       const model = monaco.editor.createModel(content, findLanguage(key));
       this.set(key.substring(KEY_PREFIX.length), model);
     }

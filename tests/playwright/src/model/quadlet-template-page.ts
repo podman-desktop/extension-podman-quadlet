@@ -1,6 +1,7 @@
 import { QuadletBasePage } from './quadlet-base-page';
 import type { Locator, Page } from '@playwright/test';
 import { expect as playExpect } from '@playwright/test';
+import { QuadletTemplateCard } from './quadlet-template-card';
 
 
 export class QuadletTemplatePage extends QuadletBasePage {
@@ -14,8 +15,8 @@ export class QuadletTemplatePage extends QuadletBasePage {
     this.cards = this.list.getByRole('listitem');
   }
 
-  async getTemplates(): Promise<Array<Locator>> {
-    return this.cards.all();
+  async getTemplates(): Promise<Array<QuadletTemplateCard>> {
+    return (await this.cards.all()).map((row) => new QuadletTemplateCard(row));
   }
 
   waitForLoad(): Promise<void> {

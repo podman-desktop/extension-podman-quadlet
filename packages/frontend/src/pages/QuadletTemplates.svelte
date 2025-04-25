@@ -24,7 +24,7 @@ function onImportTemplate(template: Template): void {
   onbreadcrumbClick={close}>
   {#snippet content()}
     <div class="mx-5">
-      <TemplateGrid onImport={onImportTemplate.bind(undefined)}/>
+      <TemplateGrid onImport={onImportTemplate.bind(undefined)} />
     </div>
   {/snippet}
 </FormPage>

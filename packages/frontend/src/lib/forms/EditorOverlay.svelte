@@ -3,7 +3,7 @@ import { Button, Tooltip } from '@podman-desktop/ui-svelte';
 import type { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 interface Props {
-  actions: Array<{ id: string; label: string; tooltip: string; icon?: IconDefinition; }>;
+  actions: Array<{ id: string; label: string; tooltip: string; icon?: IconDefinition }>;
   onclick: (actionId: string) => void;
   disabled?: boolean;
   loading?: boolean;
@@ -18,7 +18,13 @@ let { actions, disabled, loading, onclick }: Props = $props();
   aria-label="Edit Buttons">
   {#each actions as action (action.id)}
     <Tooltip topLeft tip={action.tooltip}>
-      <Button type="primary" aria-label={action.label} icon={action.icon} on:click={onclick.bind(undefined, action.id)} disabled={disabled} inProgress={loading}>{action.label}</Button>
+      <Button
+        type="primary"
+        aria-label={action.label}
+        icon={action.icon}
+        on:click={onclick.bind(undefined, action.id)}
+        disabled={disabled}
+        inProgress={loading}>{action.label}</Button>
     </Tooltip>
   {/each}
 </div>

@@ -1,7 +1,6 @@
 <script lang="ts">
 import { DetailsPage, Button } from '@podman-desktop/ui-svelte';
 import { router } from 'tinro';
-import Fa from 'svelte-fa';
 import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons/faFileCirclePlus';
 import { onMount } from 'svelte';
 import type * as Monaco from 'monaco-editor';
@@ -13,9 +12,7 @@ import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
 import { TextModelStorage } from '/@/utils/text-model-storage';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
-import type {
-  ProviderContainerConnectionDetailedInfo,
-} from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { providerConnectionsInfo } from '/@store/connections';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
 import { findLanguage } from '/@/utils/language-utils';
@@ -45,13 +42,13 @@ onMount(async () => {
     // restore if any
     files.restore(monaco);
 
-    if(files.size === 0) {
+    if (files.size === 0) {
       const model = monaco.editor.createModel('# Hello', 'ini');
       files.set('example.container', model);
     }
 
     // Open the new model tab
-    if(files.size > 0) {
+    if (files.size > 0) {
       navigateToModel(Array.from(files.values())[0]);
     }
   } finally {
@@ -70,8 +67,8 @@ function disposeModel(model: Monaco.editor.ITextModel, redirect = true): void {
   files.delete(filename);
   model.dispose();
 
-  if(redirect && modelId === model.id) {
-    if(files.size === 0) {
+  if (redirect && modelId === model.id) {
+    if (files.size === 0) {
       router.location.query.delete('modelId');
     } else {
       navigateToModel(Array.from(files.values())[0]);
@@ -84,10 +81,10 @@ async function onFileDelete(model: Monaco.editor.ITextModel): Promise<void> {
   const result = await dialogAPI.showWarningMessage(
     `Are you sure you want to delete ${getModelFilename(model)}?`,
     'Cancel',
-    'Confirm'
+    'Confirm',
   );
 
-  if(result !== 'Confirm') return;
+  if (result !== 'Confirm') return;
 
   disposeModel(model);
 }
@@ -98,14 +95,11 @@ async function onFileRename(model: Monaco.editor.ITextModel): Promise<void> {
     title: `Rename ${filename}`,
     value: filename,
   });
-  if(!result || filename === result) return;
+  if (!result || filename === result) return;
 
   // ensure no file names are duplicated
-  if(files.has(result)) {
-    await dialogAPI.showInformationMessage(
-      `You cannot have multiple files named the same`,
-      'OK',
-    );
+  if (files.has(result)) {
+    await dialogAPI.showInformationMessage(`You cannot have multiple files named the same`, 'OK');
     return;
   }
 
@@ -116,14 +110,11 @@ async function onNewFileRequest(): Promise<void> {
   const result = await dialogAPI.showInputBox({
     title: 'New File',
   });
-  if(!result) return;
+  if (!result) return;
 
   // ensure no file names are duplicated
-  if(files.has(result)) {
-    await dialogAPI.showInformationMessage(
-      `You cannot have multiple files named the same`,
-      'OK',
-    );
+  if (files.has(result)) {
+    await dialogAPI.showInformationMessage(`You cannot have multiple files named the same`, 'OK');
     return;
   }
 
@@ -143,7 +134,7 @@ function navigateToModel(model: Monaco.editor.ITextModel): void {
 }
 
 async function loadIntoMachine(): Promise<void> {
-  if(!containerProviderConnection) return;
+  if (!containerProviderConnection) return;
 
   loading = true;
   try {
@@ -151,7 +142,7 @@ async function loadIntoMachine(): Promise<void> {
       connection: $state.snapshot(containerProviderConnection),
       files: Array.from(files.entries()).map(([filename, model]) => ({
         filename: filename,
-        content:model.getValue(),
+        content: model.getValue(),
       })),
     });
     //
@@ -189,10 +180,9 @@ async function loadIntoMachine(): Promise<void> {
         url="/quadlets/create?modelId={model.id}"
         selected={modelId === model.id}
         onDelete={onFileDelete.bind(undefined, model)}
-        onEdit={onFileRename.bind(undefined, model)}
-      />
+        onEdit={onFileRename.bind(undefined, model)} />
     {/each}
-    <Button type="secondary" class="!px-2" icon={faFileCirclePlus} title="New file" onclick={onNewFileRequest}/>
+    <Button type="secondary" class="!px-2" icon={faFileCirclePlus} title="New file" onclick={onNewFileRequest} />
   {/snippet}
   <!-- BODY -->
   {#snippet contentSnippet()}
@@ -206,11 +196,17 @@ async function loadIntoMachine(): Promise<void> {
 
     <!-- overlay -->
     <EditorOverlay
-      actions={[{ id: 'load-into-machine', label: 'Load Into Machine', tooltip: 'Load files into machine', icon: faTruckPickup }]}
+      actions={[
+        {
+          id: 'load-into-machine',
+          label: 'Load Into Machine',
+          tooltip: 'Load files into machine',
+          icon: faTruckPickup,
+        },
+      ]}
       onclick={loadIntoMachine}
       disabled={loading || files.size === 0 || !containerProviderConnection}
-      loading={loading}
-    />
+      loading={loading} />
     <!-- prevent trying to render the monaco editor BEFORE we have models -->
     {#if files.size > 0}
       <MonacoEditors models={Array.from(files.values())} modelId={modelId} noMinimap />

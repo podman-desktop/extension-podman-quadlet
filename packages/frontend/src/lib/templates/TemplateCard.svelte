@@ -21,8 +21,13 @@ let { template, onImport }: Props = $props();
       <div class="flex flex-row text-base">
         <!-- left column -->
         <div class="flex flex-col grow">
-          <span class="text-[var(--pd-content-card-header-text)]" aria-label="{template.name}">{template.name}</span>
-          <span class="text-sm text-[var(--pd-content-card-text)]" aria-label="description">{template.description}</span>
+          <span
+            class="text-[var(--pd-content-card-header-text)]"
+            role="heading"
+            aria-level="1"
+            aria-label={template.name}>{template.name}</span>
+          <span class="text-sm text-[var(--pd-content-card-text)]" aria-label="description"
+            >{template.description}</span>
         </div>
 
         <div class="flex flex-col">

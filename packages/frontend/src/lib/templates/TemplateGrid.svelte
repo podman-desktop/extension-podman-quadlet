@@ -22,4 +22,3 @@ onMount(async () => {
     <TemplateCard template={template} onImport={onImport.bind(undefined, template)} />
   {/each}
 </div>
-

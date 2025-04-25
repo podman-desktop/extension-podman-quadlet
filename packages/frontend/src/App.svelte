@@ -51,7 +51,7 @@ onDestroy(() => {
         <QuadletCreate modelId={meta.query.modelId} />
       </Route>
 
-      <Route path="/quadlets/templates" breadcrumb="Templates" >
+      <Route path="/quadlets/templates" breadcrumb="Templates">
         <QuadletTemplates />
       </Route>
 

@@ -94,9 +94,9 @@ async function onCreateRequest(): Promise<void> {
   const result = await dialogAPI.showInformationMessage('Create Quadlet', 'Using Template', 'From Scratch');
 
   // handle cancel case
-  if(!result) return;
+  if (!result) return;
 
-  if(result === 'Using Template') {
+  if (result === 'Using Template') {
     router.goto('/quadlets/templates/');
   } else {
     // clear any existing

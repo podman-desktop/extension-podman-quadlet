@@ -19,7 +19,7 @@
 export function findLanguage(filename: string): string | undefined {
   // Split with latest apparition of .
   const separator = filename.lastIndexOf('.');
-  if(separator !== -1) {
+  if (separator !== -1) {
     const extension = filename.substring(separator);
     switch (extension) {
       case '.container':
