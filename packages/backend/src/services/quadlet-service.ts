@@ -16,6 +16,7 @@ import { TelemetryEvents } from '../utils/telemetry-events';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletKubeParser } from '../utils/parsers/quadlet-kube-parser';
 import { isRunError } from '../utils/run-error';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -118,8 +119,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * @param provider
    */
   protected async getQuadletVersion(provider: ProviderContainerConnection): Promise<string> {
-    const result = await this.podman.quadletExec({
-      connection: provider,
+    // Get the worker
+    const worker: PodmanWorker = await this.podman.getWorker(provider);
+
+    const result = await worker.quadletExec({
       args: ['-version'],
     });
     if (isRunError(result)) throw new Error(`cannot get quadlet version (${result.exitCode}): ${result.stderr}`);
@@ -137,8 +140,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (!options.admin) {
       args.push('-user');
     }
-    const result = await this.podman.quadletExec({
-      connection: options.provider,
+
+    // Get the worker
+    const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+
+    const result = await worker.quadletExec({
       args,
     });
 
@@ -264,6 +270,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           location: ProgressLocation.TASK_WIDGET,
         },
         async () => {
+          // Get the worker
+          const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
             // Only retain the basename (avoid path escape)
@@ -282,7 +291,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
             // write the file
             try {
-              await this.dependencies.podman.writeTextFile(options.provider, destination, content);
+              await worker.write(destination, content);
             } catch (err: unknown) {
               console.error(`Something went wrong while trying to write file to ${destination}`, err);
               throw err;
@@ -332,6 +341,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           location: ProgressLocation.TASK_WIDGET,
         },
         async progress => {
+          // Get the worker
+          const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+
           // get quadlets
           const quadlets = this.getQuadlets(options);
 
@@ -355,7 +367,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
             // 1. remove the quadlet file
             console.debug(`[QuadletService] Deleting quadlet ${quadlet.id} with path ${quadlet.path}`);
-            await this.dependencies.podman.rmFile(options.provider, quadlet.path);
+            await worker.rm(quadlet.path);
 
             // 2. remove the deleted quadlet from the entries
             this.removeEntry({
@@ -410,7 +422,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     });
     if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
 
-    return await this.dependencies.podman.readTextFile(options.provider, quadlet.path);
+    // Get the worker
+    const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+    return await worker.read(quadlet.path);
   }
 
   getSynchronisationInfo(): SynchronisationInfo[] {
@@ -452,9 +466,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }
 
     try {
-      // read
-      const result = await this.dependencies.podman.readTextFile(options.provider, target);
-      return result;
+      // Get the worker
+      const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+      return await worker.read(target);
     } catch (err: unknown) {
       console.error(`Something went wrong with readTextFile on ${target}`, err);
       // check err is an RunError

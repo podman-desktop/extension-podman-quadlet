@@ -8,29 +8,25 @@ import type {
   extensions,
   process as processApi,
   ProviderContainerConnection,
-  RunError,
   RunResult,
   Uri,
 } from '@podman-desktop/api';
 import { CancellationTokenSource } from '@podman-desktop/api';
-import { expect, test, vi, beforeEach, describe, afterEach } from 'vitest';
+import { expect, test, vi, beforeEach, describe } from 'vitest';
 import { PodmanService } from './podman-service';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
 import { PODMAN_EXTENSION_ID } from '../utils/constants';
 import type { ProviderService } from './provider-service';
-import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
-import { join } from 'node:path/posix';
+import type { PodmanConnection } from '../models/podman-connection';
+import { PodmanSSHWorker } from '../utils/worker/podman-ssh-worker';
+import { PodmanNativeWorker } from '../utils/worker/podman-native-worker';
 
 vi.mock(import('node:fs/promises'));
 vi.mock(import('node:os'));
-
-vi.mock('@podman-desktop/api', () => ({
-  Disposable: {
-    create: (fn: () => void): Disposable => ({ dispose: fn }),
-  },
-  CancellationTokenSource: vi.fn(),
-}));
+// mock podman-workers
+vi.mock(import('../utils/worker/podman-ssh-worker'));
+vi.mock(import('../utils/worker/podman-native-worker'));
 
 const extensionsMock: typeof extensions = {
   getExtension: vi.fn(),
@@ -49,7 +45,9 @@ const podmanExtensionApiMock: Extension<PodmanExtensionApi> = {
 
 const processApiMock: typeof processApi = {} as unknown as typeof processApi;
 
-const providersMock: ProviderService = {} as ProviderService;
+const providersMock: ProviderService = {
+  event: vi.fn(),
+} as unknown as ProviderService;
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -60,6 +58,15 @@ const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   providerId: 'podman',
 } as ProviderContainerConnection;
 
+const WSL_CONNECTION_INFO_MOCK: PodmanConnection = {
+  Name: WSL_PROVIDER_CONNECTION_MOCK.connection.name,
+  IsMachine: true,
+  URI: 'ssh://core@127.0.0.1:34427/run/user/1000/podman/podman.sock',
+  Identity: '/home/potatoes/machine.socket',
+  Default: false,
+  ReadWrite: true,
+};
+
 const NATIVE_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
     type: 'podman',
@@ -69,8 +76,8 @@ const NATIVE_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
 } as ProviderContainerConnection;
 
 const RUN_RESULT_MOCK: RunResult = {
-  stdout: 'dummy-stdout',
-  stderr: 'dummy-stderr',
+  stdout: '[]',
+  stderr: '',
   command: 'dummy-command',
 };
 
@@ -87,15 +94,10 @@ const CANCELLATION_SOURCE: CancellationTokenSource = {
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.useFakeTimers();
   vi.mocked(extensionsMock.getExtension).mockReturnValue(podmanExtensionApiMock);
   vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(homedir).mockReturnValue(HOMEDIR_MOCK);
   vi.mocked(CancellationTokenSource).mockReturnValue(CANCELLATION_SOURCE);
-});
-
-afterEach(() => {
-  vi.useRealTimers();
 });
 
 function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWindows?: boolean }): PodmanService {
@@ -111,185 +113,102 @@ function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWind
   });
 }
 
-test('init should subscribe to extensions events', async () => {
-  const disposeMock = vi.fn();
-  vi.mocked(extensionsMock.onDidChange).mockReturnValue({
-    dispose: disposeMock,
-  });
-  const podman = getPodmanService();
-  await podman.init();
-
-  expect(extensionsMock.onDidChange).toHaveBeenCalledWith(expect.any(Function));
-
-  podman.dispose();
-  expect(disposeMock).toHaveBeenCalledOnce();
-});
-
-test('dispose should dispose extensions events subscriber', async () => {
-  const disposeMock = vi.fn();
-  vi.mocked(extensionsMock.onDidChange).mockReturnValue({
-    dispose: disposeMock,
-  });
-  const podman = getPodmanService();
-  await podman.init();
-
-  podman.dispose();
-  expect(disposeMock).toHaveBeenCalledOnce();
-});
-
-test('quadletExec should execute in podman machine on windows', async () => {
-  const podman = getPodmanService({
-    isWindows: true,
-  });
-  const result = await podman.quadletExec({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
-    args: ['-user -dryrun'],
-  });
-
-  expect(result).toStrictEqual(RUN_RESULT_MOCK);
-  expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-    ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, '/usr/libexec/podman/quadlet -user -dryrun'],
-    {
-      connection: WSL_PROVIDER_CONNECTION_MOCK,
-      token: expect.anything(),
-    },
-  );
-});
-
-test('systemctlExec should return RunError if contains exit code', async () => {
-  const runResult: RunError = {
-    ...RUN_RESULT_MOCK,
-    exitCode: 3,
-    name: 'dummy',
-    killed: false,
-    message: 'dummy-error-message',
-    cancelled: false,
+describe('PodmanService#init', () => {
+  const EXTENSION_EVENT_DISPOSABLE: Disposable = {
+    dispose: vi.fn(),
   };
 
-  vi.mocked(podmanExtensionApiMock.exports.exec).mockRejectedValue(runResult);
+  beforeEach(() => {
+    vi.mocked(extensionsMock.onDidChange).mockReturnValue(EXTENSION_EVENT_DISPOSABLE);
+  });
 
-  const podman = getPodmanService({
-    isWindows: true,
+  test('init should subscribe to extensions events', async () => {
+    const podman = getPodmanService();
+    await podman.init();
+
+    expect(extensionsMock.onDidChange).toHaveBeenCalledWith(expect.any(Function));
+
+    podman.dispose();
+    expect(EXTENSION_EVENT_DISPOSABLE.dispose).toHaveBeenCalledOnce();
   });
-  const result = await podman.systemctlExec({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
-    args: [],
+
+  test('init should collect all podman connections', async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      stdout: JSON.stringify([WSL_CONNECTION_INFO_MOCK]),
+      stderr: '',
+      command: 'dummy-command',
+    });
+
+    const podman = getPodmanService();
+    await podman.init();
+
+    const connections = await podman.getPodmanConnections();
+    expect(connections).toHaveLength(1);
+
+    expect(podman.getConnection(WSL_PROVIDER_CONNECTION_MOCK)).toStrictEqual(WSL_CONNECTION_INFO_MOCK);
   });
-  expect(result).toStrictEqual(expect.objectContaining(RUN_RESULT_MOCK));
 });
 
-test('expect a token to be created and disposed', async () => {
-  expect(CancellationTokenSource).not.toHaveBeenCalled();
-  const podman = getPodmanService();
-
-  await podman['executeWrapper']({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
-    command: 'echo',
-    args: ['hello world'],
+describe('PodmanService#getWorker', () => {
+  let podman: PodmanService;
+  beforeEach(async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      stdout: JSON.stringify([WSL_CONNECTION_INFO_MOCK]),
+      stderr: '',
+      command: 'dummy-command',
+    });
   });
 
-  expect(CancellationTokenSource).toHaveBeenCalledOnce();
-  // get the source token
-  expect(CANCELLATION_SOURCE.token.isCancellationRequested).toBeFalsy();
-  expect(CANCELLATION_SOURCE.dispose).toHaveBeenCalledOnce();
-  expect(CANCELLATION_SOURCE.cancel).not.toHaveBeenCalled();
-});
+  test('remote connection should be created', async () => {
+    podman = getPodmanService();
+    await podman.init();
 
-test('expect a token to be created and cancelled', async () => {
-  expect(CancellationTokenSource).not.toHaveBeenCalled();
-  const podman = getPodmanService({
-    isWindows: true,
+    const worker = await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(worker).toBeDefined();
+
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+    expect(PodmanNativeWorker).not.toHaveBeenCalled();
   });
 
-  let resolve: ((value: RunResult) => void) | undefined;
-  let reject: ((err: Error) => void) | undefined;
-  const promise = new Promise<RunResult>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-  expect(resolve).toBeDefined();
-  expect(reject).toBeDefined();
-  expect(promise).toBeDefined();
+  test('remote connection should be cached', async () => {
+    podman = getPodmanService();
+    await podman.init();
 
-  vi.mocked(podmanExtensionApiMock.exports.exec).mockReturnValue(promise);
+    // call twice
+    await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
+    await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
 
-  const execPromise = podman['executeWrapper']({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
-    command: 'echo',
-    args: ['hello world'],
+    // only created once
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+    expect(PodmanNativeWorker).not.toHaveBeenCalled();
   });
 
-  expect(CancellationTokenSource).toHaveBeenCalledOnce();
-  expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-    ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, 'echo hello world'],
-    {
-      token: CANCELLATION_SOURCE.token,
-      connection: WSL_PROVIDER_CONNECTION_MOCK,
-    },
-  );
-  await vi.advanceTimersByTimeAsync(50_000);
-
-  // ensure the source token has been cancelled
-  await vi.waitFor(() => {
-    // get the source token
-    expect(CANCELLATION_SOURCE.dispose).toHaveBeenCalledOnce();
-    expect(CANCELLATION_SOURCE.cancel).toHaveBeenCalledOnce();
-  });
-
-  reject?.(new Error('final rejected'));
-  await expect(execPromise).rejects.toThrowError('final rejected');
-});
-
-describe('writeTextFile', () => {
-  test('linux', async () => {
-    const destination = '~/.config/containers/systemd/dummy.container';
-    const content = 'dummy-content';
-
-    const podman = getPodmanService({
+  test('native connection should be created', async () => {
+    podman = getPodmanService({
       isLinux: true,
     });
-    await podman.writeTextFile(NATIVE_PROVIDER_CONNECTION_MOCK, destination, content);
+    await podman.init();
 
-    // podman exec api not called
-    expect(podmanExtensionApiMock.exports.exec).not.toHaveBeenCalled();
+    const worker = await podman.getWorker(NATIVE_PROVIDER_CONNECTION_MOCK);
+    expect(worker).toBeDefined();
 
-    const resolved = join(HOMEDIR_MOCK, '.config', 'containers', 'systemd');
-
-    // ensure parent directory created
-    expect(mkdir).toHaveBeenCalledWith(resolved, { recursive: true });
-    expect(writeFile).toHaveBeenCalledWith(join(resolved, 'dummy.container'), content, { encoding: 'utf8' });
+    expect(PodmanNativeWorker).toHaveBeenCalledOnce();
+    expect(PodmanSSHWorker).not.toHaveBeenCalled();
   });
 
-  test.each(['windows', 'mac'])('%s', async platform => {
-    const destination = '~/.config/containers/systemd/dummy.container';
-    const content = 'dummy-content';
-
-    const podman = getPodmanService({
-      isWindows: platform === 'windows',
-      isMac: platform === 'mac',
+  test('native connection should be cached', async () => {
+    podman = getPodmanService({
+      isLinux: true,
     });
-    await podman.writeTextFile(WSL_PROVIDER_CONNECTION_MOCK, destination, content);
+    await podman.init();
 
-    // on windows we do not use node:fs
-    expect(mkdir).not.toHaveBeenCalled();
-    expect(writeFile).not.toHaveBeenCalled();
+    // call twice
+    await podman.getWorker(NATIVE_PROVIDER_CONNECTION_MOCK);
+    await podman.getWorker(NATIVE_PROVIDER_CONNECTION_MOCK);
 
-    // mkdir
-    expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-      ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, 'mkdir -p ~/.config/containers/systemd'],
-      {
-        connection: WSL_PROVIDER_CONNECTION_MOCK,
-        token: expect.anything(),
-      },
-    );
-
-    expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(
-      ['machine', 'ssh', WSL_PROVIDER_CONNECTION_MOCK.connection.name, `echo "${content}" > ${destination}`],
-      {
-        connection: WSL_PROVIDER_CONNECTION_MOCK,
-        token: expect.anything(),
-      },
-    );
+    // only created once
+    expect(PodmanNativeWorker).toHaveBeenCalledOnce();
+    expect(PodmanSSHWorker).not.toHaveBeenCalled();
   });
 });
 

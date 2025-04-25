@@ -37,14 +37,10 @@ import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
 import type { Quadlet } from '../models/quadlet';
 import { Messages } from '/@shared/src/messages';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
-vi.mock('@podman-desktop/api', () => ({
-  ProgressLocation: {
-    TASK_WIDGET: 2,
-  },
-}));
 
 const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -64,11 +60,17 @@ const PROVIDER_SERVICE_MOCK: ProviderService = {
 } as unknown as ProviderService;
 
 const PODMAN_SERVICE_MOCK: PodmanService = {
-  quadletExec: vi.fn(),
-  rmFile: vi.fn(),
-  readTextFile: vi.fn(),
-  writeTextFile: vi.fn(),
+  getWorker: vi.fn(),
 } as unknown as PodmanService;
+
+const PODMAN_WORKER_MOCK: PodmanWorker = {
+  read: vi.fn(),
+  rm: vi.fn(),
+  write: vi.fn(),
+  exec: vi.fn(),
+  systemctlExec: vi.fn(),
+  quadletExec: vi.fn(),
+} as unknown as PodmanWorker;
 
 const SYSTEMD_SERVICE_MOCK: SystemdService = {
   getSystemctlVersion: vi.fn(),
@@ -136,7 +138,8 @@ beforeEach(() => {
     [QUADLET_MOCK.service]: true,
   });
 
-  vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
+  vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([
     QUADLET_MOCK,
     SERVICE_LESS_QUADLET_MOCK,
@@ -172,8 +175,9 @@ describe('QuadletService#collectPodmanQuadlet', () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
-    expect(PODMAN_SERVICE_MOCK.quadletExec).toHaveBeenCalledWith({
-      connection: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+
+    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledWith({
       args: ['-dryrun', '-user'],
     });
 
@@ -200,7 +204,7 @@ describe('QuadletService#getQuadletVersion', () => {
   };
 
   test('should use PodmanService#quadletExec to get quadlet version', async () => {
-    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_RESULT);
+    vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_RESULT);
 
     const quadlet = getQuadletService();
     const result = await quadlet.getQuadletVersion(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
@@ -208,14 +212,15 @@ describe('QuadletService#getQuadletVersion', () => {
     // should return stdout
     expect(result).toBe('5.3.2');
 
-    expect(PODMAN_SERVICE_MOCK.quadletExec).toHaveBeenCalledWith({
-      connection: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+
+    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledWith({
       args: ['-version'],
     });
   });
 
   test('PodmanService#quadletExec resolving RunError should throw an error', async () => {
-    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_ERROR);
+    vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockResolvedValue(VERSION_RUN_ERROR);
 
     const quadlet = getQuadletService();
 
@@ -388,8 +393,8 @@ describe('QuadletService#remove', () => {
     await quadlet.collectPodmanQuadlet();
 
     // reset mock to reset call count
-    vi.mocked(PODMAN_SERVICE_MOCK.quadletExec).mockReset();
-    expect(PODMAN_SERVICE_MOCK.quadletExec).not.toHaveBeenCalled(); // ensure reset worked
+    vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockReset();
+    expect(PODMAN_WORKER_MOCK.quadletExec).not.toHaveBeenCalled(); // ensure reset worked
 
     await expect(() => {
       return quadlet.remove({
@@ -398,13 +403,13 @@ describe('QuadletService#remove', () => {
       });
     }).rejects.toThrowError();
 
-    expect(PODMAN_SERVICE_MOCK.quadletExec).toHaveBeenCalledOnce();
+    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledOnce();
   });
 });
 
 describe('QuadletService#read', () => {
   test('should use Podman#readTextFile', async () => {
-    vi.mocked(PODMAN_SERVICE_MOCK.readTextFile).mockResolvedValue('fake-content');
+    vi.mocked(PODMAN_WORKER_MOCK.read).mockResolvedValue('fake-content');
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
@@ -414,10 +419,10 @@ describe('QuadletService#read', () => {
     });
     expect(result).toStrictEqual('fake-content');
 
-    expect(PODMAN_SERVICE_MOCK.readTextFile).toHaveBeenCalledWith(
-      WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
-      QUADLET_MOCK.path,
-    );
+    // ensure we get the worker with appropriate connection
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+
+    expect(PODMAN_WORKER_MOCK.read).toHaveBeenCalledWith(QUADLET_MOCK.path);
   });
 });
 

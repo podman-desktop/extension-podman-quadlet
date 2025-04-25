@@ -15,25 +15,36 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { Webview } from '@podman-desktop/api';
+import type { Event, Webview } from '@podman-desktop/api';
+import { EventEmitter } from '@podman-desktop/api';
 import type { Messages } from '/@shared/src/messages';
 
 export class Publisher<T> {
+  private readonly _onEvent = new EventEmitter<T>();
+  readonly event: Event<T> = this._onEvent.event;
+
   constructor(
     private webview: Webview,
     private channel: Messages,
     private getter: () => T,
-  ) {}
+  ) {
+    // register the webview#postMessage logic
+    this.event(this.postMessage.bind(this));
+  }
 
-  notify(): void {
+  protected postMessage(content: T): void {
     // side-case: the notify function may be called during the constructor so this may be undefined.
     this?.webview
       .postMessage({
         id: this.channel,
-        body: this.getter(),
+        body: content,
       })
       .catch((err: unknown) => {
         console.error(`Something went wrong while emitting ${this.channel}: ${String(err)}`);
       });
+  }
+
+  notify(): void {
+    this._onEvent.fire(this.getter());
   }
 }
