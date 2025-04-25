@@ -18,5 +18,5 @@
     "noUnusedLocals": true
   },
   "include": ["src", "types/*.d.ts", "../../types/*.d.ts", "../shared/*.ts", "../shared/**/*.ts"],
-  "exclude": ["vite.config.ts", "vitest.config.ts"]
+  "exclude": ["vite.config.ts", "vitest.config.ts", "vitest.setup.ts"]
 }
