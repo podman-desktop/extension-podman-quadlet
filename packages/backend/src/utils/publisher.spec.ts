@@ -31,11 +31,7 @@ beforeEach(() => {
 
 test('ensure publisher properly use getter', async () => {
   const getterMock = vi.fn().mockReturnValue('dummyValue');
-  const publisher = new Publisher<string>(
-    WEBVIEW_MOCK,
-    Messages.TEST_PURPOSE,
-    getterMock,
-  );
+  const publisher = new Publisher<string>(WEBVIEW_MOCK, Messages.TEST_PURPOSE, getterMock);
   publisher.notify();
 
   await vi.waitFor(() => {
@@ -49,19 +45,15 @@ test('ensure publisher properly use getter', async () => {
 
 test('publisher should notify all listeners', async () => {
   const getterMock = vi.fn().mockReturnValue('dummyValue');
-  const publisher = new Publisher<string>(
-    WEBVIEW_MOCK,
-    Messages.TEST_PURPOSE,
-    getterMock,
-  );
+  const publisher = new Publisher<string>(WEBVIEW_MOCK, Messages.TEST_PURPOSE, getterMock);
 
-  const listeners = Array.from({length: 10}).map(() => vi.fn());
-  listeners.forEach((listener) => publisher.event(listener));
+  const listeners = Array.from({ length: 10 }).map(() => vi.fn());
+  listeners.forEach(listener => publisher.event(listener));
 
   publisher.notify();
 
   await vi.waitFor(() => {
-    listeners.forEach((listener) => {
+    listeners.forEach(listener => {
       expect(listener).toHaveBeenCalledOnce();
       expect(listener).toHaveBeenCalledWith('dummyValue');
     });
