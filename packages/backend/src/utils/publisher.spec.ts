@@ -15,28 +15,55 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import { Publisher } from './publisher';
 import type { Webview } from '@podman-desktop/api';
 import { Messages } from '/@shared/src/messages';
 
+const WEBVIEW_MOCK: Webview = {
+  postMessage: vi.fn(),
+} as unknown as Webview;
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
+});
+
 test('ensure publisher properly use getter', async () => {
-  const postMessageMock = vi.fn().mockResolvedValue(undefined);
   const getterMock = vi.fn().mockReturnValue('dummyValue');
   const publisher = new Publisher<string>(
-    {
-      postMessage: postMessageMock,
-    } as unknown as Webview,
+    WEBVIEW_MOCK,
     Messages.TEST_PURPOSE,
     getterMock,
   );
   publisher.notify();
 
   await vi.waitFor(() => {
-    expect(postMessageMock).toHaveBeenCalledWith({
+    expect(WEBVIEW_MOCK.postMessage).toHaveBeenCalledWith({
       id: Messages.TEST_PURPOSE,
       body: 'dummyValue',
     });
   });
   expect(getterMock).toHaveBeenCalled();
+});
+
+test('publisher should notify all listeners', async () => {
+  const getterMock = vi.fn().mockReturnValue('dummyValue');
+  const publisher = new Publisher<string>(
+    WEBVIEW_MOCK,
+    Messages.TEST_PURPOSE,
+    getterMock,
+  );
+
+  const listeners = Array.from({length: 10}).map(() => vi.fn());
+  listeners.forEach((listener) => publisher.event(listener));
+
+  publisher.notify();
+
+  await vi.waitFor(() => {
+    listeners.forEach((listener) => {
+      expect(listener).toHaveBeenCalledOnce();
+      expect(listener).toHaveBeenCalledWith('dummyValue');
+    });
+  });
 });

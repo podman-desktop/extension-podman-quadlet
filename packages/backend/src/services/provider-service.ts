@@ -23,7 +23,8 @@ export class ProviderService
     super(dependencies.webview, Messages.UPDATE_PROVIDERS, () => this.all());
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.#disposables.forEach((disposable: Disposable) => disposable.dispose());
   }
 
