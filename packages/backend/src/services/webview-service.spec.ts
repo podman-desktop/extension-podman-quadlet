@@ -9,12 +9,6 @@ import { readFile } from 'node:fs/promises';
 
 vi.mock(import('node:fs/promises'));
 
-vi.mock('@podman-desktop/api', () => ({
-  Uri: {
-    joinPath: vi.fn(),
-  },
-}));
-
 const windowMock: typeof windowsApi = {
   createWebviewPanel: vi.fn(),
 } as unknown as typeof windowsApi;

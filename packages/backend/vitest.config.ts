@@ -33,5 +33,6 @@ export default defineProject({
       '/@gen/': join(PACKAGE_ROOT, 'src-generated') + '/',
       '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
+    setupFiles: ['./vitest.setup.ts'],
   },
 });
