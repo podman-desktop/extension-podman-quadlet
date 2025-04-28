@@ -17,6 +17,6 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true
   },
-  "include": ["src", "types/*.d.ts", "../../types/*.d.ts", "../shared/*.ts", "../shared/**/*.ts"],
+  "include": ["src", "vitest.setup.*", "types/*.d.ts", "../../types/*.d.ts", "../shared/*.ts", "../shared/**/*.ts"],
   "exclude": ["vite.config.ts", "vitest.config.ts"]
 }
