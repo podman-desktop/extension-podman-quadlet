@@ -34,10 +34,6 @@ const CANCELLATION_TOKEN_SOURCE_MOCK: CancellationTokenSource = {
   dispose: vi.fn(),
 } as unknown as CancellationTokenSource;
 
-vi.mock('@podman-desktop/api', () => ({
-  CancellationTokenSource: vi.fn(),
-}));
-
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(CancellationTokenSource).mockReturnValue(CANCELLATION_TOKEN_SOURCE_MOCK);

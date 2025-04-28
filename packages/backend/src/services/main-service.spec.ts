@@ -16,7 +16,6 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type {
-  Disposable,
   env,
   ExtensionContext,
   extensions,
@@ -50,16 +49,6 @@ import { ImageApi } from '/@shared/src/apis/image-api';
 import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
-
-vi.mock('@podman-desktop/api', () => ({
-  Disposable: {
-    create: (fn: () => void): Disposable => ({ dispose: fn }),
-  },
-  CancellationTokenSource: vi.fn(),
-  Uri: {
-    joinPath: vi.fn(),
-  },
-}));
 
 // mock message-proxy
 vi.mock('/@shared/src/messages/message-proxy');

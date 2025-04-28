@@ -40,11 +40,6 @@ import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
-vi.mock('@podman-desktop/api', () => ({
-  ProgressLocation: {
-    TASK_WIDGET: 2,
-  },
-}));
 
 const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

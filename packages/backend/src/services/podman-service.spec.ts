@@ -2,7 +2,6 @@
  * @author axel7083
  */
 import type {
-  Disposable,
   env as envApi,
   Extension,
   extensions,
@@ -24,13 +23,6 @@ import { join } from 'node:path/posix';
 
 vi.mock(import('node:fs/promises'));
 vi.mock(import('node:os'));
-
-vi.mock('@podman-desktop/api', () => ({
-  Disposable: {
-    create: (fn: () => void): Disposable => ({ dispose: fn }),
-  },
-  CancellationTokenSource: vi.fn(),
-}));
 
 const extensionsMock: typeof extensions = {
   getExtension: vi.fn(),
