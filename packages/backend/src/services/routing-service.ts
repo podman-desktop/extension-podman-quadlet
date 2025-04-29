@@ -57,7 +57,8 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
     return this.write(`/quadlets/generate?${search.toString()}`);
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.#route = undefined;
   }
 }

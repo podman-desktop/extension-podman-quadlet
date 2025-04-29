@@ -465,7 +465,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.#value.clear();
     this.#extensionsEventDisposable?.dispose();
     this.#extensionsEventDisposable = undefined;
