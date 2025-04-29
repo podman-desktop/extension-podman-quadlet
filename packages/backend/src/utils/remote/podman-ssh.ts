@@ -80,6 +80,16 @@ export class PodmanSSH implements Disposable {
           return;
         }
 
+        // handle the cancellation token if defined
+        options.token?.onCancellationRequested(() => {
+          console.warn(`[PodmanSSH] received cancellation request for ${fullCommand}`);
+          if (channel.closed) {
+            console.warn('[PodmanSSH] channel is already closed: ignoring');
+            return;
+          }
+          channel.close();
+        });
+
         let stdout = '';
         let stderr = '';
 
