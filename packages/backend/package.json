@@ -66,6 +66,7 @@
     "@podman-desktop/api": "^1.18.0",
     "@podman-desktop/podman-extension-api": "^1.18.0",
     "@types/node": "^22",
+    "@types/ssh2": "^1.15.5",
     "@vitest/coverage-v8": "^3.0.9",
     "prettier": "^3.5.3",
     "typescript": "5.8.3",
@@ -77,6 +78,7 @@
     "js-ini": "^1.6.0",
     "semver": "^7.7.1",
     "js-yaml": "^4.1.0",
-    "podlet-js": "workspace:^"
+    "podlet-js": "workspace:^",
+    "ssh2": "^1.16.0"
   }
 }
