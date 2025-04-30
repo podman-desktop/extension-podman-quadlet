@@ -8,7 +8,7 @@
 
 ## Install
 
-You can install the Podman Quadlet Extension from the extension page and use `ghcr.io/axel7083/pd-extension-quadlet:latest`. See the instruction on [How to install an extension](https://podman-desktop.io/docs/extensions/install)
+You can install the Podman Quadlet Extension from the extension page and use `ghcr.io/podman-desktop/pd-extension-quadlet:latest`. See the instruction on [How to install an extension](https://podman-desktop.io/docs/extensions/install)
 
 ### Requirements
 
