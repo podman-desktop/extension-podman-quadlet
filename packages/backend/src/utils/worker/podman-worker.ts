@@ -57,8 +57,8 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
    */
   abstract exec(
     command: string,
-    options: {
-      args: string[];
+    options?: {
+      args?: string[];
       logger?: Logger;
       token?: CancellationToken;
       env?: Record<string, string>;
@@ -95,6 +95,10 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     });
   }
 
+  /**
+   * Execute the `quadlet` command on the podman connection
+   * @param options the options for the exec logic
+   */
   async quadletExec(options: {
     args: string[];
     logger?: Logger;
@@ -104,6 +108,10 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     return this.exec('/usr/libexec/podman/quadlet', options);
   }
 
+  /**
+   * Execute the `journalctl` command on the podman connection
+   * @param options the options for the exec logic
+   */
   async journalctlExec(options: {
     args: string[];
     logger?: Logger;
