@@ -51,9 +51,7 @@ const PODMAN_SSH_MOCK: PodmanSSH = {
   dispose: vi.fn(),
 } as unknown as PodmanSSH;
 
-const CONNECT_CONFIG_MOCK: ConnectConfig = {
-
-} as unknown as ConnectConfig;
+const CONNECT_CONFIG_MOCK: ConnectConfig = {} as unknown as ConnectConfig;
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -141,10 +139,10 @@ describe('exec', () => {
   test('exec without option should proxy to PodmanSSH#exec', async () => {
     const worker = getPodmanSSHWorker();
 
-    await worker.exec('echo', { args: ['hello']});
+    await worker.exec('echo', { args: ['hello'] });
 
     expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledOnce();
-    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledWith('echo', { args: ['hello']});
+    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledWith('echo', { args: ['hello'] });
   });
 });
 
