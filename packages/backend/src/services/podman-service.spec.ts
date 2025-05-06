@@ -20,6 +20,7 @@ import type { ProviderService } from './provider-service';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path/posix';
+import type { PodmanConnection } from '../models/podman-connection';
 
 vi.mock(import('node:fs/promises'));
 vi.mock(import('node:os'));
@@ -64,6 +65,15 @@ const RUN_RESULT_MOCK: RunResult = {
   stdout: 'dummy-stdout',
   stderr: 'dummy-stderr',
   command: 'dummy-command',
+};
+
+const WSL_CONNECTION_INFO_MOCK: PodmanConnection = {
+  Name: WSL_PROVIDER_CONNECTION_MOCK.connection.name,
+  IsMachine: true,
+  URI: 'ssh://core@127.0.0.1:34427/run/user/1000/podman/podman.sock',
+  Identity: '/home/potatoes/machine.socket',
+  Default: false,
+  ReadWrite: true,
 };
 
 const HOMEDIR_MOCK = '/home/dummy-user';
@@ -332,5 +342,54 @@ describe('isMachineRootful', () => {
 
     const result = await podman.isMachineRootful(WSL_PROVIDER_CONNECTION_MOCK);
     expect(result).toBeFalsy();
+  });
+});
+
+describe('podman connections', () => {
+  test('PodmanService#getPodmanConnections should use podman#exec', async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      stdout: JSON.stringify([WSL_CONNECTION_INFO_MOCK]),
+      stderr: '',
+      command: 'dummy-command',
+    });
+
+    const podman = getPodmanService();
+
+    const connections = await podman.getPodmanConnections();
+    expect(connections).toHaveLength(1);
+
+    expect(connections[0]).toStrictEqual(WSL_CONNECTION_INFO_MOCK);
+  });
+
+  test('PodmanService#getPodmanConnections should exclude non-ssh connections', async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      stdout: JSON.stringify([
+        {
+          ...WSL_CONNECTION_INFO_MOCK,
+          URI: 'localhost:8888',
+        },
+      ]),
+      stderr: '',
+      command: 'dummy-command',
+    });
+
+    const podman = getPodmanService();
+
+    const connections = await podman.getPodmanConnections();
+    expect(connections).toHaveLength(0);
+  });
+
+  test('malformed output should throw an error', async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
+      stdout: '{}', // not an array
+      stderr: '',
+      command: 'dummy-command',
+    });
+
+    const podman = getPodmanService();
+
+    await expect(() => {
+      return podman.getPodmanConnections();
+    }).rejects.toThrowError('malformed output for podman system connection ls command.');
   });
 });
