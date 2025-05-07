@@ -10,6 +10,8 @@ import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
 import { handleWebview } from './utils/webviewHandler';
 import { QuadletDetailsPage } from './model/quadlet-details-page';
+import { QuadletCreate } from './model/quadlet-create';
+import type { QuadletTemplateCard } from './model/quadlet-template-card';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
@@ -279,6 +281,70 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           timeout: 15_000,
         })
         .toBeTruthy();
+    });
+
+    test('create quadlet from template', async () => {
+      test.setTimeout(150_000);
+
+      const templatePage = await quadletListPage.createQuadletFromTemplate();
+      await templatePage.waitForLoad();
+
+      const templates = await templatePage.getTemplates();
+
+      let nginxTemplate: QuadletTemplateCard | undefined = undefined;
+      for (const template of templates) {
+        const title = await template.title.textContent();
+        if(title?.includes('Nginx Container')) {
+          nginxTemplate = template;
+        }
+      }
+
+      if(!nginxTemplate) throw new Error('cannot found nginx container template');
+
+      await nginxTemplate.importTemplate();
+
+      const createPage = new QuadletCreate(quadletListPage.page, quadletListPage.webview);
+      /**
+       * ==========
+       * Select the engine
+       * =========
+       */
+        // open the select dropdown
+      const podmanProviders = await createPage.containerEngineSelect.getOptions();
+      playExpect(podmanProviders.length).toBeGreaterThan(0);
+
+      const sorted = podmanProviders.find(provider => provider.toLowerCase().includes('podman'));
+      if (!sorted) throw new Error('cannot found podman provider');
+
+      // Value can be `podman-machine-default (WSL)`
+      const machine = sorted.split(' ')[0];
+      console.log(`Trying to use provider ${machine}`);
+      await createPage.containerEngineSelect.set(machine);
+
+      /**
+       * ==========
+       * Save the content
+       * =========
+       */
+      await playExpect
+        .poll(async () => await createPage.loadIntoMachineBtn.isEnabled(), {
+          timeout: 5_000,
+        })
+        .toBeTruthy();
+
+      await createPage.loadIntoMachineBtn.click();
+
+      /**
+       * ==========
+       * Ensure the template has created a quadlet
+       * =========
+       */
+      const row = await quadletListPage.getQuadletRow('nginx.service');
+      // get the status locator
+      const status = row.getByRole('status');
+      // read the title (either 'RUNNING' or '')
+      const title = await status.getAttribute('title');
+      playExpect(title).not.toBe('RUNNING');
     });
   });
 });

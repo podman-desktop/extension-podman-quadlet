@@ -1,3 +1,7 @@
+<!--
+    @component
+    @deprecated use {@link MonacoEditors}
+-->
 <script lang="ts">
 import { onDestroy, onMount } from 'svelte';
 import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';

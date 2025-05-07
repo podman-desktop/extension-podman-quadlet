@@ -11,6 +11,7 @@ import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderCo
 import { providerConnectionsInfo } from '/@store/connections';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faPencil } from '@fortawesome/free-solid-svg-icons/faPencil';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
@@ -89,6 +90,21 @@ function navigateToGenerate(): void {
   router.goto('/quadlets/generate');
 }
 
+async function onCreateRequest(): Promise<void> {
+  const result = await dialogAPI.showInformationMessage('Create Quadlet', 'Using Template', 'From Scratch');
+
+  // handle cancel case
+  if (!result) return;
+
+  if (result === 'Using Template') {
+    router.goto('/quadlets/templates/');
+  } else {
+    // clear any existing
+    localStorage.clear();
+    router.goto('/quadlets/create');
+  }
+}
+
 async function deleteSelected(): Promise<void> {
   const result = await dialogAPI.showWarningMessage(
     `Are you sure you want to delete ${selectedItemsNumber} quadlet${selectedItemsNumber > 1 ? 's' : ''}?`,
@@ -126,6 +142,8 @@ async function deleteSelected(): Promise<void> {
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
   <svelte:fragment slot="additional-actions">
+    <Button icon={faPencil} disabled={disabled} title="Create Quadlet" on:click={onCreateRequest}
+      >Create Quadlet</Button>
     <Button icon={faCode} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
       >Generate Quadlet</Button>
     <Button

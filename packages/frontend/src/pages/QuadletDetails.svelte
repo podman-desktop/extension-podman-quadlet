@@ -192,7 +192,11 @@ function onchange(content: string): void {
                 {quadlet.path}
               </span>
             </div>
-            <EditorOverlay save={save} loading={loading} changed={changed} />
+            <EditorOverlay
+              actions={[{ id: 'save', label: 'Save', tooltip: 'Apply the changes' }]}
+              onclick={save}
+              loading={loading}
+              disabled={!changed} />
             <MonacoEditor class="h-full" onChange={onchange} content={quadletSource} language="ini" />
           {/if}
         </Route>
