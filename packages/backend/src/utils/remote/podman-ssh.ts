@@ -57,21 +57,21 @@ export class PodmanSSH implements Disposable {
 
   public exec(
     command: string,
-    options: {
-      args: string[];
+    options?: {
+      args?: string[];
       logger?: Logger;
       token?: CancellationToken;
       env?: Record<string, string>;
     },
   ): Promise<RunResult> {
-    const fullCommand = `${command} ${options.args.join(' ')}`;
+    const fullCommand = `${command} ${options?.args?.join(' ')}`;
     console.log(`[PodmanSSH] start executing command ${command} for host ${this.#sshConfig.host}`);
 
     const { promise, reject, resolve } = Promise.withResolvers<RunResult>();
     this.#client.exec(
       fullCommand,
       {
-        env: options.env,
+        env: options?.env,
       },
       (error, channel) => {
         if (error) {
@@ -81,7 +81,7 @@ export class PodmanSSH implements Disposable {
         }
 
         // handle the cancellation token if defined
-        options.token?.onCancellationRequested(() => {
+        options?.token?.onCancellationRequested(() => {
           console.warn(`[PodmanSSH] received cancellation request for ${fullCommand}`);
           if (channel.closed) {
             console.warn('[PodmanSSH] channel is already closed: ignoring');
