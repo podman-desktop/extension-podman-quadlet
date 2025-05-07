@@ -366,7 +366,7 @@ describe('podman connections', () => {
       stdout: JSON.stringify([
         {
           ...WSL_CONNECTION_INFO_MOCK,
-          URI: 'localhost:8888',
+          URI: 'tcp://localhost:888',
         },
       ]),
       stderr: '',
