@@ -65,10 +65,10 @@ export class ProviderService
 
   async init(): Promise<void> {
     // register
-    this.#disposables.push(this.dependencies.providers.onDidRegisterContainerConnection(this.notify));
+    this.#disposables.push(this.dependencies.providers.onDidRegisterContainerConnection(this.notify.bind(this)));
     // unregister
-    this.#disposables.push(this.dependencies.providers.onDidUnregisterContainerConnection(this.notify));
-    // update provider (start / stop )
-    this.#disposables.push(this.dependencies.providers.onDidUpdateContainerConnection(this.notify));
+    this.#disposables.push(this.dependencies.providers.onDidUnregisterContainerConnection(this.notify.bind(this)));
+    // update container connection (start / stop )
+    this.#disposables.push(this.dependencies.providers.onDidUpdateContainerConnection(this.notify.bind(this)));
   }
 }
