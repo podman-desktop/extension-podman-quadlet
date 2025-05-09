@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { env, extensions as Extensions, process as ProcessApi, process as ProcessCore } from '@podman-desktop/api';
+import type { env, extensions as Extensions, process as ProcessApi } from '@podman-desktop/api';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
 import { PODMAN_EXTENSION_ID } from '../utils/constants';
 import type { ProviderService } from './provider-service';
@@ -16,14 +16,6 @@ export interface PodmanDependencies {
 
 export abstract class PodmanHelper {
   protected constructor(protected dependencies: PodmanDependencies) {}
-
-  /**
-   * Native exec on the host machine
-   * @protected
-   */
-  protected get exec(): typeof ProcessCore.exec {
-    return this.dependencies.processApi.exec;
-  }
 
   protected get isLinux(): boolean {
     return this.dependencies.env.isLinux;

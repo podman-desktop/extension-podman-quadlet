@@ -27,6 +27,7 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import type { Quadlet } from '../models/quadlet';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { LoggerImpl } from '../utils/logger-impl';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 const QUADLET_SERVICE: QuadletService = {
   getKubeYAML: vi.fn(),
@@ -38,7 +39,7 @@ const SYSTEMD_SERVICE: SystemdService = {
   stop: vi.fn(),
 } as unknown as SystemdService;
 const PODMAN_SERVICE: PodmanService = {
-  journalctlExec: vi.fn(),
+  getWorker: vi.fn(),
 } as unknown as PodmanService;
 const PROVIDER_SERVICE: ProviderService = {
   getProviderContainerConnection: vi.fn(),
@@ -46,6 +47,9 @@ const PROVIDER_SERVICE: ProviderService = {
 const LOGGER_SERVICE: LoggerService = {
   createLogger: vi.fn(),
 } as unknown as LoggerService;
+const PODMAN_WORKER_MOCK: PodmanWorker = {
+  journalctlExec: vi.fn(),
+} as unknown as PodmanWorker;
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -74,6 +78,7 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
 beforeEach(() => {
   vi.resetAllMocks();
 
+  vi.mocked(PODMAN_SERVICE.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
   vi.mocked(PROVIDER_SERVICE.getProviderContainerConnection).mockReturnValue(WSL_PROVIDER_CONNECTION_MOCK);
   vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue(QUADLET_MOCK);
   vi.mocked(QUADLET_SERVICE.refreshQuadletsStatuses).mockResolvedValue(undefined);
@@ -143,7 +148,7 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
 
   beforeEach(() => {
     vi.mocked(LOGGER_SERVICE.createLogger).mockReturnValue(LOGGER_MOCK);
-    vi.mocked(PODMAN_SERVICE.journalctlExec).mockResolvedValue({} as RunResult);
+    vi.mocked(PODMAN_WORKER_MOCK.journalctlExec).mockResolvedValue({} as RunResult);
   });
 
   test('should return logger created throw LoggerService#createLogger', async () => {
@@ -164,8 +169,10 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
       quadletId: QUADLET_MOCK.id,
     });
 
-    expect(PODMAN_SERVICE.journalctlExec).toHaveBeenCalledWith({
-      connection: WSL_PROVIDER_CONNECTION_MOCK,
+    expect(PODMAN_SERVICE.getWorker).toHaveBeenCalledOnce();
+    expect(PODMAN_SERVICE.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+
+    expect(PODMAN_WORKER_MOCK.journalctlExec).toHaveBeenCalledWith({
       args: ['--user', '--follow', `--unit=${QUADLET_MOCK.service}`, '--output=cat'],
       logger: LOGGER_MOCK,
       token: expect.anything(),

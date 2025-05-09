@@ -6,6 +6,7 @@ import { expect, test, vi, beforeEach } from 'vitest';
 import { SystemdService } from './systemd-service';
 import type { ProviderContainerConnection, TelemetryLogger } from '@podman-desktop/api';
 import { TelemetryEvents } from '../utils/telemetry-events';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -17,8 +18,17 @@ const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   providerId: 'podman',
 } as ProviderContainerConnection;
 
-const podmanServiceMock: PodmanService = {
+const PODMAN_WORKER_MOCK: PodmanWorker = {
+  read: vi.fn(),
+  rm: vi.fn(),
+  write: vi.fn(),
+  exec: vi.fn(),
   systemctlExec: vi.fn(),
+  quadletExec: vi.fn(),
+} as unknown as PodmanWorker;
+
+const PODMAN_SERVICE_MOCK: PodmanService = {
+  getWorker: vi.fn(),
 } as unknown as PodmanService;
 
 const telemetryMock: TelemetryLogger = {
@@ -28,7 +38,8 @@ const telemetryMock: TelemetryLogger = {
 beforeEach(() => {
   vi.resetAllMocks();
 
-  vi.mocked(podmanServiceMock.systemctlExec).mockResolvedValue({
+  vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.systemctlExec).mockResolvedValue({
     stdout: '',
     stderr: '',
     command: '',
@@ -37,7 +48,7 @@ beforeEach(() => {
 
 function getSystemdService(): SystemdService {
   return new SystemdService({
-    podman: podmanServiceMock,
+    podman: PODMAN_SERVICE_MOCK,
     telemetry: telemetryMock,
   });
 }
@@ -48,9 +59,9 @@ test('expect SystemdService#daemonReload to call PodmanService#systemctlExec', a
     provider: WSL_PROVIDER_CONNECTION_MOCK,
     admin: false,
   });
+  expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
 
-  expect(podmanServiceMock.systemctlExec).toHaveBeenCalledWith({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
+  expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
     args: ['--user', 'daemon-reload'],
   });
 });
@@ -63,8 +74,9 @@ test('expect SystemdService#start to call PodmanService#systemctlExec', async ()
     admin: false,
   });
 
-  expect(podmanServiceMock.systemctlExec).toHaveBeenCalledWith({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
+  expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+
+  expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
     args: ['--user', 'start', 'dummy'],
   });
 
@@ -80,9 +92,9 @@ test('expect SystemdService#stop to call PodmanService#systemctlExec', async () 
     service: 'dummy',
     admin: false,
   });
+  expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
 
-  expect(podmanServiceMock.systemctlExec).toHaveBeenCalledWith({
-    connection: WSL_PROVIDER_CONNECTION_MOCK,
+  expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
     args: ['--user', 'stop', 'dummy'],
   });
 

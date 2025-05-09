@@ -11,6 +11,7 @@ import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { LoggerService } from '../services/logger-service';
 import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 interface Dependencies {
   quadlet: QuadletService;
@@ -110,10 +111,12 @@ export class QuadletApiImpl extends QuadletApi {
 
     const logger = this.dependencies.loggerService.createLogger();
 
+    // get the worker
+    const worker: PodmanWorker = await this.dependencies.podman.getWorker(providerConnection);
+
     // do not wait for the returned value as we --follow
-    this.dependencies.podman
+    worker
       .journalctlExec({
-        connection: providerConnection,
         args: ['--user', '--follow', `--unit=${quadlet.service}`, '--output=cat'],
         env: {
           SYSTEMD_COLORS: 'true',
