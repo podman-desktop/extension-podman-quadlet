@@ -22,9 +22,10 @@ import type { ImageService } from './image-service';
 import { PodletJsService } from './podlet-js-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type { ContainerInspectInfo, ImageInspectInfo } from '@podman-desktop/api';
+import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@podman-desktop/api';
 import { Compose, ContainerGenerator, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
+import { TelemetryEvents } from '../utils/telemetry-events';
 
 /**
  *  mock the podlet-js library
@@ -47,6 +48,10 @@ const CONTAINER_CONNECTION_IDENTIFIER: ProviderContainerConnectionIdentifierInfo
   providerId: 'podman',
   name: 'Podman',
 };
+
+const TELEMETRY_MOCK: TelemetryLogger = {
+  logUsage: vi.fn(),
+} as unknown as TelemetryLogger;
 
 const ENGINE_ID_MOCK: string = 'dummy-engine-id';
 
@@ -81,6 +86,7 @@ function getService(): PodletJsService {
   return new PodletJsService({
     containers: CONTAINER_SERVICE_MOCK,
     images: IMAGE_SERVICE_MOCK,
+    telemetry: TELEMETRY_MOCK,
   });
 }
 
@@ -116,6 +122,46 @@ describe('container quadlets', () => {
 
     // the output should match the mocked string
     expect(result).toStrictEqual(CONTAINER_GENERATE_OUTPUT);
+  });
+
+  test('generate container should send telemetry event', async () => {
+    const podletJs = getService();
+
+    // generate container quadlet
+    await podletJs.generate({
+      connection: CONTAINER_CONNECTION_IDENTIFIER,
+      type: QuadletType.CONTAINER,
+      resourceId: CONTAINER_INSPECT_MOCK.Id,
+    });
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+        'quadlet-type': QuadletType.CONTAINER.toLowerCase(),
+      });
+    });
+  });
+
+  test('error in container quadlet generate should send telemetry event including it', async () => {
+    const podletJs = getService();
+
+    const errorMock = new Error('dummy error');
+    vi.mocked(CONTAINER_SERVICE_MOCK.inspectContainer).mockRejectedValue(errorMock);
+
+    // generate container quadlet
+    await expect(() => {
+      return podletJs.generate({
+        connection: CONTAINER_CONNECTION_IDENTIFIER,
+        type: QuadletType.CONTAINER,
+        resourceId: CONTAINER_INSPECT_MOCK.Id,
+      });
+    }).rejects.toThrowError('dummy error');
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+        'quadlet-type': QuadletType.CONTAINER.toLowerCase(),
+        error: errorMock,
+      });
+    });
   });
 });
 
@@ -187,5 +233,41 @@ describe('compose', () => {
     expect(COMPOSE_MOCK.toKubePlay).toHaveBeenCalledOnce();
 
     expect(result).toStrictEqual(KUBE_MOCK);
+  });
+
+  test('should send telemetry event', async () => {
+    const podletJs = getService();
+
+    await podletJs.compose({
+      type: QuadletType.KUBE,
+      filepath: 'dummy-path',
+    });
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_COMPOSE, {
+        'quadlet-target-type': QuadletType.KUBE.toLowerCase(),
+      });
+    });
+  });
+
+  test('error in compose should send telemetry event including it', async () => {
+    const podletJs = getService();
+
+    const errorMock = new Error('dummy error');
+    vi.mocked(readFile).mockRejectedValue(errorMock);
+
+    await expect(() => {
+      return podletJs.compose({
+        type: QuadletType.KUBE,
+        filepath: 'dummy-path',
+      });
+    }).rejects.toThrowError('dummy error');
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_COMPOSE, {
+        'quadlet-target-type': QuadletType.KUBE.toLowerCase(),
+        error: errorMock,
+      });
+    });
   });
 });
