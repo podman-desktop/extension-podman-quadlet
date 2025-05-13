@@ -19,13 +19,15 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
-import type { ContainerInspectInfo, ImageInspectInfo } from '@podman-desktop/api';
+import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@podman-desktop/api';
 import { ContainerGenerator, Compose, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
+import { TelemetryEvents } from '../utils/telemetry-events';
 
 interface Dependencies {
   containers: ContainerService;
   images: ImageService;
+  telemetry: TelemetryLogger;
 }
 
 export class PodletJsService {
@@ -67,16 +69,27 @@ export class PodletJsService {
     type: QuadletType;
     resourceId: string;
   }): Promise<string> {
+    const records: Record<string, unknown> = {
+      'quadlet-type': options.type.toLowerCase(),
+    };
+
     // Get the engine id
     const engineId = await this.dependencies.containers.getEngineId(options.connection);
 
-    switch (options.type) {
-      case QuadletType.CONTAINER:
-        return await this.generateContainer(engineId, options.resourceId);
-      case QuadletType.IMAGE:
-        return await this.generateImage(engineId, options.resourceId);
-      default:
-        throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
+    try {
+      switch (options.type) {
+        case QuadletType.CONTAINER:
+          return await this.generateContainer(engineId, options.resourceId);
+        case QuadletType.IMAGE:
+          return await this.generateImage(engineId, options.resourceId);
+        default:
+          throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
+      }
+    } catch (err: unknown) {
+      records['error'] = err;
+      throw err;
+    } finally {
+      this.dependencies.telemetry.logUsage(TelemetryEvents.PODLET_GENERATE, records);
     }
   }
 
@@ -86,7 +99,18 @@ export class PodletJsService {
   }): Promise<string> {
     if (options.type !== QuadletType.KUBE) throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
 
-    const content = await readFile(options.filepath, { encoding: 'utf8' });
-    return Compose.fromString(content).toKubePlay();
+    const records: Record<string, unknown> = {
+      'quadlet-target-type': options.type.toLowerCase(),
+    };
+
+    try {
+      const content = await readFile(options.filepath, { encoding: 'utf8' });
+      return Compose.fromString(content).toKubePlay();
+    } catch (err: unknown) {
+      records['error'] = err;
+      throw err;
+    } finally {
+      this.dependencies.telemetry.logUsage(TelemetryEvents.PODLET_COMPOSE, records);
+    }
   }
 }

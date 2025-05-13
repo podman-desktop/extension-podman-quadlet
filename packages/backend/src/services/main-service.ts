@@ -174,6 +174,7 @@ export class MainService implements Disposable, AsyncInit {
     const podletJS = new PodletJsService({
       containers: containers,
       images: images,
+      telemetry: this.#telemetry,
     });
 
     /**
