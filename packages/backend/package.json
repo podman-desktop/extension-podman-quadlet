@@ -60,7 +60,17 @@
         "command": "podlet.compose",
         "title": "Podlet: compose"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Podman Quadlet",
+      "properties": {
+        "quadlet.generate.DefaultDependencies": {
+          "type": "boolean",
+          "default": true,
+          "description": "Add Quadlet’s default network dependencies to the unit (default is true)."
+        }
+      }
+    }
   },
   "devDependencies": {
     "@podman-desktop/api": "^1.18.1",

@@ -8,6 +8,7 @@ import type {
   extensions,
   process as processApi,
   commands as commandsApi,
+  configuration as configurationApi,
   provider,
   window,
   cli as cliApi,
@@ -44,6 +45,7 @@ import { DialogService } from './dialog-service';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
 import { PodletJsService } from './podlet-js-service';
+import { ConfigurationService } from './configuration-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -55,6 +57,7 @@ interface Dependencies {
   cliApi: typeof cliApi;
   commandsApi: typeof commandsApi;
   containers: typeof containerEngine;
+  configurationApi: typeof configurationApi;
 }
 
 export class MainService implements Disposable, AsyncInit {
@@ -104,6 +107,13 @@ export class MainService implements Disposable, AsyncInit {
     });
     await routing.init();
     this.#disposables.push(routing);
+
+    // The configuration
+    const configuration = new ConfigurationService({
+      configurationApi: this.dependencies.configurationApi,
+    });
+    await configuration.init();
+    this.#disposables.push(configuration);
 
     // The provider service register subscribers events for provider updates
     const providers = new ProviderService({
@@ -175,6 +185,7 @@ export class MainService implements Disposable, AsyncInit {
       containers: containers,
       images: images,
       telemetry: this.#telemetry,
+      configuration: configuration,
     });
 
     /**

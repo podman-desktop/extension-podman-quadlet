@@ -19,9 +19,11 @@ import { Generator } from '../utils/generator';
 import type { ImageInspectInfo } from '@podman-desktop/api';
 import { stringify } from 'js-ini';
 import type { ImageQuadlet } from '../models/image-quadlet';
+import type { QuadletSection } from '../models/quadlet-section';
 
 interface Dependencies {
   image: ImageInspectInfo;
+  quadlet?: QuadletSection;
 }
 
 export class ImageGenerator extends Generator<Dependencies> {
@@ -35,6 +37,11 @@ export class ImageGenerator extends Generator<Dependencies> {
         Image: this.dependencies.image.RepoTags[0],
       },
     };
+
+    // user may specify a quadlet section
+    if (this.dependencies.quadlet) {
+      image.Quadlet = this.dependencies.quadlet;
+    }
 
     return stringify(this.format(image));
   }
