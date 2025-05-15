@@ -1,22 +1,21 @@
 <script lang="ts">
-  import Stepper from '/@/lib/stepper/Stepper.svelte';
-  import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-svelte';
-  import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
-  import { podletAPI, quadletAPI } from '/@/api/client';
-  import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
-  import { QuadletType } from '/@shared/src/utils/quadlet-type';
-  import type {
-    ProviderContainerConnectionDetailedInfo,
-  } from '/@shared/src/models/provider-container-connection-detailed-info';
-  import { providerConnectionsInfo } from '/@/stores/connections';
-  import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
-  import { router } from 'tinro';
-  import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
-  import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
-  import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
-  import Fa from 'svelte-fa';
+import Stepper from '/@/lib/stepper/Stepper.svelte';
+import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-svelte';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { podletAPI, quadletAPI } from '/@/api/client';
+import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import { providerConnectionsInfo } from '/@/stores/connections';
+import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
+import { router } from 'tinro';
+import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
+import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
+import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
+import Fa from 'svelte-fa';
+import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 
-  interface Props {
+interface Props {
   filepath?: string;
   loading: boolean;
   providerId?: string;
@@ -38,19 +37,24 @@ Description=A kubernetes yaml based service
 Yaml=<<filename>>
 `;
 
-let kubeYAML: string | undefined = $state(undefined);
-let filename: string = $state('');
+let kubeYAML: string = $state('');
+let quadlet: string = $state('');
 
-let loaded: boolean = $state(false);
-let step: string = $derived(loaded ? 'completed' : kubeYAML !== undefined ? 'edit' : 'select');
+// user define filename
+let kubeFilename: string = $state('');
+let quadletFilename: string = $state('');
 
+// Current step
+type Steps = 'edit-kube' | 'edit-quadlet' | 'select' | 'completed';
+let step: Steps = $state('select');
+
+// potential error
 let error: string | undefined = $state();
-
 function onError(err: string): void {
   error = err;
 }
 
-async function generate(): Promise<void> {
+async function generateYAML(): Promise<void> {
   if (!filepath) return;
   loading = true;
 
@@ -59,8 +63,9 @@ async function generate(): Promise<void> {
       filepath: $state.snapshot(filepath),
       type: QuadletType.KUBE, // only one supported for now
     })
-    .then((yaml) => {
+    .then(yaml => {
       kubeYAML = yaml;
+      step = 'edit-kube';
     })
     .catch((err: unknown) => {
       onError(`Something went wrong while generating compose quadlet for provider: ${String(err)}`);
@@ -83,12 +88,14 @@ function onContainerProviderConnectionChange(value: ProviderContainerConnectionD
 async function saveIntoMachine(): Promise<void> {
   if (!selectedContainerProviderConnection) throw new Error('no container provider connection selected');
   if (!kubeYAML) throw new Error('generation invalid');
+  if (!quadlet) throw new Error('cannot write into machine: quadlet content is undefined');
 
-  if(!filename.endsWith('.yaml')) {
-    error = 'The filename must end with .yaml';
+  if (!quadletFilename.endsWith('.kube')) {
+    error = 'The Quadlet filename must end with .kube';
     return;
   }
 
+  error = undefined;
   loading = true;
   try {
     await quadletAPI.writeIntoMachine({
@@ -96,17 +103,18 @@ async function saveIntoMachine(): Promise<void> {
       files: [
         // the YAML
         {
-          filename: filename,
+          filename: kubeFilename,
           content: kubeYAML,
         },
         // the Quadlet
         {
-          content: DEFAULT_KUBE_QUADLET.replace('<<filename>>', filename),
-          filename: filename.substring(0, filename.length - 5) + '.kube',
+          content: quadlet,
+          filename: quadletFilename,
         },
       ],
     });
-    loaded = true;
+    // goto completion step
+    step = 'completed';
   } catch (err: unknown) {
     onError(`Something went wrong while adding quadlet to machine: ${String(err)}`);
   } finally {
@@ -114,14 +122,51 @@ async function saveIntoMachine(): Promise<void> {
   }
 }
 
-function resetGenerate(): void {
-  error = undefined;
-  filename = '';
-  kubeYAML = undefined;
-}
-
 function close(): void {
   router.goto('/');
+}
+
+function next(): void {
+  // reset error
+  error = undefined;
+
+  switch (step) {
+    case 'edit-kube':
+      // ensure the filename are matching
+      if (!kubeFilename.endsWith('.yaml')) {
+        error = 'The YAML filename must end with .yaml';
+        return;
+      }
+
+      quadlet = DEFAULT_KUBE_QUADLET.replace('<<filename>>', kubeFilename);
+      step = 'edit-quadlet';
+      break;
+    case 'edit-quadlet':
+      break;
+    case 'select':
+      break;
+    case 'completed':
+      break;
+  }
+}
+
+function back(): void {
+  // reset error
+  error = undefined;
+
+  switch (step) {
+    case 'edit-kube':
+      kubeYAML = '';
+      step = 'select';
+      break;
+    case 'edit-quadlet':
+      quadlet = '';
+      step = 'edit-kube';
+      break;
+    case 'completed':
+      step = 'edit-quadlet';
+      break;
+  }
 }
 </script>
 
@@ -136,8 +181,12 @@ function close(): void {
           id: 'select',
         },
         {
-          label: 'Edit',
-          id: 'edit',
+          label: 'Edit YAML',
+          id: 'edit-kube',
+        },
+        {
+          label: 'Edit Quadlet',
+          id: 'edit-quadlet',
         },
         {
           label: 'Completed',
@@ -145,6 +194,7 @@ function close(): void {
         },
       ]} />
 
+    <!-- SELECT FILE (readonly, kinda lie) -->
     {#if step === 'select'}
       <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Compose file</label>
@@ -156,11 +206,36 @@ function close(): void {
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generate}>Generate</Button>
+        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generateYAML}>Generate</Button>
       </div>
 
-      <!-- step 2 edit -->
-    {:else if step === 'edit' && kubeYAML !== undefined}
+      <!-- EDIT KUBE YAML -->
+    {:else if step === 'edit-kube'}
+      <label for="kube-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Kube filename</label>
+      <Input
+        class="grow"
+        name="kube file name"
+        placeholder="Kube filename (E.g. nginx.yaml)"
+        bind:value={kubeFilename}
+        id="kube-filename" />
+
+      <div class="h-[400px] pt-4">
+        <MonacoEditor class="h-full" readOnly={false} noMinimap bind:content={kubeYAML} language="yaml" />
+      </div>
+
+      {#if error}
+        <ErrorMessage error={error} />
+      {/if}
+
+      <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
+        <Button type="secondary" on:click={back} title="Previous">Previous</Button>
+        <Button disabled={kubeFilename.length === 0} on:click={next} title="NExt">Next</Button>
+      </div>
+
+      <!-- EDIT QUADLET -->
+    {:else if step === 'edit-quadlet'}
+      <!-- select the container engine -->
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Container engine</label>
       <ContainerProviderConnectionSelect
@@ -175,23 +250,27 @@ function close(): void {
         </div>
       {/if}
 
-      <label for="kube-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Kube filename</label>
+      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Quadlet filename</label>
       <Input
         class="grow"
-        name="kube file name"
-        placeholder="Kube filename (E.g. nginx.yaml)"
-        bind:value={filename}
-        id="kube-filename" />
+        name="quadlet filename"
+        placeholder="Quadlet filename (E.g. nginx.kube)"
+        bind:value={quadletFilename}
+        id="quadlet-filename" />
 
       <div class="h-[400px] pt-4">
-        <MonacoEditor class="h-full" readOnly={false} noMinimap bind:content={kubeYAML} language="yaml" />
+        <QuadletEditor readOnly={false} bind:content={quadlet} />
       </div>
 
+      {#if error}
+        <ErrorMessage error={error} />
+      {/if}
+
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
-        <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
+        <Button type="secondary" on:click={back} title="Previous">Previous</Button>
         <Button
-          disabled={filename.length === 0 || selectedContainerProviderConnection?.status !== 'started'}
+          disabled={quadletFilename.length === 0 || selectedContainerProviderConnection?.status !== 'started'}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
           title="Load into machine">Load into machine</Button>
