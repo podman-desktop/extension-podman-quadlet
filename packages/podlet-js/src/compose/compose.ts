@@ -15,9 +15,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ComposeSpecification, DefinitionsService, PropertiesServices } from 'compose-spec-ts';
+import type { ComposeSpecification, DefinitionsService, ListOrDict, PropertiesServices } from 'compose-spec-ts';
 import { load, dump } from 'js-yaml';
-import type { PodContainer, PodContainerPort, PodmanPod } from './models/podman-pod';
+import type { PodContainer, PodContainerPort, PodEnvironment, PodmanPod } from './models/podman-pod';
 
 export const COMPOSE_SPECIFICATION_SUPPORTED: Set<keyof ComposeSpecification> = new Set([
   'services',
@@ -25,7 +25,7 @@ export const COMPOSE_SPECIFICATION_SUPPORTED: Set<keyof ComposeSpecification> = 
   'version',
 ]);
 
-export const SERVICE_SUPPORTED: Set<keyof DefinitionsService> = new Set(['image', 'ports']);
+export const SERVICE_SUPPORTED: Set<keyof DefinitionsService> = new Set(['image', 'ports', 'environment']);
 
 export class Compose {
   #spec: ComposeSpecification;
@@ -40,6 +40,23 @@ export class Compose {
 
   public getServices(): PropertiesServices {
     return this.#spec.services ?? {};
+  }
+
+  protected getEnvironments(environment: ListOrDict): Array<PodEnvironment> {
+    if (Array.isArray(environment)) {
+      return environment.map(content => {
+        const [name, value] = content.split('=');
+        return {
+          value: value,
+          name: name,
+        };
+      });
+    } else {
+      return Object.entries(environment).map(([key, value]) => ({
+        value: String(value),
+        name: key,
+      }));
+    }
   }
 
   // todo: move to dedicated file
@@ -74,6 +91,7 @@ export class Compose {
       image: service.image,
       name: name,
       ports,
+      env: service.environment ? this.getEnvironments(service.environment) : undefined,
     };
   }
 
@@ -84,7 +102,7 @@ export class Compose {
     });
 
     const services: PropertiesServices = this.getServices();
-    const containers: Array<PodContainer> = Object.entries(services).map(this.toPodContainer);
+    const containers: Array<PodContainer> = Object.entries(services).map(this.toPodContainer.bind(this));
 
     const pod: PodmanPod = {
       apiVersion: 'v1',
