@@ -23,6 +23,7 @@ export class PodmanSSH implements Disposable {
   #sshConfig: ConnectConfig;
   #client: Client;
   #connected: boolean = false;
+  #reconnectTimeout: NodeJS.Timeout | undefined;
 
   constructor(sshConfig: ConnectConfig) {
     this.#sshConfig = sshConfig;
@@ -31,6 +32,13 @@ export class PodmanSSH implements Disposable {
 
   dispose(): void {
     this.#client.end();
+    this.#connected = false;
+
+    // abort any reconnect tentative
+    if (this.#reconnectTimeout) {
+      clearTimeout(this.#reconnectTimeout);
+      this.#reconnectTimeout = undefined;
+    }
   }
 
   get connected(): boolean {
@@ -38,6 +46,8 @@ export class PodmanSSH implements Disposable {
   }
 
   async connect(): Promise<boolean> {
+    console.warn('[PodmanSSH] connecting');
+
     const { resolve, reject, promise } = Promise.withResolvers<boolean>();
     this.#client
       .on('ready', () => {
@@ -52,6 +62,18 @@ export class PodmanSSH implements Disposable {
       })
       .connect(this.#sshConfig);
 
+    this.#client.on('end', () => {
+      console.warn('connection ended by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
+    this.#client.on('close', () => {
+      console.warn('connection closed by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
     return promise;
   }
 
@@ -64,6 +86,10 @@ export class PodmanSSH implements Disposable {
       env?: Record<string, string>;
     },
   ): Promise<RunResult> {
+    if (!this.#connected) {
+      throw new Error(`cannot execute "${command}": not connected`);
+    }
+
     const fullCommand = `${command} ${options?.args?.join(' ')}`;
     console.log(`[PodmanSSH] start executing command ${command} for host ${this.#sshConfig.host}`);
 
@@ -123,5 +149,15 @@ export class PodmanSSH implements Disposable {
     );
 
     return promise;
+  }
+
+  handleReconnect(): void {
+    // need to reconnect if no timeout is set for now
+    if (!this.#reconnectTimeout) {
+      this.#reconnectTimeout = setTimeout(() => {
+        this.#reconnectTimeout = undefined;
+        this.connect().catch(console.error);
+      }, 5_000);
+    }
   }
 }
