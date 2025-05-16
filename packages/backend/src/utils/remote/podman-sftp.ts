@@ -24,6 +24,7 @@ export class PodmanSFTP implements Disposable {
   #sshConfig: ConnectConfig;
   #client: SftpClient;
   #connected: boolean = false;
+  #reconnectTimeout: NodeJS.Timeout | undefined;
 
   constructor(sshConfig: ConnectConfig) {
     this.#sshConfig = sshConfig;
@@ -32,6 +33,13 @@ export class PodmanSFTP implements Disposable {
 
   dispose(): void {
     this.#client.end().catch(console.error);
+    this.#connected = false;
+
+    // abort any reconnect tentative
+    if (this.#reconnectTimeout) {
+      clearTimeout(this.#reconnectTimeout);
+      this.#reconnectTimeout = undefined;
+    }
   }
 
   get connected(): boolean {
@@ -39,6 +47,8 @@ export class PodmanSFTP implements Disposable {
   }
 
   async connect(): Promise<void> {
+    console.warn('[PodmanSFTP] connecting');
+
     try {
       await this.#client.connect(this.#sshConfig);
       this.#connected = true;
@@ -48,6 +58,18 @@ export class PodmanSFTP implements Disposable {
 
     this.#client.on('error', () => {
       this.#connected = false;
+    });
+
+    this.#client.on('end', () => {
+      console.warn('connection ended by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
+    this.#client.on('close', () => {
+      console.warn('connection closed by remote host');
+      this.#connected = false;
+      this.handleReconnect();
     });
   }
 
@@ -78,5 +100,15 @@ export class PodmanSFTP implements Disposable {
 
   async rm(path: string): Promise<void> {
     await this.#client.delete(this.resolve(path));
+  }
+
+  handleReconnect(): void {
+    // need to reconnect if no timeout is set for now
+    if (!this.#reconnectTimeout) {
+      this.#reconnectTimeout = setTimeout(() => {
+        this.#reconnectTimeout = undefined;
+        this.connect().catch(console.error);
+      }, 5_000);
+    }
   }
 }
