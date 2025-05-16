@@ -16,7 +16,7 @@
     "typescript": "5.8.3",
     "vite": "^6.3.5",
     "vitest": "^3.0.9",
-    "vite-plugin-dts": "^4.5.3",
+    "vite-plugin-dts": "^4.5.4",
     "@types/js-yaml": "^4.0.9",
     "@podman-desktop/api": "^1.18.1"
   },
