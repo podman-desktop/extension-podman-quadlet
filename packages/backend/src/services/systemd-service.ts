@@ -7,6 +7,7 @@ import { SystemdHelper } from './systemd-helper';
 import type { AsyncInit } from '../utils/async-init';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { performance } from 'node:perf_hooks';
 
 export class SystemdService extends SystemdHelper implements Disposable, AsyncInit {
   constructor(dependencies: SystemdServiceDependencies) {
@@ -103,6 +104,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       admin: options.admin,
     };
 
+    // measure time for start operation
+    const start = performance.now();
+
     try {
       const args: string[] = [];
       if (!options.admin) {
@@ -122,6 +126,7 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       telemetry['error'] = err;
       throw err;
     } finally {
+      telemetry['duration'] = performance.now() - start;
       this.logUsage(TelemetryEvents.SYSTEMD_START, telemetry);
     }
   }
@@ -137,6 +142,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
     const telemetry: Record<string, unknown> = {
       admin: options.admin,
     };
+
+    // measure time for stop operation
+    const start = performance.now();
 
     try {
       const args: string[] = [];
@@ -156,6 +164,7 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       telemetry['error'] = err;
       throw err;
     } finally {
+      telemetry['duration'] = performance.now() - start;
       this.logUsage(TelemetryEvents.SYSTEMD_STOP, telemetry);
     }
   }

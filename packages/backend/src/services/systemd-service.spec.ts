@@ -82,6 +82,7 @@ test('expect SystemdService#start to call PodmanService#systemctlExec', async ()
 
   expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.SYSTEMD_START, {
     admin: false,
+    duration: expect.any(Number),
   });
 });
 
@@ -100,5 +101,6 @@ test('expect SystemdService#stop to call PodmanService#systemctlExec', async () 
 
   expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.SYSTEMD_STOP, {
     admin: false,
+    duration: expect.any(Number),
   });
 });
