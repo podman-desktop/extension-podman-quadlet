@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compose-podified
+spec:
+  containers:
+    - image: redislabs/redismod
+      name: redis
+      ports:
+        - containerPort: 6379
+          hostPort: 6379
+      env:
+        - value: 'true'
+          name: DEBUG
+        - value: bar
+          name: FOO
+    - image: nginx:latest
+      name: nginx
+      env:
+        - value: foobar
+          name: USERNAME

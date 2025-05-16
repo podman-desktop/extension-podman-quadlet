@@ -21,10 +21,16 @@ export interface PodContainerPort {
   hostPort: number;
 }
 
+export interface PodEnvironment {
+  name: string;
+  value: string;
+}
+
 export interface PodContainer {
   image: string;
   name: string;
   ports?: Array<PodContainerPort>;
+  env?: Array<PodEnvironment>;
 }
 
 export interface PodmanPod {
