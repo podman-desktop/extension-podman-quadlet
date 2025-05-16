@@ -57,7 +57,8 @@ export class Compose {
           hostPort: port,
         };
       } else if (typeof port === 'string') {
-        const [containerPort, hostPort] = port.split(':');
+        // Compose spec uses `host:container`
+        const [hostPort, containerPort] = port.split(':');
         return {
           containerPort: Number(containerPort),
           hostPort: Number(hostPort),
