@@ -31,10 +31,12 @@ import { ReadOnly } from './builders/read-only';
 import { Mount } from './builders/mount';
 import { Generator } from '../utils/generator';
 import { Restart } from './builders/restart';
+import type { QuadletSection } from '../models/quadlet-section';
 
 interface Dependencies {
   container: ContainerInspectInfo;
   image: ImageInspectInfo;
+  quadlet?: QuadletSection;
 }
 
 export class ContainerGenerator extends Generator<Dependencies> {
@@ -62,6 +64,11 @@ export class ContainerGenerator extends Generator<Dependencies> {
         Container: {},
       } as ContainerQuadlet,
     );
+
+    // user may specify a quadlet section
+    if (this.dependencies.quadlet) {
+      containerQuadlet.Quadlet = this.dependencies.quadlet;
+    }
 
     return stringify(this.format(containerQuadlet));
   }
