@@ -15,38 +15,34 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { Disposable } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
+import { ConnectionHandler } from './connection-handler';
 
-export class PodmanSFTP implements Disposable {
+export class PodmanSFTP extends ConnectionHandler {
   #sshConfig: ConnectConfig;
   #client: SftpClient;
   #connected: boolean = false;
-  #reconnectTimeout: NodeJS.Timeout | undefined;
 
   constructor(sshConfig: ConnectConfig) {
+    super();
     this.#sshConfig = sshConfig;
     this.#client = new SftpClient();
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
+
     this.#client.end().catch(console.error);
     this.#connected = false;
-
-    // abort any reconnect tentative
-    if (this.#reconnectTimeout) {
-      clearTimeout(this.#reconnectTimeout);
-      this.#reconnectTimeout = undefined;
-    }
   }
 
   get connected(): boolean {
     return this.#connected;
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<boolean> {
     console.warn('[PodmanSFTP] connecting');
 
     try {
@@ -71,6 +67,8 @@ export class PodmanSFTP implements Disposable {
       this.#connected = false;
       this.handleReconnect();
     });
+
+    return this.#connected;
   }
 
   protected resolve(path: string): string {
@@ -100,15 +98,5 @@ export class PodmanSFTP implements Disposable {
 
   async rm(path: string): Promise<void> {
     await this.#client.delete(this.resolve(path));
-  }
-
-  handleReconnect(): void {
-    // need to reconnect if no timeout is set for now
-    if (!this.#reconnectTimeout) {
-      this.#reconnectTimeout = setTimeout(() => {
-        this.#reconnectTimeout = undefined;
-        this.connect().catch(console.error);
-      }, 5_000);
-    }
   }
 }

@@ -15,39 +15,33 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { CancellationToken, Disposable, Logger, RunResult } from '@podman-desktop/api';
+import type { CancellationToken, Logger, RunResult } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import { Client } from 'ssh2';
+import { ConnectionHandler } from './connection-handler';
 
-export class PodmanSSH implements Disposable {
+export class PodmanSSH extends ConnectionHandler {
   #sshConfig: ConnectConfig;
   #client: Client;
   #connected: boolean = false;
-  #reconnectTimeout: NodeJS.Timeout | undefined;
 
   constructor(sshConfig: ConnectConfig) {
+    super();
     this.#sshConfig = sshConfig;
     this.#client = new Client();
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.#client.end();
     this.#connected = false;
-
-    // abort any reconnect tentative
-    if (this.#reconnectTimeout) {
-      clearTimeout(this.#reconnectTimeout);
-      this.#reconnectTimeout = undefined;
-    }
   }
 
   get connected(): boolean {
     return this.#connected;
   }
 
-  async connect(): Promise<boolean> {
-    console.warn('[PodmanSSH] connecting');
-
+  override async connect(): Promise<boolean> {
     const { resolve, reject, promise } = Promise.withResolvers<boolean>();
     this.#client
       .on('ready', () => {
@@ -86,10 +80,6 @@ export class PodmanSSH implements Disposable {
       env?: Record<string, string>;
     },
   ): Promise<RunResult> {
-    if (!this.#connected) {
-      throw new Error(`cannot execute "${command}": not connected`);
-    }
-
     const fullCommand = `${command} ${options?.args?.join(' ')}`;
     console.log(`[PodmanSSH] start executing command ${command} for host ${this.#sshConfig.host}`);
 
@@ -149,15 +139,5 @@ export class PodmanSSH implements Disposable {
     );
 
     return promise;
-  }
-
-  handleReconnect(): void {
-    // need to reconnect if no timeout is set for now
-    if (!this.#reconnectTimeout) {
-      this.#reconnectTimeout = setTimeout(() => {
-        this.#reconnectTimeout = undefined;
-        this.connect().catch(console.error);
-      }, 5_000);
-    }
   }
 }
