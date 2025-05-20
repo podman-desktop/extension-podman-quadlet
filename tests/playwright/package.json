@@ -1,6 +1,6 @@
 {
   "name": "podman-quadlet-tests-playwright",
-  "version": "0.10.0-next",
+  "version": "0.9.0",
   "description": "Podman Qualdet extension Playwright E2E tests",
   "scripts": {
     "test:e2e:setup": "xvfb-maybe --auto-servernum --server-args='-screen 0 1280x960x24' --",
