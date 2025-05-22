@@ -18,7 +18,7 @@
     "vitest": "^3.0.9",
     "vite-plugin-dts": "^4.5.4",
     "@types/js-yaml": "^4.0.9",
-    "@podman-desktop/api": "^1.18.1"
+    "@podman-desktop/api": "^1.19.1"
   },
   "dependencies": {
     "js-ini": "^1.6.0",
