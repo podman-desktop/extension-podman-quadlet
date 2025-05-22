@@ -148,6 +148,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       args,
     });
 
+    if (isRunError(result)) {
+      console.warn(`quadlet exec exit with code ${result.exitCode}`, result.stderr);
+    }
+
     const parser = new QuadletDryRunParser(result);
     return parser.parse();
   }

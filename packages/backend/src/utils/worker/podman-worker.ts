@@ -104,8 +104,12 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     logger?: Logger;
     token?: CancellationToken;
     env?: Record<string, string>;
-  }): Promise<RunResult> {
-    return this.exec('/usr/libexec/podman/quadlet', options);
+  }): Promise<RunResult | RunError> {
+    return this.exec('/usr/libexec/podman/quadlet', options).catch((err: unknown) => {
+      // check err is an RunError
+      if (isRunError(err)) return err;
+      throw err;
+    });
   }
 
   /**
