@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { vi, test, expect, beforeEach, describe, assert } from 'vitest';
+import { vi, test, expect, beforeEach, afterEach, describe, assert } from 'vitest';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { PodmanSFTP } from './podman-sftp';
@@ -42,9 +42,15 @@ const SFTP_CLIENT_MOCK: SftpClient = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.useFakeTimers();
+
   vi.mocked(SFTP_CLIENT_MOCK.end).mockResolvedValue(undefined);
 
   vi.mocked(SftpClient).mockReturnValue(SFTP_CLIENT_MOCK);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe('connect', () => {
@@ -57,7 +63,30 @@ describe('connect', () => {
   test('connection successful', async () => {
     await podmanSFTP.connect();
 
+    expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledOnce();
     expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledWith(SSH_CONFIG_MOCK);
+
+    expect(podmanSFTP.connected).toBeTruthy();
+  });
+
+  test('connection closing should handle reconnection', async () => {
+    await podmanSFTP.connect();
+
+    // ensure is connected
+    expect(podmanSFTP.connected).toBeTruthy();
+
+    const endListener = vi.mocked(SFTP_CLIENT_MOCK.on).mock.calls.find(([event]) => event === 'end')?.[1];
+    assert(endListener, 'client should register end listener');
+
+    endListener();
+
+    // ensure is connected
+    expect(podmanSFTP.connected).toBeFalsy();
+
+    await vi.advanceTimersByTimeAsync(50_000);
+
+    expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledTimes(2);
+    // ensure is connected
     expect(podmanSFTP.connected).toBeTruthy();
   });
 });

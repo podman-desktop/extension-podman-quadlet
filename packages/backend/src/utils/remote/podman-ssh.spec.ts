@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { vi, test, expect, beforeEach, assert, describe } from 'vitest';
+import { vi, test, expect, beforeEach, afterEach, assert, describe } from 'vitest';
 import { PodmanSSH } from './podman-ssh';
 import type { ClientCallback, ClientChannel, ConnectConfig } from 'ssh2';
 import { Client } from 'ssh2';
@@ -60,9 +60,14 @@ const LOGGER_MOCK: Logger = {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.useFakeTimers();
 
   vi.mocked(Client).mockReturnValue(CLIENT_MOCK);
   vi.mocked(CLIENT_MOCK.on).mockReturnValue(CLIENT_MOCK);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 function getEventListener(event: string): () => void {
@@ -114,6 +119,34 @@ describe('connect', () => {
 
     // ensure worker is not connected
     expect(podmanSSH.connected).toBeFalsy();
+  });
+
+  test('client receiving end event should start reconnection', async () => {
+    const connectPromise: Promise<boolean> = podmanSSH.connect();
+
+    // call the ready listener
+    getEventListener('ready')();
+
+    const result = await connectPromise;
+    expect(result).toBeTruthy();
+
+    // ensure worker is connected
+    expect(podmanSSH.connected).toBeTruthy();
+
+    // we should have connected only once
+    expect(CLIENT_MOCK.connect).toHaveBeenCalledOnce();
+
+    // call the ready listener
+    getEventListener('end')();
+
+    // worker should be marked as not connected
+    expect(podmanSSH.connected).toBeFalsy();
+
+    // move in the future
+    await vi.advanceTimersByTimeAsync(50_000);
+
+    // we should have connected again
+    expect(CLIENT_MOCK.connect).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -15,30 +15,36 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { Disposable } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
+import { ConnectionHandler } from './connection-handler';
 
-export class PodmanSFTP implements Disposable {
+export class PodmanSFTP extends ConnectionHandler {
   #sshConfig: ConnectConfig;
   #client: SftpClient;
   #connected: boolean = false;
 
   constructor(sshConfig: ConnectConfig) {
+    super();
     this.#sshConfig = sshConfig;
     this.#client = new SftpClient();
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
+
     this.#client.end().catch(console.error);
+    this.#connected = false;
   }
 
   get connected(): boolean {
     return this.#connected;
   }
 
-  async connect(): Promise<void> {
+  async connect(): Promise<boolean> {
+    console.warn('[PodmanSFTP] connecting');
+
     try {
       await this.#client.connect(this.#sshConfig);
       this.#connected = true;
@@ -49,6 +55,20 @@ export class PodmanSFTP implements Disposable {
     this.#client.on('error', () => {
       this.#connected = false;
     });
+
+    this.#client.on('end', () => {
+      console.warn('connection ended by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
+    this.#client.on('close', () => {
+      console.warn('connection closed by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
+    return this.#connected;
   }
 
   protected resolve(path: string): string {
