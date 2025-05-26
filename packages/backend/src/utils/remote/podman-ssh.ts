@@ -15,29 +15,33 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { CancellationToken, Disposable, Logger, RunResult } from '@podman-desktop/api';
+import type { CancellationToken, Logger, RunResult } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import { Client } from 'ssh2';
+import { ConnectionHandler } from './connection-handler';
 
-export class PodmanSSH implements Disposable {
+export class PodmanSSH extends ConnectionHandler {
   #sshConfig: ConnectConfig;
   #client: Client;
   #connected: boolean = false;
 
   constructor(sshConfig: ConnectConfig) {
+    super();
     this.#sshConfig = sshConfig;
     this.#client = new Client();
   }
 
-  dispose(): void {
+  override dispose(): void {
+    super.dispose();
     this.#client.end();
+    this.#connected = false;
   }
 
   get connected(): boolean {
     return this.#connected;
   }
 
-  async connect(): Promise<boolean> {
+  override async connect(): Promise<boolean> {
     const { resolve, reject, promise } = Promise.withResolvers<boolean>();
     this.#client
       .on('ready', () => {
@@ -51,6 +55,18 @@ export class PodmanSSH implements Disposable {
         reject(false);
       })
       .connect(this.#sshConfig);
+
+    this.#client.on('end', () => {
+      console.warn('connection ended by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
+
+    this.#client.on('close', () => {
+      console.warn('connection closed by remote host');
+      this.#connected = false;
+      this.handleReconnect();
+    });
 
     return promise;
   }
