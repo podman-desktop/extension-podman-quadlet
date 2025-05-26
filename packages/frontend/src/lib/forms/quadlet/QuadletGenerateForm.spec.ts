@@ -160,7 +160,7 @@ describe('validating filename', () => {
   });
 
   test('invalid non-empty filename should display an error', async () => {
-    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename'});
+    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });
     expect(input).toBeDefined();
 
     await fireEvent.input(input, { target: { value: 'hello' } });
@@ -172,7 +172,7 @@ describe('validating filename', () => {
   });
 
   test('valid filename should not display an error', async () => {
-    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename'});
+    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });
     expect(input).toBeDefined();
 
     await fireEvent.input(input, { target: { value: 'hello' } });
