@@ -198,7 +198,7 @@ function back(): void {
     {#if step === 'select'}
       <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Compose file</label>
-      <Input readonly value={filepath} />
+      <Input id="compose-file" name="Compose file" readonly value={filepath} />
 
       {#if error}
         <ErrorMessage error={error} />
@@ -230,7 +230,7 @@ function back(): void {
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={back} title="Previous">Previous</Button>
-        <Button disabled={kubeFilename.length === 0} on:click={next} title="NExt">Next</Button>
+        <Button disabled={kubeFilename.length === 0} on:click={next} title="Next">Next</Button>
       </div>
 
       <!-- EDIT QUADLET -->
