@@ -18,7 +18,7 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { fireEvent, render } from '@testing-library/svelte';
+import { fireEvent, render, type RenderResult } from '@testing-library/svelte';
 import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
 import * as connectionStore from '/@store/connections';
@@ -26,6 +26,7 @@ import { readable } from 'svelte/store';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { containerAPI, podletAPI } from '/@/api/client';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { Component, ComponentProps } from 'svelte';
 
 // mock clients
 vi.mock('/@/api/client', () => ({
@@ -115,6 +116,78 @@ describe('Step options', () => {
         resourceId: 'dummy-resource-id',
         type: QuadletType.CONTAINER,
       });
+    });
+  });
+});
+
+describe('validating filename', () => {
+  let renderResult: RenderResult<Component<ComponentProps<typeof QuadletGenerateForm>>>;
+
+  /**
+   * Go directly to step 2
+   */
+  beforeEach(async () => {
+    renderResult = render(QuadletGenerateForm, {
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      resourceId: 'dummy-resource-id',
+      loading: false,
+      close: vi.fn(),
+    });
+
+    const generate: HTMLButtonElement = await vi.waitFor(() => {
+      const element = renderResult.getByRole('button', { name: 'Generate' });
+      expect(element).toBeInstanceOf(HTMLButtonElement);
+      expect(element).toBeEnabled();
+      return element as HTMLButtonElement;
+    });
+
+    await fireEvent.click(generate);
+
+    const loadIntoMachine: HTMLButtonElement = await vi.waitFor(() => {
+      const element = renderResult.getByRole('button', { name: 'Load into machine' });
+      expect(element).toBeInstanceOf(HTMLButtonElement);
+      return element as HTMLButtonElement;
+    });
+
+    expect(loadIntoMachine).toBeDefined();
+  });
+
+  test('expect button to be disabled by default', async () => {
+    const loadIntoMachine = renderResult.getByRole('button', { name: 'Load into machine' });
+
+    expect(loadIntoMachine).toBeDisabled();
+  });
+
+  test('invalid non-empty filename should display an error', async () => {
+    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });
+    expect(input).toBeDefined();
+
+    await fireEvent.input(input, { target: { value: 'hello' } });
+
+    await vi.waitFor(() => {
+      const alert = renderResult.getByRole('alert');
+      expect(alert).toHaveTextContent('Quadlet filename should be <name>.container');
+    });
+  });
+
+  test('valid filename should not display an error', async () => {
+    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });
+    expect(input).toBeDefined();
+
+    await fireEvent.input(input, { target: { value: 'hello' } });
+
+    // ensure it exists
+    await vi.waitFor(() => {
+      const alert = renderResult.queryByRole('alert');
+      expect(alert).toBeDefined();
+    });
+
+    // fill the input with a valid value (it replace any existing)
+    await fireEvent.input(input, { target: { value: 'hello.container' } });
+    await vi.waitFor(() => {
+      const alert = renderResult.queryByRole('alert');
+      expect(alert).toBeNull();
     });
   });
 });

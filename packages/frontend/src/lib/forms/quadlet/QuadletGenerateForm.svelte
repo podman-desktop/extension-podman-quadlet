@@ -76,6 +76,12 @@ $effect(() => {
 let quadlet: string | undefined = $state(undefined);
 let quadletFilename: string = $state('');
 let loaded: boolean = $state(false);
+let validFilename: boolean = $derived.by(() => {
+  // split filename by . (E.g. foo.container => ['foo', 'container'])
+  const parts = quadletFilename.split('.');
+  // support multiple part (E.g. foo.bar.container => ['foo', 'bar', 'container']
+  return parts.length >= 2 && parts[0].length > 0 && parts[parts.length - 1] === quadletType.toLowerCase();
+});
 
 let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'options');
 
@@ -225,9 +231,12 @@ function resetGenerate(): void {
       <Input
         class="grow"
         name="quadlet filename"
-        placeholder="Quadlet filename (E.g. nginx.container)"
+        placeholder="Quadlet filename (E.g. foo.{quadletType.toLowerCase()})"
         bind:value={quadletFilename}
         id="quadlet-filename" />
+      {#if quadletFilename.length > 0 && !validFilename}
+        <ErrorMessage error="Quadlet filename should be <name>.{quadletType.toLowerCase()}" />
+      {/if}
 
       <div class="h-[400px] pt-4">
         <QuadletEditor bind:content={quadlet} />
@@ -238,7 +247,7 @@ function resetGenerate(): void {
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
         <Button
-          disabled={quadletFilename.length === 0 || loading}
+          disabled={quadletFilename.length === 0 || loading || !validFilename}
           inProgress={loading}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
