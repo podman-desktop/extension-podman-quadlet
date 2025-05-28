@@ -1,8 +1,5 @@
 <script lang="ts">
-interface Step {
-  id: string;
-  label: string;
-}
+import type { Step } from '/@/lib/stepper/stepper';
 
 interface Props {
   value: string;
@@ -15,7 +12,11 @@ let { value, steps }: Props = $props();
 <div aria-label="stepper" class="flex items-center w-full pt-4">
   {#each steps as step, index (step.id)}
     {@const selected = step.id === value}
-    <div class:text-purple-500={selected} class="flex items-center justify-center">
+    <div
+      aria-label="Step {step.label}"
+      aria-selected={selected}
+      class:text-purple-500={selected}
+      class="flex items-center justify-center">
       <span
         class:border-purple-500={selected}
         class="flex items-center justify-center w-5 h-5 me-2 text-xs border rounded-full shrink-0">
