@@ -4,16 +4,16 @@ import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-sve
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { podletAPI, quadletAPI } from '/@/api/client';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
-import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { providerConnectionsInfo } from '/@/stores/connections';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
+import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import Fa from 'svelte-fa';
+import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 
 interface Props {
   filepath?: string;
@@ -29,41 +29,44 @@ let selectedContainerProviderConnection: ProviderContainerConnectionDetailedInfo
   $providerConnectionsInfo.find(provider => provider.providerId === providerId && provider.name === connection),
 );
 
-let quadlet: string | undefined = $state(undefined);
+const DEFAULT_KUBE_QUADLET = `
+[Unit]
+Description=A kubernetes yaml based service
+
+[Kube]
+Yaml=<<filename>>
+`;
+
+let kubeYAML: string = $state('');
+let quadlet: string = $state('');
+
+// user define filename
+let kubeFilename: string = $state('');
 let quadletFilename: string = $state('');
 
-let loaded: boolean = $state(false);
-let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'select');
+// Current step
+type Steps = 'edit-kube' | 'edit-quadlet' | 'select' | 'completed';
+let step: Steps = $state('select');
 
-let quadletType: QuadletType.CONTAINER | QuadletType.KUBE | QuadletType.POD = $state(QuadletType.CONTAINER);
-
+// potential error
 let error: string | undefined = $state();
-
 function onError(err: string): void {
   error = err;
 }
 
-function onGenerated(value: string): void {
-  error = undefined;
-  quadlet = value;
-
-  const comment = quadlet.split('\n')[0];
-  if (comment.startsWith('#')) {
-    const [name] = comment.substring(2).split('.');
-    quadletFilename = name;
-  }
-}
-
-async function generate(): Promise<void> {
+async function generateYAML(): Promise<void> {
   if (!filepath) return;
   loading = true;
 
   podletAPI
     .compose({
       filepath: $state.snapshot(filepath),
-      type: quadletType,
+      type: QuadletType.KUBE, // only one supported for now
     })
-    .then(onGenerated)
+    .then(yaml => {
+      kubeYAML = yaml;
+      step = 'edit-kube';
+    })
     .catch((err: unknown) => {
       onError(`Something went wrong while generating compose quadlet for provider: ${String(err)}`);
     })
@@ -84,20 +87,34 @@ function onContainerProviderConnectionChange(value: ProviderContainerConnectionD
 
 async function saveIntoMachine(): Promise<void> {
   if (!selectedContainerProviderConnection) throw new Error('no container provider connection selected');
-  if (!quadlet) throw new Error('generation invalid');
+  if (!kubeYAML) throw new Error('generation invalid');
+  if (!quadlet) throw new Error('cannot write into machine: quadlet content is undefined');
 
+  if (!quadletFilename.endsWith('.kube')) {
+    error = 'The Quadlet filename must end with .kube';
+    return;
+  }
+
+  error = undefined;
   loading = true;
   try {
     await quadletAPI.writeIntoMachine({
       connection: $state.snapshot(selectedContainerProviderConnection),
       files: [
+        // the YAML
         {
-          filename: quadletFilename,
+          filename: kubeFilename,
+          content: kubeYAML,
+        },
+        // the Quadlet
+        {
           content: quadlet,
+          filename: quadletFilename,
         },
       ],
     });
-    loaded = true;
+    // goto completion step
+    step = 'completed';
   } catch (err: unknown) {
     onError(`Something went wrong while adding quadlet to machine: ${String(err)}`);
   } finally {
@@ -105,23 +122,51 @@ async function saveIntoMachine(): Promise<void> {
   }
 }
 
-function resetGenerate(): void {
-  error = undefined;
-  quadlet = undefined;
+function close(): void {
+  router.goto('/');
 }
 
-function onQuadletTypeChange(value: string): void {
-  switch (value) {
-    case QuadletType.CONTAINER:
-    case QuadletType.POD:
-    case QuadletType.KUBE:
-      quadletType = value;
+function next(): void {
+  // reset error
+  error = undefined;
+
+  switch (step) {
+    case 'edit-kube':
+      // ensure the filename are matching
+      if (!kubeFilename.endsWith('.yaml')) {
+        error = 'The YAML filename must end with .yaml';
+        return;
+      }
+
+      quadlet = DEFAULT_KUBE_QUADLET.replace('<<filename>>', kubeFilename);
+      step = 'edit-quadlet';
+      break;
+    case 'edit-quadlet':
+      break;
+    case 'select':
+      break;
+    case 'completed':
       break;
   }
 }
 
-function close(): void {
-  router.goto('/');
+function back(): void {
+  // reset error
+  error = undefined;
+
+  switch (step) {
+    case 'edit-kube':
+      kubeYAML = '';
+      step = 'select';
+      break;
+    case 'edit-quadlet':
+      quadlet = '';
+      step = 'edit-kube';
+      break;
+    case 'completed':
+      step = 'edit-quadlet';
+      break;
+  }
 }
 </script>
 
@@ -136,8 +181,12 @@ function close(): void {
           id: 'select',
         },
         {
-          label: 'Edit',
-          id: 'edit',
+          label: 'Edit YAML',
+          id: 'edit-kube',
+        },
+        {
+          label: 'Edit Quadlet',
+          id: 'edit-quadlet',
         },
         {
           label: 'Completed',
@@ -145,31 +194,11 @@ function close(): void {
         },
       ]} />
 
+    <!-- SELECT FILE (readonly, kinda lie) -->
     {#if step === 'select'}
       <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Compose file</label>
-      <Input readonly value={filepath} />
-
-      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet type</label>
-      <RadioButtons
-        disabled={loading}
-        onChange={onQuadletTypeChange}
-        value={quadletType}
-        options={[
-          {
-            label: 'container',
-            id: QuadletType.CONTAINER,
-          },
-          {
-            label: 'kube',
-            id: QuadletType.KUBE,
-          },
-          {
-            label: 'pod',
-            id: QuadletType.POD,
-          },
-        ]} />
+      <Input id="compose-file" name="Compose file" readonly value={filepath} />
 
       {#if error}
         <ErrorMessage error={error} />
@@ -177,10 +206,36 @@ function close(): void {
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generate}>Generate</Button>
+        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generateYAML}>Generate</Button>
       </div>
-      <!-- step 2 edit -->
-    {:else if step === 'edit' && quadlet !== undefined}
+
+      <!-- EDIT KUBE YAML -->
+    {:else if step === 'edit-kube'}
+      <label for="kube-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Kube filename</label>
+      <Input
+        class="grow"
+        name="kube file name"
+        placeholder="Kube filename (E.g. nginx.yaml)"
+        bind:value={kubeFilename}
+        id="kube-filename" />
+
+      <div class="h-[400px] pt-4">
+        <MonacoEditor class="h-full" readOnly={false} noMinimap bind:content={kubeYAML} language="yaml" />
+      </div>
+
+      {#if error}
+        <ErrorMessage error={error} />
+      {/if}
+
+      <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
+        <Button type="secondary" on:click={back} title="Previous">Previous</Button>
+        <Button disabled={kubeFilename.length === 0} on:click={next} title="Next">Next</Button>
+      </div>
+
+      <!-- EDIT QUADLET -->
+    {:else if step === 'edit-quadlet'}
+      <!-- select the container engine -->
       <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
         >Container engine</label>
       <ContainerProviderConnectionSelect
@@ -195,21 +250,25 @@ function close(): void {
         </div>
       {/if}
 
-      <label for="quadlet-name" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet name</label>
+      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
+        >Quadlet filename</label>
       <Input
         class="grow"
-        name="quadlet name"
-        placeholder="Quadlet name (E.g. nginx-quadlet)"
+        name="quadlet filename"
+        placeholder="Quadlet filename (E.g. nginx.kube)"
         bind:value={quadletFilename}
-        id="quadlet-name" />
+        id="quadlet-filename" />
 
       <div class="h-[400px] pt-4">
-        <QuadletEditor bind:content={quadlet} />
+        <QuadletEditor readOnly={false} bind:content={quadlet} />
       </div>
 
+      {#if error}
+        <ErrorMessage error={error} />
+      {/if}
+
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
-        <Button type="secondary" on:click={resetGenerate} title="Previous">Previous</Button>
+        <Button type="secondary" on:click={back} title="Previous">Previous</Button>
         <Button
           disabled={quadletFilename.length === 0 || selectedContainerProviderConnection?.status !== 'started'}
           icon={faTruckPickup}
