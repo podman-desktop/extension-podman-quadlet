@@ -71,3 +71,30 @@ test('dispose should abort reconnect', async () => {
     expect(handler.counter).toEqual(0);
   });
 });
+
+test('once disposed expect no reconnect', async () => {
+  const handler = new ConnectionHandlerImpl();
+
+  handler.handleReconnect();
+
+  // advance time
+  await vi.advanceTimersByTimeAsync(50_000);
+
+  await vi.waitFor(() => {
+    expect(handler.counter).toEqual(1);
+  });
+
+  // dispose
+  handler.dispose();
+
+  // advance time
+  handler.handleReconnect();
+
+  // advance time
+  await vi.advanceTimersByTimeAsync(50_000);
+
+  // we should not have any reconnect done
+  await vi.waitFor(() => {
+    expect(handler.counter).toEqual(1);
+  });
+});

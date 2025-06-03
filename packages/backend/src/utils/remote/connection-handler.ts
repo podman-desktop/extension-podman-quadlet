@@ -19,6 +19,7 @@ import type { Disposable } from '@podman-desktop/api';
 
 export abstract class ConnectionHandler implements Disposable {
   #reconnectTimeout: NodeJS.Timeout | undefined;
+  #disposed: boolean = false;
 
   dispose(): void {
     // abort any reconnect tentative
@@ -26,11 +27,13 @@ export abstract class ConnectionHandler implements Disposable {
       clearTimeout(this.#reconnectTimeout);
       this.#reconnectTimeout = undefined;
     }
+    this.#disposed = true;
   }
 
   abstract connect(): Promise<boolean>;
 
   protected handleReconnect(): void {
+    if(this.#disposed) return;
     // need to reconnect if no timeout is set for now
     if (!this.#reconnectTimeout) {
       this.#reconnectTimeout = setTimeout(() => {
