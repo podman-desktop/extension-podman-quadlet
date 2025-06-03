@@ -87,7 +87,7 @@ test('once disposed expect no reconnect', async () => {
   // dispose
   handler.dispose();
 
-  // advance time
+  // try to reconnect
   handler.handleReconnect();
 
   // advance time
