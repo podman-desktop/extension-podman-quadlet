@@ -33,7 +33,7 @@ export abstract class ConnectionHandler implements Disposable {
   abstract connect(): Promise<boolean>;
 
   protected handleReconnect(): void {
-    if(this.#disposed) return;
+    if (this.#disposed) return;
     // need to reconnect if no timeout is set for now
     if (!this.#reconnectTimeout) {
       this.#reconnectTimeout = setTimeout(() => {
