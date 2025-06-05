@@ -11,6 +11,7 @@ import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { LoggerService } from '../services/logger-service';
 import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
+import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 interface Dependencies {
@@ -159,5 +160,9 @@ export class QuadletApiImpl extends QuadletApi {
       provider: providerConnection,
       id: id,
     });
+  }
+
+  override async templates(): Promise<Array<Template>> {
+    return this.dependencies.quadlet.templates();
   }
 }

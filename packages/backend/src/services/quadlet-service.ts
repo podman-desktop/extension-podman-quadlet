@@ -16,6 +16,8 @@ import { TelemetryEvents } from '../utils/telemetry-events';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletKubeParser } from '../utils/parsers/quadlet-kube-parser';
 import { isRunError } from '../utils/run-error';
+import templates from '../assets/templates.json';
+import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
@@ -488,5 +490,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     this.#value.clear();
     this.#extensionsEventDisposable?.dispose();
     this.#extensionsEventDisposable = undefined;
+  }
+
+  public templates(): Array<Template> {
+    return templates;
   }
 }
