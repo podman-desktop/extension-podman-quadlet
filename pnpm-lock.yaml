@@ -292,20 +292,14 @@ importers:
         specifier: ^1.51.1
         version: 1.51.1
       '@podman-desktop/tests-playwright':
-        specifier: next
-        version: 1.20.0-202506060756-74e81cb585c
+        specifier: ^1.20.0-202506060756-74e81cb585c
+        version: 1.20.0-202506061249-b60ecdc25ca
       '@types/node':
         specifier: ^22
         version: 22.15.31
-      electron:
-        specifier: ^36.4.0
-        version: 36.4.0
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      vitest:
-        specifier: ^3.0.9
-        version: 3.0.9(@types/node@22.15.31)(jiti@2.4.2)(jsdom@26.1.0)(lightningcss@1.30.1)(yaml@2.6.1)
       xvfb-maybe:
         specifier: ^0.2.1
         version: 0.2.1
@@ -799,8 +793,8 @@ packages:
   '@podman-desktop/podman-extension-api@1.18.0':
     resolution: {integrity: sha512-CjRv0LDSmYZzPEtdOasPsRe8kzBYQOdK7+jjK9qhoy8l6NlOLjYPRKUIjZ/kZzNCKv1jd0D5mPxNmk0XtsBSTQ==}
 
-  '@podman-desktop/tests-playwright@1.20.0-202506060756-74e81cb585c':
-    resolution: {integrity: sha512-3f0g4a+g+jLUTH+N9hsMg+LhbJ9FIHAf6kl1c70IyJM6GvtgSFQ31wrwTJuPNwpJD3yPDGt+Sv2sfXdb9IlpHQ==}
+  '@podman-desktop/tests-playwright@1.20.0-202506061249-b60ecdc25ca':
+    resolution: {integrity: sha512-FAjqZ0c7Mb5m/ZKPTJR6Lx82mCf0BvK1kjnDYssRBAOJwvKbuPnzD4ILhr920WxElCJb7Nc21NCyqDztzFkdIQ==}
 
   '@podman-desktop/ui-svelte@1.18.0':
     resolution: {integrity: sha512-E1T45OvD8kTZhur4x0/ITxyzpDJDI26yt5z/gO3EdTvSYYfnE8GHS5+jnRULRKhOphWNPBr1ltdWAe7O36GSmQ==}
@@ -1102,9 +1096,6 @@ packages:
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
 
-  '@types/http-cache-semantics@4.0.4':
-    resolution: {integrity: sha512-1m0bIFVc7eJWyve9S0RnuRgcQqF/Xd5QsUZAZeQFr1Q3/p9JWoQQEqmVy+DPTNpGXwhgIetAoYF8JSc33q29QA==}
-
   '@types/humanize-duration@3.27.4':
     resolution: {integrity: sha512-yaf7kan2Sq0goxpbcwTQ+8E9RP6HutFBPv74T/IA/ojcHKhuKVlk2YFYyHhWZeLvZPzzLE3aatuQB4h0iqyyUA==}
 
@@ -1140,9 +1131,6 @@ packages:
 
   '@types/yargs@17.0.33':
     resolution: {integrity: sha512-WpxBCKWPLr4xSsHgz511rFJAM+wS28w2zEO1QDNY5zM/S8ok70NNfztH0xwhqKyaK0OHCbN98LDAZuy1ctxDkA==}
-
-  '@types/yauzl@2.10.3':
-    resolution: {integrity: sha512-oJoftv0LSuaDZE3Le4DbKX+KS9G36NzOeSap90UIK0yMA/NhKJhqlSGtNDORNRaIbQfzjXDrQa0ytJ6mNRGz/Q==}
 
   '@typescript-eslint/eslint-plugin@8.34.0':
     resolution: {integrity: sha512-QXwAlHlbcAwNlEEMKQS2RCgJsgXrTJdjXT08xEgbPFa2yYQgVjBymxP5DrfrE7X7iodSzd9qBUHUycdyVJTW1w==}
@@ -4420,7 +4408,7 @@ snapshots:
     dependencies:
       '@podman-desktop/api': 1.18.0
 
-  '@podman-desktop/tests-playwright@1.20.0-202506060756-74e81cb585c': {}
+  '@podman-desktop/tests-playwright@1.20.0-202506061249-b60ecdc25ca': {}
 
   '@podman-desktop/ui-svelte@1.18.0(svelte-fa@4.0.4(svelte@5.33.19))(svelte@5.33.19)':
     dependencies:
@@ -4536,8 +4524,6 @@ snapshots:
       string-argv: 0.3.2
     transitivePeerDependencies:
       - '@types/node'
-
-  '@sindresorhus/is@4.6.0': {}
 
   '@sveltejs/acorn-typescript@1.0.5(acorn@8.15.0)':
     dependencies:
@@ -4688,18 +4674,9 @@ snapshots:
 
   '@types/aria-query@5.0.4': {}
 
-  '@types/cacheable-request@6.0.3':
-    dependencies:
-      '@types/http-cache-semantics': 4.0.4
-      '@types/keyv': 3.1.4
-      '@types/node': 22.15.31
-      '@types/responselike': 1.0.3
-
   '@types/estree@1.0.7': {}
 
   '@types/estree@1.0.8': {}
-
-  '@types/http-cache-semantics@4.0.4': {}
 
   '@types/humanize-duration@3.27.4': {}
 
@@ -4708,10 +4685,6 @@ snapshots:
   '@types/json-schema@7.0.15': {}
 
   '@types/json5@0.0.29': {}
-
-  '@types/keyv@3.1.4':
-    dependencies:
-      '@types/node': 22.15.31
 
   '@types/marked@5.0.2': {}
 
@@ -4722,10 +4695,6 @@ snapshots:
   '@types/node@22.15.31':
     dependencies:
       undici-types: 6.21.0
-
-  '@types/responselike@1.0.3':
-    dependencies:
-      '@types/node': 22.15.31
 
   '@types/semver@7.5.8': {}
 
@@ -4742,11 +4711,6 @@ snapshots:
   '@types/yargs@17.0.33':
     dependencies:
       '@types/yargs-parser': 21.0.3
-
-  '@types/yauzl@2.10.3':
-    dependencies:
-      '@types/node': 22.15.31
-    optional: true
 
   '@typescript-eslint/eslint-plugin@8.34.0(@typescript-eslint/parser@8.34.0(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3))(eslint@9.28.0(jiti@2.4.2))(typescript@5.8.3)':
     dependencies:
@@ -5564,14 +5528,6 @@ snapshots:
 
   electron-to-chromium@1.5.166:
     optional: true
-
-  electron@36.4.0:
-    dependencies:
-      '@electron/get': 2.0.3
-      '@types/node': 22.15.31
-      extract-zip: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
 
   emoji-regex@8.0.0: {}
 
