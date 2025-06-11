@@ -482,3 +482,12 @@ describe('QuadletService#getQuadlet', () => {
     }
   });
 });
+
+describe('QuadletService#templates', () => {
+  test('templates should be an array', async () => {
+    const quadlet = getQuadletService();
+    const templates = quadlet.templates();
+
+    expect(templates).toBeInstanceOf(Array);
+  });
+});

@@ -1,0 +1,31 @@
+[
+  {
+    "id": "nginx-container",
+    "name": "Nginx Container",
+    "description": "Simple Nginx Container Quadlet template",
+    "files": [
+      {
+        "language": "ini",
+        "content": "# nginx.container\n[Container]\nImage=nginx\nPublishPort=8888:80\n\n[Service]\nRestart=always",
+        "name": "nginx.container"
+      }
+    ]
+  },
+  {
+    "id": "nginx-pod",
+    "name": "Nginx Pod",
+    "description": "Simple Nginx Kube Quadlet Template",
+    "files": [
+      {
+        "language": "ini",
+        "content": "# play.kube\n[Kube]\nYaml=play.yaml",
+        "name": "nginx.kube"
+      },
+      {
+        "language": "ini",
+        "content": "apiVersion: v1\nkind: Pod\nmetadata:\n  name: nginx-pod\nspec:\n  containers:\n    - name: container\n      image: nginx\n      ports:\n        - name: http\n          containerPort: 80",
+        "name": "play.yaml"
+      }
+    ]
+  }
+]
