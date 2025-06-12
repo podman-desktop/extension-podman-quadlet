@@ -16,12 +16,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { ServiceQuadlet } from './service-quadlet';
+import type { QuadletSection } from './quadlet-section';
 
 /**
  * Learn more about Container Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#container-units-container
  */
 export interface ContainerQuadlet {
   Service?: ServiceQuadlet;
+  Quadlet?: QuadletSection;
   Container: {
     /**
      * Add these capabilities, in addition to the default Podman capability set, to the container.

@@ -23,11 +23,14 @@ import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@p
 import { ContainerGenerator, Compose, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
+import type { ConfigurationService } from './configuration-service';
+import type { QuadletSection } from 'podlet-js/dist/models/quadlet-section';
 
 interface Dependencies {
   containers: ContainerService;
   images: ImageService;
   telemetry: TelemetryLogger;
+  configuration: ConfigurationService;
 }
 
 export class PodletJsService {
@@ -47,7 +50,18 @@ export class PodletJsService {
     return new ContainerGenerator({
       container,
       image,
+      quadlet: this.buildQuadletSection(),
     }).generate();
+  }
+
+  protected buildQuadletSection(): undefined | QuadletSection {
+    const defaultDependencies = this.dependencies.configuration.getQuadletDefaultDependencies();
+    if (!defaultDependencies) {
+      return {
+        DefaultDependencies: defaultDependencies,
+      };
+    }
+    return undefined;
   }
 
   /**
@@ -61,6 +75,7 @@ export class PodletJsService {
 
     return new ImageGenerator({
       image: image,
+      quadlet: this.buildQuadletSection(),
     }).generate();
   }
 
