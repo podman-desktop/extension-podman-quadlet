@@ -292,8 +292,8 @@ importers:
         specifier: ^1.51.1
         version: 1.51.1
       '@podman-desktop/tests-playwright':
-        specifier: ^1.20.0-202506112247-eb111f3adfc
-        version: 1.20.0-202506112247-eb111f3adfc
+        specifier: ^1.20.0-202506121723-d68ea290dfd
+        version: 1.20.0-202506121723-d68ea290dfd
       '@types/node':
         specifier: ^22
         version: 22.15.31
@@ -793,8 +793,8 @@ packages:
   '@podman-desktop/podman-extension-api@1.18.0':
     resolution: {integrity: sha512-CjRv0LDSmYZzPEtdOasPsRe8kzBYQOdK7+jjK9qhoy8l6NlOLjYPRKUIjZ/kZzNCKv1jd0D5mPxNmk0XtsBSTQ==}
 
-  '@podman-desktop/tests-playwright@1.20.0-202506112247-eb111f3adfc':
-    resolution: {integrity: sha512-NiyTJdL4fC+Zz/4Kv/F9GPQw8hssguQ8+y7/hUe8tpqDJEXIfdWBbyNQyCVAaEDP8R9wGaofAOt7TgyLcIH48w==}
+  '@podman-desktop/tests-playwright@1.20.0-202506121723-d68ea290dfd':
+    resolution: {integrity: sha512-zouCd7yE+rKxbLsVpHdET3K9OEKcp37TuYzjGCL0yJ+NKOx0eQQXKtKHHMax45fQTYH0Uhn5NKTB8rqSAg77wA==}
 
   '@podman-desktop/ui-svelte@1.18.0':
     resolution: {integrity: sha512-E1T45OvD8kTZhur4x0/ITxyzpDJDI26yt5z/gO3EdTvSYYfnE8GHS5+jnRULRKhOphWNPBr1ltdWAe7O36GSmQ==}
@@ -1856,8 +1856,8 @@ packages:
   electron-to-chromium@1.5.150:
     resolution: {integrity: sha512-rOOkP2ZUMx1yL4fCxXQKDHQ8ZXwisb2OycOQVKHgvB3ZI4CvehOd4y2tfnnLDieJ3Zs1RL1Dlp3cMkyIn7nnXA==}
 
-  electron-to-chromium@1.5.166:
-    resolution: {integrity: sha512-QPWqHL0BglzPYyJJ1zSSmwFFL6MFXhbACOCcsCdUMCkzPdS9/OIBVxg516X/Ado2qwAq8k0nJJ7phQPCqiaFAw==}
+  electron-to-chromium@1.5.167:
+    resolution: {integrity: sha512-LxcRvnYO5ez2bMOFpbuuVuAI5QNeY1ncVytE/KXaL6ZNfzX1yPlAO0nSOyIHx2fVAuUprMqPs/TdVhUFZy7SIQ==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -4408,7 +4408,7 @@ snapshots:
     dependencies:
       '@podman-desktop/api': 1.18.0
 
-  '@podman-desktop/tests-playwright@1.20.0-202506112247-eb111f3adfc': {}
+  '@podman-desktop/tests-playwright@1.20.0-202506121723-d68ea290dfd': {}
 
   '@podman-desktop/ui-svelte@1.18.0(svelte-fa@4.0.4(svelte@5.34.1))(svelte@5.34.1)':
     dependencies:
@@ -5263,7 +5263,7 @@ snapshots:
   browserslist@4.25.0:
     dependencies:
       caniuse-lite: 1.0.30001722
-      electron-to-chromium: 1.5.166
+      electron-to-chromium: 1.5.167
       node-releases: 2.0.19
       update-browserslist-db: 1.1.3(browserslist@4.25.0)
     optional: true
@@ -5526,7 +5526,7 @@ snapshots:
 
   electron-to-chromium@1.5.150: {}
 
-  electron-to-chromium@1.5.166:
+  electron-to-chromium@1.5.167:
     optional: true
 
   emoji-regex@8.0.0: {}
