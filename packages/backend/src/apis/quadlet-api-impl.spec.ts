@@ -95,12 +95,16 @@ function getQuadletApiImpl(): QuadletApiImpl {
 }
 
 test('QuadletApiImpl#getKubeYAML should propagate result from QuadletService#getKubeYAML', async () => {
-  vi.mocked(QUADLET_SERVICE.getKubeYAML).mockResolvedValue('dummy-yaml-content');
+  vi.mocked(QUADLET_SERVICE.getKubeYAML).mockResolvedValue({
+    content: 'dummy-yaml-content',
+    path: 'hello-world',
+  });
 
   const api = getQuadletApiImpl();
 
-  const result = await api.getKubeYAML(WSL_PROVIDER_IDENTIFIER, 'dummy-quadlet-id');
-  expect(result).toStrictEqual('dummy-yaml-content');
+  const { content, path } = await api.getKubeYAML(WSL_PROVIDER_IDENTIFIER, 'dummy-quadlet-id');
+  expect(content).toStrictEqual('dummy-yaml-content');
+  expect(path).toStrictEqual('hello-world');
   expect(PROVIDER_SERVICE.getProviderContainerConnection).toHaveBeenCalledWith(WSL_PROVIDER_IDENTIFIER);
 });
 

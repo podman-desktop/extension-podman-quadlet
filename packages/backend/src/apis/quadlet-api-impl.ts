@@ -153,7 +153,13 @@ export class QuadletApiImpl extends QuadletApi {
     });
   }
 
-  override async getKubeYAML(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string> {
+  override async getKubeYAML(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    id: string,
+  ): Promise<{
+    content: string;
+    path: string;
+  }> {
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
 
     return await this.dependencies.quadlet.getKubeYAML({

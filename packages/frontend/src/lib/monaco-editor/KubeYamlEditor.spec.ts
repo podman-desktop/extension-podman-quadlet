@@ -36,9 +36,12 @@ vi.mock('/@/api/client', () => ({
   },
 }));
 
-const MOCK_YAML = `
+const MOCK_YAML: { content: string; path: string } = {
+  content: `
 foo=bar
-`;
+`,
+  path: '/foo/bar',
+};
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -73,6 +76,17 @@ test('ensure reload button is visible', async () => {
   await vi.waitFor(() => {
     expect(reloadBtn).toBeEnabled();
   });
+});
+
+test('ensure kube path is visible', async () => {
+  const { getByLabelText } = render(KubeYamlEditor, {
+    quadlet: KUBE_QUADLET,
+    loading: false,
+  });
+
+  const kubeSpan = getByLabelText('kube path');
+  expect(kubeSpan).toBeInTheDocument();
+  expect(kubeSpan).toHaveTextContent(KUBE_QUADLET.path);
 });
 
 test('ensure reload button is disabled when loading true', async () => {
@@ -115,7 +129,7 @@ test('expect result from quadletAPI#getKubeYAML to be displayed in monaco editor
     expect(MonacoEditor).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        content: MOCK_YAML,
+        content: MOCK_YAML.content,
       }),
     );
   });

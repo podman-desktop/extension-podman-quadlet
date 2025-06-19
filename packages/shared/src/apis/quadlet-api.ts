@@ -50,7 +50,13 @@ export abstract class QuadletApi {
 
   abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
 
-  abstract getKubeYAML(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string>;
+  abstract getKubeYAML(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    id: string,
+  ): Promise<{
+    content: string;
+    path: string;
+  }>;
 
   /**
    * List Quadlets templates

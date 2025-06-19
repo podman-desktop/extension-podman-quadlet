@@ -440,7 +440,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }));
   }
 
-  async getKubeYAML(options: { id: string; provider: ProviderContainerConnection }): Promise<string> {
+  async getKubeYAML(options: { id: string; provider: ProviderContainerConnection }): Promise<{
+    content: string;
+    path: string;
+  }> {
     const quadlet = this.findQuadlet({
       provider: options.provider,
       id: options.id,
@@ -474,7 +477,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     try {
       // Get the worker
       const worker: PodmanWorker = await this.podman.getWorker(options.provider);
-      return await worker.read(target);
+      const content = await worker.read(target);
+      return {
+        content: content,
+        path: target,
+      };
     } catch (err: unknown) {
       console.error(`Something went wrong with readTextFile on ${target}`, err);
       // check err is an RunError
