@@ -81,6 +81,6 @@
     "js-yaml": "^4.1.0",
     "podlet-js": "workspace:^",
     "ssh2": "^1.16.0",
-    "ssh2-sftp-client": "^12.0.0"
+    "ssh2-sftp-client": "^12.0.1"
   }
 }
