@@ -19,7 +19,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { render, fireEvent } from '@testing-library/svelte';
-import { beforeEach, test, vi, expect } from 'vitest';
+import { beforeEach, test, vi, expect, assert } from 'vitest';
 import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
@@ -33,6 +33,7 @@ vi.mock('/@/lib/monaco-editor/MonacoEditor.svelte');
 vi.mock('/@/api/client', () => ({
   quadletAPI: {
     getKubeYAML: vi.fn(),
+    writeIntoMachine: vi.fn(),
   },
 }));
 
@@ -40,7 +41,7 @@ const MOCK_YAML: { content: string; path: string } = {
   content: `
 foo=bar
 `,
-  path: '/foo/bar',
+  path: '/foo/bar/example.yaml',
 };
 
 beforeEach(() => {
@@ -150,5 +151,68 @@ test('expect error from quadletAPI#getKubeYAML to be displayed', async () => {
   await vi.waitFor(() => {
     const alert = getByRole('alert');
     expect(alert).toHaveTextContent('Something went wrong: Error: Dummy foo error');
+  });
+});
+
+test('expect save button to be disabled by default', async () => {
+  const { getByRole } = render(KubeYamlEditor, {
+    quadlet: KUBE_QUADLET,
+    loading: false,
+  });
+
+  await vi.waitFor(() => {
+    const saveBtn = getByRole('button', { name: 'Save' });
+    expect(saveBtn).toBeDisabled();
+  });
+});
+
+test('expect save button to be enabled when content is updated', async () => {
+  const { getByRole } = render(KubeYamlEditor, {
+    quadlet: KUBE_QUADLET,
+    loading: false,
+  });
+
+  const saveBtn = await vi.waitFor(() => {
+    return getByRole('button', { name: 'Save' });
+  });
+
+  // before editing, should be disabled
+  expect(saveBtn).toBeDisabled();
+
+  const onchange: (content: string) => void = await vi.waitFor(() => {
+    expect(MonacoEditor).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        content: MOCK_YAML.content,
+        onChange: expect.any(Function),
+      }),
+    );
+    const props = vi.mocked(MonacoEditor).mock.calls[0]?.[1];
+    assert(props.onChange);
+    return props.onChange;
+  });
+
+  onchange('potatoes');
+
+  // after editing, should be enabled
+  await vi.waitFor(() => {
+    expect(saveBtn).toBeEnabled();
+  });
+
+  // click on save
+  saveBtn.click();
+
+  await vi.waitFor(() => {
+    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledOnce();
+    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledWith({
+      connection: PODMAN_MACHINE_DEFAULT,
+      files: [
+        {
+          filename: MOCK_YAML.path,
+          content: 'potatoes',
+        },
+      ],
+      skipSystemdDaemonReload: true,
+    });
   });
 });

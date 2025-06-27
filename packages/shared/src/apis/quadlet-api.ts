@@ -46,6 +46,11 @@ export abstract class QuadletApi {
   abstract writeIntoMachine(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     files: Array<{ filename: string; content: string }>;
+    /**
+     * When writing to the machine, by default the code will call systemd daemon-reload
+     * @default false
+     */
+    skipSystemdDaemonReload?: boolean;
   }): Promise<void>;
 
   abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;

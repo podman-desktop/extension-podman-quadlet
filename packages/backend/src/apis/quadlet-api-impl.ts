@@ -144,6 +144,7 @@ export class QuadletApiImpl extends QuadletApi {
   override writeIntoMachine(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     files: Array<{ filename: string; content: string }>;
+    skipSystemdDaemonReload?: boolean;
   }): Promise<void> {
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
 
