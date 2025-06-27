@@ -38,6 +38,7 @@ import type { Quadlet } from '../models/quadlet';
 import { Messages } from '/@shared/src/messages';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { join as joinposix } from 'node:path/posix';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
@@ -489,5 +490,72 @@ describe('QuadletService#templates', () => {
     const templates = quadlet.templates();
 
     expect(templates).toBeInstanceOf(Array);
+  });
+});
+
+describe('QuadletService#writeIntoMachine', () => {
+  test('should create a withProgress task', async () => {
+    const quadlet = getQuadletService();
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [],
+    });
+
+    expect(WINDOW_MOCK.withProgress).toHaveBeenCalledWith(
+      {
+        location: ProgressLocation.TASK_WIDGET,
+        title: `Saving`,
+      },
+      expect.any(Function),
+    );
+  });
+
+  test('expect daemon reload by default', async () => {
+    const quadlet = getQuadletService();
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [],
+    });
+
+    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalledOnce();
+    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalledWith({
+      admin: false,
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    });
+  });
+
+  test('expect skipSystemdDaemonReload options to disable daemon reload', async () => {
+    const quadlet = getQuadletService();
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [],
+      skipSystemdDaemonReload: true,
+    });
+
+    expect(SYSTEMD_SERVICE_MOCK.daemonReload).not.toHaveBeenCalled();
+  });
+
+  test('should save each files in appropriate folder', async () => {
+    const quadlet = getQuadletService();
+
+    const files = Array.from({ length: 10 }, (_, index) => ({
+      filename: `${index}.yaml`,
+      content: `${index}-content`,
+    }));
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: files,
+    });
+
+    files.forEach(file => {
+      expect(PODMAN_WORKER_MOCK.write).toHaveBeenCalledWith(
+        joinposix('~/.config/containers/systemd', file.filename),
+        file.content,
+      );
+    });
   });
 });

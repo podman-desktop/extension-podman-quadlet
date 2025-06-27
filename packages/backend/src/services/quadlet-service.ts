@@ -260,6 +260,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     admin?: boolean;
     files: Array<{ filename: string; content: string }>;
+    /**
+     * When writing to the machine, by default the code will call systemd daemon-reload
+     * @default false
+     */
+    skipSystemdDaemonReload?: boolean;
   }): Promise<void> {
     const telemetry: Record<string, unknown> = {
       admin: options.admin,
@@ -304,14 +309,16 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             }
           }
 
-          // reload
-          await this.dependencies.systemd.daemonReload({
-            admin: options.admin ?? false,
-            provider: options.provider,
-          });
+          if (!options.skipSystemdDaemonReload) {
+            // reload
+            await this.dependencies.systemd.daemonReload({
+              admin: options.admin ?? false,
+              provider: options.provider,
+            });
 
-          // collect quadlets
-          await this.collectPodmanQuadlet();
+            // collect quadlets
+            await this.collectPodmanQuadlet();
+          }
         },
       )
       .catch((err: unknown) => {

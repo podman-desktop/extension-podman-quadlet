@@ -52,6 +52,8 @@ async function saveKube(): Promise<void> {
           filename: yamlPath,
         },
       ],
+      // prevent reloading systemd
+      skipSystemdDaemonReload: true,
     });
     // apply to original content
     originalContent = kubeContent;
@@ -68,6 +70,10 @@ async function saveKube(): Promise<void> {
 onMount(() => {
   pull().catch(console.error);
 });
+
+function onchange(content: string): void {
+  kubeContent = content;
+}
 </script>
 
 <div class="flex py-2 h-[40px] gap-x-2">
@@ -85,5 +91,5 @@ onMount(() => {
 {/if}
 {#if !loading && kubeContent && !error}
   <EditorOverlay save={saveKube} loading={loading} changed={kubeChanged} />
-  <MonacoEditor class="h-full" bind:content={kubeContent} language="yaml" />
+  <MonacoEditor class="h-full" content={kubeContent} onChange={onchange} language="yaml" />
 {/if}
