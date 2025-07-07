@@ -19,6 +19,7 @@ import { join } from 'node:path';
 import { builtinModules } from 'node:module';
 import dts from 'vite-plugin-dts';
 import { defineConfig } from 'vite';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -31,7 +32,15 @@ export default defineConfig({
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
     },
   },
-  plugins: [dts()],
+  plugins: [
+    dts(),
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: 'podlet-js',
+      uploadToken: process.env.CODECOV_TOKEN,
+      telemetry: false,
+    }),
+  ],
   build: {
     sourcemap: 'inline',
     target: 'esnext',

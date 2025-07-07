@@ -18,6 +18,7 @@
 import { join } from 'node:path';
 import { builtinModules } from 'node:module';
 import { defineConfig } from 'vite';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 const PACKAGE_ROOT = __dirname;
 
@@ -29,6 +30,14 @@ export default defineConfig({
   mode: process.env.MODE,
   root: PACKAGE_ROOT,
   envDir: process.cwd(),
+  plugins: [
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: 'backend',
+      uploadToken: process.env.CODECOV_TOKEN,
+      telemetry: false,
+    }),
+  ],
   resolve: {
     alias: {
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
