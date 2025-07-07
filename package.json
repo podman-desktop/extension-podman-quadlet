@@ -20,7 +20,7 @@
     "format:fix": "prettier --write \"packages/**/*.{ts,js,json,svelte}\"",
     "lint:check": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",
-    "svelte:check": "svelte-check",
+    "svelte:check": "cd packages/frontend && svelte-check",
     "test:podlet-js": "vitest run --project podlet-js",
     "test:backend":   "vitest run --project quadlet",
     "test:frontend":  "vitest run --project frontend",
