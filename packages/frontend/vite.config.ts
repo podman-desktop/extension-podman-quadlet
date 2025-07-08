@@ -21,6 +21,7 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { defineConfig } from 'vite';
 import { fileURLToPath } from 'node:url';
 import tailwindcss from '@tailwindcss/vite';
+import { codecovVitePlugin } from '@codecov/vite-plugin';
 
 const filename = fileURLToPath(import.meta.url);
 const PACKAGE_ROOT = path.dirname(filename);
@@ -36,7 +37,16 @@ export default defineConfig({
       '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
     },
   },
-  plugins: [tailwindcss(), svelte({ hot: !process.env.VITEST })],
+  plugins: [
+    tailwindcss(),
+    svelte({ hot: !process.env.VITEST }),
+    codecovVitePlugin({
+      enableBundleAnalysis: process.env.CODECOV_TOKEN !== undefined,
+      bundleName: 'frontend',
+      uploadToken: process.env.CODECOV_TOKEN,
+      telemetry: false,
+    }),
+  ],
   optimizeDeps: {
     exclude: [],
   },
