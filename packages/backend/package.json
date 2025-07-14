@@ -63,7 +63,7 @@
     ]
   },
   "devDependencies": {
-    "@podman-desktop/api": "^1.20.0",
+    "@podman-desktop/api": "^1.20.1",
     "@podman-desktop/podman-extension-api": "^1.18.0",
     "@types/node": "^22",
     "@types/ssh2": "^1.15.5",
