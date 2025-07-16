@@ -44,7 +44,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.useFakeTimers();
 
-  vi.mocked(SFTP_CLIENT_MOCK.end).mockResolvedValue(undefined);
+  vi.mocked(SFTP_CLIENT_MOCK.end).mockResolvedValue(false);
 
   vi.mocked(SftpClient).mockReturnValue(SFTP_CLIENT_MOCK);
 });
