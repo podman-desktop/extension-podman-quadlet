@@ -47,6 +47,7 @@ const QUADLET_MOCK: QuadletInfo = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+  isTemplate: false,
 };
 
 test('expect quadlet with service name to use it', () => {

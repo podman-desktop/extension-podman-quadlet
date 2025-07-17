@@ -73,6 +73,18 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
+  isTemplate: false,
+};
+
+const TEMPLATE_QUADLET_MOCK: Quadlet & { service: string } = {
+  id: 'foo-template-id',
+  service: 'foo@.service',
+  path: 'foo/bar@.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  isTemplate: true,
 };
 
 beforeEach(() => {
@@ -116,8 +128,18 @@ describe.each(['start', 'stop'] as Array<'start' | 'stop'>)('QuadletApiImpl#%s',
     expect(QUADLET_SERVICE.getQuadlet).toHaveBeenCalledWith(QUADLET_MOCK.id);
   });
 
+  test('calling with a template quadlet should throw an error', async () => {
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue(TEMPLATE_QUADLET_MOCK);
+
+    const api = getQuadletApiImpl();
+
+    await expect(() => {
+      return api[func](WSL_PROVIDER_IDENTIFIER, TEMPLATE_QUADLET_MOCK.id);
+    }).rejects.toThrowError(`cannot ${func} quadlet: quadlet is a template`);
+  });
+
   test('should propagate error if quadlet does not have associated service', async () => {
-    vi.mocked(QUADLET_SERVICE.getQuadlet).mockResolvedValue({
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue({
       ...QUADLET_MOCK,
       service: undefined,
     });
@@ -163,6 +185,19 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
       quadletId: QUADLET_MOCK.id,
     });
     expect(loggerId).toStrictEqual(LOGGER_MOCK.id);
+  });
+
+  test('calling with a template quadlet should throw an error', async () => {
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue(TEMPLATE_QUADLET_MOCK);
+
+    const api = getQuadletApiImpl();
+
+    await expect(() => {
+      return api.createQuadletLogger({
+        connection: WSL_PROVIDER_IDENTIFIER,
+        quadletId: QUADLET_MOCK.id,
+      });
+    }).rejects.toThrowError(`cannot create quadlet logger: quadlet is a template`);
   });
 
   test('should call podman#journalctlExec with appropriate arguments', async () => {

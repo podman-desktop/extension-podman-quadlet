@@ -52,6 +52,7 @@ const QUADLET_MOCK: QuadletInfo = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+  isTemplate: false,
 };
 
 test('expect active quadlet to have stop enabled', async () => {
@@ -116,4 +117,20 @@ test('expect user confirm removal action to use quadletAPI#remove', async () => 
 
   expect(dialogAPI.showWarningMessage).toHaveBeenCalled();
   expect(quadletAPI.remove).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+});
+
+test('expect template quadlet to only have delete action', async () => {
+  const { getByRole, queryByRole } = render(QuadletActions, {
+    object: { ...QUADLET_MOCK, state: 'unknown', isTemplate: true },
+  });
+
+  const startBtn = queryByRole('button', { name: 'Start quadlet' });
+  expect(startBtn).toBeNull();
+
+  const stopBtn = queryByRole('button', { name: 'Stop quadlet' });
+  expect(stopBtn).toBeNull();
+
+  const removeBtn = getByRole('button', { name: 'Remove quadlet' });
+  expect(removeBtn).toBeDefined();
+  expect(removeBtn).toBeEnabled();
 });

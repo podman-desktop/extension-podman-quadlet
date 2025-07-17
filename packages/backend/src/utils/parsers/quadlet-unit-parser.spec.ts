@@ -64,7 +64,7 @@ After=nginx-image.service
 RequiresMountsFor=%t/containers
 `;
 
-const DUMMY_SERVICE_NAME = 'dummy.container';
+const DUMMY_SERVICE_NAME = 'dummy.service';
 
 test('expect path to be properly extracted', async () => {
   const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
@@ -96,4 +96,24 @@ test('expect requires to be properly parsed', async () => {
   const result = parser.parse();
 
   expect(result.requires).toStrictEqual(['hello-world.image', 'nginx-image.service']);
+});
+
+test.each<{ name: string; isTemplate: boolean }>([
+  {
+    name: 'foo.service', // normal quadlet
+    isTemplate: false,
+  },
+  {
+    name: 'foo@.service', // template
+    isTemplate: true,
+  },
+  {
+    name: 'foo@bar.service', // template instance
+    isTemplate: false,
+  },
+])('service with name $name should be recognised as template', ({ name, isTemplate }) => {
+  const parser = new QuadletUnitParser(name, CONTAINER_QUADLET_EXAMPLE);
+  const result = parser.parse();
+
+  expect(result.isTemplate).toBe(isTemplate);
 });

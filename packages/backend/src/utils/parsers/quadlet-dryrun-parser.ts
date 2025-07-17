@@ -7,7 +7,7 @@ import { QuadletUnitParser } from './quadlet-unit-parser';
 import type { Quadlet } from '../../models/quadlet';
 import type { RunResult } from '@podman-desktop/api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
-import { isAbsolute } from 'node:path/posix';
+import { isAbsolute, basename } from 'node:path/posix';
 import { randomUUID } from 'node:crypto';
 
 export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number }, Quadlet[]> {
@@ -37,6 +37,16 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
 
     this.parsed = true;
     return Object.values(this.services);
+  }
+
+  // https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html#Service%20Templates
+  protected isTemplate(path: string): boolean {
+    const filename = basename(path);
+
+    const separator = filename.lastIndexOf('.');
+    if (separator === -1) throw new Error('service name do not have .service extension');
+    const [name] = [filename.slice(0, separator), filename.slice(separator + 1)];
+    return name.endsWith('@');
   }
 
   /**
@@ -72,6 +82,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         state: 'error',
         type: new QuadletExtensionParser(path).parse(),
         requires: [], // cannot detect requires
+        isTemplate: this.isTemplate(path),
       });
 
       return accumulator;
