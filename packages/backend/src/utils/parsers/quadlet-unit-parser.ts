@@ -8,6 +8,7 @@ import type { Quadlet } from '../../models/quadlet';
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
+import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
 
 interface Unit {
   SourcePath: string;
@@ -45,15 +46,6 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     return randomUUID();
   }
 
-  // https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html#Service%20Templates
-  protected isTemplate(): boolean {
-    const separator = this.serviceName.lastIndexOf('.');
-    if (separator === -1) throw new Error('service name do not have .service extension');
-    const [name, extension] = [this.serviceName.slice(0, separator), this.serviceName.slice(separator + 1)];
-    if (extension !== 'service') throw new Error('service name do not have .service extension');
-    return name.endsWith('@');
-  }
-
   override parse(): Quadlet {
     const raw = parse(this.content, {
       comment: ['#', ';'],
@@ -71,7 +63,9 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       state: 'unknown',
       type: type,
       requires: unit.Requires,
-      isTemplate: this.isTemplate(),
+      isTemplate:
+        new QuadletServiceTypeParser({ filename: this.serviceName, extension: 'service' }).parse() ===
+        ServiceType.TEMPLATE,
     };
   }
 }
