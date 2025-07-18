@@ -8,6 +8,7 @@ import type { Quadlet } from '../../models/quadlet';
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
+import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
 
 interface Unit {
   SourcePath: string;
@@ -62,6 +63,9 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       state: 'unknown',
       type: type,
       requires: unit.Requires,
+      isTemplate:
+        new QuadletServiceTypeParser({ filename: this.serviceName, extension: 'service' }).parse() ===
+        ServiceType.TEMPLATE,
     };
   }
 }

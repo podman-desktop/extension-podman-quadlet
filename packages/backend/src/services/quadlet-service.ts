@@ -231,7 +231,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         provider: provider,
         admin: false,
         services: quadlets
-          .filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service)
+          // only check statuses for quadlet with corresponding service & non-template
+          .filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service && !quadlet.isTemplate)
           .map(quadlet => quadlet.service),
       });
 

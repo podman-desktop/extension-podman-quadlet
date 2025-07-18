@@ -52,7 +52,7 @@ async function remove(): Promise<void> {
 
 {#if object.state === 'active'}
   <ListItemButtonIcon icon={faStop} onClick={stop} title="Stop quadlet" enabled={!loading && !deleting} />
-{:else}
+{:else if !object.isTemplate}
   <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading && !deleting} />
 {/if}
 <ListItemButtonIcon

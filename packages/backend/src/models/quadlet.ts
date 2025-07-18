@@ -38,4 +38,8 @@ export interface Quadlet {
    * @remarks the string are the service name, not the quadlet ids.
    */
   requires: Array<string>;
+  /**
+   * https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#template-files
+   */
+  isTemplate: boolean;
 }
