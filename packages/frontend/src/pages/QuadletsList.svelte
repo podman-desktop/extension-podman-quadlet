@@ -76,7 +76,7 @@ let data: (QuadletInfo & { selected?: boolean })[] = $derived(
     }
 
     if (match && searchTerm.length > 0) {
-      match = quadlet.service?.includes(searchTerm) || false;
+      match = quadlet.service?.includes(searchTerm) ?? false;
     }
 
     return match;
