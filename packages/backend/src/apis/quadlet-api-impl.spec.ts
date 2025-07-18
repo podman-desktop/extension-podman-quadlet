@@ -135,7 +135,7 @@ describe.each(['start', 'stop'] as Array<'start' | 'stop'>)('QuadletApiImpl#%s',
 
     await expect(() => {
       return api[func](WSL_PROVIDER_IDENTIFIER, TEMPLATE_QUADLET_MOCK.id);
-    }).rejects.toThrowError(`cannot ${func} quadlet: quadlet is a template`);
+    }).rejects.toThrowError(`cannot ${func} quadlet: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
   });
 
   test('should propagate error if quadlet does not have associated service', async () => {
@@ -197,7 +197,7 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
         connection: WSL_PROVIDER_IDENTIFIER,
         quadletId: QUADLET_MOCK.id,
       });
-    }).rejects.toThrowError(`cannot create quadlet logger: quadlet is a template`);
+    }).rejects.toThrowError(`cannot create quadlet logger: quadlet with id ${QUADLET_MOCK.id} is a template`);
   });
 
   test('should call podman#journalctlExec with appropriate arguments', async () => {
