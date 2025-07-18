@@ -19,7 +19,7 @@
     "@codecov/vite-plugin": "^1.9.1",
     "vite-plugin-dts": "^4.5.4",
     "@types/js-yaml": "^4.0.9",
-    "@podman-desktop/api": "^1.20.1"
+    "@podman-desktop/api": "^1.20.2"
   },
   "dependencies": {
     "js-ini": "^1.6.0",
