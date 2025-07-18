@@ -40,16 +40,6 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
     return Object.values(this.services);
   }
 
-  // https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html#Service%20Templates
-  protected isTemplate(path: string): boolean {
-    const filename = basename(path);
-
-    const separator = filename.lastIndexOf('.');
-    if (separator === -1) throw new Error('service name do not have .service extension');
-    const [name] = [filename.slice(0, separator), filename.slice(separator + 1)];
-    return name.endsWith('@');
-  }
-
   /**
    * @param validQuadlets
    * @protected
