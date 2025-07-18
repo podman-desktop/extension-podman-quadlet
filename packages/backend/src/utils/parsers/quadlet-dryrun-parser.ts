@@ -31,8 +31,12 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
       const serviceName = match[1].trim();
 
       // parse the quadlet unit
-      const quadletUnitParser = new QuadletUnitParser(serviceName, match[2].trim());
-      this.services[serviceName] = quadletUnitParser.parse();
+      try {
+        const quadletUnitParser = new QuadletUnitParser(serviceName, match[2].trim());
+        this.services[serviceName] = quadletUnitParser.parse();
+      } catch (err: unknown) {
+        console.error(`cannot parse ${serviceName}`, err);
+      }
     }
 
     this.parsed = true;

@@ -19,6 +19,9 @@ import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { lt, coerce } from 'semver';
+
+export const QUADLET_MIN_STABLE = '5.3.0';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -191,6 +194,12 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       console.log(
         `[QuadletService] found quadlet version ${quadletVersion} for connection ${provider.connection.name} of provider ${provider.providerId}`,
       );
+
+      // warn user depending on quadlet version
+      const coerced = coerce(quadletVersion);
+      if (coerced && lt(coerced, QUADLET_MIN_STABLE)) {
+        console.warn(`connection ${provider.connection.name} uses an old quadlet version: ${quadletVersion}`);
+      }
 
       // 3. get the quadlets
       const quadlets = await this.getPodmanQuadlets({ provider, admin: false });
