@@ -73,7 +73,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         id: randomUUID(),
         path: path,
         state: 'error',
-        type: new QuadletExtensionParser(path).parse(),
+        type: type,
         requires: [], // cannot detect requires
         isTemplate:
           new QuadletServiceTypeParser({ filename: basename(path), extension: type.toLowerCase() }).parse() ===
