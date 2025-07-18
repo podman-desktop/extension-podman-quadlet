@@ -41,7 +41,7 @@ export class QuadletServiceTypeParser extends Parser<Options, ServiceType> {
   override parse(): ServiceType {
     // split the filename using the last `.`
     const separatorIndex = this.content.filename.lastIndexOf('.');
-    if (separatorIndex === -1) throw new Error('service name do not have .service extension');
+    if (separatorIndex === -1) throw new Error(`service ${this.content.filename} does not have an extension`);
 
     // split the name from the extension
     const [name, extension] = [
