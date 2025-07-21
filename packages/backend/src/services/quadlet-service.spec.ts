@@ -34,7 +34,7 @@ import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
-import type { Quadlet } from '../models/quadlet';
+import type { Quadlet } from '/@shared/src/models/quadlet';
 import { Messages } from '/@shared/src/messages';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { PodmanWorker } from '../utils/worker/podman-worker';

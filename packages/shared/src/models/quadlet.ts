@@ -1,8 +1,10 @@
 /**
  * @author axel7083
  */
-import type { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type { QuadletState } from '/@shared/src/models/quadlet-info';
+
+import type { QuadletType } from '../utils/quadlet-type';
+
+export type QuadletState = 'active' | 'inactive' | 'deleting' | 'unknown' | 'error';
 
 export interface Quadlet {
   /**

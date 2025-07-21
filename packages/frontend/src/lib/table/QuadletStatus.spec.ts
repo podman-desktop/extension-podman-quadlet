@@ -20,12 +20,13 @@ import '@testing-library/jest-dom/vitest';
 
 import { render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
-import type { QuadletState, QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 
 import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
+import type { QuadletState } from '/@shared/src/models/quadlet';
 
 vi.mock('@podman-desktop/ui-svelte');
 

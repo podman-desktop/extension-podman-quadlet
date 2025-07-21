@@ -4,7 +4,7 @@
 
 import { Parser } from './iparser';
 import { type IIniObject, parse } from 'js-ini';
-import type { Quadlet } from '../../models/quadlet';
+import type { Quadlet } from '/@shared/src/models/quadlet';
 import type { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
