@@ -104,6 +104,18 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
+  isTemplate: false,
+};
+
+const TEMPLATE_QUADLET_MOCK: Quadlet & { service: string } = {
+  id: 'foo-template-id',
+  service: 'foo@.service',
+  path: 'foo/valid@.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  isTemplate: true,
 };
 
 const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
@@ -114,6 +126,7 @@ const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
   content: 'dummy-content',
   type: QuadletType.KUBE,
   requires: [],
+  isTemplate: false,
 };
 
 const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
@@ -123,6 +136,7 @@ const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
+  isTemplate: false,
 };
 
 const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
@@ -145,6 +159,7 @@ beforeEach(() => {
     QUADLET_MOCK,
     SERVICE_LESS_QUADLET_MOCK,
     KUBE_QUADLET_MOCK,
+    TEMPLATE_QUADLET_MOCK,
   ]);
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
@@ -182,7 +197,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
       args: ['-dryrun', '-user'],
     });
 
-    expect(quadlet.all()).toHaveLength(3);
+    expect(quadlet.all()).toHaveLength(4);
   });
 });
 
@@ -232,7 +247,7 @@ describe('QuadletService#getQuadletVersion', () => {
 });
 
 describe('QuadletService#refreshQuadletsStatuses', () => {
-  test('should only provide quadlet with corresponding service', async () => {
+  test('should only provide quadlet with corresponding service and non-template', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
@@ -265,6 +280,10 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
     expect(validQuadlet?.state).toStrictEqual('inactive');
     // should not update service
     expect(serviceLessQuadlet?.state).toStrictEqual('unknown');
+
+    // should not update the template quadlet
+    const templateQuadlet = quadlets.find(quadlet => quadlet.path === TEMPLATE_QUADLET_MOCK.path);
+    expect(templateQuadlet?.state).toStrictEqual('unknown');
   });
 });
 
@@ -276,6 +295,7 @@ describe('QuadletService#remove', () => {
     content: 'dummy-content',
     type: QuadletType.CONTAINER,
     requires: [],
+    isTemplate: false,
   }));
 
   beforeEach(() => {

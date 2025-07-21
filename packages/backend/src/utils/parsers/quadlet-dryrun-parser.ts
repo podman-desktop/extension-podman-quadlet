@@ -7,8 +7,9 @@ import { QuadletUnitParser } from './quadlet-unit-parser';
 import type { Quadlet } from '../../models/quadlet';
 import type { RunResult } from '@podman-desktop/api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
-import { isAbsolute } from 'node:path/posix';
+import { isAbsolute, basename } from 'node:path/posix';
 import { randomUUID } from 'node:crypto';
+import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
 
 export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number }, Quadlet[]> {
   // match line such as 'quadlet-generator[11695]: Loading source unit file /home/user/.config/containers/systemd/nginx.image'
@@ -64,14 +65,19 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
       // if the quadlet we got already exist, ignore
       if (validQuadlets.has(path)) return accumulator;
 
+      const type = new QuadletExtensionParser(path).parse();
+
       // create quadlet in error state
       accumulator.push({
         service: undefined, // do not have corresponding service
         id: randomUUID(),
         path: path,
         state: 'error',
-        type: new QuadletExtensionParser(path).parse(),
+        type: type,
         requires: [], // cannot detect requires
+        isTemplate:
+          new QuadletServiceTypeParser({ filename: basename(path), extension: type.toLowerCase() }).parse() ===
+          ServiceType.TEMPLATE,
       });
 
       return accumulator;

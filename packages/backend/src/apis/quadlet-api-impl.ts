@@ -41,6 +41,8 @@ export class QuadletApiImpl extends QuadletApi {
     if (!quadlet.service)
       throw new Error(`cannot start quadlet: quadlet with id ${id} does not have an associated systemd service`);
 
+    if (quadlet.isTemplate) throw new Error(`cannot start quadlet: quadlet with id ${id} is a template`);
+
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
 
     try {
@@ -59,6 +61,8 @@ export class QuadletApiImpl extends QuadletApi {
     const quadlet = this.dependencies.quadlet.getQuadlet(id);
     if (!quadlet.service)
       throw new Error(`cannot stop quadlet: quadlet with id ${id} does not have an associated systemd service`);
+
+    if (quadlet.isTemplate) throw new Error(`cannot stop quadlet: quadlet with id ${id} is a template`);
 
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
 
@@ -107,6 +111,9 @@ export class QuadletApiImpl extends QuadletApi {
       throw new Error(
         `cannot create quadlet logger quadlet: quadlet with id ${options.quadletId} does not have an associated systemd service`,
       );
+
+    if (quadlet.isTemplate)
+      throw new Error(`cannot create quadlet logger: quadlet with id ${options.quadletId} is a template`);
 
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
 
