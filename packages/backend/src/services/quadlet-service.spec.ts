@@ -96,7 +96,7 @@ const RUN_RESULT_MOCK: RunResult = {
   stderr: 'dummy-stderr',
 };
 
-const QUADLET_MOCK: Quadlet & { service: string } = {
+const QUADLET_MOCK: Quadlet = {
   id: 'foo-id',
   service: 'foo.service',
   path: 'foo/valid.container',
@@ -106,7 +106,7 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   requires: [],
 };
 
-const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
+const KUBE_QUADLET_MOCK: Quadlet = {
   id: 'foo-kube-id',
   service: 'foo.service',
   path: 'foo/valid.kube',
@@ -120,7 +120,7 @@ const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   id: 'service-less-id',
   path: 'foo/invalid.container',
   state: 'unknown',
-  content: 'dummy-content',
+  service: undefined,
   type: QuadletType.CONTAINER,
   requires: [],
 };
@@ -273,7 +273,7 @@ describe('QuadletService#remove', () => {
     id: `quadlet-${index}.container`,
     state: 'unknown',
     path: `config/quadlet-${index}.container`,
-    content: 'dummy-content',
+    service: undefined,
     type: QuadletType.CONTAINER,
     requires: [],
   }));

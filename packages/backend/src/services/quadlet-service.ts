@@ -19,6 +19,7 @@ import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -230,9 +231,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
         admin: false,
-        services: quadlets
-          .filter((quadlet): quadlet is Quadlet & { service: string } => !!quadlet.service)
-          .map(quadlet => quadlet.service),
+        services: quadlets.filter(isServiceQuadlet).map(quadlet => quadlet.service),
       });
 
       // update each quadlets
@@ -461,7 +460,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     if (quadlet.type !== QuadletType.KUBE)
       throw new Error(`cannot get kube yaml of non-kube quadlet: quadlet ${quadlet.id} type is ${quadlet.type}`);
 
-    if (!quadlet.content || !quadlet.service)
+    if (!quadlet.service)
       throw new Error('cannot get kube yaml: quadlet without associated systemd service cannot be parsed.');
 
     // extract the yaml file from

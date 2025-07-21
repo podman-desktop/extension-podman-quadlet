@@ -26,7 +26,7 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
-import type { QuadletState } from '/@shared/src/models/quadlet';
+import type { QuadletState } from '../../../../shared/src/models/base-quadlet';
 
 vi.mock('@podman-desktop/ui-svelte');
 
@@ -37,7 +37,7 @@ const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
 
 const QUADLET_MOCK: QuadletInfo = {
   id: `foo.container`,
-  content: 'dummy-content',
+  service: undefined,
   state: 'active',
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,

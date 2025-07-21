@@ -55,7 +55,7 @@ const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
   status: 'started',
 };
 
-const CONTAINER_QUADLET_MOCK: QuadletInfo & { service: string } = {
+const CONTAINER_QUADLET_MOCK: QuadletInfo = {
   connection: WSL_PROVIDER_DETAILED_INFO,
   id: `foo-container-id`,
   service: 'foo-container.service',
@@ -66,7 +66,7 @@ const CONTAINER_QUADLET_MOCK: QuadletInfo & { service: string } = {
   requires: [],
 };
 
-const IMAGE_QUADLET_MOCK: QuadletInfo & { service: string } = {
+const IMAGE_QUADLET_MOCK: QuadletInfo = {
   // either WSL either QEMU
   connection: WSL_PROVIDER_DETAILED_INFO,
   id: `foo-image-id`,
@@ -86,17 +86,18 @@ const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
   requires: [],
+  service: undefined,
 };
 
 const KUBE_QUADLET_MOCK: QuadletInfo = {
   // either WSL either QEMU
   connection: WSL_PROVIDER_DETAILED_INFO,
   id: `foo.kube`,
-  content: 'dummy-content',
   state: 'active',
   path: `bar/foo.kube`,
   type: QuadletType.KUBE,
   requires: [],
+  service: undefined,
 };
 
 beforeEach(() => {
@@ -175,7 +176,6 @@ describe('title', () => {
     });
     // ensure the service is undefined
     expect(INVALID_IMAGE_QUADLET_MOCK.service).toBeUndefined();
-
     const navigation = getByRole('navigation', {
       name: 'Breadcrumb',
     });
