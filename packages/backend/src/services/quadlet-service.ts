@@ -7,7 +7,7 @@ import type { Disposable, ProviderContainerConnection } from '@podman-desktop/ap
 import type { QuadletServiceDependencies } from './quadlet-helper';
 import { QuadletHelper } from './quadlet-helper';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
-import type { Quadlet } from '../models/quadlet';
+import type { Quadlet } from '/@shared/src/models/quadlet';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { AsyncInit } from '../utils/async-init';
 import { join as joinposix, basename, dirname, isAbsolute } from 'node:path/posix';
