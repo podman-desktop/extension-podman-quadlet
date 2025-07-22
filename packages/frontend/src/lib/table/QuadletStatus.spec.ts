@@ -26,7 +26,7 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
-import type { QuadletState } from '../../../../shared/src/models/base-quadlet';
+import type { QuadletState } from '/@shared/src/models/base-quadlet';
 
 vi.mock('@podman-desktop/ui-svelte');
 
