@@ -65,7 +65,7 @@ const WSL_PROVIDER_IDENTIFIER: ProviderContainerConnectionIdentifierInfo = {
   providerId: WSL_PROVIDER_CONNECTION_MOCK.providerId,
 };
 
-const QUADLET_MOCK: Quadlet & { service: string } = {
+const QUADLET_MOCK: Quadlet = {
   id: 'foo-id',
   service: 'foo.service',
   path: 'foo/bar.container',

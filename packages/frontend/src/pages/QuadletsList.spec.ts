@@ -26,7 +26,7 @@ import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { readable } from 'svelte/store';
 import * as quadletStore from '/@store/quadlets';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type { ServiceQuadletInfo } from '/@shared/src/models/quadlet-info';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
@@ -67,7 +67,7 @@ vi.mock('tinro');
 // mock components
 vi.mock('/@/lib/empty-screen/EmptyQuadletList.svelte');
 
-const QUADLETS_MOCK: Array<QuadletInfo & { service: string }> = Array.from({ length: 10 }, (_, index) => ({
+const QUADLETS_MOCK: Array<ServiceQuadletInfo> = Array.from({ length: 10 }, (_, index) => ({
   // either WSL either QEMU
   connection: index % 2 === 0 ? WSL_PROVIDER_DETAILED_INFO : QEMU_PROVIDER_DETAILED_INFO,
   id: `random-${index}`,

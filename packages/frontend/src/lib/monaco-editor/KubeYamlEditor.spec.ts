@@ -59,7 +59,7 @@ const KUBE_QUADLET: QuadletInfo & { type: QuadletType.KUBE } = {
   type: QuadletType.KUBE,
   id: `foo.bar`,
   path: `/mnt/foo/bar.kube`,
-  content: 'dummy-content',
+  service: undefined,
   state: 'active',
   connection: PODMAN_MACHINE_DEFAULT,
   requires: [],

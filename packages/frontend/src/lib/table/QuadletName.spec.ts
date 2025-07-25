@@ -20,11 +20,11 @@ import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 import { router } from 'tinro';
+import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 
 // mock utils
 vi.mock('tinro');
@@ -40,30 +40,32 @@ const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
 
 const QUADLET_MOCK: QuadletInfo = {
   id: `dummy-id`,
-  service: 'foo.service',
-  content: 'dummy-content',
   state: 'active',
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+  service: undefined,
+};
+
+const SERVICE_QUADLET_MOCK: QuadletInfo = {
+  ...QUADLET_MOCK,
+  service: 'foo.service',
+  content: 'dummy-content',
 };
 
 test('expect quadlet with service name to use it', () => {
   const { getByRole } = render(QuadletName, {
-    object: QUADLET_MOCK,
+    object: SERVICE_QUADLET_MOCK,
   });
 
   const btn = getByRole('button', { name: 'quadlet name' });
-  expect(btn.textContent).toStrictEqual(QUADLET_MOCK.service);
+  expect(btn.textContent).toStrictEqual(SERVICE_QUADLET_MOCK.service);
 });
 
 test('expect quadlet without service name to use it', () => {
   const { getByRole } = render(QuadletName, {
-    object: {
-      ...QUADLET_MOCK,
-      service: undefined,
-    },
+    object: QUADLET_MOCK,
   });
 
   const btn = getByRole('button', { name: 'quadlet name' });
@@ -72,10 +74,7 @@ test('expect quadlet without service name to use it', () => {
 
 test('clicking on quadlet name should redirect to details page', async () => {
   const { getByRole } = render(QuadletName, {
-    object: {
-      ...QUADLET_MOCK,
-      service: undefined,
-    },
+    object: QUADLET_MOCK,
   });
 
   const btn = getByRole('button', { name: 'quadlet name' });

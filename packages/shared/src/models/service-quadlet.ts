@@ -16,18 +16,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { NoServiceQuadlet } from './no-service-quadlet';
-import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
-import type { ServiceQuadlet } from './service-quadlet';
+import type { BaseQuadlet } from './base-quadlet';
+import type { Quadlet } from './quadlet';
 
-export type HasConnection = {
+export interface ServiceQuadlet extends BaseQuadlet {
   /**
-   * Associate connection to the quadlet
+   * systemd service name
    */
-  connection: ProviderContainerConnectionIdentifierInfo;
-};
+  service: string;
 
-export type ServiceQuadletInfo = ServiceQuadlet & HasConnection;
-export type NoServiceQuadletInfo = NoServiceQuadlet & HasConnection;
+  /**
+   * raw content (generate) of the service file
+   */
+  content: string;
+}
 
-export type QuadletInfo = ServiceQuadletInfo | NoServiceQuadletInfo;
+export function isServiceQuadlet(quadlet: Quadlet): quadlet is ServiceQuadlet {
+  return !!quadlet.service;
+}

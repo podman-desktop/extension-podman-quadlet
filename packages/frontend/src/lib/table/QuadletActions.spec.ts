@@ -46,7 +46,7 @@ const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
 
 const QUADLET_MOCK: QuadletInfo = {
   id: `foo.container`,
-  content: 'dummy-content',
+  service: undefined,
   state: 'active',
   path: `bar/foo.container`,
   connection: PROVIDER_MOCK,

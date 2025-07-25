@@ -16,6 +16,7 @@ import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
 import { isKubeQuadlet } from '/@/utils/quadlet';
+import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 
 interface Props {
   id: string;
@@ -149,7 +150,7 @@ function onchange(content: string): void {
         url="/quadlets/{providerId}/{connection}/{id}"
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}`} />
       <!-- systemd-service tab -->
-      {#if quadlet.content}
+      {#if isServiceQuadlet(quadlet) && quadlet.content}
         <Tab
           title="Systemd Service"
           url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
@@ -207,7 +208,7 @@ function onchange(content: string): void {
           </div>
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
-          {#if quadlet.content}
+          {#if isServiceQuadlet(quadlet) && quadlet.content}
             <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
           {/if}
         </Route>

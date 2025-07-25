@@ -16,18 +16,32 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { NoServiceQuadlet } from './no-service-quadlet';
-import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
-import type { ServiceQuadlet } from './service-quadlet';
+import type { QuadletType } from '../utils/quadlet-type';
 
-export type HasConnection = {
+export type QuadletState = 'active' | 'inactive' | 'deleting' | 'unknown' | 'error';
+
+export interface BaseQuadlet {
   /**
-   * Associate connection to the quadlet
+   * UUID to internally identify the quadlet
+   * @remarks the id is not persisted
    */
-  connection: ProviderContainerConnectionIdentifierInfo;
-};
-
-export type ServiceQuadletInfo = ServiceQuadlet & HasConnection;
-export type NoServiceQuadletInfo = NoServiceQuadlet & HasConnection;
-
-export type QuadletInfo = ServiceQuadletInfo | NoServiceQuadletInfo;
+  id: string;
+  /**
+   * path to the quadlet file
+   * @example "~/.config/containers/systemd/foo.container"
+   */
+  path: string;
+  /**
+   * State of the quadlet
+   */
+  state: QuadletState;
+  /**
+   * quadlet have a type based on their extension (.container, .image etc.)
+   */
+  type: QuadletType;
+  /**
+   * quadlet can depend on other services (which may be also quadlets)
+   * @remarks the string are the service name, not the quadlet ids.
+   */
+  requires: Array<string>;
+}
