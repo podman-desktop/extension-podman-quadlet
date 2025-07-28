@@ -18,6 +18,6 @@
 
 import type { BaseQuadlet } from './base-quadlet';
 
-export interface NoServiceQuadlet extends BaseQuadlet {
+export interface ServiceLessQuadlet extends BaseQuadlet {
   service: undefined;
 }

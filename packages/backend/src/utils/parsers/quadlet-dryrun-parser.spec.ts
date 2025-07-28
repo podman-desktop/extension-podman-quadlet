@@ -4,6 +4,7 @@
 
 import { test, expect } from 'vitest';
 import { QuadletDryRunParser } from './quadlet-dryrun-parser';
+import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 
 const MULTIPLE_QUADLETS_EXAMPLE = `
 ---nginx.service---
@@ -106,11 +107,12 @@ test('should parse stderr properly and properly set state', async () => {
 
   expect(container.path).toBe('/home/user/.config/containers/systemd/nginx.container');
   expect(container.state).toBe('error');
-  expect(container.service).toBeUndefined();
+  expect(isServiceQuadlet(container)).toBeFalsy();
 
   expect(image.path).toBe('/home/user/.config/containers/systemd/nginx.image');
   expect(image.state).toBe('error');
-  expect(image.service).toBeUndefined();
+
+  expect(isServiceQuadlet(image)).toBeFalsy();
 });
 
 test('overlapping stderr should be overwritten by stdout', async () => {
