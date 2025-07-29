@@ -190,3 +190,18 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
     ...QUADLETS_MOCK.filter(quadlet => quadlet.connection === WSL_PROVIDER_DETAILED_INFO).map(({ id }) => id),
   );
 });
+
+test('search should filter based on path', async () => {
+  const { getByRole, getAllByRole } = render(QuadletsList);
+
+  // get toggle all checkbox
+  const textbox = getByRole('textbox', { name: 'search Podman Quadlets' });
+  expect(textbox).toBeDefined();
+
+  await fireEvent.input(textbox, { target: { value: QUADLETS_MOCK[0].path } });
+
+  await vi.waitFor(() => {
+    const checkboxes = getAllByRole('checkbox');
+    expect(checkboxes).toHaveLength(2); // the toggle all + our quadlet row
+  });
+});
