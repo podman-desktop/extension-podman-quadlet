@@ -39,6 +39,7 @@ import { Messages } from '/@shared/src/messages';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
+import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
@@ -96,7 +97,7 @@ const RUN_RESULT_MOCK: RunResult = {
   stderr: 'dummy-stderr',
 };
 
-const QUADLET_MOCK: Quadlet & { service: string } = {
+const QUADLET_MOCK: ServiceQuadlet = {
   id: 'foo-id',
   service: 'foo.service',
   path: 'foo/valid.container',
@@ -106,7 +107,7 @@ const QUADLET_MOCK: Quadlet & { service: string } = {
   requires: [],
 };
 
-const KUBE_QUADLET_MOCK: Quadlet & { service: string } = {
+const KUBE_QUADLET_MOCK: ServiceQuadlet = {
   id: 'foo-kube-id',
   service: 'foo.service',
   path: 'foo/valid.kube',
@@ -120,7 +121,7 @@ const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   id: 'service-less-id',
   path: 'foo/invalid.container',
   state: 'unknown',
-  content: 'dummy-content',
+  service: undefined,
   type: QuadletType.CONTAINER,
   requires: [],
 };
@@ -273,7 +274,7 @@ describe('QuadletService#remove', () => {
     id: `quadlet-${index}.container`,
     state: 'unknown',
     path: `config/quadlet-${index}.container`,
-    content: 'dummy-content',
+    service: undefined,
     type: QuadletType.CONTAINER,
     requires: [],
   }));

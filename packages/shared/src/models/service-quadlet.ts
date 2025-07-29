@@ -16,7 +16,21 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { ServiceLessQuadlet } from './service-less-quadlet';
-import type { ServiceQuadlet } from './service-quadlet';
+import type { BaseQuadlet } from './base-quadlet';
+import type { Quadlet } from './quadlet';
 
-export type Quadlet = ServiceQuadlet | ServiceLessQuadlet;
+export interface ServiceQuadlet extends BaseQuadlet {
+  /**
+   * systemd service name
+   */
+  service: string;
+
+  /**
+   * raw content (generate) of the service file
+   */
+  content: string;
+}
+
+export function isServiceQuadlet(quadlet: Quadlet): quadlet is ServiceQuadlet {
+  return !!quadlet.service;
+}
