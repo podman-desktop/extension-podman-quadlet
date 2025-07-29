@@ -79,13 +79,20 @@ const QUADLET_MOCK: ServiceQuadlet = {
 const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
   id: 'foo-template-id',
   service: 'foo@.service',
-  path: 'foo/bar@.container',
+  path: '/foo@.container',
   state: 'unknown',
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
   template: 'foo',
-  enablable: false,
+  defaultInstance: undefined, // no default instance
+};
+
+const STARTABLE_TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
+  ...TEMPLATE_QUADLET_MOCK,
+  service: 'foo@bar.service',
+  path: '/foo@bar.container',
+  defaultInstance: 'bar', // default instance provided
 };
 
 beforeEach(() => {
@@ -139,8 +146,22 @@ describe.each(['start', 'stop'] as Array<'start' | 'stop'>)('QuadletApiImpl#%s',
     }).rejects.toThrowError(`cannot ${func} quadlet: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
   });
 
+  test('calling with a startable template should work', async () => {
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue(STARTABLE_TEMPLATE_QUADLET_MOCK);
+
+    const api = getQuadletApiImpl();
+
+    await api[func](WSL_PROVIDER_IDENTIFIER, STARTABLE_TEMPLATE_QUADLET_MOCK.id);
+
+    expect(SYSTEMD_SERVICE[func]).toHaveBeenCalledWith({
+      provider: WSL_PROVIDER_CONNECTION_MOCK,
+      service: STARTABLE_TEMPLATE_QUADLET_MOCK.service,
+      admin: false,
+    });
+  });
+
   test('should propagate error if quadlet does not have associated service', async () => {
-    vi.mocked(QUADLET_SERVICE.getQuadlet).mockResolvedValue({
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue({
       ...QUADLET_MOCK,
       service: undefined,
     });
@@ -196,9 +217,9 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
     await expect(() => {
       return api.createQuadletLogger({
         connection: WSL_PROVIDER_IDENTIFIER,
-        quadletId: QUADLET_MOCK.id,
+        quadletId: TEMPLATE_QUADLET_MOCK.id,
       });
-    }).rejects.toThrowError(`cannot create quadlet logger: quadlet with id ${QUADLET_MOCK.id} is a template`);
+    }).rejects.toThrowError(`cannot create quadlet logger: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
   });
 
   test('should call podman#journalctlExec with appropriate arguments', async () => {

@@ -25,12 +25,12 @@ export interface TemplateQuadlet extends BaseQuadlet {
    */
   template: string;
   /**
-   * We may be able to enable a template, if the `[Install]` section contains a `DefaultInstance=key`
+   * We may be able to start a template, if the `[Install]` section contains has a `DefaultInstance=key`
    * https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#DefaultInstance=
    */
-  enablable: boolean;
+  defaultInstance: string | undefined;
 }
 
 export function isTemplateQuadlet(quadlet: Quadlet): quadlet is TemplateQuadlet {
-  return 'template' in quadlet && !!quadlet.template && 'enablable' in quadlet;
+  return 'template' in quadlet && !!quadlet.template && 'defaultInstance' in quadlet;
 }

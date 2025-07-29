@@ -15,7 +15,7 @@ let { object }: Props = $props();
 
 let deleting: boolean = $derived(object.state === 'deleting');
 let loading: boolean = $state(false);
-let startable: boolean = $derived(isTemplateQuadlet(object) ? object.enablable : true);
+let startable: boolean = $derived(isTemplateQuadlet(object) ? !!object.defaultInstance : true);
 
 async function start(): Promise<void> {
   loading = true;

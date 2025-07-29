@@ -78,7 +78,7 @@ const CONTAINER_TEMPLATE_QUADLET_MOCK: QuadletInfo & ServiceQuadlet & TemplateQu
   type: QuadletType.CONTAINER,
   requires: [],
   template: 'foo',
-  enablable: false,
+  defaultInstance: undefined,
 };
 
 const IMAGE_QUADLET_MOCK: QuadletInfo = {

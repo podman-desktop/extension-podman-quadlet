@@ -64,14 +64,15 @@ const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
   type: QuadletType.CONTAINER,
   requires: [],
   template: 'foo',
-  enablable: false,
+  defaultInstance: undefined,
   connection: PROVIDER_MOCK,
 };
 
-const ENABLABLE_TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
+const STARTABLE_TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
   ...TEMPLATE_QUADLET_MOCK,
+  service: 'foo@bar.service',
   state: 'inactive',
-  enablable: true,
+  defaultInstance: 'bar',
 };
 
 test('expect active quadlet to have stop enabled', async () => {
@@ -154,9 +155,9 @@ test('expect template quadlet to only have delete action', async () => {
   expect(removeBtn).toBeEnabled();
 });
 
-test('expect enablable template quadlet to have start action', async () => {
+test('expect startable template quadlet to have start action', async () => {
   const { queryByRole } = render(QuadletActions, {
-    object: ENABLABLE_TEMPLATE_QUADLET_MOCK,
+    object: STARTABLE_TEMPLATE_QUADLET_MOCK,
   });
 
   const startBtn = queryByRole('button', { name: 'Start quadlet' });

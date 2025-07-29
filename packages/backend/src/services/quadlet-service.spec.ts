@@ -118,7 +118,7 @@ const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
   type: QuadletType.CONTAINER,
   requires: [],
   template: 'foo',
-  enablable: false,
+  defaultInstance: undefined,
 };
 
 const TEMPLATE_INSTANCE_QUADLET_MOCK: TemplateInstanceQuadlet & ServiceQuadlet = {

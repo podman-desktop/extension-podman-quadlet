@@ -68,7 +68,7 @@ RequiresMountsFor=%t/containers
 
 const DUMMY_SERVICE_NAME = 'dummy.service';
 
-const ENABLABLE_TEMPLATE_QUADLET_MOCK = `
+const STARTABLE_TEMPLATE_QUADLET_MOCK = `
 [Unit]
 Wants=podman-user-wait-network-online.service
 After=podman-user-wait-network-online.service
@@ -130,8 +130,8 @@ test('expect requires to be properly parsed', async () => {
   expect(result.requires).toStrictEqual(['hello-world.image', 'nginx-image.service']);
 });
 
-test('expect enablable template quadlet to have proper service name', () => {
-  const parser = new QuadletUnitParser('sleep-quadlet@.service', ENABLABLE_TEMPLATE_QUADLET_MOCK);
+test('expect startable template quadlet to have proper service name', () => {
+  const parser = new QuadletUnitParser('sleep-quadlet@.service', STARTABLE_TEMPLATE_QUADLET_MOCK);
   const result = parser.parse();
 
   assert(isTemplateQuadlet(result));
@@ -140,5 +140,5 @@ test('expect enablable template quadlet to have proper service name', () => {
   // the service name should be `<template>@<argument>.service`
   expect(result.service).toBe('sleep-quadlet@100.service');
   expect(result.template).toBe('sleep-quadlet');
-  expect(result.enablable).toBeTruthy();
+  expect(result.defaultInstance).toBe('100');
 });

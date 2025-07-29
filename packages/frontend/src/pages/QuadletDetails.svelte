@@ -88,7 +88,7 @@ let logger: LoggerStore | undefined = $state();
 
 async function createLogger(): Promise<void> {
   if (!quadlet) throw new Error('Quadlets not found');
-  if (isTemplateQuadlet(quadlet) && !quadlet.enablable) throw new Error('Cannot create logger for a template');
+  if (isTemplateQuadlet(quadlet) && !quadlet.defaultInstance) throw new Error('Cannot create logger for a template');
 
   loggerId = await quadletAPI.createQuadletLogger({
     quadletId: quadlet.id,

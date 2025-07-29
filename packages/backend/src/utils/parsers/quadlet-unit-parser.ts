@@ -92,7 +92,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
           ...serviceQuadlet,
           service: defaultInstance ? `${result}@${defaultInstance}.service` : serviceQuadlet.service,
           template: result,
-          enablable: defaultInstance !== undefined,
+          defaultInstance: defaultInstance,
         } as TemplateQuadlet & ServiceQuadlet;
       case ServiceType.TEMPLATE_INSTANCE:
         return {

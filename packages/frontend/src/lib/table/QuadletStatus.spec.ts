@@ -58,7 +58,7 @@ const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
   type: QuadletType.CONTAINER,
   requires: [],
   template: 'foo',
-  enablable: false,
+  defaultInstance: undefined,
 };
 
 type TestCase = {

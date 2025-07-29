@@ -91,7 +91,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
           accumulator.push({
             ...serviceLessQuadlet,
             template: result,
-            enablable: false, // we can't determine if this is enablable in error state
+            defaultInstance: undefined, // we can't determine in error state
           } as TemplateQuadlet);
           break;
         case ServiceType.TEMPLATE_INSTANCE:
