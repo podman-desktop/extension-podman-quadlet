@@ -197,7 +197,7 @@ test('search should filter based on path', async () => {
   const textbox = getByRole('textbox', { name: 'search Podman Quadlets' });
   await fireEvent.input(textbox, { target: { value: QUADLETS_MOCK[0].path } });
 
-  const [, content ] = await vi.waitFor(() => {
+  const [, content] = await vi.waitFor(() => {
     const rows = getAllByRole('row');
     expect(rows).toHaveLength(2); // the toggle all + our quadlet row
     return rows;
