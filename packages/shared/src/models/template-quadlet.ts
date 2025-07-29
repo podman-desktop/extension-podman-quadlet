@@ -15,22 +15,22 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-
 import type { BaseQuadlet } from './base-quadlet';
 import type { Quadlet } from './quadlet';
 
-export interface ServiceQuadlet extends BaseQuadlet {
+export interface TemplateQuadlet extends BaseQuadlet {
   /**
-   * systemd service name
+   * The template property represents the template name
+   * https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#template-files
    */
-  service: string;
-
+  template: string;
   /**
-   * raw content (generate) of the service file
+   * We may be able to enable a template, if the `[Install]` section contains a `DefaultInstance=key`
+   * https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html#DefaultInstance=
    */
-  content: string;
+  enablable: boolean;
 }
 
-export function isServiceQuadlet(quadlet: Quadlet): quadlet is ServiceQuadlet {
-  return 'service' in quadlet && !!quadlet.service;
+export function isTemplateQuadlet(quadlet: Quadlet): quadlet is TemplateQuadlet {
+  return 'template' in quadlet && !!quadlet.template && 'enablable' in quadlet;
 }

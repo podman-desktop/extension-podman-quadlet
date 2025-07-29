@@ -25,6 +25,7 @@ import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 
 vi.mock('/@/api/client', () => ({
   dialogAPI: {
@@ -52,6 +53,25 @@ const QUADLET_MOCK: QuadletInfo = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+};
+
+const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
+  id: 'foo-template-id',
+  service: 'foo@.service',
+  path: 'foo/bar@.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  template: 'foo',
+  enablable: false,
+  connection: PROVIDER_MOCK,
+};
+
+const ENABLABLE_TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
+  ...TEMPLATE_QUADLET_MOCK,
+  state: 'inactive',
+  enablable: true,
 };
 
 test('expect active quadlet to have stop enabled', async () => {
@@ -116,4 +136,29 @@ test('expect user confirm removal action to use quadletAPI#remove', async () => 
 
   expect(dialogAPI.showWarningMessage).toHaveBeenCalled();
   expect(quadletAPI.remove).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+});
+
+test('expect template quadlet to only have delete action', async () => {
+  const { getByRole, queryByRole } = render(QuadletActions, {
+    object: TEMPLATE_QUADLET_MOCK,
+  });
+
+  const startBtn = queryByRole('button', { name: 'Start quadlet' });
+  expect(startBtn).toBeNull();
+
+  const stopBtn = queryByRole('button', { name: 'Stop quadlet' });
+  expect(stopBtn).toBeNull();
+
+  const removeBtn = getByRole('button', { name: 'Remove quadlet' });
+  expect(removeBtn).toBeDefined();
+  expect(removeBtn).toBeEnabled();
+});
+
+test('expect enablable template quadlet to have start action', async () => {
+  const { queryByRole } = render(QuadletActions, {
+    object: ENABLABLE_TEMPLATE_QUADLET_MOCK,
+  });
+
+  const startBtn = queryByRole('button', { name: 'Start quadlet' });
+  expect(startBtn).toBeDefined();
 });

@@ -18,5 +18,7 @@
 
 import type { ServiceLessQuadlet } from './service-less-quadlet';
 import type { ServiceQuadlet } from './service-quadlet';
+import type { TemplateQuadlet } from './template-quadlet';
+import type { TemplateInstanceQuadlet } from './template-instance-quadlet';
 
-export type Quadlet = ServiceQuadlet | ServiceLessQuadlet;
+export type Quadlet = ServiceQuadlet | ServiceLessQuadlet | TemplateQuadlet | TemplateInstanceQuadlet;

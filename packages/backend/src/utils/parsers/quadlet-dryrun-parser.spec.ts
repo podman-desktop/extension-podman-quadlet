@@ -4,74 +4,13 @@
 
 import { test, expect } from 'vitest';
 import { QuadletDryRunParser } from './quadlet-dryrun-parser';
+import TEMPLATE_AND_INSTANCE from './tests/quadlet-stdout-template-and-instance.txt?raw';
+import MULTIPLE_QUADLETS_EXAMPLE from './tests/quadlet-stdout-multiple-quadlets.txt?raw';
+import DRYRUN_STDERR from './tests/quadlet-stderr.txt?raw';
+import TEMPLATE_QUADLET from './tests/quadlet-stdout-container-template.txt?raw';
+import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
-
-const MULTIPLE_QUADLETS_EXAMPLE = `
----nginx.service---
-# demo-quadlet.container
-[X-Container]
-ContainerName=demo-quadlet
-Image=nginx
-PodmanArgs=--cgroups=enabled
-PublishPort=8080:80
-
-[Service]
-Restart=always
-Environment=PODMAN_SYSTEMD_UNIT=%n
-KillMode=mixed
-ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
-ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
-Delegate=yes
-Type=notify
-NotifyAccess=all
-SyslogIdentifier=%N
-ExecStart=/usr/bin/podman run --name=demo-quadlet --cidfile=%t/%N.cid --replace --rm --cgroups=split --sdnotify=conmon -d --publish 8080:80 --cgroups=enabled nginx
-
-[Install]
-WantedBy=default.target
-
-[Unit]
-Wants=network-online.target
-After=network-online.target
-SourcePath=/home/user/.config/containers/systemd/nginx.container
-RequiresMountsFor=%t/containers
-
----nginx2.service---
-# demo-quadlet.container
-[X-Container]
-ContainerName=demo-quadlet-2
-Image=nginx
-PodmanArgs=--cgroups=enabled
-PublishPort=8081:80
-
-[Service]
-Restart=always
-Environment=PODMAN_SYSTEMD_UNIT=%n
-KillMode=mixed
-ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
-ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
-Delegate=yes
-Type=notify
-NotifyAccess=all
-SyslogIdentifier=%N
-ExecStart=/usr/bin/podman run --name=demo-quadlet-2 --cidfile=%t/%N.cid --replace --rm --cgroups=split --sdnotify=conmon -d --publish 8081:80 --cgroups=enabled nginx
-
-[Install]
-WantedBy=default.target
-
-[Unit]
-Wants=network-online.target
-After=network-online.target
-SourcePath=/home/user/.config/containers/systemd/nginx2.container
-RequiresMountsFor=%t/containers
-`;
-
-const DRYRUN_STDERR: string = `
-quadlet-generator[13914]: Loading source unit file /home/user/.config/containers/systemd/nginx.container
-quadlet-generator[13914]: Loading source unit file /home/user/.config/containers/systemd/nginx.image
-quadlet-generator[13914]: converting "nginx.image": unsupported key 'Annotation' in group 'Image' in /home/user/.config/containers/systemd/nginx.image
-converting "nginx2.image": unsupported key 'jhfhfhf' in group 'Image' in /home/user/.config/containers/systemd/nginx2.image
-`;
+import { isTemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 test('expect result to contain two quadlets', async () => {
   const parser = new QuadletDryRunParser({
@@ -130,4 +69,38 @@ test('overlapping stderr should be overwritten by stdout', async () => {
   expect(containerNginx2.state).toBe('unknown');
 
   expect(imageNginx.state).toBe('error');
+});
+
+test('expect template quadlet to be recognised', async () => {
+  const parser = new QuadletDryRunParser({
+    stdout: TEMPLATE_QUADLET,
+    stderr: '',
+    command: '',
+  });
+
+  const result = parser.parse();
+  expect(result).toHaveLength(1);
+
+  const [foo] = result;
+  expect(isTemplateQuadlet(foo)).toBeTruthy();
+  expect(isTemplateInstanceQuadlet(foo)).toBeFalsy();
+});
+
+test('expect template and instance quadlet to be recognised', async () => {
+  const parser = new QuadletDryRunParser({
+    stdout: TEMPLATE_AND_INSTANCE,
+    stderr: '',
+    command: '',
+  });
+
+  const result = parser.parse();
+  expect(result).toHaveLength(2);
+
+  const [template, instance] = result;
+  expect(isTemplateQuadlet(template)).toBeTruthy();
+  expect(isTemplateInstanceQuadlet(template)).toBeFalsy();
+
+  // an instance is a template
+  expect(isTemplateQuadlet(instance)).toBeFalsy();
+  expect(isTemplateInstanceQuadlet(instance)).toBeTruthy();
 });

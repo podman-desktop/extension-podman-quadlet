@@ -5,6 +5,7 @@ import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 
 interface Props {
   object: QuadletInfo;
@@ -14,6 +15,7 @@ let { object }: Props = $props();
 
 let deleting: boolean = $derived(object.state === 'deleting');
 let loading: boolean = $state(false);
+let startable: boolean = $derived(isTemplateQuadlet(object) ? object.enablable : true);
 
 async function start(): Promise<void> {
   loading = true;
@@ -52,7 +54,7 @@ async function remove(): Promise<void> {
 
 {#if object.state === 'active'}
   <ListItemButtonIcon icon={faStop} onClick={stop} title="Stop quadlet" enabled={!loading && !deleting} />
-{:else}
+{:else if startable}
   <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading && !deleting} />
 {/if}
 <ListItemButtonIcon

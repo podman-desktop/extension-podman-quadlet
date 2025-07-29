@@ -40,6 +40,8 @@ import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
@@ -107,6 +109,30 @@ const QUADLET_MOCK: ServiceQuadlet = {
   requires: [],
 };
 
+const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
+  id: 'foo-template-id',
+  service: 'foo@.service',
+  path: 'foo/valid@.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  template: 'foo',
+  enablable: false,
+};
+
+const TEMPLATE_INSTANCE_QUADLET_MOCK: TemplateInstanceQuadlet & ServiceQuadlet = {
+  id: 'foo-template-instance-id',
+  service: 'foo@bar.service',
+  path: 'foo/valid@bar.container',
+  state: 'unknown',
+  content: 'dummy-content',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  template: 'foo',
+  argument: 'bar',
+};
+
 const KUBE_QUADLET_MOCK: ServiceQuadlet = {
   id: 'foo-kube-id',
   service: 'foo.service',
@@ -146,6 +172,8 @@ beforeEach(() => {
     QUADLET_MOCK,
     SERVICE_LESS_QUADLET_MOCK,
     KUBE_QUADLET_MOCK,
+    TEMPLATE_QUADLET_MOCK,
+    TEMPLATE_INSTANCE_QUADLET_MOCK,
   ]);
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
@@ -183,7 +211,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
       args: ['-dryrun', '-user'],
     });
 
-    expect(quadlet.all()).toHaveLength(3);
+    expect(quadlet.all()).toHaveLength(5);
   });
 });
 
@@ -233,14 +261,14 @@ describe('QuadletService#getQuadletVersion', () => {
 });
 
 describe('QuadletService#refreshQuadletsStatuses', () => {
-  test('should only provide quadlet with corresponding service', async () => {
+  test('should only provide quadlet with corresponding service and non-template', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
     // should have been called only with the quadlet with a corresponding service
     expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).toHaveBeenCalledWith(
       expect.objectContaining({
-        services: [QUADLET_MOCK.service, KUBE_QUADLET_MOCK.service],
+        services: [QUADLET_MOCK.service, KUBE_QUADLET_MOCK.service, TEMPLATE_INSTANCE_QUADLET_MOCK.service],
       }),
     );
   });
@@ -266,6 +294,10 @@ describe('QuadletService#refreshQuadletsStatuses', () => {
     expect(validQuadlet?.state).toStrictEqual('inactive');
     // should not update service
     expect(serviceLessQuadlet?.state).toStrictEqual('unknown');
+
+    // should not update the template quadlet
+    const templateQuadlet = quadlets.find(quadlet => quadlet.path === TEMPLATE_QUADLET_MOCK.path);
+    expect(templateQuadlet?.state).toStrictEqual('unknown');
   });
 });
 

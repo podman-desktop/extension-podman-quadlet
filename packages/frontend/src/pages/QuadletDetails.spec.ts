@@ -28,6 +28,8 @@ import * as connectionStore from '/@store/connections';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';
 import { router } from 'tinro';
+import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 
 // mock clients
 vi.mock('/@/api/client', () => ({
@@ -64,6 +66,19 @@ const CONTAINER_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.container`,
   type: QuadletType.CONTAINER,
   requires: [],
+};
+
+const CONTAINER_TEMPLATE_QUADLET_MOCK: QuadletInfo & ServiceQuadlet & TemplateQuadlet = {
+  connection: WSL_PROVIDER_DETAILED_INFO,
+  id: `foo-container-template-id`,
+  service: 'foo@.service',
+  content: 'dummy-content',
+  state: 'unknown',
+  path: `bar/foo@.container`,
+  type: QuadletType.CONTAINER,
+  requires: [],
+  template: 'foo',
+  enablable: false,
 };
 
 const IMAGE_QUADLET_MOCK: QuadletInfo = {
@@ -107,6 +122,7 @@ beforeEach(() => {
     IMAGE_QUADLET_MOCK,
     KUBE_QUADLET_MOCK,
     INVALID_IMAGE_QUADLET_MOCK,
+    CONTAINER_TEMPLATE_QUADLET_MOCK,
   ]);
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
 });
@@ -184,18 +200,44 @@ describe('title', () => {
   });
 });
 
-test('logs tab should have expected journalctl command', async () => {
-  const { getByRole } = render(QuadletDetails, {
-    connection: WSL_PROVIDER_DETAILED_INFO.name,
-    providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
-    id: CONTAINER_QUADLET_MOCK.id,
+describe('logs tab', () => {
+  test('valid container quadlet should have logs tab', async () => {
+    const { getByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: CONTAINER_QUADLET_MOCK.id,
+    });
+
+    await vi.waitFor(() => {
+      const logs = getByText('Logs');
+      expect(logs).toBeDefined();
+    });
   });
 
-  // go to logs tab
-  router.goto('/logs');
+  test('logs tab should have expected journalctl command', async () => {
+    const { getByRole } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: CONTAINER_QUADLET_MOCK.id,
+    });
 
-  await vi.waitFor(() => {
-    const command = getByRole('banner', { name: 'journactl command' });
-    expect(command.textContent).toBe(`journalctl --user --follow --unit=${CONTAINER_QUADLET_MOCK.service}`);
+    // go to logs tab
+    router.goto('/logs');
+
+    await vi.waitFor(() => {
+      const command = getByRole('banner', { name: 'journactl command' });
+      expect(command.textContent).toBe(`journalctl --user --follow --unit=${CONTAINER_QUADLET_MOCK.service}`);
+    });
+  });
+
+  test('template quadlet should not have logs tab', async () => {
+    const { queryByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: CONTAINER_TEMPLATE_QUADLET_MOCK.id,
+    });
+
+    const logs = queryByText('Logs');
+    expect(logs).toBeNull();
   });
 });

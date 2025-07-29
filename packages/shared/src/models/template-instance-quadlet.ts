@@ -15,22 +15,22 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-
-import type { BaseQuadlet } from './base-quadlet';
 import type { Quadlet } from './quadlet';
+import type { BaseQuadlet } from './base-quadlet';
 
-export interface ServiceQuadlet extends BaseQuadlet {
+export interface TemplateInstanceQuadlet extends BaseQuadlet {
   /**
-   * systemd service name
+   * The template property represents the template name
+   * https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#template-files
    */
-  service: string;
-
+  template: string;
   /**
-   * raw content (generate) of the service file
+   * For template like `foo@.container`, you may create an instance `foo@bar.container`
+   * will mean the argument is `bar`
    */
-  content: string;
+  argument: string;
 }
 
-export function isServiceQuadlet(quadlet: Quadlet): quadlet is ServiceQuadlet {
-  return 'service' in quadlet && !!quadlet.service;
+export function isTemplateInstanceQuadlet(quadlet: Quadlet): quadlet is TemplateInstanceQuadlet {
+  return 'template' in quadlet && 'argument' in quadlet && !!quadlet.argument;
 }

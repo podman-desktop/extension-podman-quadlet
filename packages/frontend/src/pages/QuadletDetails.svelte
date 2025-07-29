@@ -17,6 +17,7 @@ import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
 import { isKubeQuadlet } from '/@/utils/quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet.js';
 
 interface Props {
   id: string;
@@ -41,7 +42,17 @@ let quadlet: QuadletInfo | undefined = $derived(
   ),
 );
 // the title is either the systemd service name or if undefined the last part of the path (E.g. /foo/bar.container => bar.container)
-let title: string = $derived(quadlet?.service ?? quadlet?.path.split('/').pop() ?? 'none');
+let title: string = $derived.by(() => {
+  if (!quadlet) {
+    return 'none';
+  }
+
+  if (isServiceQuadlet(quadlet)) {
+    return quadlet.service;
+  }
+
+  return quadlet.path.split('/').pop() ?? 'none';
+});
 
 export function close(): void {
   router.goto('/');
@@ -77,6 +88,7 @@ let logger: LoggerStore | undefined = $state();
 
 async function createLogger(): Promise<void> {
   if (!quadlet) throw new Error('Quadlets not found');
+  if (isTemplateQuadlet(quadlet) && !quadlet.enablable) throw new Error('Cannot create logger for a template');
 
   loggerId = await quadletAPI.createQuadletLogger({
     quadletId: quadlet.id,
@@ -221,14 +233,16 @@ function onchange(content: string): void {
 
         <!-- quadlet -dryrun output -->
         <Route path="/logs">
-          <div class="flex py-2 h-[40px]">
-            <span
-              role="banner"
-              aria-label="journactl command"
-              class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-              journalctl --user --follow --unit={quadlet.service}
-            </span>
-          </div>
+          {#if isServiceQuadlet(quadlet)}
+            <div class="flex py-2 h-[40px]">
+              <span
+                role="banner"
+                aria-label="journactl command"
+                class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
+                journalctl --user --follow --unit={quadlet.service}
+              </span>
+            </div>
+          {/if}
           {#if logger}
             <XTerminal store={logger} />
           {/if}

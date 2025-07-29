@@ -19,7 +19,9 @@ import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -227,15 +229,19 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       const providerIdentifier = this.fromSymbol(symbol);
       const provider = this.providers.getProviderContainerConnection(providerIdentifier);
 
+      const serviceQuadlets: Array<ServiceQuadlet> = quadlets
+        // filter service quadlet and filter out template quadlet
+        .filter((quadlet): quadlet is ServiceQuadlet => isServiceQuadlet(quadlet) && !isTemplateQuadlet(quadlet));
+
       // get the statuses of the quadlets with a corresponding service
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
         admin: false,
-        services: quadlets.filter(isServiceQuadlet).map(quadlet => quadlet.service),
+        services: serviceQuadlets.map(quadlet => quadlet.service),
       });
 
       // update each quadlets
-      for (const quadlet of quadlets) {
+      for (const quadlet of serviceQuadlets) {
         // skip quadlet without associated service
         if (!quadlet.service) continue;
 
