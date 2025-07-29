@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { ServiceLessQuadlet } from './no-service-quadlet';
+import type { ServiceLessQuadlet } from './service-less-quadlet';
 import type { ServiceQuadlet } from './service-quadlet';
 
 export type Quadlet = ServiceQuadlet | ServiceLessQuadlet;
