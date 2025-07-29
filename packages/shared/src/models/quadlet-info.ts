@@ -16,18 +16,14 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { ServiceLessQuadlet } from './no-service-quadlet';
 import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
-import type { ServiceQuadlet } from './service-quadlet';
+import type { Quadlet } from './quadlet';
 
-export type HasConnection = {
+type HasConnection = {
   /**
    * Associate connection to the quadlet
    */
   connection: ProviderContainerConnectionIdentifierInfo;
 };
 
-export type ServiceQuadletInfo = ServiceQuadlet & HasConnection;
-export type ServiceLessQuadletInfo = ServiceLessQuadlet & HasConnection;
-
-export type QuadletInfo = ServiceQuadletInfo | ServiceLessQuadletInfo;
+export type QuadletInfo = Quadlet & HasConnection;
