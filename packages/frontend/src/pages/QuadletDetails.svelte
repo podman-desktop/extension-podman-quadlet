@@ -150,7 +150,7 @@ function onchange(content: string): void {
         url="/quadlets/{providerId}/{connection}/{id}"
         selected={$router.path === `/quadlets/${providerId}/${connection}/${id}`} />
       <!-- systemd-service tab -->
-      {#if isServiceQuadlet(quadlet) && quadlet.content}
+      {#if isServiceQuadlet(quadlet)}
         <Tab
           title="Systemd Service"
           url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
@@ -208,7 +208,7 @@ function onchange(content: string): void {
           </div>
           <!-- monaco editor is multiplying the build time by too much -->
           <!-- <MonacoEditor readOnly content={quadlet.content} language="ini" /> -->
-          {#if isServiceQuadlet(quadlet) && quadlet.content}
+          {#if isServiceQuadlet(quadlet)}
             <MonacoEditor class="h-full" readOnly content={quadlet.content} language="ini" />
           {/if}
         </Route>
