@@ -18,7 +18,7 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { fireEvent, render } from '@testing-library/svelte';
+import { fireEvent, render, within } from '@testing-library/svelte';
 
 import * as connectionStore from '/@store/connections';
 import { assert, beforeEach, expect, test, vi } from 'vitest';
@@ -194,14 +194,14 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
 test('search should filter based on path', async () => {
   const { getByRole, getAllByRole } = render(QuadletsList);
 
-  // get toggle all checkbox
   const textbox = getByRole('textbox', { name: 'search Podman Quadlets' });
-  expect(textbox).toBeDefined();
-
   await fireEvent.input(textbox, { target: { value: QUADLETS_MOCK[0].path } });
 
-  await vi.waitFor(() => {
-    const checkboxes = getAllByRole('checkbox');
-    expect(checkboxes).toHaveLength(2); // the toggle all + our quadlet row
+  const [, content ] = await vi.waitFor(() => {
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(2); // the toggle all + our quadlet row
+    return rows;
   });
+  const div = within(content).getByText(QUADLETS_MOCK[0].path);
+  expect(div).toBeDefined();
 });
