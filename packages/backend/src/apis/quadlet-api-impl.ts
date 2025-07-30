@@ -16,7 +16,6 @@ import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import type { Quadlet } from '/@shared/src/models/quadlet';
 
 interface Dependencies {
   quadlet: QuadletService;
@@ -39,7 +38,8 @@ export class QuadletApiImpl extends QuadletApi {
     return this.dependencies.quadlet.collectPodmanQuadlet();
   }
 
-  private checkQuadlet(quadlet: Quadlet): ServiceQuadlet {
+  private checkQuadlet(id: string): ServiceQuadlet {
+    const quadlet = this.dependencies.quadlet.getQuadlet(id);
     if (!isServiceQuadlet(quadlet))
       throw new Error(`quadlet with id ${quadlet.id} does not have an associated systemd service`);
 
@@ -52,7 +52,7 @@ export class QuadletApiImpl extends QuadletApi {
     let quadlet: ServiceQuadlet;
 
     try {
-      quadlet = this.checkQuadlet(this.dependencies.quadlet.getQuadlet(id));
+      quadlet = this.checkQuadlet(id);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`cannot start quadlet: ${error.message}`);
@@ -77,7 +77,7 @@ export class QuadletApiImpl extends QuadletApi {
     let quadlet: ServiceQuadlet;
 
     try {
-      quadlet = this.checkQuadlet(this.dependencies.quadlet.getQuadlet(id));
+      quadlet = this.checkQuadlet(id);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`cannot stop quadlet: ${error.message}`);
@@ -129,7 +129,7 @@ export class QuadletApiImpl extends QuadletApi {
     let quadlet: ServiceQuadlet;
 
     try {
-      quadlet = this.checkQuadlet(this.dependencies.quadlet.getQuadlet(options.quadletId));
+      quadlet = this.checkQuadlet(options.quadletId);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`cannot create quadlet logger: ${error.message}`);
