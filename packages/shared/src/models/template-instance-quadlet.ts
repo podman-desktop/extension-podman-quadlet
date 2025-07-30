@@ -32,5 +32,5 @@ export interface TemplateInstanceQuadlet extends BaseQuadlet {
 }
 
 export function isTemplateInstanceQuadlet(quadlet: Quadlet): quadlet is TemplateInstanceQuadlet {
-  return 'template' in quadlet && 'argument' in quadlet && !!quadlet.argument;
+  return 'template' in quadlet && !!quadlet.template && 'argument' in quadlet && !!quadlet.argument;
 }
