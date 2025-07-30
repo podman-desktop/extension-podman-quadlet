@@ -35,7 +35,7 @@ test.each<TestCase>([
     name: 'simple quadlet',
   },
   {
-    expected: [ServiceType.TEMPLATE, 'foo'],
+    expected: [ServiceType.TEMPLATE, { template: 'foo' }],
     filename: 'foo@.container',
     extension: 'container',
     name: 'template quadlet',

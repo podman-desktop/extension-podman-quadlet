@@ -32,7 +32,7 @@ export enum ServiceType {
 
 export type QuadletServiceTypeParserResult =
   | [ServiceType.SIMPLE, undefined]
-  | [ServiceType.TEMPLATE, string]
+  | [ServiceType.TEMPLATE, { template: string }]
   | [ServiceType.TEMPLATE_INSTANCE, { template: string; argument: string }];
 
 /**
@@ -62,7 +62,7 @@ export class QuadletServiceTypeParser extends Parser<Options, QuadletServiceType
 
     const [template, argument] = name.split('@');
 
-    if (argument.length === 0) return [ServiceType.TEMPLATE, template];
+    if (argument.length === 0) return [ServiceType.TEMPLATE, { template: template }];
 
     return [
       ServiceType.TEMPLATE_INSTANCE,

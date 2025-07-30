@@ -90,8 +90,8 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       case ServiceType.TEMPLATE:
         return {
           ...serviceQuadlet,
-          service: defaultInstance ? `${result}@${defaultInstance}.service` : serviceQuadlet.service,
-          template: result,
+          service: defaultInstance ? `${result.template}@${defaultInstance}.service` : serviceQuadlet.service,
+          template: result.template,
           defaultInstance: defaultInstance,
         } as TemplateQuadlet & ServiceQuadlet;
       case ServiceType.TEMPLATE_INSTANCE:

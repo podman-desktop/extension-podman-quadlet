@@ -90,7 +90,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         case ServiceType.TEMPLATE:
           accumulator.push({
             ...serviceLessQuadlet,
-            template: result,
+            template: result.template,
             defaultInstance: undefined, // we can't determine in error state
           } as TemplateQuadlet);
           break;
