@@ -100,7 +100,7 @@ test('expect template and instance quadlet to be recognised', async () => {
   expect(isTemplateQuadlet(template)).toBeTruthy();
   expect(isTemplateInstanceQuadlet(template)).toBeFalsy();
 
-  // an instance is a template
+  // an instance is not a template
   expect(isTemplateQuadlet(instance)).toBeFalsy();
   expect(isTemplateInstanceQuadlet(instance)).toBeTruthy();
 });
