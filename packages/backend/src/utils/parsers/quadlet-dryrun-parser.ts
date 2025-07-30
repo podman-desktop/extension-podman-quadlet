@@ -7,8 +7,12 @@ import { QuadletUnitParser } from './quadlet-unit-parser';
 import type { Quadlet } from '/@shared/src/models/quadlet';
 import type { RunResult } from '@podman-desktop/api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
-import { isAbsolute } from 'node:path/posix';
+import { basename, isAbsolute } from 'node:path/posix';
 import { randomUUID } from 'node:crypto';
+import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
+import type { ServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number }, Quadlet[]> {
   // match line such as 'quadlet-generator[11695]: Loading source unit file /home/user/.config/containers/systemd/nginx.image'
@@ -64,15 +68,40 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
       // if the quadlet we got already exist, ignore
       if (validQuadlets.has(path)) return accumulator;
 
-      // create quadlet in error state
-      accumulator.push({
+      const type = new QuadletExtensionParser(path).parse();
+
+      const serviceLessQuadlet: ServiceLessQuadlet = {
         service: undefined, // do not have corresponding service
         id: randomUUID(),
         path: path,
         state: 'error',
-        type: new QuadletExtensionParser(path).parse(),
+        type: type,
         requires: [], // cannot detect requires
-      });
+      };
+
+      const [serviceType, result] = new QuadletServiceTypeParser({
+        filename: basename(path),
+        extension: type.toLowerCase(),
+      }).parse();
+      switch (serviceType) {
+        case ServiceType.SIMPLE:
+          accumulator.push(serviceLessQuadlet);
+          break;
+        case ServiceType.TEMPLATE:
+          accumulator.push({
+            ...serviceLessQuadlet,
+            template: result.template,
+            defaultInstance: undefined, // we can't determine in error state
+          } as TemplateQuadlet);
+          break;
+        case ServiceType.TEMPLATE_INSTANCE:
+          accumulator.push({
+            ...serviceLessQuadlet,
+            template: result.template,
+            argument: result.argument,
+          } as TemplateInstanceQuadlet);
+          break;
+      }
 
       return accumulator;
     }, [] as Array<Quadlet>);

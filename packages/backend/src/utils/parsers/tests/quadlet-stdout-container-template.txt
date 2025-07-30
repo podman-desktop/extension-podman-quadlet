@@ -1,0 +1,28 @@
+---sleep@.service---
+[Unit]
+Wants=podman-user-wait-network-online.service
+After=podman-user-wait-network-online.service
+Description=A templated sleepy container
+SourcePath=/home/user/.config/containers/systemd/sleep@.container
+RequiresMountsFor=%t/containers
+
+[X-Container]
+Image=quay.io/fedora/fedora
+Exec=sleep %i
+
+[Service]
+# Restart service when sleep finishes
+Restart=always
+Environment=PODMAN_SYSTEMD_UNIT=%n
+KillMode=mixed
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+Delegate=yes
+Type=notify
+NotifyAccess=all
+SyslogIdentifier=%N
+ExecStart=/usr/bin/podman run --name systemd-%p_%i --cidfile=%t/%N.cid --replace --rm --cgroups=split --sdnotify=conmon -d quay.io/fedora/fedora sleep %i
+
+[Install]
+WantedBy=multi-user.target
+DefaultInstance=100

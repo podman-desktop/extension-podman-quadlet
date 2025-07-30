@@ -26,6 +26,10 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
+import FileCodeIcon from '/@/lib/table/FileCodeIcon.svelte';
+import FileLinesIcon from '/@/lib/table/FileLinesIcon.svelte';
+import type { Component } from 'svelte';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { QuadletState } from '/@shared/src/models/base-quadlet';
 
 vi.mock('@podman-desktop/ui-svelte');
@@ -43,6 +47,18 @@ const QUADLET_MOCK: QuadletInfo = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+};
+
+const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
+  id: `foo@.container`,
+  content: 'dummy-content',
+  state: 'active',
+  path: `bar/foo@.container`,
+  connection: PROVIDER_MOCK,
+  type: QuadletType.CONTAINER,
+  requires: [],
+  template: 'foo',
+  defaultInstance: undefined,
 };
 
 type TestCase = {
@@ -91,4 +107,26 @@ test.each<TestCase>([
       }),
     );
   });
+});
+
+test.each<{ quadlet: QuadletInfo; icon: Component }>([
+  {
+    quadlet: QUADLET_MOCK,
+    icon: FileLinesIcon,
+  },
+  {
+    quadlet: TEMPLATE_QUADLET_MOCK,
+    icon: FileCodeIcon,
+  },
+])(`quadlet $quadlet.id should display $icon`, ({ quadlet, icon }) => {
+  render(QuadletStatus, {
+    object: quadlet,
+  });
+
+  expect(StatusIcon).toHaveBeenCalledWith(
+    expect.anything(),
+    expect.objectContaining({
+      icon: icon,
+    }),
+  );
 });
