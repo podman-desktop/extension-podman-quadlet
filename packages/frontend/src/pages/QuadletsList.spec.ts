@@ -18,7 +18,7 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { fireEvent, render } from '@testing-library/svelte';
+import { fireEvent, render, within } from '@testing-library/svelte';
 
 import * as connectionStore from '/@store/connections';
 import { assert, beforeEach, expect, test, vi } from 'vitest';
@@ -189,4 +189,19 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
     WSL_PROVIDER_DETAILED_INFO,
     ...QUADLETS_MOCK.filter(quadlet => quadlet.connection === WSL_PROVIDER_DETAILED_INFO).map(({ id }) => id),
   );
+});
+
+test('search should filter based on path', async () => {
+  const { getByRole, getAllByRole } = render(QuadletsList);
+
+  const textbox = getByRole('textbox', { name: 'search Podman Quadlets' });
+  await fireEvent.input(textbox, { target: { value: QUADLETS_MOCK[0].path } });
+
+  const [, content] = await vi.waitFor(() => {
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(2); // the toggle all + our quadlet row
+    return rows;
+  });
+  const div = within(content).getByText(QUADLETS_MOCK[0].path);
+  expect(div).toBeDefined();
 });
