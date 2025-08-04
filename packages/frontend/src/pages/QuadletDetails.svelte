@@ -150,7 +150,6 @@ function onchange(content: string): void {
     onclose={close}
     breadcrumbLeftPart="Quadlets"
     breadcrumbRightPart={title}
-    breadcrumbTitle="Go back to quadlets page"
     onbreadcrumbClick={close}>
     {#snippet actionsSnippet()}
       <QuadletActions object={quadlet} />
