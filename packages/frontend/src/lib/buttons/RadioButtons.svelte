@@ -23,7 +23,7 @@ function onclick(id: string): void {
 <ul
   role="radiogroup"
   aria-label={label}
-  class:border-[var(--pd-button-secondary)]={!disabled}
+  class:border-[var(--pd-button-primary-bg)]={!disabled}
   class:border-[var(--pd-button-disabled)]={disabled}
   class="text-sm text-center shadow-sm border-[1px] flex overflow-hidden rounded-[4px] h-[32px]">
   {#each options as option (option.id)}
