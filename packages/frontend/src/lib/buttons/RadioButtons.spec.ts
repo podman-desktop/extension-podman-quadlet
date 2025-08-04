@@ -54,3 +54,23 @@ test('click on a radio should call onChange prop', async () => {
 
   expect(onChangeMock).toHaveBeenCalledWith(OPTIONS[5].id);
 });
+
+test('disable radio buttons should have proper styling', async () => {
+  const { getByRole, getAllByRole } = render(RadioButtons, {
+    options: OPTIONS,
+    label: 'Example',
+    value: OPTIONS[0].id,
+    onChange: vi.fn(),
+    disabled: true,
+  });
+
+  const group = getByRole('radiogroup', { name: 'Example' });
+  expect(group).toHaveClass('border-[var(--pd-button-disabled)]');
+
+  const buttons = getAllByRole('radio');
+  expect(buttons).toHaveLength(OPTIONS.length);
+  for (const button of buttons) {
+    expect(button).toHaveClass('bg-[var(--pd-button-disabled)]');
+    expect(button).toHaveClass('text-[var(--pd-button-disabled-text)]');
+  }
+});

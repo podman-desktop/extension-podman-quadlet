@@ -23,7 +23,9 @@ function onclick(id: string): void {
 <ul
   role="radiogroup"
   aria-label={label}
-  class="text-sm text-center rounded-lg shadow-sm bg-[var(--pd-action-button-bg)] flex overflow-hidden">
+  class:border-[var(--pd-button-secondary)]={!disabled}
+  class:border-[var(--pd-button-disabled)]={disabled}
+  class="text-sm text-center shadow-sm border-[1px] flex overflow-hidden rounded-[4px] h-[32px]">
   {#each options as option (option.id)}
     {@const selected = value === option.id}
     <li class="w-full">
@@ -33,8 +35,13 @@ function onclick(id: string): void {
         onclick={onclick.bind(undefined, option.id)}
         class:bg-[var(--pd-button-primary-bg)]={selected && !disabled}
         class:bg-[var(--pd-button-disabled)]={disabled}
+        class:text-[var(--pd-button-text)]={selected && !disabled}
+        class:text-[var(--pd-button-disabled-text)]={disabled}
+        class:text-[var(--pd-button-secondary)]={!disabled}
+        class:hover:text-[var(--pd-button-text)]={!disabled}
+        class:hover:bg-[var(--pd-button-secondary-hover)]={!disabled}
         class:cursor-not-allowed={disabled}
-        class="inline-block py-2 w-full bg-gray-100"
+        class="inline-block w-full h-full"
         title={option.label}
         aria-label={option.label}
         aria-current="page">
