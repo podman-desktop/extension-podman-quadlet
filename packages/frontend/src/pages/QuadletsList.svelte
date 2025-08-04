@@ -18,6 +18,8 @@ import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 
+type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };
+
 const columns = [
   new TableColumn<QuadletInfo>('Status', {
     width: '70px',
@@ -46,7 +48,7 @@ const columns = [
   }),
   new TableColumn<QuadletInfo>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
 ];
-const row = new TableRow<QuadletInfo>({ selectable: (_service): boolean => true });
+const row = new TableRow<SelectableQuadletInfo>({ selectable: (_service): boolean => true });
 
 let loading: boolean = $state(false);
 // considered disable if there is no connection running or loading
@@ -66,7 +68,7 @@ let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undef
 let searchTerm: string = $state('');
 let selectedItemsNumber: number = $state(0);
 
-let data: (QuadletInfo & { selected?: boolean })[] = $derived(
+let data: Array<SelectableQuadletInfo> = $derived(
   $quadletsInfo.filter(quadlet => {
     let match = true;
     if (containerProviderConnection) {
@@ -122,10 +124,14 @@ async function deleteSelected(): Promise<void> {
     ),
   );
 }
+
+function getQuadletInfoKey({ id }: QuadletInfo): string {
+  return id;
+}
 </script>
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
-  <svelte:fragment slot="additional-actions">
+  {#snippet additionalActions()}
     <Button icon={faCode} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
       >Generate Quadlet</Button>
     <Button
@@ -134,8 +140,8 @@ async function deleteSelected(): Promise<void> {
       disabled={disabled}
       title="Refresh Quadlets"
       on:click={refreshQuadlets}>Refresh</Button>
-  </svelte:fragment>
-  <svelte:fragment slot="bottom-additional-actions">
+  {/snippet}
+  {#snippet bottomAdditionalActions()}
     <div class="w-full flex justify-between">
       <div class="flex flex-row items-center space-x-2">
         {#if selectedItemsNumber > 0}
@@ -153,8 +159,8 @@ async function deleteSelected(): Promise<void> {
           containerProviderConnections={$providerConnectionsInfo} />
       </div>
     </div>
-  </svelte:fragment>
-  <svelte:fragment slot="content">
+  {/snippet}
+  {#snippet content()}
     {#if !empty}
       <Table
         kind="quadlets"
@@ -162,6 +168,7 @@ async function deleteSelected(): Promise<void> {
         columns={columns}
         row={row}
         bind:selectedItemsNumber={selectedItemsNumber}
+        key={getQuadletInfoKey}
         defaultSortColumn="Environment" />
     {:else}
       <EmptyQuadletList
@@ -170,5 +177,5 @@ async function deleteSelected(): Promise<void> {
         loading={loading}
         disabled={disabled} />
     {/if}
-  </svelte:fragment>
+  {/snippet}
 </NavPage>

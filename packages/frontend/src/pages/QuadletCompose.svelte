@@ -26,7 +26,6 @@ function close(): void {
   onclose={close}
   breadcrumbLeftPart="Quadlets"
   breadcrumbRightPart="Generate"
-  breadcrumbTitle="Go back to quadlets page"
   onbreadcrumbClick={close}>
   {#snippet icon()}
     <div class="rounded-full w-8 h-8 flex items-center justify-center">
