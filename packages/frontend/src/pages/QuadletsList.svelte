@@ -17,6 +17,8 @@ import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
+import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import { isTemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };
 
@@ -48,7 +50,17 @@ const columns = [
   }),
   new TableColumn<QuadletInfo>('Actions', { align: 'right', width: '120px', renderer: QuadletActions }),
 ];
-const row = new TableRow<SelectableQuadletInfo>({ selectable: (_service): boolean => true });
+
+const row = new TableRow<SelectableQuadletInfo>({
+  selectable: (_service): boolean => true,
+  // for template quadlets return template instance
+  children: (quadlet: QuadletInfo): Array<QuadletInfo> => {
+    if (isTemplateQuadlet(quadlet)) {
+      return templateInstances.get(getTemplateKey(quadlet)) ?? [];
+    }
+    return [];
+  },
+});
 
 let loading: boolean = $state(false);
 // considered disable if there is no connection running or loading
@@ -68,9 +80,51 @@ let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undef
 let searchTerm: string = $state('');
 let selectedItemsNumber: number = $state(0);
 
+/**
+ * A template name may appear in multiple container connections.
+ * To be able to uniquely identify it, we should create a key based on the connection and the template name
+ * @param template
+ * @param connection
+ */
+function getTemplateKey({
+  template,
+  connection,
+}: {
+  template: string;
+  connection: ProviderContainerConnectionIdentifierInfo;
+}): string {
+  return `${connection.providerId}-${connection.name}:${template}`;
+}
+
+// keep a reference of existing templates
+let templates: Set<string> = $derived(
+  $quadletsInfo.reduce((accumulator, quadlet) => {
+    if (isTemplateQuadlet(quadlet)) {
+      accumulator.add(getTemplateKey(quadlet));
+    }
+    return accumulator;
+  }, new Set<string>()),
+);
+
+// templateName => quadlet instances
+let templateInstances: Map<string, Array<QuadletInfo>> = $derived.by(() => {
+  return Map.groupBy(
+    $quadletsInfo.filter(quadlet => isTemplateInstanceQuadlet(quadlet)),
+    getTemplateKey,
+  );
+});
+
 let data: Array<SelectableQuadletInfo> = $derived(
   $quadletsInfo.filter(quadlet => {
+    // do not display template instances
+    // special case: if a template instance does not have a parent, we show it
+    if (isTemplateInstanceQuadlet(quadlet) && templates.has(getTemplateKey(quadlet))) {
+      return false;
+    }
+
     let match = true;
+
+    // filter base on container provider connection
     if (containerProviderConnection) {
       match =
         quadlet.connection.providerId === containerProviderConnection.providerId &&
