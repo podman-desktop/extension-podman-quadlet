@@ -1,7 +1,7 @@
 <script lang="ts">
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { quadletsInfo } from '/@store/quadlets';
-import { DetailsPage, Tab } from '@podman-desktop/ui-svelte';
+import { DetailsPage, Tab, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { router } from 'tinro';
 import Route from '/@/lib/Route.svelte';
 import { onMount, onDestroy } from 'svelte';
@@ -30,6 +30,7 @@ let { id, providerId, connection }: Props = $props();
 let loading: boolean = $state(true);
 let quadletSource: string | undefined = $state(undefined);
 let originalSource: string | undefined = $state(undefined);
+let quadletSourceError: string | undefined = $state(undefined);
 let changed: boolean = $derived(quadletSource !== originalSource);
 
 let loggerId: string | undefined = $state(undefined);
@@ -74,8 +75,10 @@ onMount(async () => {
     );
     // copy the original
     originalSource = quadletSource;
+    quadletSourceError = undefined;
   } catch (err: unknown) {
     console.error(err);
+    quadletSourceError = String(err);
   } finally {
     loading = false;
   }
@@ -197,13 +200,16 @@ function onchange(content: string): void {
 
         <!-- content of the path -->
         <Route path="/">
+          <div class="flex py-2 h-[40px]">
+            <span
+              class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
+              {quadlet.path}
+            </span>
+            {#if quadletSourceError}
+              <ErrorMessage error={quadletSourceError} />
+            {/if}
+          </div>
           {#if quadletSource}
-            <div class="flex py-2 h-[40px]">
-              <span
-                class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-                {quadlet.path}
-              </span>
-            </div>
             <EditorOverlay save={save} loading={loading} changed={changed} />
             <MonacoEditor class="h-full" onChange={onchange} content={quadletSource} language="ini" />
           {/if}
