@@ -118,7 +118,7 @@ test('expect remove action to use dialogAPI#showWarningMessage', async () => {
   await fireEvent.click(removeBtn);
 
   expect(dialogAPI.showWarningMessage).toHaveBeenCalledWith(
-    'Are you sure you want to delete foo.container?',
+    `Are you sure you want to delete ${QUADLET_MOCK.path}?`,
     'Confirm',
     'Cancel',
   );
