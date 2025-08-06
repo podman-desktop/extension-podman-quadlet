@@ -251,7 +251,7 @@ jobs:
 
       # Install the quadlet extension
       - name: Download Quadlet Plugins
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           name: quadlet-plugin
           path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
