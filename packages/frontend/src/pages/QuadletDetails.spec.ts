@@ -30,6 +30,7 @@ import QuadletDetails from '/@/pages/QuadletDetails.svelte';
 import { router } from 'tinro';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import { quadletAPI } from '/@/api/client';
 
 // mock clients
 vi.mock('/@/api/client', () => ({
@@ -167,6 +168,22 @@ test('kube quadlet should have kube yaml tab', async () => {
 
   const kubeTab = getByText('kube yaml');
   expect(kubeTab).toBeInTheDocument();
+});
+
+test('quadletAPI.read error should be displayed', async () => {
+  const ERROR_READ_MOCK = 'error reading quadlet';
+  vi.mocked(quadletAPI.read).mockRejectedValue(new Error(ERROR_READ_MOCK));
+
+  const { getByRole } = render(QuadletDetails, {
+    connection: WSL_PROVIDER_DETAILED_INFO.name,
+    providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+    id: KUBE_QUADLET_MOCK.id,
+  });
+
+  await vi.waitFor(() => {
+    const alert = getByRole('alert', { name: 'Error Message Content' });
+    expect(alert).toHaveTextContent(ERROR_READ_MOCK);
+  });
 });
 
 describe('title', () => {
