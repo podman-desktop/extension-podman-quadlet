@@ -259,6 +259,8 @@ jobs:
       - name: Run E2E Smoke tests
         shell: bash
         run: pnpm test:e2e:smoke
+        env:
+          NODE_OPTIONS: --no-experimental-strip-types
 
       - uses: actions/upload-artifact@v4
         if: always()
