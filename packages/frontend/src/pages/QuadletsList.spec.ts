@@ -21,7 +21,7 @@ import '@testing-library/jest-dom/vitest';
 import { fireEvent, render, within } from '@testing-library/svelte';
 
 import * as connectionStore from '/@store/connections';
-import { assert, beforeEach, expect, test, vi } from 'vitest';
+import { assert, beforeEach, describe, expect, test, vi } from 'vitest';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { readable } from 'svelte/store';
@@ -31,6 +31,8 @@ import { router } from 'tinro';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -204,4 +206,83 @@ test('search should filter based on path', async () => {
   });
   const div = within(content).getByText(QUADLETS_MOCK[0].path);
   expect(div).toBeDefined();
+});
+
+describe('templates', () => {
+  const TEMPLATE_QUADLET: QuadletInfo & TemplateQuadlet = {
+    connection: WSL_PROVIDER_DETAILED_INFO,
+    id: `template-quadlet-id-wsl`,
+    service: `foo@.service`,
+    content: 'dummy-content',
+    state: 'unknown',
+    path: `foo@.container`,
+    type: QuadletType.CONTAINER,
+    requires: [],
+    template: 'foo',
+    defaultInstance: undefined,
+  };
+
+  const TEMPLATE_INSTANCE_QUADLET: QuadletInfo & TemplateInstanceQuadlet = {
+    connection: WSL_PROVIDER_DETAILED_INFO,
+    template: TEMPLATE_QUADLET.template,
+    argument: 'bar',
+    id: `template-instance-quadlet-id-wsl`,
+    service: `foo@bar.service`,
+    content: 'dummy-content',
+    state: 'unknown',
+    path: `foo@bar.container`,
+    type: QuadletType.CONTAINER,
+    requires: [],
+  };
+
+  test('template quadlet with same name on different engine should be renderer apart', async () => {
+    vi.mocked(quadletStore).quadletsInfo = readable([
+      TEMPLATE_QUADLET,
+      {
+        ...TEMPLATE_QUADLET,
+        connection: QEMU_PROVIDER_DETAILED_INFO,
+        id: `template-quadlet-id-qemu`,
+      },
+    ]);
+
+    const { getAllByRole } = render(QuadletsList);
+
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(3);
+
+    const [, wsl, qemu] = rows;
+    expect(wsl).toHaveClass('rounded-lg');
+    expect(qemu).toHaveClass('rounded-lg');
+  });
+
+  test('template instance quadlet should be rendered as children of template quadlet', async () => {
+    vi.mocked(quadletStore).quadletsInfo = readable([TEMPLATE_QUADLET, TEMPLATE_INSTANCE_QUADLET]);
+
+    const { getAllByRole } = render(QuadletsList);
+
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(3);
+
+    const [, template, instance] = rows;
+    // ensure template is the parent component
+    expect(template).toHaveClass('rounded-t-lg');
+    expect(template).toHaveTextContent(TEMPLATE_QUADLET.service);
+
+    // ensure instance is the child component
+    expect(instance).toHaveClass('rounded-b-lg');
+    expect(instance).toHaveTextContent(TEMPLATE_INSTANCE_QUADLET.service);
+  });
+
+  test('special case: template instance without corresponding template should be renderer', async () => {
+    vi.mocked(quadletStore).quadletsInfo = readable([TEMPLATE_INSTANCE_QUADLET]);
+
+    const { getAllByRole } = render(QuadletsList);
+
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(2);
+
+    const [, instance] = rows;
+    expect(instance).toHaveClass('rounded-lg');
+    expect(instance).toHaveTextContent(TEMPLATE_INSTANCE_QUADLET.service);
+  });
 });
