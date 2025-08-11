@@ -4,8 +4,7 @@
   "description": "Podman Qualdet extension Playwright E2E tests",
   "scripts": {
     "test:e2e:setup": "xvfb-maybe --auto-servernum --server-args='-screen 0 1280x960x24' --",
-    "test:e2e": "npm run test:e2e:setup playwright test src/",
-    "test:e2e:smoke": "npm run test:e2e:setup playwright test src/ --grep @smoke"
+    "test:e2e:smoke": "npm run test:e2e:setup node --no-experimental-strip-types ../../node_modules/playwright/cli.js test src/ --grep @smoke"
   },
   "publisher": "podman-desktop",
   "license": "Apache-2.0",
