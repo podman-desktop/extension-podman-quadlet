@@ -208,6 +208,10 @@ function resetGenerate(): void {
             label: 'Image',
             id: QuadletType.IMAGE,
           },
+          {
+            label: 'pod',
+            id: QuadletType.POD,
+          },
         ]} />
 
       <!-- each form is individual -->

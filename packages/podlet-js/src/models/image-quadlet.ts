@@ -24,7 +24,7 @@ export interface ImageQuadlet {
   Service?: ServiceQuadlet;
   Image: {
     /**
-     * All tagged images in the repository are pulled.
+     * All tagged pods in the repository are pulled.
      *
      * This is equivalent to the Podman --all-tags option.
      */
@@ -60,7 +60,7 @@ export interface ImageQuadlet {
      */
     Creds?: string;
     /**
-     * The [key[:passphrase]] to be used for decryption of images.
+     * The [key[:passphrase]] to be used for decryption of pods.
      *
      * This is equivalent to the Podman --decryption-key option.
      */
