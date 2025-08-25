@@ -182,34 +182,21 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           cancellable: true,
         },
         async (progress, token): Promise<void> => {
-          const containerProviders: ProviderContainerConnection[] = this.providers.getContainerConnections();
+          const containerProviders: ProviderContainerConnection[] = this.providers
+            .getContainerConnections()
+            // only care about started podman connection
+            .filter(provider => provider.connection.type === 'podman' && provider.connection.status() === 'started');
           console.log(`[QuadletService] collectPodmanQuadlet found ${containerProviders.length} connections`);
 
           telemetry['connections-length'] = containerProviders.length;
 
           for (const provider of containerProviders) {
             if (token.isCancellationRequested) return;
+
+            // set current message
             progress.report({
-              increment: 100 / containerProviders.length,
               message: `Collecting quadlets ${provider.connection.name}`,
             });
-
-            // only care about podman connection
-            if (provider.connection.type !== 'podman') {
-              console.warn(
-                `[QuadletService] ignoring connection ${provider.connection.name} of provider ${provider.providerId}, type is ${provider.connection.type}`,
-              );
-              continue;
-            }
-
-            // only care about started connection
-            const status = provider.connection.status();
-            if (status !== 'started') {
-              console.warn(
-                `[QuadletService] ignoring connection ${provider.connection.name} of provider ${provider.providerId}, status is ${status}`,
-              );
-              continue;
-            }
 
             // 1. we check the systemctl version
             const systemctlVersion = await this.dependencies.systemd.getSystemctlVersion(provider, { token });
@@ -231,7 +218,14 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (quadlets.length > 0) {
               await this.refreshQuadletsStatuses(false);
             }
+
+            // increment progress
+            progress.report({
+              increment: 100 / containerProviders.length,
+            });
           }
+
+          progress.report({ message: 'Collecting quadlets completed.' });
         },
       )
       .catch((err: unknown) => {

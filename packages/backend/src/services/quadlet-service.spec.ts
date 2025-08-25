@@ -216,6 +216,57 @@ describe('QuadletService#collectPodmanQuadlet', () => {
     expect(WINDOW_MOCK.withProgress).toHaveBeenCalledOnce();
   });
 
+  test('cancelled token should prevent any logic to be executed', async () => {
+    // mock already cancelled token
+    vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
+      return tasks(PROGRESS_REPORT, {
+        isCancellationRequested: true,
+        onCancellationRequested: vi.fn(),
+      });
+    });
+
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    expect(SYSTEMD_SERVICE_MOCK.getSystemctlVersion).not.toHaveBeenCalled();
+  });
+
+  test('collectPodmanQuadlet should report progress for each connections', async () => {
+    // mock 10 started podman connections
+    const CONNECTIONS = Array.from({ length: 10 }).map(
+      (_, index) =>
+        ({
+          connection: {
+            type: 'podman',
+            name: `podman-machine-${index}`,
+            vmType: 'WSL',
+            status: () => 'started',
+          },
+          providerId: 'podman',
+        }) as ProviderContainerConnection,
+    );
+    vi.mocked(PROVIDER_SERVICE_MOCK.getContainerConnections).mockReturnValue(CONNECTIONS);
+
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    for (const connection of CONNECTIONS) {
+      // once for updating the message
+      expect(PROGRESS_REPORT.report).toHaveBeenCalledWith({
+        message: `Collecting quadlets ${connection.connection.name}`,
+      });
+      // once for updating the increment
+      expect(PROGRESS_REPORT.report).toHaveBeenCalledWith({
+        increment: 100 / CONNECTIONS.length,
+      });
+    }
+
+    // last call should properly set final message
+    expect(PROGRESS_REPORT.report).toHaveBeenLastCalledWith({
+      message: 'Collecting quadlets completed.',
+    });
+  });
+
   test('QUADLET_COLLECT telemetry should be logged', async () => {
     const ERROR = new Error('fake error');
     vi.mocked(WINDOW_MOCK.withProgress).mockRejectedValue(ERROR);
