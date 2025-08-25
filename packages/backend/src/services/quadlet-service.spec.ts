@@ -42,6 +42,7 @@ import { join as joinposix } from 'node:path/posix';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import { TelemetryEvents } from '../utils/telemetry-events';
 
 vi.mock('../utils/parsers/quadlet-dryrun-parser');
 vi.mock('../utils/parsers/quadlet-type-parser');
@@ -156,6 +157,11 @@ const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
   report: vi.fn(),
 };
 
+const CANCELLATION_TOKEN: CancellationToken = {
+  isCancellationRequested: false,
+  onCancellationRequested: vi.fn(),
+};
+
 beforeEach(() => {
   vi.resetAllMocks();
 
@@ -178,7 +184,7 @@ beforeEach(() => {
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 
   vi.mocked(WINDOW_MOCK.withProgress).mockImplementation((_options, tasks): Promise<unknown> => {
-    return tasks(PROGRESS_REPORT, {} as unknown as CancellationToken);
+    return tasks(PROGRESS_REPORT, CANCELLATION_TOKEN);
   });
 });
 
@@ -201,6 +207,34 @@ function getQuadletService(): QuadletServiceTest {
 }
 
 describe('QuadletService#collectPodmanQuadlet', () => {
+  test('should be wrapped in a window#withProgress', async () => {
+    vi.mocked(WINDOW_MOCK.withProgress).mockResolvedValue(undefined);
+
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    expect(WINDOW_MOCK.withProgress).toHaveBeenCalledOnce();
+  });
+
+  test('QUADLET_COLLECT telemetry should be logged', async () => {
+    const ERROR = new Error('fake error');
+    vi.mocked(WINDOW_MOCK.withProgress).mockRejectedValue(ERROR);
+
+    const quadlet = getQuadletService();
+
+    await expect(async () => {
+      await quadlet.collectPodmanQuadlet();
+    }).rejects.toThrowError('fake error');
+
+    expect(WINDOW_MOCK.withProgress).toHaveBeenCalledOnce();
+
+    // ensure telemetry is prooperly logged
+    expect(TELEMETRY_LOGGER_MOCK.logUsage).toHaveBeenCalledOnce();
+    expect(TELEMETRY_LOGGER_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.QUADLET_COLLECT, {
+      error: ERROR,
+    });
+  });
+
   test('should use PodmanService#quadletExec to get quadlet dry-run', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
@@ -209,6 +243,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
 
     expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledWith({
       args: ['-dryrun', '-user'],
+      token: CANCELLATION_TOKEN,
     });
 
     expect(quadlet.all()).toHaveLength(5);
