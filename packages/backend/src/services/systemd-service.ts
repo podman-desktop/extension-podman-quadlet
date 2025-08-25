@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { Disposable, ProviderContainerConnection } from '@podman-desktop/api';
+import type { CancellationToken, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
 import type { SystemdServiceDependencies } from './systemd-helper';
 import { SystemdHelper } from './systemd-helper';
 import type { AsyncInit } from '../utils/async-init';
@@ -16,12 +16,16 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
 
   async init(): Promise<void> {}
 
-  async getSystemctlVersion(provider: ProviderContainerConnection): Promise<string> {
+  async getSystemctlVersion(
+    provider: ProviderContainerConnection,
+    options?: { token: CancellationToken },
+  ): Promise<string> {
     // get the worker
     const worker: PodmanWorker = await this.podman.getWorker(provider);
 
     const result = await worker.systemctlExec({
       args: ['--version'],
+      token: options?.token,
     });
     return result.stdout;
   }

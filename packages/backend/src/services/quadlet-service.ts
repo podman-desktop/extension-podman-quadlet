@@ -3,7 +3,7 @@
  */
 
 import { ProgressLocation } from '@podman-desktop/api';
-import type { Disposable, ProviderContainerConnection } from '@podman-desktop/api';
+import type { Disposable, ProviderContainerConnection, CancellationToken } from '@podman-desktop/api';
 import type { QuadletServiceDependencies } from './quadlet-helper';
 import { QuadletHelper } from './quadlet-helper';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
@@ -122,13 +122,18 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * The quadlet executable is installed at /usr/libexec/podman/quadlet on the podman machine
    * @protected
    * @param provider
+   * @param options
    */
-  protected async getQuadletVersion(provider: ProviderContainerConnection): Promise<string> {
+  protected async getQuadletVersion(
+    provider: ProviderContainerConnection,
+    options?: { token?: CancellationToken },
+  ): Promise<string> {
     // Get the worker
     const worker: PodmanWorker = await this.podman.getWorker(provider);
 
     const result = await worker.quadletExec({
       args: ['-version'],
+      token: options?.token,
     });
     if (isRunError(result)) throw new Error(`cannot get quadlet version (${result.exitCode}): ${result.stderr}`);
     return result.stdout;
@@ -136,6 +141,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
   protected async getPodmanQuadlets(options: {
     provider: ProviderContainerConnection;
+    token?: CancellationToken;
     /**
      * @default false (Run as systemd user)
      */
@@ -151,6 +157,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
     const result = await worker.quadletExec({
       args,
+      token: options.token,
     });
 
     if (isRunError(result)) {
@@ -164,50 +171,72 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   async collectPodmanQuadlet(): Promise<void> {
     this.#value.clear();
 
-    const containerProviders: ProviderContainerConnection[] = this.providers.getContainerConnections();
-    console.log(`[QuadletService] collectPodmanQuadlet found ${containerProviders.length} connections`);
+    const telemetry: Record<string, unknown> = {};
 
-    for (const provider of containerProviders) {
-      // only care about podman connection
-      if (provider.connection.type !== 'podman') {
-        console.warn(
-          `[QuadletService] ignoring connection ${provider.connection.name} of provider ${provider.providerId}, type is ${provider.connection.type}`,
-        );
-        continue;
-      }
+    // wrap in a Task
+    return this.dependencies.window
+      .withProgress(
+        {
+          title: 'Collecting quadlets',
+          location: ProgressLocation.TASK_WIDGET,
+          cancellable: true,
+        },
+        async (progress, token): Promise<void> => {
+          const containerProviders: ProviderContainerConnection[] = this.providers
+            .getContainerConnections()
+            // only care about started podman connection
+            .filter(provider => provider.connection.type === 'podman' && provider.connection.status() === 'started');
+          console.log(`[QuadletService] collectPodmanQuadlet found ${containerProviders.length} connections`);
 
-      // only care about started connection
-      const status = provider.connection.status();
-      if (status !== 'started') {
-        console.warn(
-          `[QuadletService] ignoring connection ${provider.connection.name} of provider ${provider.providerId}, status is ${status}`,
-        );
-        continue;
-      }
+          telemetry['connections-length'] = containerProviders.length;
 
-      // 1. we check the systemctl version
-      const systemctlVersion = await this.dependencies.systemd.getSystemctlVersion(provider);
-      console.log(`[QuadletService] systemctlVersion ${systemctlVersion}`);
+          for (const provider of containerProviders) {
+            if (token.isCancellationRequested) return;
 
-      // 2. check the quadlet version
-      const quadletVersion = await this.getQuadletVersion(provider);
-      console.log(
-        `[QuadletService] found quadlet version ${quadletVersion} for connection ${provider.connection.name} of provider ${provider.providerId}`,
-      );
+            // set current message
+            progress.report({
+              message: `Collecting quadlets ${provider.connection.name}`,
+            });
 
-      // 3. get the quadlets
-      const quadlets = await this.getPodmanQuadlets({ provider, admin: false });
+            // 1. we check the systemctl version
+            const systemctlVersion = await this.dependencies.systemd.getSystemctlVersion(provider, { token });
+            console.log(`[QuadletService] systemctlVersion ${systemctlVersion}`);
 
-      // 4. update internally but do not notify (we need to collect the statuses)
-      this.update(provider, quadlets, false);
+            // 2. check the quadlet version
+            const quadletVersion = await this.getQuadletVersion(provider, { token });
+            console.log(
+              `[QuadletService] found quadlet version ${quadletVersion} for connection ${provider.connection.name} of provider ${provider.providerId}`,
+            );
 
-      // 5. Refresh the status if some quadlets are found
-      if (quadlets.length > 0) {
-        await this.refreshQuadletsStatuses(false);
-      }
-    }
-    // notify completion
-    this.notify();
+            // 3. get the quadlets
+            const quadlets = await this.getPodmanQuadlets({ provider, token, admin: false });
+
+            // 4. update internally but do not notify (we need to collect the statuses)
+            this.update(provider, quadlets, false);
+
+            // 5. Refresh the status if some quadlets are found
+            if (quadlets.length > 0) {
+              await this.refreshQuadletsStatuses(false);
+            }
+
+            // increment progress
+            progress.report({
+              increment: 100 / containerProviders.length,
+            });
+          }
+
+          progress.report({ message: 'Collecting quadlets completed.' });
+        },
+      )
+      .catch((err: unknown) => {
+        telemetry['error'] = err;
+        throw err;
+      })
+      .finally(() => {
+        // notify completion
+        this.dependencies.telemetry.logUsage(TelemetryEvents.QUADLET_COLLECT, telemetry);
+        this.notify();
+      });
   }
 
   protected update(provider: ProviderContainerConnection, quadlets: Quadlet[], notify: boolean = true): void {
