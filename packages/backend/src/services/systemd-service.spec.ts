@@ -2,9 +2,9 @@
  * @author axel7083
  */
 import type { PodmanService } from './podman-service';
-import { expect, test, vi, beforeEach } from 'vitest';
+import { expect, test, vi, beforeEach, describe } from 'vitest';
 import { SystemdService } from './systemd-service';
-import type { ProviderContainerConnection, TelemetryLogger } from '@podman-desktop/api';
+import type { CancellationToken, ProviderContainerConnection, TelemetryLogger } from '@podman-desktop/api';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 
@@ -35,6 +35,11 @@ const telemetryMock: TelemetryLogger = {
   logUsage: vi.fn(),
 } as unknown as TelemetryLogger;
 
+const CANCELLATION_TOKEN: CancellationToken = {
+  isCancellationRequested: false,
+  onCancellationRequested: vi.fn(),
+};
+
 beforeEach(() => {
   vi.resetAllMocks();
 
@@ -52,6 +57,39 @@ function getSystemdService(): SystemdService {
     telemetry: telemetryMock,
   });
 }
+
+describe('SystemdService#getSystemctlVersion', () => {
+  beforeEach(() => {
+    vi.mocked(PODMAN_WORKER_MOCK.systemctlExec).mockResolvedValue({
+      stdout: 'systemd 255 (255.18-1.fc40)',
+      stderr: '',
+      command: '',
+    });
+  });
+
+  test('should return version if systemd is installed', async () => {
+    const systemd = getSystemdService();
+    const version = await systemd.getSystemctlVersion(WSL_PROVIDER_CONNECTION_MOCK);
+
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
+      args: ['--version'],
+    });
+
+    expect(version).toEqual('systemd 255 (255.18-1.fc40)');
+  });
+
+  test('expect cancellation token to be propagated', async () => {
+    const systemd = getSystemdService();
+    await systemd.getSystemctlVersion(WSL_PROVIDER_CONNECTION_MOCK, { token: CANCELLATION_TOKEN });
+
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
+      args: ['--version'],
+      token: CANCELLATION_TOKEN,
+    });
+  });
+});
 
 test('expect SystemdService#daemonReload to call PodmanService#systemctlExec', async () => {
   const systemd = getSystemdService();
