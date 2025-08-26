@@ -1,10 +1,12 @@
 # Podman Desktop Quadlet Extension
 
 [![codecov](https://codecov.io/github/podman-desktop/extension-podman-quadlet/graph/badge.svg?token=P885ZCDJA7)](https://codecov.io/github/podman-desktop/extension-podman-quadlet)
+![GitHub Repo stars](https://img.shields.io/github/stars/podman-desktop/extension-podman-quadlet?link=https%3A%2F%2Fgithub.com%2Fpodman-desktop%2Fextension-podman-quadlet)
 
 ## Overview
 
-![quadlet-list.png](images/quadlet-list.png)
+![quadlet-list.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/quadlet-list.png)
+
 
 ## Install
 
@@ -22,13 +24,13 @@ This extension will allow you to list, generate, enable and delete podman quadle
 
 You can generate Quadlet from the Podman Desktop containers page, as visible bellow
 
-![generate-from-containers-list.png](images/generate-from-containers-list.png)
+![generate-from-containers-list.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/generate-from-containers-list.png)
 
-![quadlet-generate-container.png](images/quadlet-generate-container.png)
+![quadlet-generate-container.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/quadlet-generate-container.png)
 
 Once generated, the output can be edited before being loaded into the Podman Machine
 
-![edit-podlet-output.png](images/edit-podlet-output.png)
+![edit-podlet-output.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/edit-podlet-output.png)
 
 ### Compose
 
@@ -37,9 +39,9 @@ The extension has a partial support for create quadlet from an existing compose 
 > Podman Desktop group containers in the same compose project. 
 > This allows us to determine which spec has been used by looking at the `com.docker.compose.project.config_files` containers label
 
-![generate-from-compose.png](images/generate-from-compose.png)
+![generate-from-compose.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/generate-from-compose.png)
 
 Two type of Quadlet can be generated from a compose specification, `Container`, `Kube` or `Pod`
 
-![quadlet-generate-compose.png](images/quadlet-generate-compose.png)
+![quadlet-generate-compose.png](https://github.com/podman-desktop/extension-podman-quadlet/raw/main/images/quadlet-generate-compose.png)
 
