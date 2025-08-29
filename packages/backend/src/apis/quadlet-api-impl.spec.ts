@@ -237,7 +237,9 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
       args: ['--user', '--follow', `--unit=${QUADLET_MOCK.service}`, '--output=cat'],
       logger: LOGGER_MOCK,
       token: expect.anything(),
-      env: expect.anything(),
+      env: {
+        SYSTEMD_COLORS: 'true',
+      },
     });
   });
 });

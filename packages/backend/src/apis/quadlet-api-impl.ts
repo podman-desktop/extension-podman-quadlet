@@ -150,7 +150,6 @@ export class QuadletApiImpl extends QuadletApi {
         args: ['--user', '--follow', `--unit=${quadlet.service}`, '--output=cat'],
         env: {
           SYSTEMD_COLORS: 'true',
-          DBUS_SESSION_BUS_ADDRESS: 'unix:path=/run/user/1000/bus',
         },
         logger: logger,
         // the logger has an internal cancellation token, let's use it
