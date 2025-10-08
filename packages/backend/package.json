@@ -78,7 +78,7 @@
   },
   "dependencies": {
     "js-ini": "^1.6.0",
-    "semver": "^7.7.2",
+    "semver": "^7.7.3",
     "js-yaml": "^4.1.0",
     "podlet-js": "workspace:^",
     "ssh2": "^1.17.0",
