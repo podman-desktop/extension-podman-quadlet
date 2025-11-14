@@ -23,7 +23,7 @@
   },
   "dependencies": {
     "js-ini": "^1.6.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "compose-spec-ts": "^0.3.2"
   },
   "files": [
