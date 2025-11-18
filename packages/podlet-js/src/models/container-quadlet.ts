@@ -16,6 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { ServiceQuadlet } from './service-quadlet';
+import type { InstallQuadlet } from './install-quadlet';
 
 /**
  * Learn more about Container Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#container-units-container
@@ -411,4 +412,5 @@ export interface ContainerQuadlet {
      */
     Volume?: Array<string>;
   };
+  Install?: InstallQuadlet;
 }
