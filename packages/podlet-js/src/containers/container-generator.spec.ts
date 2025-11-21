@@ -30,22 +30,25 @@ describe('generate', async () => {
     const containerPath = join(folderPath, 'container-inspect.json');
     const imagePath = join(folderPath, 'image-inspect.json');
     const expectedPath = join(folderPath, 'expect.ini');
+    const optionsPath = join(folderPath, 'options.json');
 
     await Promise.all(
-      [containerPath, imagePath, expectedPath].map(async file => {
+      [containerPath, imagePath, expectedPath, optionsPath].map(async file => {
         await access(file);
       }),
     );
 
-    const [container, image, expected] = await Promise.all([
+    const [container, image, expected, options] = await Promise.all([
       readFile(containerPath, 'utf-8'),
       readFile(imagePath, 'utf-8'),
       readFile(expectedPath, 'utf-8'),
+      readFile(optionsPath, 'utf-8'),
     ]);
 
     const result = new ContainerGenerator({
       container: JSON.parse(container),
       image: JSON.parse(image),
+      options: JSON.parse(options),
     }).generate();
     expect(result.trim()).toBe(expected.trim());
   });
