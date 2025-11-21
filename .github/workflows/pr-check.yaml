@@ -28,7 +28,7 @@ jobs:
     name: linter, formatters
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: pnpm/action-setup@v4
         name: Install pnpm
         with:
@@ -64,7 +64,7 @@ jobs:
       matrix:
         os: [windows-2022, ubuntu-24.04, macos-15]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: pnpm/action-setup@v4
         name: Install pnpm
@@ -90,7 +90,7 @@ jobs:
     name: Build Extension Image
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build Image and Extract Files
         id: build-image
         run: |
@@ -121,7 +121,7 @@ jobs:
       # by default playwright cache browsers binaries in ~/.cache/ms-playwright on Linux and %USERPROFILE%\AppData\Local\ms-playwright on Windows
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/podman-desktop/pw-browsers
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       # ==============================================
       # Installing Podman
