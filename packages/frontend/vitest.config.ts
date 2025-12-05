@@ -15,24 +15,15 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { defineProject } from 'vitest/config';
+import { mergeConfig } from 'vitest/config';
+import viteConfig from './vite.config';
 import { join } from 'node:path';
-import { svelte } from '@sveltejs/vite-plugin-svelte';
 import { svelteTesting } from '@testing-library/svelte/vite';
 
-const PACKAGE_ROOT = __dirname;
-const WORKSPACE_ROOT = join(PACKAGE_ROOT, '..', '..');
+const WORKSPACE_ROOT = join(__dirname, '..', '..');
 
-export default defineProject({
-  root: PACKAGE_ROOT,
-  resolve: {
-    alias: {
-      '/@/': join(PACKAGE_ROOT, 'src') + '/',
-      '/@store/': join(PACKAGE_ROOT, 'src', 'stores') + '/',
-      '/@shared/': join(PACKAGE_ROOT, '../shared') + '/',
-    },
-  },
-  plugins: [svelte({ hot: !process.env.VITEST }), svelteTesting()],
+export default mergeConfig(viteConfig, {
+  plugins: [svelteTesting()],
   test: {
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globals: true,
