@@ -25,18 +25,20 @@ const WEBVIEW_MOCK: Webview = {
   postMessage: vi.fn(),
 } as unknown as Webview;
 const LOGGER_ID: string = 'dummy-logger-id';
-const CANCELLATION_TOKEN_SOURCE_MOCK: CancellationTokenSource = {
-  token: {
-    isCancellationRequested: false,
-    onCancellationRequested: vi.fn(),
-  },
-  cancel: vi.fn(),
-  dispose: vi.fn(),
-} as unknown as CancellationTokenSource;
+
+vi.mock(import('@podman-desktop/api'), () => ({
+  CancellationTokenSource: vi.fn(class {
+    token = {
+      isCancellationRequested: false,
+      onCancellationRequested: vi.fn(),
+    };
+    cancel = vi.fn();
+    dispose = vi.fn();
+  }),
+}));
 
 beforeEach(() => {
   vi.resetAllMocks();
-  vi.mocked(CancellationTokenSource).mockReturnValue(CANCELLATION_TOKEN_SOURCE_MOCK);
   vi.mocked(WEBVIEW_MOCK.postMessage).mockResolvedValue(true);
 });
 
@@ -65,21 +67,21 @@ test('LoggerImpl should create a token and return it through LoggerImpl#token', 
   });
 
   expect(CancellationTokenSource).toHaveBeenCalledOnce();
-  expect(logger.token).toStrictEqual(CANCELLATION_TOKEN_SOURCE_MOCK.token);
+  const instance = vi.mocked(CancellationTokenSource).mock.instances[0];
+  expect(logger.token).toStrictEqual(instance.token);
 });
 
 test('disposing LoggerImpl should cancel&dispose token', () => {
-  expect(CANCELLATION_TOKEN_SOURCE_MOCK.cancel).not.toHaveBeenCalled();
-  expect(CANCELLATION_TOKEN_SOURCE_MOCK.dispose).not.toHaveBeenCalled();
-
   const logger = new LoggerImpl({
     webview: WEBVIEW_MOCK,
     loggerId: LOGGER_ID,
   });
   logger.dispose();
+
   // ensure token is cancelled and disposed
-  expect(CANCELLATION_TOKEN_SOURCE_MOCK.cancel).toHaveBeenCalledOnce();
-  expect(CANCELLATION_TOKEN_SOURCE_MOCK.dispose).toHaveBeenCalledOnce();
+  const instance = vi.mocked(CancellationTokenSource).mock.instances[0];
+  expect(instance.cancel).toHaveBeenCalledOnce();
+  expect(instance.dispose).toHaveBeenCalledOnce();
 });
 
 test('maxLogsLengths should prevent logs to exceed given length', () => {

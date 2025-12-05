@@ -30,23 +30,11 @@ const SSH_CONFIG_MOCK: ConnectConfig = {
   privateKey: '==content==',
 };
 
-const SFTP_CLIENT_MOCK: SftpClient = {
-  connect: vi.fn(),
-  on: vi.fn(),
-  end: vi.fn(),
-  get: vi.fn(),
-  delete: vi.fn(),
-  mkdir: vi.fn(),
-  put: vi.fn(),
-} as unknown as SftpClient;
-
 beforeEach(() => {
   vi.resetAllMocks();
   vi.useFakeTimers();
 
-  vi.mocked(SFTP_CLIENT_MOCK.end).mockResolvedValue(false);
-
-  vi.mocked(SftpClient).mockReturnValue(SFTP_CLIENT_MOCK);
+  vi.mocked(SftpClient.prototype.end).mockResolvedValue(false);
 });
 
 afterEach(() => {
@@ -63,8 +51,8 @@ describe('connect', () => {
   test('connection successful', async () => {
     await podmanSFTP.connect();
 
-    expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledOnce();
-    expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledWith(SSH_CONFIG_MOCK);
+    expect(SftpClient.prototype.connect).toHaveBeenCalledOnce();
+    expect(SftpClient.prototype.connect).toHaveBeenCalledWith(SSH_CONFIG_MOCK);
 
     expect(podmanSFTP.connected).toBeTruthy();
   });
@@ -75,7 +63,7 @@ describe('connect', () => {
     // ensure is connected
     expect(podmanSFTP.connected).toBeTruthy();
 
-    const endListener = vi.mocked(SFTP_CLIENT_MOCK.on).mock.calls.find(([event]) => event === 'end')?.[1];
+    const endListener = vi.mocked(SftpClient.prototype.on).mock.calls.find(([event]) => event === 'end')?.[1];
     assert(endListener, 'client should register end listener');
 
     endListener();
@@ -85,7 +73,7 @@ describe('connect', () => {
 
     await vi.advanceTimersByTimeAsync(50_000);
 
-    expect(SFTP_CLIENT_MOCK.connect).toHaveBeenCalledTimes(2);
+    expect(SftpClient.prototype.connect).toHaveBeenCalledTimes(2);
     // ensure is connected
     expect(podmanSFTP.connected).toBeTruthy();
   });
@@ -101,7 +89,7 @@ describe('read', () => {
 
   test('get buffer response should be converted to utf-8 string', async () => {
     // mock buffer for resolve content
-    vi.mocked(SFTP_CLIENT_MOCK.get).mockResolvedValue(Buffer.from('bar'));
+    vi.mocked(SftpClient.prototype.get).mockResolvedValue(Buffer.from('bar'));
 
     const response: string = await podmanSFTP.read('/foo');
     expect(response).toBe('bar');
@@ -109,7 +97,7 @@ describe('read', () => {
 
   test('get string should be returned as it is', async () => {
     // mock string for resolve content
-    vi.mocked(SFTP_CLIENT_MOCK.get).mockResolvedValue('bar');
+    vi.mocked(SftpClient.prototype.get).mockResolvedValue('bar');
 
     const response: string = await podmanSFTP.read('/foo');
     expect(response).toBe('bar');
@@ -117,11 +105,11 @@ describe('read', () => {
 
   test('homedir path should be resolved', async () => {
     // mock string for resolve content
-    vi.mocked(SFTP_CLIENT_MOCK.get).mockResolvedValue('bar');
+    vi.mocked(SftpClient.prototype.get).mockResolvedValue('bar');
 
     await podmanSFTP.read('~/foo');
 
-    expect(SFTP_CLIENT_MOCK.get).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo`);
+    expect(SftpClient.prototype.get).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo`);
   });
 });
 
@@ -136,15 +124,15 @@ describe('write', () => {
   test('should mkdir parent', async () => {
     await podmanSFTP.write('/foo/bar.txt', 'hello');
 
-    expect(SFTP_CLIENT_MOCK.mkdir).toHaveBeenCalledWith('/foo', true);
-    expect(SFTP_CLIENT_MOCK.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
+    expect(SftpClient.prototype.mkdir).toHaveBeenCalledWith('/foo', true);
+    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
   });
 
   test('content should be converted to buffer', async () => {
     await podmanSFTP.write('/foo/bar.txt', 'hello');
 
-    expect(SFTP_CLIENT_MOCK.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
-    const buffer = vi.mocked(SFTP_CLIENT_MOCK.put).mock.calls[0][0];
+    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
+    const buffer = vi.mocked(SftpClient.prototype.put).mock.calls[0][0];
     assert(Buffer.isBuffer(buffer), 'first argument should be a buffer');
 
     expect(buffer.toString('utf-8')).toStrictEqual('hello');
@@ -153,8 +141,8 @@ describe('write', () => {
   test('homedir path should be resolved', async () => {
     await podmanSFTP.write('~/foo/bar.txt', 'hello');
 
-    expect(SFTP_CLIENT_MOCK.mkdir).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo`, true);
-    expect(SFTP_CLIENT_MOCK.put).toHaveBeenCalledWith(
+    expect(SftpClient.prototype.mkdir).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo`, true);
+    expect(SftpClient.prototype.put).toHaveBeenCalledWith(
       expect.any(Buffer),
       `/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`,
     );
@@ -172,13 +160,13 @@ describe('rm', () => {
   test('absolute path should be kept as it is', async () => {
     await podmanSFTP.rm('/foo/bar.txt');
 
-    expect(SFTP_CLIENT_MOCK.delete).toHaveBeenCalledWith(`/foo/bar.txt`);
+    expect(SftpClient.prototype.delete).toHaveBeenCalledWith(`/foo/bar.txt`);
   });
 
   test('homedir path should be resolved', async () => {
     await podmanSFTP.rm('~/foo/bar.txt');
 
-    expect(SFTP_CLIENT_MOCK.delete).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`);
+    expect(SftpClient.prototype.delete).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`);
   });
 });
 
@@ -186,5 +174,5 @@ test('dispose should end ssh2 client', () => {
   const podmanSFTP = new PodmanSFTP(SSH_CONFIG_MOCK);
   podmanSFTP.dispose();
 
-  expect(SFTP_CLIENT_MOCK.end).toHaveBeenCalledOnce();
+  expect(SftpClient.prototype.end).toHaveBeenCalledOnce();
 });

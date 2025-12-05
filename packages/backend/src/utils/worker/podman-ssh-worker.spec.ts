@@ -37,27 +37,10 @@ const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   providerId: 'podman',
 } as ProviderContainerConnection;
 
-const PODMAN_SFTP_MOCK: PodmanSFTP = {
-  read: vi.fn(),
-  rm: vi.fn(),
-  connect: vi.fn(),
-  write: vi.fn(),
-  dispose: vi.fn(),
-} as unknown as PodmanSFTP;
-
-const PODMAN_SSH_MOCK: PodmanSSH = {
-  connect: vi.fn(),
-  exec: vi.fn(),
-  dispose: vi.fn(),
-} as unknown as PodmanSSH;
-
 const CONNECT_CONFIG_MOCK: ConnectConfig = {} as unknown as ConnectConfig;
 
 beforeEach(() => {
   vi.resetAllMocks();
-
-  vi.mocked(PodmanSFTP).mockReturnValue(PODMAN_SFTP_MOCK);
-  vi.mocked(PodmanSSH).mockReturnValue(PODMAN_SSH_MOCK);
 });
 
 function getPodmanSSHWorker(): PodmanWorker {
@@ -70,8 +53,8 @@ describe('init', () => {
 
     await worker.init();
 
-    expect(PODMAN_SFTP_MOCK.connect).toHaveBeenCalledOnce();
-    expect(PODMAN_SSH_MOCK.connect).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.connect).toHaveBeenCalledOnce();
+    expect(PodmanSSH.prototype.connect).toHaveBeenCalledOnce();
   });
 });
 
@@ -79,7 +62,7 @@ describe('read', () => {
   const DUMMY_CONTENT = 'bar';
 
   beforeEach(() => {
-    vi.mocked(PODMAN_SFTP_MOCK.read).mockResolvedValue(DUMMY_CONTENT);
+    vi.mocked(PodmanSFTP.prototype.read).mockResolvedValue(DUMMY_CONTENT);
   });
 
   test('read should proxy to PodmanSFTP#read', async () => {
@@ -88,8 +71,8 @@ describe('read', () => {
     const result = await worker.read('/foo.txt');
     expect(result).toEqual(DUMMY_CONTENT);
 
-    expect(PODMAN_SFTP_MOCK.read).toHaveBeenCalledOnce();
-    expect(PODMAN_SFTP_MOCK.read).toHaveBeenCalledWith('/foo.txt');
+    expect(PodmanSFTP.prototype.read).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.read).toHaveBeenCalledWith('/foo.txt');
   });
 });
 
@@ -99,8 +82,8 @@ describe('rm', () => {
 
     await worker.rm('/foo.txt');
 
-    expect(PODMAN_SFTP_MOCK.rm).toHaveBeenCalledOnce();
-    expect(PODMAN_SFTP_MOCK.rm).toHaveBeenCalledWith('/foo.txt');
+    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledWith('/foo.txt');
   });
 });
 
@@ -110,8 +93,8 @@ describe('rm', () => {
 
     await worker.rm('/foo.txt');
 
-    expect(PODMAN_SFTP_MOCK.rm).toHaveBeenCalledOnce();
-    expect(PODMAN_SFTP_MOCK.rm).toHaveBeenCalledWith('/foo.txt');
+    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledWith('/foo.txt');
   });
 });
 
@@ -121,8 +104,8 @@ describe('write', () => {
 
     await worker.write('/foo.txt', 'bar');
 
-    expect(PODMAN_SFTP_MOCK.write).toHaveBeenCalledOnce();
-    expect(PODMAN_SFTP_MOCK.write).toHaveBeenCalledWith('/foo.txt', 'bar');
+    expect(PodmanSFTP.prototype.write).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.write).toHaveBeenCalledWith('/foo.txt', 'bar');
   });
 });
 
@@ -132,8 +115,8 @@ describe('exec', () => {
 
     await worker.exec('echo');
 
-    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledOnce();
-    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledWith('echo', undefined);
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledOnce();
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledWith('echo', undefined);
   });
 
   test('exec without option should proxy to PodmanSSH#exec', async () => {
@@ -141,8 +124,8 @@ describe('exec', () => {
 
     await worker.exec('echo', { args: ['hello'] });
 
-    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledOnce();
-    expect(PODMAN_SSH_MOCK.exec).toHaveBeenCalledWith('echo', { args: ['hello'] });
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledOnce();
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledWith('echo', { args: ['hello'] });
   });
 });
 
@@ -152,7 +135,7 @@ describe('dispose', () => {
 
     worker.dispose();
 
-    expect(PODMAN_SFTP_MOCK.dispose).toHaveBeenCalledOnce();
-    expect(PODMAN_SSH_MOCK.dispose).toHaveBeenCalledOnce();
+    expect(PodmanSFTP.prototype.dispose).toHaveBeenCalledOnce();
+    expect(PodmanSSH.prototype.dispose).toHaveBeenCalledOnce();
   });
 });

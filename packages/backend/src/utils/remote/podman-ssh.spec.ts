@@ -30,13 +30,6 @@ const SSH_CONFIG_MOCK: ConnectConfig = {
   privateKey: '==content==',
 };
 
-const CLIENT_MOCK: Client = {
-  on: vi.fn(),
-  connect: vi.fn(),
-  end: vi.fn(),
-  exec: vi.fn(),
-} as unknown as Client;
-
 const CLIENT_CHANNEL_MOCK: ClientChannel = {
   stdout: {
     on: vi.fn(),
@@ -62,8 +55,7 @@ beforeEach(() => {
   vi.resetAllMocks();
   vi.useFakeTimers();
 
-  vi.mocked(Client).mockReturnValue(CLIENT_MOCK);
-  vi.mocked(CLIENT_MOCK.on).mockReturnValue(CLIENT_MOCK);
+  vi.mocked(Client.prototype.on).mockReturnThis();
 });
 
 afterEach(() => {
@@ -72,11 +64,11 @@ afterEach(() => {
 
 function getEventListener(event: string): () => void {
   // ensure we registered a listener for ready event
-  expect(CLIENT_MOCK.on).toHaveBeenCalledWith(event, expect.any(Function));
+  expect(Client.prototype.on).toHaveBeenCalledWith(event, expect.any(Function));
 
   // extract the listener
   const listener = vi
-    .mocked(CLIENT_MOCK.on)
+    .mocked(Client.prototype.on)
     .mock.calls.find(([channel]) => (channel as string) === event)?.[1] as () => void;
   assert(listener, 'listener should be defined');
 
@@ -134,7 +126,7 @@ describe('connect', () => {
     expect(podmanSSH.connected).toBeTruthy();
 
     // we should have connected only once
-    expect(CLIENT_MOCK.connect).toHaveBeenCalledOnce();
+    expect(Client.prototype.connect).toHaveBeenCalledOnce();
 
     // call the ready listener
     getEventListener('end')();
@@ -146,7 +138,7 @@ describe('connect', () => {
     await vi.advanceTimersByTimeAsync(50_000);
 
     // we should have connected again
-    expect(CLIENT_MOCK.connect).toHaveBeenCalledTimes(2);
+    expect(Client.prototype.connect).toHaveBeenCalledTimes(2);
   });
 });
 
@@ -159,9 +151,9 @@ describe('exec', () => {
 
   function getClientCallback(): Promise<ClientCallback> {
     return vi.waitFor<ClientCallback>(() => {
-      expect(CLIENT_MOCK.exec).toHaveBeenCalledOnce();
+      expect(Client.prototype.exec).toHaveBeenCalledOnce();
 
-      const args: Array<unknown> = vi.mocked(CLIENT_MOCK.exec).mock.calls[0];
+      const args: Array<unknown> = vi.mocked(Client.prototype.exec).mock.calls[0];
       expect(args).toHaveLength(3);
       return args[2] as ClientCallback;
     });
@@ -326,5 +318,5 @@ test('dispose should end ssh2 client', () => {
   const podmanSSH = new PodmanSSH(SSH_CONFIG_MOCK);
   podmanSSH.dispose();
 
-  expect(CLIENT_MOCK.end).toHaveBeenCalledOnce();
+  expect(Client.prototype.end).toHaveBeenCalledOnce();
 });
