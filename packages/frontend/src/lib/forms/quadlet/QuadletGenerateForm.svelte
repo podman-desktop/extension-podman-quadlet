@@ -21,6 +21,7 @@ import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
 import QuadletEditor from '/@/lib/monaco-editor/QuadletEditor.svelte';
 import Fa from 'svelte-fa';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
+import type { QuadletGenerateOptions } from '/@shared/src/models/quadlet-generate-options';
 
 interface Props extends QuadletGenerateFormProps {
   loading: boolean;
@@ -83,6 +84,8 @@ let validFilename: boolean = $derived.by(() => {
   return parts.length >= 2 && parts[0].length > 0 && parts[parts.length - 1] === quadletType.toLowerCase();
 });
 
+let options: QuadletGenerateOptions | undefined = $state(undefined);
+
 let step: string = $derived(loaded ? 'completed' : quadlet !== undefined ? 'edit' : 'options');
 
 let error: string | undefined = $state();
@@ -105,6 +108,7 @@ async function generate(): Promise<void> {
       connection: $state.snapshot(selectedContainerProviderConnection),
       resourceId: $state.snapshot(resourceId),
       type: quadletType as QuadletTypeGenerate,
+      options: $state.snapshot(options),
     })
     .then(onGenerated)
     .catch((err: unknown) => {
@@ -137,6 +141,11 @@ async function saveIntoMachine(): Promise<void> {
   } finally {
     loading = false;
   }
+}
+
+function onFormChange(nOptions?: QuadletGenerateOptions): void {
+  resetGenerate();
+  options = nOptions;
 }
 
 function resetGenerate(): void {
@@ -203,7 +212,7 @@ function resetGenerate(): void {
       <!-- each form is individual -->
       {#key selectedContainerProviderConnection}
         <ChildForm
-          onChange={resetGenerate}
+          onChange={onFormChange}
           onError={onError}
           bind:loading={loading}
           provider={selectedContainerProviderConnection}
