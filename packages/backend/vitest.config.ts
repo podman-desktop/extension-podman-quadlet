@@ -27,7 +27,7 @@ export default mergeConfig(viteConfig, {
     environment: 'node',
     include: ['src/**/*.{test,spec}.?(c|m)[jt]s?(x)', 'vitest.setup.spec.ts'],
     alias: {
-      '@podman-desktop/api': resolve(WORKSPACE_ROOT, '__mocks__', '@podman-desktop','api.js'),
+      '@podman-desktop/api': resolve(WORKSPACE_ROOT, '__mocks__', '@podman-desktop', 'api.js'),
     },
     setupFiles: ['./vitest.setup.ts'],
   },

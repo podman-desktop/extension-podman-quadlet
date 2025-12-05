@@ -27,14 +27,16 @@ const WEBVIEW_MOCK: Webview = {
 const LOGGER_ID: string = 'dummy-logger-id';
 
 vi.mock(import('@podman-desktop/api'), () => ({
-  CancellationTokenSource: vi.fn(class {
-    token = {
-      isCancellationRequested: false,
-      onCancellationRequested: vi.fn(),
-    };
-    cancel = vi.fn();
-    dispose = vi.fn();
-  }),
+  CancellationTokenSource: vi.fn(
+    class {
+      token = {
+        isCancellationRequested: false,
+        onCancellationRequested: vi.fn(),
+      };
+      cancel = vi.fn();
+      dispose = vi.fn();
+    },
+  ),
 }));
 
 beforeEach(() => {
