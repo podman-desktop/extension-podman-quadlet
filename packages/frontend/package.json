@@ -39,7 +39,7 @@
     "autoprefixer": "^10.4.22",
     "filesize": "^11.0.13",
     "humanize-duration": "^3.33.2",
-    "jsdom": "^27.2.0",
+    "jsdom": "^27.3.0",
     "moment": "^2.30.1",
     "monaco-editor": "^0.54.0",
     "prettier": "^3.7.4",
