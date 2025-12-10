@@ -119,8 +119,8 @@ importers:
         specifier: ^1.9.1
         version: 1.9.1(vite@7.2.7(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.6.1))
       '@podman-desktop/api':
-        specifier: ^1.23.1
-        version: 1.23.1
+        specifier: ^1.24.1
+        version: 1.24.1
       '@podman-desktop/podman-extension-api':
         specifier: ^1.18.0
         version: 1.18.0
@@ -277,8 +277,8 @@ importers:
         specifier: ^1.9.1
         version: 1.9.1(vite@7.2.7(@types/node@22.19.2)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.6.1))
       '@podman-desktop/api':
-        specifier: ^1.23.1
-        version: 1.23.1
+        specifier: ^1.24.1
+        version: 1.24.1
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -899,8 +899,8 @@ packages:
   '@podman-desktop/api@1.18.0':
     resolution: {integrity: sha512-+6MeXHxTPxcf0dT+Hmyer5o0QFQXYdBaZPoy68pd0Cx6O60EKeuWh7T4zcanf8m2cdZ63/iqfnrCwo26c3DZbg==}
 
-  '@podman-desktop/api@1.23.1':
-    resolution: {integrity: sha512-Z3cPF6l7YrydDxzXynsQc0pHo2ooopPqE3IM5EgVQq4/3B9ZBmPIo8P7eLMor44kFnLmQgAzUnX2AbUaXdPeqg==}
+  '@podman-desktop/api@1.24.1':
+    resolution: {integrity: sha512-tTl0LVbpyMUIgeAZ4Sx24A9U5Lg0tTCaBfq+K9ZtGe1OQTcNb1YqMm7Yyj4vKl2QTrLx6W0hkwbgpEcxsIyyRQ==}
 
   '@podman-desktop/podman-extension-api@1.18.0':
     resolution: {integrity: sha512-CjRv0LDSmYZzPEtdOasPsRe8kzBYQOdK7+jjK9qhoy8l6NlOLjYPRKUIjZ/kZzNCKv1jd0D5mPxNmk0XtsBSTQ==}
@@ -4566,7 +4566,7 @@ snapshots:
 
   '@podman-desktop/api@1.18.0': {}
 
-  '@podman-desktop/api@1.23.1': {}
+  '@podman-desktop/api@1.24.1': {}
 
   '@podman-desktop/podman-extension-api@1.18.0':
     dependencies:
