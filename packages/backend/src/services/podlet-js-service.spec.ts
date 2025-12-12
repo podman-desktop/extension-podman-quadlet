@@ -99,6 +99,9 @@ describe('container quadlets', () => {
       connection: CONTAINER_CONNECTION_IDENTIFIER,
       type: QuadletType.CONTAINER,
       resourceId: CONTAINER_INSPECT_MOCK.Id,
+      options: {
+        type: QuadletType.CONTAINER,
+      },
     });
 
     // Should get the corresponding engine id
@@ -118,6 +121,7 @@ describe('container quadlets', () => {
     expect(ContainerGenerator).toHaveBeenCalledWith({
       image: IMAGE_INSPECT_MOCK,
       container: CONTAINER_INSPECT_MOCK,
+      options: {},
     });
 
     // the output should match the mocked string
@@ -132,12 +136,40 @@ describe('container quadlets', () => {
       connection: CONTAINER_CONNECTION_IDENTIFIER,
       type: QuadletType.CONTAINER,
       resourceId: CONTAINER_INSPECT_MOCK.Id,
+      options: {
+        type: QuadletType.CONTAINER,
+      },
     });
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
         'quadlet-type': QuadletType.CONTAINER.toLowerCase(),
       });
+    });
+  });
+
+  test('generate option should be properly passed to the podlet-js container generator', async () => {
+    const podletJs = getService();
+
+    // generate container quadlet
+    await podletJs.generate({
+      connection: CONTAINER_CONNECTION_IDENTIFIER,
+      type: QuadletType.CONTAINER,
+      resourceId: CONTAINER_INSPECT_MOCK.Id,
+      options: {
+        type: QuadletType.CONTAINER,
+        wantedBy: 'default.target',
+      },
+    });
+
+    // should properly call the podlet-js container generator
+    expect(ContainerGenerator).toHaveBeenCalledOnce();
+    expect(ContainerGenerator).toHaveBeenCalledWith({
+      image: IMAGE_INSPECT_MOCK,
+      container: CONTAINER_INSPECT_MOCK,
+      options: {
+        wantedBy: 'default.target',
+      },
     });
   });
 
@@ -153,6 +185,9 @@ describe('container quadlets', () => {
         connection: CONTAINER_CONNECTION_IDENTIFIER,
         type: QuadletType.CONTAINER,
         resourceId: CONTAINER_INSPECT_MOCK.Id,
+        options: {
+          type: QuadletType.CONTAINER,
+        },
       });
     }).rejects.toThrowError('dummy error');
 
@@ -174,6 +209,9 @@ describe('image quadlets', () => {
       connection: CONTAINER_CONNECTION_IDENTIFIER,
       type: QuadletType.IMAGE,
       resourceId: IMAGE_INSPECT_MOCK.Id,
+      options: {
+        type: QuadletType.IMAGE,
+      },
     });
 
     // Should get the corresponding engine id
