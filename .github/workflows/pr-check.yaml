@@ -35,7 +35,7 @@ jobs:
           run_install: false
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
       - name: Execute pnpm
         run: pnpm install --frozen-lockfile
@@ -73,7 +73,7 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
 
       - name: Execute pnpm
@@ -197,7 +197,7 @@ jobs:
       # Install Node.js
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
 
       # Install npm packages for quadlet extension
