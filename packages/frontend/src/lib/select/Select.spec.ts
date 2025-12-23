@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2024 Red Hat, Inc.
+ * Copyright (C) 2024-2025 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import '@testing-library/jest-dom/vitest';
-import { beforeEach, vi, test, expect } from 'vitest';
+import { beforeEach, vi, test, expect, describe } from 'vitest';
 import { render, fireEvent, within } from '@testing-library/svelte';
 import Select from '/@/lib/select/Select.svelte';
 
@@ -122,37 +122,60 @@ test('selecting value should call onchange callback', async () => {
   });
 });
 
-test('clearing value should call onchange callback with undefined', async () => {
-  const onChangeMock = vi.fn();
-  const { container } = render(Select, {
-    label: 'Select Item',
-    items: [
-      {
-        label: 'Dummy Item 1',
-        value: 'item-1',
-      },
-      {
+describe('clear button', () => {
+  test('clearing value should call onchange callback with undefined', async () => {
+    const onChangeMock = vi.fn();
+    const { container } = render(Select, {
+      label: 'Select Item',
+      items: [
+        {
+          label: 'Dummy Item 1',
+          value: 'item-1',
+        },
+        {
+          label: 'Dummy Item 2',
+          value: 'item-2',
+        },
+      ],
+      value: {
         label: 'Dummy Item 2',
         value: 'item-2',
       },
-    ],
-    value: {
-      label: 'Dummy Item 2',
-      value: 'item-2',
-    },
-    onchange: onChangeMock,
+      onchange: onChangeMock,
+    });
+
+    // get clear HTMLElement
+    const clear = container.querySelector('button[class~="clear-select"]');
+    // ensure we have two options
+    expect(clear).not.toBeNull();
+    if (!clear) throw new Error('clear is null');
+
+    await fireEvent.click(clear);
+
+    await vi.waitFor(() => {
+      expect(onChangeMock).toHaveBeenCalledWith(undefined);
+      expect(onChangeMock).toHaveBeenCalledOnce();
+    });
   });
 
-  // get clear HTMLElement
-  const clear = container.querySelector('button[class~="clear-select"]');
-  // ensure we have two options
-  expect(clear).not.toBeNull();
-  if (!clear) throw new Error('clear is null');
+  test('clearable props should be respected', async () => {
+    const { container } = render(Select, {
+      label: 'Select Item',
+      items: [
+        {
+          label: 'Dummy Item 1',
+          value: 'item-1',
+        },
+      ],
+      value: {
+        label: 'Dummy Item 1',
+        value: 'item-1',
+      },
+      clearable: false,
+    });
 
-  await fireEvent.click(clear);
-
-  await vi.waitFor(() => {
-    expect(onChangeMock).toHaveBeenCalledWith(undefined);
-    expect(onChangeMock).toHaveBeenCalledOnce();
+    // find clear HTMLElement
+    const clear = container.querySelector('button[class~="clear-select"]');
+    expect(clear).toBeNull();
   });
 });
