@@ -29,6 +29,12 @@ let selectedContainerProviderConnection: ProviderContainerConnectionDetailedInfo
   $providerConnectionsInfo.find(provider => provider.providerId === providerId && provider.name === connection),
 );
 
+$effect(() => {
+  if (!selectedContainerProviderConnection && $providerConnectionsInfo.length > 0) {
+    onContainerProviderConnectionChange($providerConnectionsInfo[0]);
+  }
+});
+
 const DEFAULT_KUBE_QUADLET = `
 [Unit]
 Description=A kubernetes yaml based service

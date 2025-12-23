@@ -29,6 +29,10 @@ import { readable } from 'svelte/store';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
 import type { PodletApi } from '/@shared/src/apis/podlet-api';
 import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
+import { router } from 'tinro';
+
+// mock router lib
+vi.mock(import('tinro'));
 
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
@@ -67,6 +71,17 @@ beforeEach(() => {
 });
 
 describe('step select', () => {
+  test('expect container engine to be automatically selected', async () => {
+    render(QuadletComposeForm, {
+      providerId: undefined,
+      connection: undefined,
+      loading: false,
+    });
+
+    expect(router.location.query.set).toHaveBeenCalledWith('providerId', WSL_PROVIDER_DETAILED_INFO.providerId);
+    expect(router.location.query.set).toHaveBeenCalledWith('connection', WSL_PROVIDER_DETAILED_INFO.name);
+  });
+
   test('file provided as parameter should be displayed', async () => {
     const { getByRole } = render(QuadletComposeForm, {
       filepath: FILEPATH_MOCK,

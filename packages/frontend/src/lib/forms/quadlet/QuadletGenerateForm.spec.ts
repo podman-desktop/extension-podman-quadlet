@@ -30,6 +30,10 @@ import type { Component, ComponentProps } from 'svelte';
 import type { ContainerApi } from '/@shared/src/apis/container-api';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
 import type { PodletApi } from '/@shared/src/apis/podlet-api';
+import { router } from 'tinro';
+
+// mock router lib
+vi.mock(import('tinro'));
 
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
@@ -67,6 +71,18 @@ beforeEach(() => {
 });
 
 describe('Step options', () => {
+  test('expect container engine to be automatically selected', async () => {
+    render(QuadletGenerateForm, {
+      providerId: undefined,
+      connection: undefined,
+      loading: false,
+      close: vi.fn(),
+    });
+
+    expect(router.location.query.set).toHaveBeenCalledWith('providerId', WSL_PROVIDER_DETAILED_INFO.providerId);
+    expect(router.location.query.set).toHaveBeenCalledWith('connection', WSL_PROVIDER_DETAILED_INFO.name);
+  });
+
   test('expect cancel to call close', async () => {
     const closeMock = vi.fn();
     const { getByRole } = render(QuadletGenerateForm, {
