@@ -23,3 +23,7 @@ updates:
         patterns:
           - "@tailwindcss/*"
           - "tailwindcss"
+      xterm:
+        applies-to: version-updates
+        patterns:
+          - "@xterm/*"
