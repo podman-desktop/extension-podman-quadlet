@@ -200,7 +200,7 @@ function getQuadletInfoKey({ id }: QuadletInfo): string {
       <div class="flex flex-row items-center space-x-2">
         {#if selectedItemsNumber > 0}
           <Button
-            on:click={deleteSelected}
+            onclick={deleteSelected}
             title="Delete {selectedItemsNumber} selected items"
             inProgress={loading}
             icon={faTrash} />

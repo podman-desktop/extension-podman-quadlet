@@ -179,7 +179,9 @@ test('removing all quadlets should call quadletAPI#remove for each connection', 
   );
 
   // We have two provider, so should have call it twice
-  expect(quadletAPI.remove).toHaveBeenCalledTimes(2);
+  await vi.waitFor(() => {
+    expect(quadletAPI.remove).toHaveBeenCalledTimes(2);
+  });
 
   // ensure we get the right calls for each provider
   expect(quadletAPI.remove).toHaveBeenCalledWith(
