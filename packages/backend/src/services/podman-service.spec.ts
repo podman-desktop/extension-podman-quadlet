@@ -11,7 +11,6 @@ import type {
   RunResult,
   Uri,
 } from '@podman-desktop/api';
-import { CancellationTokenSource } from '@podman-desktop/api';
 import { expect, test, vi, beforeEach, describe } from 'vitest';
 import { PodmanService } from './podman-service';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
@@ -27,6 +26,9 @@ vi.mock(import('node:os'));
 // mock podman-workers
 vi.mock(import('../utils/worker/podman-ssh-worker'));
 vi.mock(import('../utils/worker/podman-native-worker'));
+vi.mock(import('@podman-desktop/api'), () => ({
+  CancellationTokenSource: vi.fn(),
+}));
 
 const extensionsMock: typeof extensions = {
   getExtension: vi.fn(),
@@ -83,21 +85,11 @@ const RUN_RESULT_MOCK: RunResult = {
 
 const HOMEDIR_MOCK = '/home/dummy-user';
 
-const CANCELLATION_SOURCE: CancellationTokenSource = {
-  cancel: vi.fn(),
-  dispose: vi.fn(),
-  token: {
-    isCancellationRequested: false,
-    onCancellationRequested: vi.fn(),
-  },
-} as unknown as CancellationTokenSource;
-
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(extensionsMock.getExtension).mockReturnValue(podmanExtensionApiMock);
   vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(homedir).mockReturnValue(HOMEDIR_MOCK);
-  vi.mocked(CancellationTokenSource).mockReturnValue(CANCELLATION_SOURCE);
 });
 
 function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWindows?: boolean }): PodmanService {
