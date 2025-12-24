@@ -26,9 +26,6 @@ vi.mock(import('node:os'));
 // mock podman-workers
 vi.mock(import('../utils/worker/podman-ssh-worker'));
 vi.mock(import('../utils/worker/podman-native-worker'));
-vi.mock(import('@podman-desktop/api'), () => ({
-  CancellationTokenSource: vi.fn(),
-}));
 
 const extensionsMock: typeof extensions = {
   getExtension: vi.fn(),
