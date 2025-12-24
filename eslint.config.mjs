@@ -33,6 +33,7 @@ import etc from 'eslint-plugin-etc';
 import svelte from 'eslint-plugin-svelte';
 import redundantUndefined from 'eslint-plugin-redundant-undefined';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
+import vitest from '@vitest/eslint-plugin';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -79,6 +80,7 @@ export default [
       'no-null': fixupPluginRules(noNull),
       'redundant-undefined': fixupPluginRules(redundantUndefined),
       'simple-import-sort': fixupPluginRules(simpleImportSort),
+      vitest,
     },
     settings: {
       'import/resolver': {
