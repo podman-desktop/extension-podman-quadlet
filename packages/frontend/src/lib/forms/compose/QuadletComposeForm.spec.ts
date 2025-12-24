@@ -26,19 +26,22 @@ import { podletAPI, quadletAPI } from '/@/api/client';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
+import type { ProviderApi } from '/@shared/src/apis/provide-api';
+import type { PodletApi } from '/@shared/src/apis/podlet-api';
+import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 
 // mock clients
-vi.mock('/@/api/client', () => ({
+vi.mock(import('/@/api/client'), () => ({
   providerAPI: {
     all: vi.fn(),
-  },
+  } as unknown as ProviderApi,
   podletAPI: {
     generate: vi.fn(),
     compose: vi.fn(),
-  },
+  } as unknown as PodletApi,
   quadletAPI: {
     writeIntoMachine: vi.fn(),
-  },
+  } as unknown as QuadletApi,
 }));
 
 // mock stores

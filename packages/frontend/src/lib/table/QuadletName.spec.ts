@@ -27,7 +27,7 @@ import { router } from 'tinro';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 
 // mock utils
-vi.mock('tinro');
+vi.mock(import('tinro'));
 
 beforeEach(() => {
   vi.resetAllMocks();

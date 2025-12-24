@@ -33,6 +33,9 @@ import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import type { DialogApi } from '/@shared/src/apis/dialog-api';
+import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
+import type { ProviderApi } from '/@shared/src/apis/provide-api';
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -51,24 +54,24 @@ const QEMU_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
 };
 
 // mock clients
-vi.mock('/@/api/client', () => ({
-  providerAPI: {},
+vi.mock(import('/@/api/client'), () => ({
+  providerAPI: {} as unknown as ProviderApi,
   quadletAPI: {
     remove: vi.fn(),
     refresh: vi.fn(),
-  },
+  } as unknown as QuadletApi,
   dialogAPI: {
     showWarningMessage: vi.fn(),
-  },
+  } as unknown as DialogApi,
 }));
 // mock stores
-vi.mock('/@store/connections');
-vi.mock('/@store/quadlets');
-vi.mock('/@store/synchronisation');
+vi.mock(import('/@store/connections'));
+vi.mock(import('/@store/quadlets'));
+vi.mock(import('/@store/synchronisation'));
 // mock utils
-vi.mock('tinro');
+vi.mock(import('tinro'));
 // mock components
-vi.mock('/@/lib/empty-screen/EmptyQuadletList.svelte');
+vi.mock(import('/@/lib/empty-screen/EmptyQuadletList.svelte'));
 
 const QUADLETS_MOCK: Array<QuadletInfo> = Array.from({ length: 10 }, (_, index) => ({
   // either WSL either QEMU

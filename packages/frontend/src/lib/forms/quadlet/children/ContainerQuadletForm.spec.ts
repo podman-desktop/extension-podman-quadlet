@@ -27,7 +27,7 @@ import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-i
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // mock clients
-vi.mock('/@/api/client', () => ({
+vi.mock(import('/@/api/client'), () => ({
   containerAPI: {
     all: vi.fn(),
   },

@@ -25,8 +25,8 @@ import type { process as ProcessApi, ProviderContainerConnection } from '@podman
 import type { PodmanWorker } from './podman-worker';
 
 // mock node packages
-vi.mock('node:fs/promises');
-vi.mock('node:os');
+vi.mock(import('node:fs/promises'));
+vi.mock(import('node:os'));
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

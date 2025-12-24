@@ -30,8 +30,8 @@ import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 import type {} from 'svelte';
 
 // mock stores
-vi.mock('/@store/connections');
-vi.mock('/@store/synchronisation');
+vi.mock(import('/@store/connections'));
+vi.mock(import('/@store/synchronisation'));
 
 // ui object
 const WSL_RUNNING_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
