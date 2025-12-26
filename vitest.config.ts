@@ -19,13 +19,13 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
-    workspace: ['packages/*/vitest.config.ts'],
+    projects: ['packages/*/vitest.config.ts'],
     // use GitHub action reporters when running in CI
-    reporters: process.env.GITHUB_ACTIONS?['github-actions', 'default']:['default'],
+    reporters: process.env.GITHUB_ACTIONS ? ['github-actions', 'default'] : ['default'],
     coverage: {
       excludeAfterRemap: true,
       provider: 'v8',
-      reporter: [process.env.GITHUB_ACTIONS?'html':'text'],
+      reporter: [process.env.GITHUB_ACTIONS ? 'html' : 'text'],
     },
   },
 });
