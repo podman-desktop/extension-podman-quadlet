@@ -138,7 +138,9 @@ test('expect user confirm removal action to use quadletAPI#remove', async () => 
   await fireEvent.click(removeBtn);
 
   expect(dialogAPI.showWarningMessage).toHaveBeenCalled();
-  expect(quadletAPI.remove).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+  await vi.waitFor(() => {
+    expect(quadletAPI.remove).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+  });
 });
 
 test('expect template quadlet to only have delete action', async () => {
