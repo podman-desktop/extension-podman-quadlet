@@ -172,7 +172,7 @@ test('Test raising exception', async () => {
     throw new Error('big error');
   });
 
-  await expect(rpcBrowser.invoke('raiseError')).rejects.toThrow('big error');
+  await expect(rpcBrowser.invoke('raiseError')).rejects.toThrowError('big error');
 });
 
 test('getChannel should use CHANNEL property of classType provided', () => {

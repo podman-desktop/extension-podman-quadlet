@@ -66,7 +66,7 @@ describe('init', () => {
 
   test('should throw error when vmType is defined', async () => {
     const worker = new PodmanNativeWorker(WSL_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
-    await expect(worker.init()).rejects.toThrow('PodmanNativeWorker cannot deal with podman machines');
+    await expect(worker.init()).rejects.toThrowError('PodmanNativeWorker cannot deal with podman machines');
   });
 });
 
