@@ -196,10 +196,30 @@ export default [
       'svelte/valid-compile': 'off',
       'no-undef': 'off',
       'vitest/prefer-import-in-mock': 'error',
-      'vitest/consistent-test-it': ["error", {
-        "fn": "test",
-        "withinDescribe": "test",
-      }]
+      'vitest/consistent-test-it': [
+        'error',
+        {
+          fn: 'test',
+          withinDescribe: 'test',
+        },
+      ],
+      'vitest/consistent-vitest-vi': [
+        'error',
+        {
+          fn: 'vi',
+        },
+      ],
+      'vitest/consistent-test-filename': [
+        'error',
+        {
+          pattern: '.*\\.spec\\.ts?$',
+        },
+      ],
+      'vitest/no-import-node-test': ['error'],
+      'vitest/prefer-hooks-on-top': ['error'],
+      'vitest/hoisted-apis-on-top': ['error'],
+      'vitest/prefer-mock-promise-shorthand': ['error'],
+      'vitest/prefer-each': ['error'],
     },
   },
 
