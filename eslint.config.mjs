@@ -220,6 +220,7 @@ export default [
       'vitest/hoisted-apis-on-top': ['error'],
       'vitest/prefer-mock-promise-shorthand': ['error'],
       'vitest/prefer-each': ['error'],
+      'vitest/no-alias-methods': ['error']
     },
   },
 
