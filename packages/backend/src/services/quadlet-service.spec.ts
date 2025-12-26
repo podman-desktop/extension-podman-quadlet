@@ -44,8 +44,8 @@ import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 import { TelemetryEvents } from '../utils/telemetry-events';
 
-vi.mock('../utils/parsers/quadlet-dryrun-parser');
-vi.mock('../utils/parsers/quadlet-type-parser');
+vi.mock(import('../utils/parsers/quadlet-dryrun-parser'));
+vi.mock(import('../utils/parsers/quadlet-type-parser'));
 
 const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

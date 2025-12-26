@@ -51,20 +51,20 @@ import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
 
 // mock message-proxy
-vi.mock('/@shared/src/messages/message-proxy');
+vi.mock(import('/@shared/src/messages/message-proxy'));
 // mock services
-vi.mock('./webview-service');
-vi.mock('./podman-service');
-vi.mock('./systemd-service');
-vi.mock('./quadlet-service');
-vi.mock('./provider-service');
-vi.mock('./podlet-cli-service');
-vi.mock('./command-service');
-vi.mock('./routing-service');
-vi.mock('./container-service');
-vi.mock('./image-service');
-vi.mock('./logger-service');
-vi.mock('./dialog-service');
+vi.mock(import('./webview-service'));
+vi.mock(import('./podman-service'));
+vi.mock(import('./systemd-service'));
+vi.mock(import('./quadlet-service'));
+vi.mock(import('./provider-service'));
+vi.mock(import('./podlet-js-service'));
+vi.mock(import('./command-service'));
+vi.mock(import('./routing-service'));
+vi.mock(import('./container-service'));
+vi.mock(import('./image-service'));
+vi.mock(import('./logger-service'));
+vi.mock(import('./dialog-service'));
 
 const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
 const WINDOW_API_MOCK: typeof window = {} as unknown as typeof window;

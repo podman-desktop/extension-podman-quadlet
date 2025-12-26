@@ -32,7 +32,7 @@ import type { Component } from 'svelte';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { QuadletState } from '/@shared/src/models/base-quadlet';
 
-vi.mock('@podman-desktop/ui-svelte');
+vi.mock(import('@podman-desktop/ui-svelte'));
 
 const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
   name: 'podman-machine-default',

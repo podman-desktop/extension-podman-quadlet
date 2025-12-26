@@ -17,15 +17,15 @@
  ***********************************************************************/
 
 import { vi } from 'vitest';
-import type { Event, EventEmitter, Disposable } from '@podman-desktop/api';
+import type * as podmanDesktopApi from '@podman-desktop/api';
 
 /**
  * Mock the {@link EventEmitter} class logic
  */
-class EventEmitterMock<T> implements EventEmitter<T> {
+class EventEmitterMock<T> implements podmanDesktopApi.EventEmitter<T> {
   #set: Set<(t: T) => void> = new Set();
 
-  get event(): Event<T> {
+  get event(): podmanDesktopApi.Event<T> {
     return listener => {
       this.#set.add(listener);
       return {
@@ -45,16 +45,20 @@ class EventEmitterMock<T> implements EventEmitter<T> {
   }
 }
 
-vi.mock('@podman-desktop/api', () => ({
-  EventEmitter: EventEmitterMock,
-  ProgressLocation: {
-    TASK_WIDGET: 2,
-  },
-  Disposable: {
-    create: (fn: () => void): Disposable => ({ dispose: fn }),
-  },
-  CancellationTokenSource: vi.fn(),
-  Uri: {
-    joinPath: vi.fn(),
-  },
-}));
+vi.mock(
+  import('@podman-desktop/api'),
+  () =>
+    ({
+      EventEmitter: EventEmitterMock,
+      ProgressLocation: {
+        TASK_WIDGET: 2,
+      },
+      Disposable: {
+        create: (fn: () => void): podmanDesktopApi.Disposable => ({ dispose: fn }),
+      },
+      CancellationTokenSource: vi.fn(),
+      Uri: {
+        joinPath: vi.fn(),
+      },
+    }) as unknown as typeof podmanDesktopApi,
+);

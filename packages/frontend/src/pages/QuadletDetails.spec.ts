@@ -31,24 +31,28 @@ import { router } from 'tinro';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { quadletAPI } from '/@/api/client';
+import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
+import type { LoggerApi } from '/@shared/src/apis/logger-api';
+import type { ProviderApi } from '/@shared/src/apis/provide-api';
+import type { RpcBrowser } from '/@shared/src/messages/message-proxy';
 
 // mock clients
-vi.mock('/@/api/client', () => ({
-  providerAPI: {},
+vi.mock(import('/@/api/client'), () => ({
+  providerAPI: {} as unknown as ProviderApi,
   quadletAPI: {
     createQuadletLogger: vi.fn(),
     read: vi.fn(),
-  },
-  loggerAPI: {},
-  rpcBrowser: {},
+  } as unknown as QuadletApi,
+  loggerAPI: {} as unknown as LoggerApi,
+  rpcBrowser: {} as unknown as RpcBrowser,
 }));
 // mock stores
-vi.mock('/@store/connections');
-vi.mock('/@store/quadlets');
-vi.mock('/@store/logger-store');
+vi.mock(import('/@store/connections'));
+vi.mock(import('/@store/quadlets'));
+vi.mock(import('/@store/logger-store'));
 // mock component
-vi.mock('/@/lib/monaco-editor/MonacoEditor.svelte');
-vi.mock('/@/lib/terminal/XTerminal.svelte');
+vi.mock(import('/@/lib/monaco-editor/MonacoEditor.svelte'));
+vi.mock(import('/@/lib/terminal/XTerminal.svelte'));
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {

@@ -27,23 +27,26 @@ import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/model
 import { containerAPI, podletAPI } from '/@/api/client';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { Component, ComponentProps } from 'svelte';
+import type { ContainerApi } from '/@shared/src/apis/container-api';
+import type { ProviderApi } from '/@shared/src/apis/provide-api';
+import type { PodletApi } from '/@shared/src/apis/podlet-api';
 
 // mock clients
-vi.mock('/@/api/client', () => ({
+vi.mock(import('/@/api/client'), () => ({
   containerAPI: {
     all: vi.fn(),
-  },
+  } as unknown as ContainerApi,
   providerAPI: {
     all: vi.fn(),
-  },
+  } as unknown as ProviderApi,
   podletAPI: {
     generate: vi.fn(),
-  },
+  } as unknown as PodletApi,
 }));
 // mock stores
-vi.mock('/@store/connections');
+vi.mock(import('/@store/connections'));
 // do not render monaco editor
-vi.mock('/@/lib/monaco-editor/QuadletEditor.svelte');
+vi.mock(import('/@/lib/monaco-editor/QuadletEditor.svelte'));
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {

@@ -26,14 +26,16 @@ import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/mod
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import type { DialogApi } from '/@shared/src/apis/dialog-api';
+import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 
-vi.mock('/@/api/client', () => ({
+vi.mock(import('/@/api/client'), () => ({
   dialogAPI: {
     showWarningMessage: vi.fn(),
-  },
+  } as unknown as DialogApi,
   quadletAPI: {
     remove: vi.fn(),
-  },
+  } as unknown as QuadletApi,
 }));
 
 beforeEach(() => {

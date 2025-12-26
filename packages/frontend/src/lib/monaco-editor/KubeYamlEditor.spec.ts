@@ -26,15 +26,16 @@ import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { quadletAPI } from '/@/api/client';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
+import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 
 // mock monaco editor
-vi.mock('/@/lib/monaco-editor/MonacoEditor.svelte');
+vi.mock(import('/@/lib/monaco-editor/MonacoEditor.svelte'));
 // mock clients
-vi.mock('/@/api/client', () => ({
+vi.mock(import('/@/api/client'), () => ({
   quadletAPI: {
     getKubeYAML: vi.fn(),
     writeIntoMachine: vi.fn(),
-  },
+  } as unknown as QuadletApi,
 }));
 
 const MOCK_YAML: { content: string; path: string } = {
