@@ -195,7 +195,11 @@ export default [
       // disabled as code in this project is not yet compliant:
       'svelte/valid-compile': 'off',
       'no-undef': 'off',
-      'vitest/prefer-import-in-mock': 'error'
+      'vitest/prefer-import-in-mock': 'error',
+      'vitest/consistent-test-it': ["error", {
+        "fn": "test",
+        "withinDescribe": "test",
+      }]
     },
   },
 
