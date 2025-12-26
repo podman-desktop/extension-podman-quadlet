@@ -8,9 +8,10 @@ interface Props {
   onChange?: (value: ProviderContainerConnectionDetailedInfo | undefined) => void;
   containerProviderConnections: ProviderContainerConnectionDetailedInfo[];
   disabled?: boolean;
+  clearable?: boolean;
 }
 
-let { value = $bindable(), containerProviderConnections, onChange, disabled }: Props = $props();
+let { value = $bindable(), clearable = true, containerProviderConnections, onChange, disabled }: Props = $props();
 
 /**
  * Handy mechanism to provide the mandatory property `label` and `value` to the Select component
@@ -47,6 +48,7 @@ function getProviderStatusColor(item: ProviderContainerConnectionDetailedInfo): 
   disabled={disabled}
   value={selected}
   onchange={handleOnChange}
+  clearable={clearable}
   placeholder="Select container provider to use"
   items={containerProviderConnections.map(containerProviderConnection => ({
     ...containerProviderConnection,

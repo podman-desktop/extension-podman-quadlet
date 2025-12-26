@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import '@testing-library/jest-dom/vitest';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi, describe } from 'vitest';
 import { render, within } from '@testing-library/svelte';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { VMType } from '/@shared/src/utils/vm-types';
@@ -70,4 +70,29 @@ test('default value should be visible', async () => {
   // first get the select input
   const select = within(container).getByText(qemuConnection.name);
   expect(select).toBeDefined();
+});
+
+describe('clear button', () => {
+  test('clear button should be visible by default', async () => {
+    const { container } = render(ContainerProviderConnectionSelect, {
+      value: qemuConnection,
+      containerProviderConnections: [wslConnection, qemuConnection],
+    });
+
+    // find clear HTMLElement
+    const clear = container.querySelector('button[class~="clear-select"]');
+    expect(clear).toBeDefined();
+  });
+
+  test('clearable prop should be propagated to Select component', async () => {
+    const { container } = render(ContainerProviderConnectionSelect, {
+      value: qemuConnection,
+      containerProviderConnections: [wslConnection, qemuConnection],
+      clearable: false,
+    });
+
+    // find clear HTMLElement
+    const clear = container.querySelector('button[class~="clear-select"]');
+    expect(clear).toBeNull();
+  });
 });

@@ -44,6 +44,12 @@ let selectedContainerProviderConnection: ProviderContainerConnectionDetailedInfo
   $providerConnectionsInfo.find(provider => provider.providerId === providerId && provider.name === connection),
 );
 
+$effect(() => {
+  if (!selectedContainerProviderConnection && $providerConnectionsInfo.length > 0) {
+    onContainerProviderConnectionChange($providerConnectionsInfo[0]);
+  }
+});
+
 function onQuadletTypeChange(value: string): void {
   router.location.query.set('quadletType', value);
   router.location.query.delete(RESOURCE_ID_QUERY); // delete the key
@@ -174,6 +180,7 @@ function resetGenerate(): void {
         disabled={loading}
         onChange={onContainerProviderConnectionChange}
         value={selectedContainerProviderConnection}
+        clearable={false}
         containerProviderConnections={$providerConnectionsInfo} />
       {#if selectedContainerProviderConnection && selectedContainerProviderConnection.status !== 'started'}
         <div class="text-gray-800 text-sm flex items-center">

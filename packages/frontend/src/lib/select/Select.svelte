@@ -10,6 +10,7 @@ export let placeholder: string | undefined = undefined;
 export let label: string | undefined = undefined;
 export let name: string | undefined = undefined;
 export let onchange: ((value: T | undefined) => void) | undefined = undefined;
+export let clearable: boolean = true;
 
 function handleOnChange(e: CustomEvent<T | undefined>): void {
   value = e.detail;
@@ -52,6 +53,7 @@ function handleOnClear(): void {
   --height="32px"
   --max-height="32px"
   placeholder={placeholder}
+  clearable={clearable}
   class="!bg-[var(--pd-content-bg)] !text-[var(--pd-content-card-text)]"
   items={items}
   showChevron={!disabled}>
