@@ -2,34 +2,49 @@
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { quadletAPI } from '/@/api/client';
 import { onMount } from 'svelte';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import type { QuadletType } from '/@shared/src/utils/quadlet-type';
-import { ErrorMessage, Button } from '@podman-desktop/ui-svelte';
+import { Button, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
+import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 interface Props {
-  quadlet: QuadletInfo & { type: QuadletType.KUBE };
+  connection: ProviderContainerConnectionIdentifierInfo;
+  path: string;
   loading: boolean;
 }
 
-let { quadlet, loading = $bindable() }: Props = $props();
+let { path, connection, loading = $bindable() }: Props = $props();
 
 let originalContent: string | undefined = $state(undefined);
-let kubeContent: string | undefined = $state(undefined);
-let error: string | undefined = $state(undefined);
-let kubeChanged: boolean = $derived(originalContent !== kubeContent);
+let currentContent: string | undefined = $state(undefined);
 
-let yamlPath: string | undefined = $state(undefined);
+let language: string = $derived.by(() => {
+  const pathParts = path.split('/');
+  const filename = pathParts[pathParts.length - 1];
+
+  const filenameParts = filename.split('.');
+
+  switch (filenameParts[filenameParts.length - 1]) {
+    case 'yaml':
+    case 'yml':
+      return 'yaml';
+    default:
+      return 'text';
+  }
+});
+
+let error: string | undefined = $state(undefined);
+let contentChanged: boolean = $derived(originalContent !== currentContent);
 
 async function pull(): Promise<void> {
   loading = true;
   try {
-    const result = await quadletAPI.getKubeYAML(quadlet.connection, quadlet.id);
-    originalContent = result.content;
-    yamlPath = result.path;
+    originalContent = await quadletAPI.readIntoMachine({
+      path: path,
+      connection: $state.snapshot(connection),
+    });
 
-    kubeContent = originalContent;
+    currentContent = originalContent;
     error = undefined;
   } catch (err: unknown) {
     console.error(err);
@@ -40,23 +55,23 @@ async function pull(): Promise<void> {
 }
 
 async function saveKube(): Promise<void> {
-  if (!yamlPath || !kubeContent) return;
+  if (!path || !currentContent) return;
 
   loading = true;
   try {
     await quadletAPI.writeIntoMachine({
-      connection: quadlet.connection,
+      connection: connection,
       files: [
         {
-          content: kubeContent,
-          filename: yamlPath,
+          content: currentContent,
+          filename: path,
         },
       ],
       // prevent reloading systemd
       skipSystemdDaemonReload: true,
     });
     // apply to original content
-    originalContent = kubeContent;
+    originalContent = currentContent;
     error = undefined;
     await pull(); // reload
   } catch (err: unknown) {
@@ -72,7 +87,7 @@ onMount(() => {
 });
 
 function onchange(content: string): void {
-  kubeContent = content;
+  currentContent = content;
 }
 </script>
 
@@ -83,13 +98,13 @@ function onchange(content: string): void {
   <span
     aria-label="kube path"
     class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
-    {quadlet.path}
+    {path}
   </span>
 </div>
 {#if error}
   <ErrorMessage error={error} />
 {/if}
-{#if !loading && kubeContent && !error}
-  <EditorOverlay save={saveKube} loading={loading} changed={kubeChanged} />
-  <MonacoEditor class="h-full" content={kubeContent} onChange={onchange} language="yaml" />
+{#if !loading && currentContent && !error}
+  <EditorOverlay save={saveKube} loading={loading} changed={contentChanged} />
+  <MonacoEditor class="h-full" content={currentContent} onChange={onchange} language={language} />
 {/if}

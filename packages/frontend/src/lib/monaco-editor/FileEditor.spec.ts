@@ -20,9 +20,7 @@ import '@testing-library/jest-dom/vitest';
 
 import { render, fireEvent } from '@testing-library/svelte';
 import { beforeEach, test, vi, expect, assert } from 'vitest';
-import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { quadletAPI } from '/@/api/client';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
@@ -33,22 +31,19 @@ vi.mock(import('/@/lib/monaco-editor/MonacoEditor.svelte'));
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
   quadletAPI: {
-    getKubeYAML: vi.fn(),
+    readIntoMachine: vi.fn(),
     writeIntoMachine: vi.fn(),
   } as unknown as QuadletApi,
 }));
 
-const MOCK_YAML: { content: string; path: string } = {
-  content: `
+const MOCK_YAML: string = `
 foo=bar
-`,
-  path: '/foo/bar/example.yaml',
-};
+`;
 
 beforeEach(() => {
   vi.resetAllMocks();
 
-  vi.mocked(quadletAPI.getKubeYAML).mockResolvedValue(MOCK_YAML);
+  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue(MOCK_YAML);
 });
 
 const PODMAN_MACHINE_DEFAULT: ProviderContainerConnectionIdentifierInfo = {
@@ -56,20 +51,10 @@ const PODMAN_MACHINE_DEFAULT: ProviderContainerConnectionIdentifierInfo = {
   providerId: 'podman',
 };
 
-const KUBE_QUADLET: QuadletInfo & { type: QuadletType.KUBE } = {
-  type: QuadletType.KUBE,
-  id: `foo.bar`,
-  path: `/mnt/foo/bar.kube`,
-  service: undefined,
-  state: 'active',
-  connection: PODMAN_MACHINE_DEFAULT,
-  requires: [],
-  files: [],
-};
-
 test('ensure reload button is visible', async () => {
-  const { getByTitle } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByTitle } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
@@ -82,20 +67,22 @@ test('ensure reload button is visible', async () => {
 });
 
 test('ensure kube path is visible', async () => {
-  const { getByLabelText } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByLabelText } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
   const kubeSpan = getByLabelText('kube path');
   expect(kubeSpan).toBeInTheDocument();
-  expect(kubeSpan).toHaveTextContent(KUBE_QUADLET.path);
+  expect(kubeSpan).toHaveTextContent('/mnt/foo/bar.yaml');
 });
 
 test('ensure reload button is disabled when loading true', async () => {
-  const { getByTitle } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
-    loading: true,
+  const { getByTitle } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
+    loading: false,
   });
 
   const reloadBtn = getByTitle('Reload file');
@@ -104,50 +91,53 @@ test('ensure reload button is disabled when loading true', async () => {
 });
 
 test('expect reload button to call quadletAPI#getKubeYAML', async () => {
-  const { getByTitle } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByTitle } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
   const reloadBtn = getByTitle('Reload file');
-  vi.mocked(quadletAPI.getKubeYAML).mockReset();
+  vi.mocked(quadletAPI.readIntoMachine).mockReset();
   await fireEvent.click(reloadBtn);
 
   await vi.waitFor(() => {
-    expect(quadletAPI.getKubeYAML).toHaveBeenCalledOnce();
+    expect(quadletAPI.readIntoMachine).toHaveBeenCalledOnce();
   });
 });
 
 test('expect result from quadletAPI#getKubeYAML to be displayed in monaco editor', async () => {
-  render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
   await vi.waitFor(() => {
-    expect(quadletAPI.getKubeYAML).toHaveBeenCalled();
+    expect(quadletAPI.readIntoMachine).toHaveBeenCalled();
   });
 
   await vi.waitFor(() => {
     expect(MonacoEditor).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        content: MOCK_YAML.content,
+        content: MOCK_YAML,
       }),
     );
   });
 });
 
 test('expect error from quadletAPI#getKubeYAML to be displayed', async () => {
-  vi.mocked(quadletAPI.getKubeYAML).mockRejectedValue(new Error('Dummy foo error'));
+  vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(new Error('Dummy foo error'));
 
-  const { getByRole } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByRole } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
   await vi.waitFor(() => {
-    expect(quadletAPI.getKubeYAML).toHaveBeenCalled();
+    expect(quadletAPI.readIntoMachine).toHaveBeenCalled();
   });
 
   await vi.waitFor(() => {
@@ -157,8 +147,9 @@ test('expect error from quadletAPI#getKubeYAML to be displayed', async () => {
 });
 
 test('expect save button to be disabled by default', async () => {
-  const { getByRole } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByRole } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
@@ -169,8 +160,9 @@ test('expect save button to be disabled by default', async () => {
 });
 
 test('expect save button to be enabled when content is updated', async () => {
-  const { getByRole } = render(KubeYamlEditor, {
-    quadlet: KUBE_QUADLET,
+  const { getByRole } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.yaml',
     loading: false,
   });
 
@@ -185,7 +177,7 @@ test('expect save button to be enabled when content is updated', async () => {
     expect(MonacoEditor).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
-        content: MOCK_YAML.content,
+        content: MOCK_YAML,
         onChange: expect.any(Function),
       }),
     );
@@ -210,7 +202,7 @@ test('expect save button to be enabled when content is updated', async () => {
       connection: PODMAN_MACHINE_DEFAULT,
       files: [
         {
-          filename: MOCK_YAML.path,
+          filename: '/mnt/foo/bar.yaml',
           content: 'potatoes',
         },
       ],

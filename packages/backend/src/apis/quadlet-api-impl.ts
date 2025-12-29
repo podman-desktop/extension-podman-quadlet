@@ -182,18 +182,14 @@ export class QuadletApiImpl extends QuadletApi {
     });
   }
 
-  override async getKubeYAML(
-    connection: ProviderContainerConnectionIdentifierInfo,
-    id: string,
-  ): Promise<{
-    content: string;
+  override readIntoMachine(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
     path: string;
-  }> {
-    const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
-
-    return await this.dependencies.quadlet.getKubeYAML({
+  }): Promise<string> {
+    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
+    return this.dependencies.quadlet.readIntoMachine({
+      path: options.path,
       provider: providerConnection,
-      id: id,
     });
   }
 
