@@ -25,14 +25,14 @@ import type {
 } from '@podman-desktop/api';
 import type { AsyncInit } from '../async-init';
 import { isRunError } from '../run-error';
-import { isAbsolute, join } from 'node:path/posix';
-
-export const PODMAN_SYSTEMD_GENERATOR = 'podman-system-generator';
+import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
 
 export abstract class PodmanWorker implements Disposable, AsyncInit {
-  protected quadlet: string | undefined = undefined;
+  protected quadletBinaryResolver: QuadletBinaryResolver;
 
-  constructor(protected connection: ProviderContainerConnection) {}
+  constructor(protected connection: ProviderContainerConnection) {
+    this.quadletBinaryResolver = new QuadletBinaryResolver(this);
+  }
 
   /**
    * Return the content of the file at path
@@ -109,41 +109,6 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
   }
 
   /**
-   * Following discussion with @Luap99 from the Podman team, we found a way to determine the quadlet binary path.
-   * In most distros it will be located in /usr/libexec/podman/quadlet but this may differ.
-   *
-   * Reported in https://github.com/podman-desktop/extension-podman-quadlet/issues/837
-   * users on Nixos have the Quadlet binary on a different location
-   *
-   * Determine the path `$ realpath $(systemd-path systemd-system-generator)/podman-system-generator`
-   * @param options
-   * @protected
-   */
-  protected async getQuadletBinary(options?: { token?: CancellationToken; logger?: Logger }): Promise<string> {
-    if (this.quadlet) return this.quadlet;
-
-    try {
-      options?.logger?.log('getting quadlet binary using systemd-path');
-      const result = await this.exec('systemd-path', {
-        args: ['systemd-system-generator'],
-        token: options?.token,
-      });
-
-      const systemdGeneratorDirectory = result.stdout.trim();
-      if (!isAbsolute(systemdGeneratorDirectory))
-        throw new Error(`systemd-system-generator directory is not absolute, received "${systemdGeneratorDirectory}".`);
-
-      const symlink = join(systemdGeneratorDirectory, PODMAN_SYSTEMD_GENERATOR);
-      const path = await this.realPath(symlink);
-      this.quadlet = path;
-      return path;
-    } catch (err: unknown) {
-      options?.logger?.error('something went wrong while getting the quadlet binary', err);
-      throw err;
-    }
-  }
-
-  /**
    * Execute the `quadlet` command on the podman connection
    * @param options the options for the exec logic
    */
@@ -153,7 +118,8 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     token?: CancellationToken;
     env?: Record<string, string>;
   }): Promise<RunResult | RunError> {
-    const binary = await this.getQuadletBinary(options);
+    const binary = await this.quadletBinaryResolver.resolve(options);
+    
     return this.exec(binary, options).catch((err: unknown) => {
       // check err is an RunError
       if (isRunError(err)) return err;

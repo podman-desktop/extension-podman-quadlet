@@ -16,10 +16,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { Logger, CancellationToken, RunResult, ProviderContainerConnection, RunError } from '@podman-desktop/api';
-import { PODMAN_SYSTEMD_GENERATOR, PodmanWorker } from './podman-worker';
-import { join } from 'node:path/posix';
+import { PodmanWorker } from './podman-worker';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -49,6 +49,8 @@ const RUN_ERROR_MOCK: RunError = {
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
+vi.mock(import('../quadlet-binary-resolver'))
+
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
     connection: ProviderContainerConnection,
@@ -64,10 +66,6 @@ class PodmanWorkerImpl extends PodmanWorker {
     },
   ) {
     super(connection);
-  }
-
-  override async getQuadletBinary(options?: { token?: CancellationToken; logger?: Logger }): Promise<string> {
-    return super.getQuadletBinary(options);
   }
 
   override realPath(path: string): Promise<string> {
@@ -135,79 +133,10 @@ describe('systemctlExec', () => {
   });
 });
 
-describe('getQuadletBinary', () => {
-  test('should return the quadlet binary path', async () => {
-    const worker = getPodmanWorkerImpl();
-
-    // mock the exec logic
-    vi.mocked(worker.callbacks.exec).mockImplementation(async command => {
-      switch (command) {
-        // if we try to get the systemd-path let's return it
-        case 'systemd-path':
-          return {
-            stderr: '',
-            stdout: '/usr/lib/systemd/system-generators',
-            command: 'systemd-path',
-          };
-        // if we try to exec on the quadlet binary return dummy result
-        case QUADLET_BINARY_PATH_MOCK:
-          return RUN_RESULT_MOCK;
-        default:
-          throw new Error(`command ${command} not supported`);
-      }
-    });
-    // mock realpath
-    vi.mocked(worker.callbacks.realpath).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
-
-    const path = await worker.getQuadletBinary();
-    expect(path).toEqual(QUADLET_BINARY_PATH_MOCK);
-
-    // ensure we called the right commands to determine the systemd generator path
-    expect(worker.callbacks.exec).toHaveBeenCalledExactlyOnceWith('systemd-path', {
-      args: ['systemd-system-generator'],
-      token: undefined,
-    });
-    expect(worker.callbacks.realpath).toHaveBeenCalledExactlyOnceWith(
-      join('/usr/lib/systemd/system-generators', PODMAN_SYSTEMD_GENERATOR),
-    );
-  });
-
-  test('should cache on success', async () => {
-    const worker = getPodmanWorkerImpl();
-
-    // mock the exec logic
-    vi.mocked(worker.callbacks.exec).mockImplementation(async command => {
-      switch (command) {
-        // if we try to get the systemd-path let's return it
-        case 'systemd-path':
-          return {
-            stderr: '',
-            stdout: '/usr/lib/systemd/system-generators',
-            command: 'systemd-path',
-          };
-        // if we try to exec on the quadlet binary return dummy result
-        case QUADLET_BINARY_PATH_MOCK:
-          return RUN_RESULT_MOCK;
-        default:
-          throw new Error(`command ${command} not supported`);
-      }
-    });
-    // mock realpath
-    vi.mocked(worker.callbacks.realpath).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
-
-    for (let i = 0; i < 10; i++) {
-      const path = await worker.getQuadletBinary();
-      expect(path).toEqual(QUADLET_BINARY_PATH_MOCK);
-    }
-
-    expect(worker.callbacks.exec).toHaveBeenCalledOnce();
-  });
-});
-
 describe('quadletExec', () => {
   test('RunResult should passthrough', async () => {
     const worker = getPodmanWorkerImpl();
-    vi.spyOn(worker, 'getQuadletBinary').mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
+    vi.mocked(QuadletBinaryResolver.prototype.resolve).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
 
     vi.mocked(worker.callbacks.exec).mockResolvedValue(RUN_RESULT_MOCK);
 
@@ -223,7 +152,7 @@ describe('quadletExec', () => {
 
   test('RunError should be properly catch', async () => {
     const worker = getPodmanWorkerImpl();
-    vi.spyOn(worker, 'getQuadletBinary').mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
+    vi.mocked(QuadletBinaryResolver.prototype.resolve).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
 
     vi.mocked(worker.callbacks.exec).mockRejectedValue(RUN_ERROR_MOCK);
 
