@@ -146,8 +146,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
       // select the image
       const options = await generateForm.quadletType.getOptions();
-      playExpect(options).toContain('image');
-      await generateForm.quadletType.select('image');
+      playExpect(options).toContain('Image');
+      await generateForm.quadletType.select('Image');
 
       // wait for loading to be finished
       await playExpect
