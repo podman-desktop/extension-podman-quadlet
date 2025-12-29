@@ -20,7 +20,7 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { QuadletBinaryResolver, PODMAN_SYSTEMD_GENERATOR } from './quadlet-binary-resolver';
 import { join } from 'node:path/posix';
 import type { RunResult } from '@podman-desktop/api';
-import { PodmanWorker } from './worker/podman-worker';
+import type { PodmanWorker } from './worker/podman-worker';
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
@@ -81,7 +81,7 @@ describe('QuadletBinaryResolver', () => {
       command: 'systemd-path',
     } as RunResult);
 
-    await expect(resolver.resolve()).rejects.toThrow('systemd-system-generator directory is not absolute');
+    await expect(resolver.resolve()).rejects.toThrowError('systemd-system-generator directory is not absolute');
   });
 
   test('should cache on success', async () => {

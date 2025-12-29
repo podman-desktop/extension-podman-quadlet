@@ -49,7 +49,7 @@ const RUN_ERROR_MOCK: RunError = {
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
-vi.mock(import('../quadlet-binary-resolver'))
+vi.mock(import('../quadlet-binary-resolver'));
 
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
