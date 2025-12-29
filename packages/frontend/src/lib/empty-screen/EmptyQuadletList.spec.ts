@@ -80,8 +80,8 @@ test.each([
   {
     synchronisation: [WSL_SYNCHRONISATION_INFO],
     connections: [WSL_RUNNING_PROVIDER_DETAILED_INFO],
-    message: 'No Quadlet found on the system',
-    name: 'one running container connections with synchronisation should say No Quadlet found on the system',
+    message: 'No Quadlets found on your system',
+    name: 'one running container connections with synchronisation should say No Quadlets found on your system',
   },
 ])('$name', async ({ synchronisation, connections, message }: TestCase): Promise<void> => {
   vi.mocked(connectionStore).providerConnectionsInfo = readable(connections);
