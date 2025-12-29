@@ -86,6 +86,14 @@ export class PodmanSFTP extends ConnectionHandler {
     return response;
   }
 
+  /**
+   * Returns the real path of the given path.
+   */
+  async realpath(path: string): Promise<string> {
+    const response = await this.#client.realPath(this.resolve(path));
+    return response;
+  }
+
   async write(destination: string, content: string): Promise<void> {
     // resolve path (replace ~ with /home/{username}
     const resolved = this.resolve(destination);

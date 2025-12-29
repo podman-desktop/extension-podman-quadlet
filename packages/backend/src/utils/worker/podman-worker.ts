@@ -25,9 +25,14 @@ import type {
 } from '@podman-desktop/api';
 import type { AsyncInit } from '../async-init';
 import { isRunError } from '../run-error';
+import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
 
 export abstract class PodmanWorker implements Disposable, AsyncInit {
-  constructor(protected connection: ProviderContainerConnection) {}
+  protected quadletBinaryResolver: QuadletBinaryResolver;
+
+  constructor(protected connection: ProviderContainerConnection) {
+    this.quadletBinaryResolver = new QuadletBinaryResolver(this);
+  }
 
   /**
    * Return the content of the file at path
@@ -49,6 +54,14 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
    * @param content
    */
   abstract write(path: string, content: string): Promise<void>;
+
+  /**
+   * Resolves the absolute real path of the given file or directory.
+   *
+   * @param path The string representation of the file or directory path to resolve.
+   * @return A Promise that resolves to the absolute real path as a string.
+   */
+  abstract realPath(path: string): Promise<string>;
 
   /**
    * execute the given command to the
@@ -105,7 +118,9 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     token?: CancellationToken;
     env?: Record<string, string>;
   }): Promise<RunResult | RunError> {
-    return this.exec('/usr/libexec/podman/quadlet', options).catch((err: unknown) => {
+    const binary = await this.quadletBinaryResolver.resolve(options);
+
+    return this.exec(binary, options).catch((err: unknown) => {
       // check err is an RunError
       if (isRunError(err)) return err;
       throw err;

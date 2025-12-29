@@ -170,6 +170,24 @@ describe('rm', () => {
   });
 });
 
+describe('realpath', () => {
+  let podmanSFTP: PodmanSFTP;
+
+  beforeEach(async () => {
+    podmanSFTP = new PodmanSFTP(SSH_CONFIG_MOCK);
+    await podmanSFTP.connect();
+  });
+
+  test('should use SftpClient#realpath', async () => {
+    vi.mocked(SftpClient.prototype.realPath).mockResolvedValue('/foo.txt');
+
+    const result = await podmanSFTP.realpath('/foo-symlink.txt');
+
+    expect(result).toEqual('/foo.txt');
+    expect(SftpClient.prototype.realPath).toHaveBeenCalledExactlyOnceWith('/foo-symlink.txt');
+  });
+});
+
 test('dispose should end ssh2 client', () => {
   const podmanSFTP = new PodmanSFTP(SSH_CONFIG_MOCK);
   podmanSFTP.dispose();

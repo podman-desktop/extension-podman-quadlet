@@ -139,3 +139,15 @@ describe('dispose', () => {
     expect(PodmanSSH.prototype.dispose).toHaveBeenCalledOnce();
   });
 });
+
+describe('realpath', () => {
+  test('should proxy to PodmanSFTP#realpath', async () => {
+    vi.mocked(PodmanSFTP.prototype.realpath).mockResolvedValue('/foo.txt');
+    const worker = getPodmanSSHWorker();
+
+    const result = await worker.realPath('/foo-symlink.txt');
+
+    expect(PodmanSFTP.prototype.realpath).toHaveBeenCalledExactlyOnceWith('/foo-symlink.txt');
+    expect(result).toEqual('/foo.txt');
+  });
+});

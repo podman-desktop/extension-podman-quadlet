@@ -19,6 +19,7 @@ import type { Logger, CancellationToken, RunResult, ProviderContainerConnection,
 import { PodmanWorker } from './podman-worker';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
+import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -46,6 +47,10 @@ const RUN_ERROR_MOCK: RunError = {
   message: 'error',
 };
 
+const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
+
+vi.mock(import('../quadlet-binary-resolver'));
+
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
     connection: ProviderContainerConnection,
@@ -53,6 +58,7 @@ class PodmanWorkerImpl extends PodmanWorker {
       read: (path: string) => Promise<string>;
       rm: (path: string) => Promise<void>;
       write: (path: string, content: string) => Promise<void>;
+      realpath: (path: string) => Promise<string>;
       exec: (
         command: string,
         options?: { args?: string[]; logger?: Logger; token?: CancellationToken; env?: Record<string, string> },
@@ -60,6 +66,10 @@ class PodmanWorkerImpl extends PodmanWorker {
     },
   ) {
     super(connection);
+  }
+
+  override realPath(path: string): Promise<string> {
+    return this.callbacks.realpath(path);
   }
 
   override read(path: string): Promise<string> {
@@ -91,6 +101,7 @@ function getPodmanWorkerImpl(): PodmanWorkerImpl {
     exec: vi.fn(),
     write: vi.fn(),
     rm: vi.fn(),
+    realpath: vi.fn(),
   });
 }
 
@@ -125,6 +136,7 @@ describe('systemctlExec', () => {
 describe('quadletExec', () => {
   test('RunResult should passthrough', async () => {
     const worker = getPodmanWorkerImpl();
+    vi.mocked(QuadletBinaryResolver.prototype.resolve).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
 
     vi.mocked(worker.callbacks.exec).mockResolvedValue(RUN_RESULT_MOCK);
 
@@ -140,6 +152,7 @@ describe('quadletExec', () => {
 
   test('RunError should be properly catch', async () => {
     const worker = getPodmanWorkerImpl();
+    vi.mocked(QuadletBinaryResolver.prototype.resolve).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
 
     vi.mocked(worker.callbacks.exec).mockRejectedValue(RUN_ERROR_MOCK);
 
