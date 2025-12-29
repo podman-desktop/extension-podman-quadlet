@@ -198,11 +198,11 @@ function resetGenerate(): void {
         value={quadletType}
         options={[
           {
-            label: 'container',
+            label: 'Container',
             id: QuadletType.CONTAINER,
           },
           {
-            label: 'image',
+            label: 'Image',
             id: QuadletType.IMAGE,
           },
         ]} />
