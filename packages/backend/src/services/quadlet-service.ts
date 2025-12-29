@@ -320,19 +320,21 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
 
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
-            // Only retain the basename (avoid path escape)
-            const base = basename(filename);
+            let destination: string;
+            if (isAbsolute(filename) || filename.startsWith('~/')) {
+              destination = filename;
+            } else {
+              if (options.admin) {
+                destination = joinposix('/etc/containers/systemd', filename);
+              } else {
+                destination = joinposix('~/.config/containers/systemd', filename);
+              }
+            }
 
-            // basic path validation
+            // basic name validation
+            const base = basename(destination);
             if (base.length === 0) throw new Error('invalid filename: empty name not allowed');
             if (!base.includes('.')) throw new Error('invalid filename: file without extension are not allowed');
-
-            let destination: string;
-            if (options.admin) {
-              destination = joinposix('/etc/containers/systemd', base);
-            } else {
-              destination = joinposix('~/.config/containers/systemd', base);
-            }
 
             // write the file
             try {

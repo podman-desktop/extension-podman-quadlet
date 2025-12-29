@@ -677,4 +677,71 @@ describe('QuadletService#writeIntoMachine', () => {
       );
     });
   });
+
+  test('should respect absolute path', async () => {
+    const quadlet = getQuadletService();
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [
+        {
+          filename: '/foo/bar.yaml',
+          content: 'dummy-content',
+        },
+      ],
+    });
+
+    expect(PODMAN_WORKER_MOCK.write).toHaveBeenCalledWith('/foo/bar.yaml', 'dummy-content');
+  });
+
+  test('should respect relative sub-folder', async () => {
+    const quadlet = getQuadletService();
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [
+        {
+          filename: 'foo/bar.yaml',
+          content: 'dummy-content',
+        },
+      ],
+    });
+
+    expect(PODMAN_WORKER_MOCK.write).toHaveBeenCalledWith(
+      joinposix('~/.config/containers/systemd', 'foo/bar.yaml'),
+      'dummy-content',
+    );
+  });
+
+  test('empty basename should throw an error', async () => {
+    const quadlet = getQuadletService();
+
+    await expect(() => {
+      return quadlet.writeIntoMachine({
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+        files: [
+          {
+            filename: '/',
+            content: 'dummy-content',
+          },
+        ],
+      });
+    }).rejects.toThrowError('invalid filename: empty name not allowed');
+  });
+
+  test('basename without extension should throw an error', async () => {
+    const quadlet = getQuadletService();
+
+    await expect(() => {
+      return quadlet.writeIntoMachine({
+        provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+        files: [
+          {
+            filename: '/hello',
+            content: 'dummy-content',
+          },
+        ],
+      });
+    }).rejects.toThrowError('invalid filename: file without extension are not allowed');
+  });
 });
