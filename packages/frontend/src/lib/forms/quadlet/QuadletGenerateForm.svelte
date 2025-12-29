@@ -242,7 +242,7 @@ function resetGenerate(): void {
         bind:value={quadletFilename}
         id="quadlet-filename" />
       {#if quadletFilename.length > 0 && !validFilename}
-        <ErrorMessage error="Quadlet filename should be <name>.{quadletType.toLowerCase()}" />
+        <ErrorMessage error="Quadlet filename must be <name>.{quadletType.toLowerCase()}" />
       {/if}
 
       <div class="h-[400px] pt-4">

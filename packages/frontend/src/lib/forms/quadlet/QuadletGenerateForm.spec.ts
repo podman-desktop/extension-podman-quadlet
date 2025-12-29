@@ -186,7 +186,7 @@ describe('validating filename', () => {
 
     await vi.waitFor(() => {
       const alert = renderResult.getByRole('alert');
-      expect(alert).toHaveTextContent('Quadlet filename should be <name>.container');
+      expect(alert).toHaveTextContent('Quadlet filename must be <name>.container');
     });
   });
 
