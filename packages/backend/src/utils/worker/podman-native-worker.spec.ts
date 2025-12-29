@@ -19,7 +19,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { PodmanNativeWorker } from './podman-native-worker';
 import { homedir } from 'node:os';
-import { readFile, rm, mkdir, writeFile } from 'node:fs/promises';
+import { readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 import type { process as ProcessApi, ProviderContainerConnection } from '@podman-desktop/api';
 import type { PodmanWorker } from './podman-worker';
@@ -130,5 +130,21 @@ describe('exec', () => {
     });
 
     expect(PROCESS_API_MOCK.exec).toHaveBeenCalledWith('echo', ['hello world'], {});
+  });
+});
+
+describe('realpath', () => {
+  let worker: PodmanWorker;
+  beforeEach(() => {
+    worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+  });
+
+  test('should use realpath', async () => {
+    vi.mocked(realpath).mockResolvedValue('/foo.txt');
+
+    const result = await worker.realPath('/foo-symlink.txt');
+    expect(result).toEqual('/foo.txt');
+
+    expect(realpath).toHaveBeenCalledExactlyOnceWith('/foo-symlink.txt');
   });
 });

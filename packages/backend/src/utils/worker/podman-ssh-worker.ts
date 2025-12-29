@@ -47,6 +47,10 @@ export class PodmanSSHWorker extends PodmanWorker {
     return this.#podmanSFTP.write(path, content);
   }
 
+  override realPath(path: string): Promise<string> {
+    return this.#podmanSFTP.realpath(path);
+  }
+
   override exec(
     command: string,
     options?: { args?: string[]; logger?: Logger; token?: CancellationToken; env?: Record<string, string> },

@@ -24,7 +24,7 @@ import type {
 } from '@podman-desktop/api';
 import { PodmanWorker } from './podman-worker';
 import { homedir } from 'node:os';
-import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 
 export class PodmanNativeWorker extends PodmanWorker {
@@ -50,6 +50,10 @@ export class PodmanNativeWorker extends PodmanWorker {
     await mkdir(dirname(resolved), { recursive: true });
     // 3. write file
     await writeFile(resolved, content, { encoding: 'utf8' });
+  }
+
+  override async realPath(path: string): Promise<string> {
+    return realpath(path);
   }
 
   override exec(
