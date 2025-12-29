@@ -50,7 +50,7 @@ let message: string = $derived.by(() => {
     return `machine ${connection.name} is not running`;
   }
 
-  return 'No Quadlet found on the system';
+  return 'No Quadlets found on your system';
 });
 </script>
 
