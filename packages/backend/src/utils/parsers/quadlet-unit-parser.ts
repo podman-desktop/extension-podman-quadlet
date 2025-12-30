@@ -73,6 +73,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       state: 'unknown',
       type: type,
       requires: unit.Requires,
+      resources: [], // TODO
     };
 
     const [serviceType, result] = new QuadletServiceTypeParser({

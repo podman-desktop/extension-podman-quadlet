@@ -20,6 +20,11 @@ import type { QuadletType } from '../utils/quadlet-type';
 
 export type QuadletState = 'active' | 'inactive' | 'deleting' | 'unknown' | 'error';
 
+export interface FileReference {
+  name: string;
+  path: string;
+}
+
 export interface BaseQuadlet {
   /**
    * UUID to internally identify the quadlet
@@ -44,4 +49,8 @@ export interface BaseQuadlet {
    * @remarks the string are the service name, not the quadlet ids.
    */
   requires: Array<string>;
+  /**
+   * A Quadlet can have resources (files) associated with them
+   */
+  resources: Array<FileReference>;
 }

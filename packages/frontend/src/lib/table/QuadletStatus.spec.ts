@@ -47,6 +47,7 @@ const QUADLET_MOCK: QuadletInfo = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+  resources: [],
 };
 
 const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
@@ -57,6 +58,7 @@ const TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
   connection: PROVIDER_MOCK,
   type: QuadletType.CONTAINER,
   requires: [],
+  resources: [],
   template: 'foo',
   defaultInstance: undefined,
 };
