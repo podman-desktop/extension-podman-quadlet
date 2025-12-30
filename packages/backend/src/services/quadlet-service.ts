@@ -198,23 +198,13 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
               message: `Collecting quadlets ${provider.connection.name}`,
             });
 
-            // 1. we check the systemctl version
-            const systemctlVersion = await this.dependencies.systemd.getSystemctlVersion(provider, { token });
-            console.log(`[QuadletService] systemctlVersion ${systemctlVersion}`);
-
-            // 2. check the quadlet version
-            const quadletVersion = await this.getQuadletVersion(provider, { token });
-            console.log(
-              `[QuadletService] found quadlet version ${quadletVersion} for connection ${provider.connection.name} of provider ${provider.providerId}`,
-            );
-
-            // 3. get the quadlets
+            // 1. get the quadlets
             const quadlets = await this.getPodmanQuadlets({ provider, token, admin: false });
 
-            // 4. update internally but do not notify (we need to collect the statuses)
+            // 2. update internally but do not notify (we need to collect the statuses)
             this.update(provider, quadlets, false);
 
-            // 5. Refresh the status if some quadlets are found
+            // 3. Refresh the status if some quadlets are found
             if (quadlets.length > 0) {
               await this.refreshQuadletsStatuses(false);
             }
