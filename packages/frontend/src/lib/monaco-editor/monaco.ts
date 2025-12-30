@@ -1,12 +1,12 @@
-import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api';
+import type * as Monaco from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 export class MonacoManager {
   protected static monaco: typeof Monaco | undefined;
 
   protected static async importLanguages(): Promise<Awaited<unknown>[]> {
     return Promise.all([
-      import('monaco-editor/esm/vs/basic-languages/ini/ini.contribution'),
-      import('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'),
+      import('monaco-editor/esm/vs/basic-languages/ini/ini.contribution.js'),
+      import('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js'),
     ]);
   }
 
@@ -17,7 +17,7 @@ export class MonacoManager {
     await this.importLanguages();
 
     // import monaco editor dynamically
-    this.monaco = await import('monaco-editor/esm/vs/editor/editor.api');
+    this.monaco = await import('monaco-editor/esm/vs/editor/editor.api.js');
     this.registerTheme();
 
     // return the full monaco

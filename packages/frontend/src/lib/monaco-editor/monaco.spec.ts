@@ -19,7 +19,7 @@ import '@testing-library/jest-dom/vitest';
 
 import { beforeEach, test, vi, expect } from 'vitest';
 import { MonacoManager } from '/@/lib/monaco-editor/monaco';
-import type { editor } from 'monaco-editor/esm/vs/editor/editor.api';
+import type { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
 
 const BG_BLACK_COLOR = '#000000';
 
@@ -29,13 +29,13 @@ const BG_BLACK_COLOR = '#000000';
  * /!\ If your code is importing a mocked module, without any associated __mocks__ file or factory for this module,
  * Vitest will mock the module itself by invoking it and mocking every export.
  */
-vi.mock(import('monaco-editor/esm/vs/editor/editor.api'), () => ({
+vi.mock(import('monaco-editor/esm/vs/editor/editor.api.js'), () => ({
   editor: {
     defineTheme: vi.fn(),
   } as unknown as typeof editor,
 }));
-vi.mock(import('monaco-editor/esm/vs/basic-languages/ini/ini.contribution'), () => ({}));
-vi.mock(import('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution'), () => ({}));
+vi.mock(import('monaco-editor/esm/vs/basic-languages/ini/ini.contribution.js'), () => ({}));
+vi.mock(import('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js'), () => ({}));
 
 beforeEach(() => {
   vi.resetAllMocks();
