@@ -50,7 +50,7 @@ export interface BaseQuadlet {
    */
   requires: Array<string>;
   /**
-   * A Quadlet can have resources (files) associated with them
+   * A Quadlet can have files associated with them (E.g., Yaml= for Kube Quadlet)
    */
-  resources: Array<FileReference>;
+  files: Array<FileReference>;
 }

@@ -71,7 +71,7 @@ const CONTAINER_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.container`,
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const CONTAINER_TEMPLATE_QUADLET_MOCK: QuadletInfo & ServiceQuadlet & TemplateQuadlet = {
@@ -85,7 +85,7 @@ const CONTAINER_TEMPLATE_QUADLET_MOCK: QuadletInfo & ServiceQuadlet & TemplateQu
   requires: [],
   template: 'foo',
   defaultInstance: undefined,
-  resources: [],
+  files: [],
 };
 
 const IMAGE_QUADLET_MOCK: QuadletInfo = {
@@ -98,7 +98,7 @@ const IMAGE_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
@@ -109,7 +109,7 @@ const INVALID_IMAGE_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.image`,
   type: QuadletType.IMAGE,
   requires: [],
-  resources: [],
+  files: [],
   service: undefined,
 };
 
@@ -121,7 +121,7 @@ const KUBE_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.kube`,
   type: QuadletType.KUBE,
   requires: [],
-  resources: [],
+  files: [],
   service: undefined,
 };
 

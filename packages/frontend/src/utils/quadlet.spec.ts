@@ -38,7 +38,7 @@ test.each(Object.values(QuadletType).filter(type => type !== QuadletType.KUBE))(
         state: 'active',
         connection: PODMAN_MACHINE_DEFAULT,
         requires: [],
-        resources: [],
+        files: [],
       }),
     ).toBeFalsy();
   },
@@ -54,7 +54,7 @@ test(`expect ${QuadletType.KUBE} to be recognised`, () => {
       state: 'active',
       connection: PODMAN_MACHINE_DEFAULT,
       requires: [],
-      resources: [],
+      files: [],
     }),
   ).toBeTruthy();
 });
