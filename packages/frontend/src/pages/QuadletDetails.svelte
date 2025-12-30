@@ -177,7 +177,7 @@ function onchange(content: string): void {
           url="/quadlets/{providerId}/{connection}/{id}/logs"
           selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/logs`} />
       {/if}
-      {#each quadlet.resources as file (file.path)}
+      {#each quadlet.files as file (file.path)}
         {@const fileId = encodeURIComponent(file.path)}
         <IconTab
           title={file.name}

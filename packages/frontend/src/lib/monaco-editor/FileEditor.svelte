@@ -23,14 +23,7 @@ let language: string = $derived.by(() => {
   const filename = pathParts[pathParts.length - 1];
 
   const filenameParts = filename.split('.');
-
-  switch (filenameParts[filenameParts.length - 1]) {
-    case 'yaml':
-    case 'yml':
-      return 'yaml';
-    default:
-      return 'text';
-  }
+  return filenameParts[filenameParts.length - 1];
 });
 
 let error: string | undefined = $state(undefined);
