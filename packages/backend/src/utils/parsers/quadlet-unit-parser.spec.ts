@@ -2,20 +2,14 @@
  * @author axel7083
  */
 
-import { test, expect, assert } from 'vitest';
+import { test, expect, assert, describe } from 'vitest';
 import { QuadletUnitParser } from './quadlet-unit-parser';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
+import type { FileReference } from '/@shared/src/models/base-quadlet';
 
-const CONTAINER_QUADLET_EXAMPLE = `
-# demo-quadlet.container
-[X-Container]
-ContainerName=demo-quadlet-2
-Image=nginx
-PodmanArgs=--cgroups=enabled
-PublishPort=8081:80
-
+const PARTIAL_CONTAINER_QUADLET_MOCK = `
 [Service]
 Restart=always
 Environment=PODMAN_SYSTEMD_UNIT=%n
@@ -36,6 +30,31 @@ Wants=network-online.target
 After=network-online.target
 SourcePath=/home/user/.config/containers/systemd/nginx2.container
 RequiresMountsFor=%t/containers
+`;
+
+const CONTAINER_QUADLET_EXAMPLE = `
+# demo-quadlet.container
+[X-Container]
+ContainerName=demo-quadlet-2
+Image=nginx
+PodmanArgs=--cgroups=enabled
+PublishPort=8081:80
+EnvironmentFile=/mnt/foo/.env
+
+${PARTIAL_CONTAINER_QUADLET_MOCK}
+`;
+
+const CONTAINER_QUADLET_MULTIPLE_ENVIRONMENT_FILE_EXAMPLE = `
+# demo-quadlet.container
+[X-Container]
+ContainerName=demo-quadlet-2
+Image=nginx
+PodmanArgs=--cgroups=enabled
+PublishPort=8081:80
+EnvironmentFile=/mnt/foo/.env
+EnvironmentFile=/mnt/foo/.env2
+
+${PARTIAL_CONTAINER_QUADLET_MOCK}
 `;
 
 const REQUIRES_EXAMPLE = `
@@ -98,6 +117,45 @@ WantedBy=multi-user.target
 DefaultInstance=100
 `;
 
+const PARTIAL_KUBE_QUADLET_MOCK = `
+[Unit]
+Wants=podman-user-wait-network-online.service
+After=podman-user-wait-network-online.service
+SourcePath=/home/user/.config/containers/systemd/boycott/play.kube
+RequiresMountsFor=%t/containers
+
+[Service]
+KillMode=mixed
+Environment=PODMAN_SYSTEMD_UNIT=%n
+Type=notify
+NotifyAccess=all
+SyslogIdentifier=%N
+ExecStart=/usr/bin/podman kube play --replace --service-container=true --build /home/USER/.config/containers/systemd/boycott/play.yaml
+ExecStopPost=/usr/bin/podman kube down /home/USER/.config/containers/systemd/boycott/play.yaml
+`;
+
+const SINGLE_YAML_KUBE_QUADLET_EXAMPLE = `
+[X-Kube]
+Yaml=/mnt/foo/bar.yaml
+
+${PARTIAL_KUBE_QUADLET_MOCK}
+`;
+
+const MULTIPLE_YAMLS_KUBE_QUADLET_EXAMPLE = `
+[X-Kube]
+Yaml=/mnt/foo/ping.yaml
+Yaml=/mnt/foo/pong.yaml
+
+${PARTIAL_KUBE_QUADLET_MOCK}
+`;
+
+const RELATIVE_YAML_KUBE_QUADLET_EXAMPLE = `
+[X-Kube]
+Yaml=./ping.yaml
+
+${PARTIAL_KUBE_QUADLET_MOCK}
+`;
+
 test('expect path to be properly extracted', async () => {
   const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
   const result = parser.parse();
@@ -141,4 +199,78 @@ test('expect startable template quadlet to have proper service name', () => {
   expect(result.service).toBe('sleep-quadlet@100.service');
   expect(result.template).toBe('sleep-quadlet');
   expect(result.defaultInstance).toBe('100');
+});
+
+describe('resources', () => {
+  interface TestCase {
+    name: string;
+    service: string;
+    expected: Array<FileReference>;
+  }
+
+  test.each<TestCase>([
+    {
+      name: 'single YAML from kube quadlet should be detected',
+      expected: [
+        {
+          name: 'bar.yaml',
+          path: '/mnt/foo/bar.yaml',
+        },
+      ],
+      service: SINGLE_YAML_KUBE_QUADLET_EXAMPLE,
+    },
+    {
+      name: 'multiple YAMLs from kube quadlet should be detected',
+      expected: [
+        {
+          name: 'ping.yaml',
+          path: '/mnt/foo/ping.yaml',
+        },
+        {
+          name: 'pong.yaml',
+          path: '/mnt/foo/pong.yaml',
+        },
+      ],
+      service: MULTIPLE_YAMLS_KUBE_QUADLET_EXAMPLE,
+    },
+    {
+      name: 'EnvironmentFile should be detected as a resource',
+      expected: [
+        {
+          name: '.env',
+          path: '/mnt/foo/.env',
+        },
+      ],
+      service: CONTAINER_QUADLET_EXAMPLE,
+    },
+    {
+      name: 'multiple EnvironmentFile should be detected as resources',
+      expected: [
+        {
+          name: '.env',
+          path: '/mnt/foo/.env',
+        },
+        {
+          name: '.env2',
+          path: '/mnt/foo/.env2',
+        },
+      ],
+      service: CONTAINER_QUADLET_MULTIPLE_ENVIRONMENT_FILE_EXAMPLE,
+    },
+    {
+      name: 'relative path should be resolved',
+      expected: [
+        {
+          name: 'ping.yaml',
+          path: '/home/user/.config/containers/systemd/boycott/ping.yaml',
+        },
+      ],
+      service: RELATIVE_YAML_KUBE_QUADLET_EXAMPLE,
+    },
+  ])('$name', ({ service, expected }) => {
+    const parser = new QuadletUnitParser('dummy.service', service);
+    const result = parser.parse();
+
+    expect(result.resources).toStrictEqual(expected);
+  });
 });

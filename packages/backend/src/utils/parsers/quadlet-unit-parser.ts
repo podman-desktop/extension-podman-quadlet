@@ -5,18 +5,34 @@
 import { Parser } from './iparser';
 import { type IIniObject, parse } from 'js-ini';
 import type { Quadlet } from '/@shared/src/models/quadlet';
-import type { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
 import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
 import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import type { FileReference } from '/@shared/src/models/base-quadlet';
+import { basename, dirname, isAbsolute, join } from 'node:path/posix';
 
 interface Unit {
   SourcePath: string;
   Requires: Array<string>;
 }
+
+/**
+ * To determine the {@link import('/@shared/src/models/base-quadlet').BaseQuadlet#resources} we need to specify which
+ * properties if defined correspond to a file reference
+ */
+export const QUADLET_RESOURCES_PATHS: Record<QuadletType, Array<string>> = {
+  [QuadletType.CONTAINER]: ['EnvironmentFile', 'SeccompProfile', 'ContainersConfModule'],
+  [QuadletType.KUBE]: ['Yaml', 'ConfigMap', 'ContainersConfModule'],
+  [QuadletType.BUILD]: ['AuthFile', 'IgnoreFile', 'ContainersConfModule'],
+  [QuadletType.IMAGE]: ['AuthFile', 'ContainersConfModule'],
+  [QuadletType.NETWORK]: ['ContainersConfModule'],
+  [QuadletType.POD]: ['ContainersConfModule'],
+  [QuadletType.VOLUME]: ['ContainersConfModule'],
+};
 
 export class QuadletUnitParser extends Parser<string, Quadlet> {
   constructor(
@@ -56,6 +72,42 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     return `${source['Install']['DefaultInstance']}`;
   }
 
+  protected toAbsolute(sourcePath: string, path: string): string {
+    if (isAbsolute(path)) return path;
+    if (path.startsWith('~')) return path;
+
+    return join(dirname(sourcePath), path);
+  }
+
+  protected findResources(sourcePath: string, source: IIniObject): Array<FileReference> {
+    return Object.entries(QUADLET_RESOURCES_PATHS).reduce((accumulator, [quadletType, properties]) => {
+      const key = `X-${quadletType}`;
+      if (!(key in source)) return accumulator;
+      if (typeof source[key] !== 'object' || Array.isArray(source[key])) return accumulator;
+
+      for (const property of properties) {
+        if (!(property in source[key])) continue;
+
+        let values: string[];
+        if (Array.isArray(source[key][property])) {
+          values = source[key][property];
+        } else if (typeof source[key][property] === 'string') {
+          values = [source[key][property]];
+        } else {
+          return accumulator;
+        }
+
+        accumulator.push(
+          ...values.map(value => ({
+            path: this.toAbsolute(sourcePath, value),
+            name: basename(value),
+          })),
+        );
+      }
+      return accumulator;
+    }, [] as Array<FileReference>);
+  }
+
   override parse(): Quadlet {
     const raw = parse(this.content, {
       comment: ['#', ';'],
@@ -73,7 +125,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       state: 'unknown',
       type: type,
       requires: unit.Requires,
-      resources: [], // TODO
+      resources: this.findResources(unit.SourcePath, raw),
     };
 
     const [serviceType, result] = new QuadletServiceTypeParser({
