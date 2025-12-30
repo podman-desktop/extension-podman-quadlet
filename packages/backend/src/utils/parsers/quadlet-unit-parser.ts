@@ -94,7 +94,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
         } else if (typeof source[key][property] === 'string') {
           values = [source[key][property]];
         } else {
-          return accumulator;
+          continue;
         }
 
         accumulator.push(
