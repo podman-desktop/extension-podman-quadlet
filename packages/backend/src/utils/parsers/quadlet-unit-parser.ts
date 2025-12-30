@@ -21,10 +21,10 @@ interface Unit {
 }
 
 /**
- * To determine the {@link import('/@shared/src/models/base-quadlet').BaseQuadlet#resources} we need to specify which
+ * To determine the {@link import('/@shared/src/models/base-quadlet').BaseQuadlet#files} we need to specify which
  * properties if defined correspond to a file reference
  */
-const QUADLET_RESOURCES_PATHS: Record<QuadletType, Array<string>> = {
+const QUADLET_FILES_PATHS: Record<QuadletType, Array<string>> = {
   [QuadletType.CONTAINER]: ['EnvironmentFile', 'SeccompProfile', 'ContainersConfModule'],
   [QuadletType.KUBE]: ['Yaml', 'ConfigMap', 'ContainersConfModule'],
   [QuadletType.BUILD]: ['AuthFile', 'IgnoreFile', 'ContainersConfModule'],
@@ -79,31 +79,35 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
     return join(dirname(sourcePath), path);
   }
 
-  protected findResources(sourcePath: string, source: IIniObject): Array<FileReference> {
-    return Object.entries(QUADLET_RESOURCES_PATHS).reduce((accumulator, [quadletType, properties]) => {
-      const key = `X-${quadletType}`;
-      if (!(key in source)) return accumulator;
-      if (typeof source[key] !== 'object' || Array.isArray(source[key])) return accumulator;
+  protected findFiles(type: QuadletType, sourcePath: string, source: IIniObject): Array<FileReference> {
+    const key = `X-${type}`;
+    if (!(key in source)) return [];
 
-      for (const property of properties) {
-        if (!(property in source[key])) continue;
+    const section = source[key];
+    if (typeof section !== 'object' || Array.isArray(section)) return [];
 
-        let values: string[];
-        if (Array.isArray(source[key][property])) {
-          values = source[key][property];
-        } else if (typeof source[key][property] === 'string') {
-          values = [source[key][property]];
-        } else {
-          continue;
-        }
+    const properties = QUADLET_FILES_PATHS[type];
 
-        accumulator.push(
-          ...values.map(value => ({
-            path: this.toAbsolute(sourcePath, value),
-            name: basename(value),
-          })),
-        );
+    return properties.reduce((accumulator, property) => {
+      if (!(property in section)) return accumulator;
+
+      const rawValue = section[property];
+
+      let values: string[];
+      if (Array.isArray(rawValue)) {
+        values = rawValue;
+      } else if (typeof rawValue === 'string') {
+        values = [rawValue];
+      } else {
+        return accumulator;
       }
+
+      accumulator.push(
+        ...values.map(value => ({
+          path: this.toAbsolute(sourcePath, value),
+          name: basename(value),
+        })),
+      );
       return accumulator;
     }, [] as Array<FileReference>);
   }
@@ -125,7 +129,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
       state: 'unknown',
       type: type,
       requires: unit.Requires,
-      resources: this.findResources(unit.SourcePath, raw),
+      files: this.findFiles(type, unit.SourcePath, raw),
     };
 
     const [serviceType, result] = new QuadletServiceTypeParser({

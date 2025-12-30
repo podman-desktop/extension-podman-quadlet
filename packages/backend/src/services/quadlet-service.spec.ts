@@ -108,7 +108,7 @@ const QUADLET_MOCK: ServiceQuadlet = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
@@ -119,7 +119,7 @@ const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
   template: 'foo',
   defaultInstance: undefined,
 };
@@ -132,7 +132,7 @@ const TEMPLATE_INSTANCE_QUADLET_MOCK: TemplateInstanceQuadlet & ServiceQuadlet =
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
   template: 'foo',
   argument: 'bar',
 };
@@ -145,7 +145,7 @@ const KUBE_QUADLET_MOCK: ServiceQuadlet = {
   content: 'dummy-content',
   type: QuadletType.KUBE,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
@@ -155,7 +155,7 @@ const SERVICE_LESS_QUADLET_MOCK: Quadlet = {
   service: undefined,
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const PROGRESS_REPORT: Progress<{ message?: string; increment?: number }> = {
@@ -400,7 +400,7 @@ describe('QuadletService#remove', () => {
     service: undefined,
     type: QuadletType.CONTAINER,
     requires: [],
-    resources: [],
+    files: [],
   }));
 
   beforeEach(() => {

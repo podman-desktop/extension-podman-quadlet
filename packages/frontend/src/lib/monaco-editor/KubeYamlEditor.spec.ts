@@ -64,7 +64,7 @@ const KUBE_QUADLET: QuadletInfo & { type: QuadletType.KUBE } = {
   state: 'active',
   connection: PODMAN_MACHINE_DEFAULT,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 test('ensure reload button is visible', async () => {

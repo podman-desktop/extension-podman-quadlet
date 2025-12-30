@@ -201,7 +201,7 @@ test('expect startable template quadlet to have proper service name', () => {
   expect(result.defaultInstance).toBe('100');
 });
 
-describe('resources', () => {
+describe('files', () => {
   interface TestCase {
     name: string;
     service: string;
@@ -271,6 +271,6 @@ describe('resources', () => {
     const parser = new QuadletUnitParser('dummy.service', service);
     const result = parser.parse();
 
-    expect(result.resources).toStrictEqual(expected);
+    expect(result.files).toStrictEqual(expected);
   });
 });

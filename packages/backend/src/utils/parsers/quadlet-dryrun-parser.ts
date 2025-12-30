@@ -77,7 +77,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         state: 'error',
         type: type,
         requires: [], // cannot detect requires
-        resources: [], // cannot detect resources
+        files: [], // cannot detect resources
       };
 
       const [serviceType, result] = new QuadletServiceTypeParser({

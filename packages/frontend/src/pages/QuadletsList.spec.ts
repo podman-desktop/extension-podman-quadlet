@@ -83,7 +83,7 @@ const QUADLETS_MOCK: Array<QuadletInfo> = Array.from({ length: 10 }, (_, index) 
   path: `bar/foo-${index}.container`,
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
 }));
 
 beforeEach(() => {
@@ -226,7 +226,7 @@ describe('templates', () => {
     requires: [],
     template: 'foo',
     defaultInstance: undefined,
-    resources: [],
+    files: [],
   };
 
   const TEMPLATE_INSTANCE_QUADLET: QuadletInfo & TemplateInstanceQuadlet = {
@@ -240,7 +240,7 @@ describe('templates', () => {
     path: `foo@bar.container`,
     type: QuadletType.CONTAINER,
     requires: [],
-    resources: [],
+    files: [],
   };
 
   test('template quadlet with same name on different engine should be renderer apart', async () => {

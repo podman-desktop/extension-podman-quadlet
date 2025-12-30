@@ -74,7 +74,7 @@ const QUADLET_MOCK: ServiceQuadlet = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
 };
 
 const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
@@ -85,7 +85,7 @@ const TEMPLATE_QUADLET_MOCK: TemplateQuadlet & ServiceQuadlet = {
   content: 'dummy-content',
   type: QuadletType.CONTAINER,
   requires: [],
-  resources: [],
+  files: [],
   template: 'foo',
   defaultInstance: undefined, // no default instance
 };
