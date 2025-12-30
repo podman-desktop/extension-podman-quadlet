@@ -24,7 +24,7 @@ interface Unit {
  * To determine the {@link import('/@shared/src/models/base-quadlet').BaseQuadlet#resources} we need to specify which
  * properties if defined correspond to a file reference
  */
-export const QUADLET_RESOURCES_PATHS: Record<QuadletType, Array<string>> = {
+const QUADLET_RESOURCES_PATHS: Record<QuadletType, Array<string>> = {
   [QuadletType.CONTAINER]: ['EnvironmentFile', 'SeccompProfile', 'ContainersConfModule'],
   [QuadletType.KUBE]: ['Yaml', 'ConfigMap', 'ContainersConfModule'],
   [QuadletType.BUILD]: ['AuthFile', 'IgnoreFile', 'ContainersConfModule'],
