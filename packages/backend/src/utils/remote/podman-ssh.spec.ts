@@ -233,8 +233,7 @@ describe('exec', () => {
 
     listener(undefined, CLIENT_CHANNEL_MOCK);
 
-    expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledOnce();
-    expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledWith(expect.any(Function));
+    expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
 
     const exitListener = getExitListener();
     exitListener(0);
@@ -250,8 +249,7 @@ describe('exec', () => {
     listener(undefined, CLIENT_CHANNEL_MOCK);
 
     const cancelListener = await vi.waitFor(() => {
-      expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledOnce();
-      expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledWith(expect.any(Function));
+      expect(CANCELLATION_TOKEN_MOCK.onCancellationRequested).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
       return vi.mocked(CANCELLATION_TOKEN_MOCK.onCancellationRequested).mock.calls[0][0];
     });
 

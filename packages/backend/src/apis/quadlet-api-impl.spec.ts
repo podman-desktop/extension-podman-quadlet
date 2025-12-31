@@ -238,8 +238,7 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
       quadletId: QUADLET_MOCK.id,
     });
 
-    expect(PODMAN_SERVICE.getWorker).toHaveBeenCalledOnce();
-    expect(PODMAN_SERVICE.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(PODMAN_SERVICE.getWorker).toHaveBeenCalledExactlyOnceWith(WSL_PROVIDER_CONNECTION_MOCK);
 
     expect(PODMAN_WORKER_MOCK.journalctlExec).toHaveBeenCalledWith({
       args: ['--user', '--follow', `--unit=${QUADLET_MOCK.service}`, '--output=cat'],

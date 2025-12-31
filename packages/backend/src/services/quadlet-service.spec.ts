@@ -285,8 +285,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
     expect(WINDOW_MOCK.withProgress).toHaveBeenCalledOnce();
 
     // ensure telemetry is prooperly logged
-    expect(TELEMETRY_LOGGER_MOCK.logUsage).toHaveBeenCalledOnce();
-    expect(TELEMETRY_LOGGER_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.QUADLET_COLLECT, {
+    expect(TELEMETRY_LOGGER_MOCK.logUsage).toHaveBeenCalledExactlyOnceWith(TelemetryEvents.QUADLET_COLLECT, {
       error: ERROR,
     });
   });
@@ -636,8 +635,7 @@ describe('QuadletService#writeIntoMachine', () => {
       files: [],
     });
 
-    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalledOnce();
-    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalledWith({
+    expect(SYSTEMD_SERVICE_MOCK.daemonReload).toHaveBeenCalledExactlyOnceWith({
       admin: false,
       provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
     });

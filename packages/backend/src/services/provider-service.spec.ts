@@ -91,16 +91,13 @@ describe('init', () => {
     await providers.init();
 
     // listen to new container connection
-    expect(PROVIDER_API_MOCK.onDidRegisterContainerConnection).toHaveBeenCalledOnce();
-    expect(PROVIDER_API_MOCK.onDidRegisterContainerConnection).toHaveBeenCalledWith(expect.any(Function));
+    expect(PROVIDER_API_MOCK.onDidRegisterContainerConnection).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
 
     // listen to remove of container connection
-    expect(PROVIDER_API_MOCK.onDidUnregisterContainerConnection).toHaveBeenCalledOnce();
-    expect(PROVIDER_API_MOCK.onDidUnregisterContainerConnection).toHaveBeenCalledWith(expect.any(Function));
+    expect(PROVIDER_API_MOCK.onDidUnregisterContainerConnection).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
 
     // listen to update of container connection
-    expect(PROVIDER_API_MOCK.onDidUpdateContainerConnection).toHaveBeenCalledOnce();
-    expect(PROVIDER_API_MOCK.onDidUpdateContainerConnection).toHaveBeenCalledWith(expect.any(Function));
+    expect(PROVIDER_API_MOCK.onDidUpdateContainerConnection).toHaveBeenCalledExactlyOnceWith(expect.any(Function));
   });
 
   test('container connection update should notify for events', async () => {

@@ -225,6 +225,7 @@ export default [
       'vitest/no-identical-title': ['error'],
       'vitest/prefer-equality-matcher': ['error'],
       'vitest/prefer-to-contain': ['error'],
+      'vitest/prefer-called-exactly-once-with': ['error'],
     },
   },
 

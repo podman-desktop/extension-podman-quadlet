@@ -71,8 +71,7 @@ describe('read', () => {
     const result = await worker.read('/foo.txt');
     expect(result).toEqual(DUMMY_CONTENT);
 
-    expect(PodmanSFTP.prototype.read).toHaveBeenCalledOnce();
-    expect(PodmanSFTP.prototype.read).toHaveBeenCalledWith('/foo.txt');
+    expect(PodmanSFTP.prototype.read).toHaveBeenCalledExactlyOnceWith('/foo.txt');
   });
 });
 
@@ -82,8 +81,7 @@ describe('rm', () => {
 
     await worker.rm('/foo.txt');
 
-    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledOnce();
-    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledWith('/foo.txt');
+    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledExactlyOnceWith('/foo.txt');
   });
 });
 
@@ -93,8 +91,7 @@ describe('write', () => {
 
     await worker.write('/foo.txt', 'bar');
 
-    expect(PodmanSFTP.prototype.write).toHaveBeenCalledOnce();
-    expect(PodmanSFTP.prototype.write).toHaveBeenCalledWith('/foo.txt', 'bar');
+    expect(PodmanSFTP.prototype.write).toHaveBeenCalledExactlyOnceWith('/foo.txt', 'bar');
   });
 });
 
@@ -104,8 +101,7 @@ describe('exec', () => {
 
     await worker.exec('echo');
 
-    expect(PodmanSSH.prototype.exec).toHaveBeenCalledOnce();
-    expect(PodmanSSH.prototype.exec).toHaveBeenCalledWith('echo', undefined);
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledExactlyOnceWith('echo', undefined);
   });
 
   test('exec without option should proxy to PodmanSSH#exec', async () => {
@@ -113,8 +109,7 @@ describe('exec', () => {
 
     await worker.exec('echo', { args: ['hello'] });
 
-    expect(PodmanSSH.prototype.exec).toHaveBeenCalledOnce();
-    expect(PodmanSSH.prototype.exec).toHaveBeenCalledWith('echo', { args: ['hello'] });
+    expect(PodmanSSH.prototype.exec).toHaveBeenCalledExactlyOnceWith('echo', { args: ['hello'] });
   });
 });
 
