@@ -89,7 +89,7 @@ function onchange(content: string): void {
     <Button icon={faRotateRight} padding="px-2" disabled={loading} title="Reload file" on:click={pull}>Reload</Button>
   </span>
   <span
-    aria-label="kube path"
+    aria-label="file path"
     class="block w-auto text-sm font-medium whitespace-nowrap leading-6 text-[var(--pd-content-text)] pl-2 pr-2">
     {path}
   </span>
