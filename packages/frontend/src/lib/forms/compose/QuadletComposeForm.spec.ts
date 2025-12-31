@@ -197,7 +197,7 @@ describe('Step Edit Quadlet', async () => {
     });
   });
 
-  test('typing a filename should enable next button', async () => {
+  test('typing a filename should enable Load into machine button', async () => {
     const loadIntoMachineBtn = renderResult.getByRole('button', { name: 'Load into machine' });
     expect(loadIntoMachineBtn).toBeDisabled();
 
@@ -209,7 +209,7 @@ describe('Step Edit Quadlet', async () => {
     });
   });
 
-  test('typing a filename should enable next button', async () => {
+  test('expect Load into machine to call quadletAPI#writeIntoMachine', async () => {
     const loadIntoMachineBtn = renderResult.getByRole('button', { name: 'Load into machine' });
 
     const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });

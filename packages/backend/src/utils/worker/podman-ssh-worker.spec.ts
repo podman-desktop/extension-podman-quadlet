@@ -87,17 +87,6 @@ describe('rm', () => {
   });
 });
 
-describe('rm', () => {
-  test('rm should proxy to PodmanSFTP#rm', async () => {
-    const worker = getPodmanSSHWorker();
-
-    await worker.rm('/foo.txt');
-
-    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledOnce();
-    expect(PodmanSFTP.prototype.rm).toHaveBeenCalledWith('/foo.txt');
-  });
-});
-
 describe('write', () => {
   test('write should proxy to PodmanSFTP#write', async () => {
     const worker = getPodmanSSHWorker();
