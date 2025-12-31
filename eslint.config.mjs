@@ -222,6 +222,7 @@ export default [
       'vitest/prefer-each': ['error'],
       'vitest/no-alias-methods': ['error'],
       'vitest/no-conditional-in-test': ['error'],
+      'vitest/no-identical-title': ['error'],
     },
   },
 
