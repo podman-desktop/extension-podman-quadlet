@@ -223,6 +223,8 @@ export default [
       'vitest/no-alias-methods': ['error'],
       'vitest/no-conditional-in-test': ['error'],
       'vitest/no-identical-title': ['error'],
+      'vitest/prefer-equality-matcher': ['error'],
+      'vitest/prefer-to-contain': ['error'],
     },
   },
 
