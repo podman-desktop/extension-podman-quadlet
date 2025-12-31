@@ -73,7 +73,7 @@ test('ensure kube path is visible', async () => {
     loading: false,
   });
 
-  const kubeSpan = getByLabelText('kube path');
+  const kubeSpan = getByLabelText('file path');
   expect(kubeSpan).toBeInTheDocument();
   expect(kubeSpan).toHaveTextContent('/mnt/foo/bar.yaml');
 });
