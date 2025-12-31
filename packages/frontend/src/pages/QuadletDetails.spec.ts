@@ -121,8 +121,32 @@ const KUBE_QUADLET_MOCK: QuadletInfo = {
   path: `bar/foo.kube`,
   type: QuadletType.KUBE,
   requires: [],
-  files: [],
+  files: [
+    {
+      name: 'play.yaml',
+      path: '/mnt/bar/play.yaml',
+    },
+  ],
   service: undefined,
+};
+
+const MULTI_RESOURCES_QUADLET_MOCK: QuadletInfo = {
+  ...CONTAINER_QUADLET_MOCK,
+  id: `multi-resources-id`,
+  files: [
+    {
+      name: '1.env',
+      path: '/mnt/1.env',
+    },
+    {
+      name: '2.env',
+      path: '/mnt/2.env',
+    },
+    {
+      name: '3.env',
+      path: '/mnt/3.env',
+    },
+  ],
 };
 
 beforeEach(() => {
@@ -133,6 +157,7 @@ beforeEach(() => {
     KUBE_QUADLET_MOCK,
     INVALID_IMAGE_QUADLET_MOCK,
     CONTAINER_TEMPLATE_QUADLET_MOCK,
+    MULTI_RESOURCES_QUADLET_MOCK,
   ]);
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
 });
@@ -168,15 +193,30 @@ test('invalid quadlet should not have generated tab', async () => {
   expect(sourceTab).toBeInTheDocument();
 });
 
-test('kube quadlet should have kube yaml tab', async () => {
-  const { getByText } = render(QuadletDetails, {
-    connection: WSL_PROVIDER_DETAILED_INFO.name,
-    providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
-    id: KUBE_QUADLET_MOCK.id,
+describe('resources', () => {
+  test('kube quadlet should have kube yaml tab', async () => {
+    const { getByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: KUBE_QUADLET_MOCK.id,
+    });
+
+    const kubeTab = getByText('play.yaml');
+    expect(kubeTab).toBeInTheDocument();
   });
 
-  const kubeTab = getByText('kube yaml');
-  expect(kubeTab).toBeInTheDocument();
+  test('every resources should have a corresponding tab', async () => {
+    const { getByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: MULTI_RESOURCES_QUADLET_MOCK.id,
+    });
+
+    for (const { name } of MULTI_RESOURCES_QUADLET_MOCK.files) {
+      const kubeTab = getByText(name);
+      expect(kubeTab).toBeInTheDocument();
+    }
+  });
 });
 
 test('quadletAPI.read error should be displayed', async () => {

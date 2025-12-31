@@ -53,16 +53,16 @@ export abstract class QuadletApi {
     skipSystemdDaemonReload?: boolean;
   }): Promise<void>;
 
-  abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
-
-  abstract getKubeYAML(
-    connection: ProviderContainerConnectionIdentifierInfo,
-    id: string,
-  ): Promise<{
-    content: string;
+  /**
+   * Read a file from a given connection
+   * @param options
+   */
+  abstract readIntoMachine(options: {
+    connection: ProviderContainerConnectionIdentifierInfo;
     path: string;
-  }>;
+  }): Promise<string>;
 
+  abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
   /**
    * List Quadlets templates
    */

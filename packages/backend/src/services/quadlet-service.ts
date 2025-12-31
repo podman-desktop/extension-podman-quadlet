@@ -10,11 +10,9 @@ import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
 import type { Quadlet } from '/@shared/src/models/quadlet';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import type { AsyncInit } from '../utils/async-init';
-import { join as joinposix, basename, dirname, isAbsolute } from 'node:path/posix';
+import { join as joinposix, basename, isAbsolute } from 'node:path/posix';
 import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 import { TelemetryEvents } from '../utils/telemetry-events';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import { QuadletKubeParser } from '../utils/parsers/quadlet-kube-parser';
 import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { Template } from '/@shared/src/models/template';
@@ -274,6 +272,12 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }
   }
 
+  async readIntoMachine(options: { provider: ProviderContainerConnection; path: string }): Promise<string> {
+    // Get the worker
+    const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+    return worker.read(options.path);
+  }
+
   /**
    * @param options
    */
@@ -471,58 +475,6 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       connection: this.fromSymbol(symbol),
       timestamp: timestamp,
     }));
-  }
-
-  async getKubeYAML(options: { id: string; provider: ProviderContainerConnection }): Promise<{
-    content: string;
-    path: string;
-  }> {
-    const quadlet = this.findQuadlet({
-      provider: options.provider,
-      id: options.id,
-    });
-    if (!quadlet) throw new Error(`quadlet with id ${options.id} not found`);
-
-    // assert quadlet type is kube.
-    if (quadlet.type !== QuadletType.KUBE)
-      throw new Error(`cannot get kube yaml of non-kube quadlet: quadlet ${quadlet.id} type is ${quadlet.type}`);
-
-    if (!isServiceQuadlet(quadlet))
-      throw new Error('cannot get kube yaml: quadlet without associated systemd service cannot be parsed.');
-
-    // extract the yaml file from
-    const { yaml } = new QuadletKubeParser(quadlet.content).parse();
-
-    // found the absolute path of the yaml
-    // the documentation says "The path, absolute or relative to the location of the unit file, to the Kubernetes YAML file to use."
-    let target: string;
-    if (isAbsolute(yaml)) {
-      target = yaml;
-    } else {
-      target = joinposix(dirname(quadlet.path), yaml);
-    }
-
-    // some security, only allow to read yaml / yml files.
-    if (!target.endsWith('.yaml') && !target.endsWith('.yml')) {
-      throw new Error(`quadlet ${quadlet.id} declared yaml file ${target}: invalid file format.`);
-    }
-
-    try {
-      // Get the worker
-      const worker: PodmanWorker = await this.podman.getWorker(options.provider);
-      const content = await worker.read(target);
-      return {
-        content: content,
-        path: target,
-      };
-    } catch (err: unknown) {
-      console.error(`Something went wrong with readTextFile on ${target}`, err);
-      // check err is an RunError
-      if (!err || typeof err !== 'object' || !('exitCode' in err) || !('stderr' in err)) {
-        throw err;
-      }
-      throw new Error(`cannot read ${target}: ${err.stderr}`);
-    }
   }
 
   override dispose(): void {

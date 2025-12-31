@@ -13,11 +13,11 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import { LoggerStore } from '/@store/logger-store';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import KubeYamlEditor from '/@/lib/monaco-editor/KubeYamlEditor.svelte';
-import { isKubeQuadlet } from '/@/utils/quadlet';
 import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet.js';
+import IconTab from '/@/lib/tab/IconTab.svelte';
+import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
+import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
 
 interface Props {
   id: string;
@@ -170,13 +170,6 @@ function onchange(content: string): void {
           url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
           selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/systemd-service`} />
       {/if}
-      <!-- kube yaml tab -->
-      {#if quadlet.type === QuadletType.KUBE}
-        <Tab
-          title="kube yaml"
-          url="/quadlets/{providerId}/{connection}/{id}/yaml"
-          selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/yaml`} />
-      {/if}
       {#if logger}
         <!-- journalctl tab -->
         <Tab
@@ -184,6 +177,14 @@ function onchange(content: string): void {
           url="/quadlets/{providerId}/{connection}/{id}/logs"
           selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/logs`} />
       {/if}
+      {#each quadlet.files as file (file.path)}
+        {@const fileId = encodeURIComponent(file.path)}
+        <IconTab
+          title={file.name}
+          url="/quadlets/{providerId}/{connection}/{id}/file/{fileId}"
+          icon={faPaperclip}
+          selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/file/${fileId}`} />
+      {/each}
     {/snippet}
     {#snippet iconSnippet()}
       <QuadletStatus object={quadlet} />
@@ -230,10 +231,13 @@ function onchange(content: string): void {
           {/if}
         </Route>
 
-        <Route path="/yaml">
-          {#if isKubeQuadlet(quadlet)}
-            <KubeYamlEditor quadlet={quadlet} bind:loading={loading} />
-          {/if}
+        <Route path="/file/:fileId" let:meta>
+          {#key meta.params.fileId}
+            <FileEditor
+              connection={quadlet.connection}
+              bind:loading={loading}
+              path={decodeURIComponent(meta.params.fileId)} />
+          {/key}
         </Route>
 
         <!-- quadlet -dryrun output -->
