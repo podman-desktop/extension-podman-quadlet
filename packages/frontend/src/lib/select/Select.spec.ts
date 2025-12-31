@@ -152,8 +152,7 @@ describe('clear button', () => {
     await fireEvent.click(clear);
 
     await vi.waitFor(() => {
-      expect(onChangeMock).toHaveBeenCalledWith(undefined);
-      expect(onChangeMock).toHaveBeenCalledOnce();
+      expect(onChangeMock).toHaveBeenCalledExactlyOnceWith(undefined);
     });
   });
 

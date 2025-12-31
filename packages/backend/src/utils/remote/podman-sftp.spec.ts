@@ -51,8 +51,7 @@ describe('connect', () => {
   test('connection successful', async () => {
     await podmanSFTP.connect();
 
-    expect(SftpClient.prototype.connect).toHaveBeenCalledOnce();
-    expect(SftpClient.prototype.connect).toHaveBeenCalledWith(SSH_CONFIG_MOCK);
+    expect(SftpClient.prototype.connect).toHaveBeenCalledExactlyOnceWith(SSH_CONFIG_MOCK);
 
     expect(podmanSFTP.connected).toBeTruthy();
   });

@@ -29,8 +29,7 @@ describe('EventEmitter', () => {
     // emit
     emitter.fire('potatoes');
     // ensure expected behaviour
-    expect(listener).toHaveBeenCalledOnce();
-    expect(listener).toHaveBeenCalledWith('potatoes');
+    expect(listener).toHaveBeenCalledExactlyOnceWith('potatoes');
   });
 
   test('EventEmitter#event should provide a disposable', () => {
@@ -70,8 +69,7 @@ describe('EventEmitter', () => {
     emitter.fire('potatoes');
     // ensure expected behaviour
     listeners.forEach(listener => {
-      expect(listener).toHaveBeenCalledOnce();
-      expect(listener).toHaveBeenCalledWith('potatoes');
+      expect(listener).toHaveBeenCalledExactlyOnceWith('potatoes');
     });
   });
 });

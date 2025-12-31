@@ -197,8 +197,7 @@ test('expect save button to be enabled when content is updated', async () => {
   saveBtn.click();
 
   await vi.waitFor(() => {
-    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledOnce();
-    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledWith({
+    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledExactlyOnceWith({
       connection: PODMAN_MACHINE_DEFAULT,
       files: [
         {

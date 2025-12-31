@@ -102,20 +102,22 @@ describe('container quadlets', () => {
     });
 
     // Should get the corresponding engine id
-    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledOnce();
-    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledWith(CONTAINER_CONNECTION_IDENTIFIER);
+    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
 
     // should get the container inspect info
-    expect(CONTAINER_SERVICE_MOCK.inspectContainer).toHaveBeenCalledOnce();
-    expect(CONTAINER_SERVICE_MOCK.inspectContainer).toHaveBeenCalledWith(ENGINE_ID_MOCK, CONTAINER_INSPECT_MOCK.Id);
+    expect(CONTAINER_SERVICE_MOCK.inspectContainer).toHaveBeenCalledExactlyOnceWith(
+      ENGINE_ID_MOCK,
+      CONTAINER_INSPECT_MOCK.Id,
+    );
 
     // should get the image inspect info
-    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledOnce();
-    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledWith(ENGINE_ID_MOCK, CONTAINER_INSPECT_MOCK.Image);
+    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledExactlyOnceWith(
+      ENGINE_ID_MOCK,
+      CONTAINER_INSPECT_MOCK.Image,
+    );
 
     // should properly call the podlet-js container generator
-    expect(ContainerGenerator).toHaveBeenCalledOnce();
-    expect(ContainerGenerator).toHaveBeenCalledWith({
+    expect(ContainerGenerator).toHaveBeenCalledExactlyOnceWith({
       image: IMAGE_INSPECT_MOCK,
       container: CONTAINER_INSPECT_MOCK,
     });
@@ -177,19 +179,16 @@ describe('image quadlets', () => {
     });
 
     // Should get the corresponding engine id
-    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledOnce();
-    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledWith(CONTAINER_CONNECTION_IDENTIFIER);
+    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
 
     // nothing related to containers
     expect(CONTAINER_SERVICE_MOCK.inspectContainer).not.toHaveBeenCalledOnce();
 
     // should get the image inspect info
-    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledOnce();
-    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledWith(ENGINE_ID_MOCK, IMAGE_INSPECT_MOCK.Id);
+    expect(IMAGE_SERVICE_MOCK.inspectImage).toHaveBeenCalledExactlyOnceWith(ENGINE_ID_MOCK, IMAGE_INSPECT_MOCK.Id);
 
     // should properly call the podlet-js image generator
-    expect(ImageGenerator).toHaveBeenCalledOnce();
-    expect(ImageGenerator).toHaveBeenCalledWith({
+    expect(ImageGenerator).toHaveBeenCalledExactlyOnceWith({
       image: IMAGE_INSPECT_MOCK,
     });
 
@@ -222,12 +221,10 @@ describe('compose', () => {
     });
 
     // ensure the right file is read
-    expect(readFile).toHaveBeenCalledOnce();
-    expect(readFile).toHaveBeenCalledWith('dummy-path', { encoding: 'utf8' });
+    expect(readFile).toHaveBeenCalledExactlyOnceWith('dummy-path', { encoding: 'utf8' });
 
     // expect raw content to be used
-    expect(Compose.fromString).toHaveBeenCalledOnce();
-    expect(Compose.fromString).toHaveBeenCalledWith(COMPOSE_RAW_MOCK);
+    expect(Compose.fromString).toHaveBeenCalledExactlyOnceWith(COMPOSE_RAW_MOCK);
 
     // ensure the compose instance is converted to kube play
     expect(COMPOSE_MOCK.toKubePlay).toHaveBeenCalledOnce();

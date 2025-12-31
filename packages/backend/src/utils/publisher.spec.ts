@@ -54,8 +54,7 @@ test('publisher should notify all listeners', async () => {
 
   await vi.waitFor(() => {
     listeners.forEach(listener => {
-      expect(listener).toHaveBeenCalledOnce();
-      expect(listener).toHaveBeenCalledWith('dummyValue');
+      expect(listener).toHaveBeenCalledExactlyOnceWith('dummyValue');
     });
   });
 });

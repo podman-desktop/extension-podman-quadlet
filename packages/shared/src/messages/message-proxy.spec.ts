@@ -197,8 +197,7 @@ describe('subscribe', () => {
   test('subscriber should be called on event received', async () => {
     const rpcBrowser = new RpcBrowser(window, api);
 
-    expect(window.addEventListener).toHaveBeenCalledOnce();
-    expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledExactlyOnceWith('message', expect.any(Function));
     const messageListener = vi.mocked(window.addEventListener).mock.calls[0][1] as (event: MessageEvent) => void;
 
     const listener = vi.fn();
@@ -217,8 +216,7 @@ describe('subscribe', () => {
   test('all subscribers should be called if multiple exists', async () => {
     const rpcBrowser = new RpcBrowser(window, api);
 
-    expect(window.addEventListener).toHaveBeenCalledOnce();
-    expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledExactlyOnceWith('message', expect.any(Function));
     const messageListener = vi.mocked(window.addEventListener).mock.calls[0][1] as (event: MessageEvent) => void;
 
     const listeners = Array.from({ length: 10 }, _ => vi.fn());
@@ -240,8 +238,7 @@ describe('subscribe', () => {
   test('subscribers which unsubscribe should should be called', async () => {
     const rpcBrowser = new RpcBrowser(window, api);
 
-    expect(window.addEventListener).toHaveBeenCalledOnce();
-    expect(window.addEventListener).toHaveBeenCalledWith('message', expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledExactlyOnceWith('message', expect.any(Function));
     const messageListener = vi.mocked(window.addEventListener).mock.calls[0][1] as (event: MessageEvent) => void;
 
     const [listenerA, listenerB] = [vi.fn(), vi.fn()];
