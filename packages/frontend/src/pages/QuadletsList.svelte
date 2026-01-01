@@ -82,17 +82,26 @@ let selectedItemsNumber: number = $state(0);
 
 const SELECTED_PROVIDER_KEY = 'quadlets.selectedContainerProvider';
 
-// Track whether we should persist the selection (initially false until we successfully restore or user selects)
-let shouldPersistSelection = $state(false);
+// Track the initial value after restoration to detect user changes
+let initialProviderAfterRestore: ProviderContainerConnectionDetailedInfo | undefined = $state(undefined);
+let hasCompletedRestore = $state(false);
 
 // Apply stored selection when provider list becomes available (reactive to `$providerConnectionsInfo`).
 $effect(() => {
   // Always read the providers to ensure this effect reacts to changes
   const providers = $providerConnectionsInfo;
 
+  // Skip if we've already completed restoration (to avoid overriding user selection)
+  if (hasCompletedRestore) return;
+
   // If there's a stored selection, try to apply it; only then fall back to first started provider.
   const raw = localStorage.getItem(SELECTED_PROVIDER_KEY);
-  if (!raw) return; // preserve previous behavior: do nothing if no stored preference
+  if (!raw) {
+    // No stored preference, mark as completed so we start persisting future user changes
+    initialProviderAfterRestore = containerProviderConnection;
+    hasCompletedRestore = true;
+    return;
+  }
 
   try {
     const stored = JSON.parse(raw) as { providerId: string; name: string };
@@ -101,7 +110,8 @@ $effect(() => {
     );
     if (found) {
       containerProviderConnection = found;
-      shouldPersistSelection = true; // successfully restored, now we can persist changes
+      initialProviderAfterRestore = found;
+      hasCompletedRestore = true; // successfully restored
       return;
     }
   } catch {
@@ -112,14 +122,18 @@ $effect(() => {
   const fallback = providers.find(p => p.status === 'started');
   if (fallback) {
     containerProviderConnection = fallback;
-    shouldPersistSelection = true; // fallback found, now we can persist changes
+    initialProviderAfterRestore = fallback;
+    hasCompletedRestore = true; // fallback applied
   }
-  // If no fallback, leave containerProviderConnection as undefined and don't clear localStorage yet
+  // If no fallback found yet, wait for providers to populate (don't mark as completed)
 });
 
-// Persist selection to localStorage (but only after initial restoration is complete)
+// Persist selection to localStorage (but only after restoration is complete AND value has changed)
 $effect(() => {
-  if (!shouldPersistSelection) return;
+  if (!hasCompletedRestore) return;
+
+  // Only persist if the value has changed from the initial restored value
+  if (containerProviderConnection === initialProviderAfterRestore) return;
 
   if (containerProviderConnection) {
     try {
@@ -133,6 +147,9 @@ $effect(() => {
       localStorage.removeItem(SELECTED_PROVIDER_KEY);
     } catch {}
   }
+
+  // Update the baseline so subsequent changes are also persisted
+  initialProviderAfterRestore = containerProviderConnection;
 })
 
 /**

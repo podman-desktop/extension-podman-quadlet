@@ -124,6 +124,21 @@ test('fallbacks to first started provider when stored provider is missing', asyn
   });
 });
 
+test('does not persist initial state when no stored preference exists', async () => {
+  // Start with no stored preference
+  expect(localStorage.getItem('quadlets.selectedContainerProvider')).toBeNull();
+
+  render(QuadletsList);
+
+  // Wait for component to render
+  await tick();
+  await tick();
+
+  // localStorage should still be null because we haven't changed the selection
+  // (we only persist changes, not the initial state)
+  expect(localStorage.getItem('quadlets.selectedContainerProvider')).toBeNull();
+});
+
 test('restores selected provider when provider list arrives later', async () => {
   // use a writable so we can simulate the provider list arriving after mount
   const providers = writable<ProviderContainerConnectionDetailedInfo[]>([]);
