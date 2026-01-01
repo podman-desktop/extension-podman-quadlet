@@ -80,6 +80,61 @@ let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undef
 let searchTerm: string = $state('');
 let selectedItemsNumber: number = $state(0);
 
+const SELECTED_PROVIDER_KEY = 'quadlets.selectedContainerProvider';
+
+// Track whether we should persist the selection (initially false until we successfully restore or user selects)
+let shouldPersistSelection = $state(false);
+
+// Apply stored selection when provider list becomes available (reactive to `$providerConnectionsInfo`).
+$effect(() => {
+  // Always read the providers to ensure this effect reacts to changes
+  const providers = $providerConnectionsInfo;
+
+  // If there's a stored selection, try to apply it; only then fall back to first started provider.
+  const raw = localStorage.getItem(SELECTED_PROVIDER_KEY);
+  if (!raw) return; // preserve previous behavior: do nothing if no stored preference
+
+  try {
+    const stored = JSON.parse(raw) as { providerId: string; name: string };
+    const found = providers.find(
+      p => p.providerId === stored.providerId && p.name === stored.name,
+    );
+    if (found) {
+      containerProviderConnection = found;
+      shouldPersistSelection = true; // successfully restored, now we can persist changes
+      return;
+    }
+  } catch {
+    // ignore parse errors
+  }
+
+  // stored item existed but didn't match; fallback to first started provider if available
+  const fallback = providers.find(p => p.status === 'started');
+  if (fallback) {
+    containerProviderConnection = fallback;
+    shouldPersistSelection = true; // fallback found, now we can persist changes
+  }
+  // If no fallback, leave containerProviderConnection as undefined and don't clear localStorage yet
+});
+
+// Persist selection to localStorage (but only after initial restoration is complete)
+$effect(() => {
+  if (!shouldPersistSelection) return;
+
+  if (containerProviderConnection) {
+    try {
+      localStorage.setItem(
+        SELECTED_PROVIDER_KEY,
+        JSON.stringify({ providerId: containerProviderConnection.providerId, name: containerProviderConnection.name }),
+      );
+    } catch {}
+  } else {
+    try {
+      localStorage.removeItem(SELECTED_PROVIDER_KEY);
+    } catch {}
+  }
+})
+
 /**
  * A template name may appear in multiple container connections.
  * To be able to uniquely identify it, we should create a key based on the connection and the template name

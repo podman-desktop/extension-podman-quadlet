@@ -24,7 +24,8 @@ import * as connectionStore from '/@store/connections';
 import { assert, beforeEach, describe, expect, test, vi } from 'vitest';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
-import { readable } from 'svelte/store';
+import { readable, writable } from 'svelte/store';
+import { tick } from 'svelte';
 import * as quadletStore from '/@store/quadlets';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
@@ -88,11 +89,83 @@ const QUADLETS_MOCK: Array<QuadletInfo> = Array.from({ length: 10 }, (_, index) 
 
 beforeEach(() => {
   vi.resetAllMocks();
+  localStorage.clear();
   vi.mocked(quadletStore).quadletsInfo = readable(QUADLETS_MOCK);
   vi.mocked(connectionStore).providerConnectionsInfo = readable([
     WSL_PROVIDER_DETAILED_INFO,
     QEMU_PROVIDER_DETAILED_INFO,
   ]);
+});
+
+test('restores selected provider from localStorage', async () => {
+  localStorage.setItem(
+    'quadlets.selectedContainerProvider',
+    JSON.stringify({ providerId: 'podman', name: 'podman-machine' }),
+  );
+
+  const { getAllByRole } = render(QuadletsList);
+
+  // we expect 5 WSL quadlets + toggle all row
+  await vi.waitFor(() => {
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(6);
+  });
+});
+
+test('fallbacks to first started provider when stored provider is missing', async () => {
+  localStorage.setItem('quadlets.selectedContainerProvider', JSON.stringify({ providerId: 'podman', name: 'nope' }));
+
+  const { getAllByRole } = render(QuadletsList);
+
+  // fallback to first started (WSL) -> 5 items + toggle
+  await vi.waitFor(() => {
+    const rows = getAllByRole('row');
+    expect(rows).toHaveLength(6);
+  });
+});
+
+test('restores selected provider when provider list arrives later', async () => {
+  // use a writable so we can simulate the provider list arriving after mount
+  const providers = writable<ProviderContainerConnectionDetailedInfo[]>([]);
+  vi.mocked(connectionStore).providerConnectionsInfo = providers;
+
+  localStorage.setItem(
+    'quadlets.selectedContainerProvider',
+    JSON.stringify({ providerId: 'podman', name: 'podman-machine' }),
+  );
+
+  // initial render with empty providers
+  const { getByText, queryByText, getAllByRole } = render(QuadletsList);
+
+  // Initially, all quadlets should be visible (no filter applied)
+  await vi.waitFor(() => {
+    const rows = getAllByRole('row');
+    expect(rows.length).toBeGreaterThan(6); // all 10 quadlets + toggle row
+  });
+
+  // simulate providers coming in later
+  providers.set([WSL_PROVIDER_DETAILED_INFO, QEMU_PROVIDER_DETAILED_INFO]);
+
+  // Force Svelte to process all pending updates
+  await tick();
+
+  // Wait for Svelte reactivity to apply the stored provider selection
+  // Now we expect only 5 WSL quadlets + toggle all row
+  await vi.waitFor(
+    () => {
+      const rows = getAllByRole('row');
+      expect(rows).toHaveLength(6);
+    },
+    { timeout: 3000 },
+  );
+
+  // verify that WSL quadlets are visible (check by path which exists on all quadlet types)
+  const wslQuadlet = getByText(QUADLETS_MOCK[0].path);
+  expect(wslQuadlet).toBeInTheDocument();
+
+  // verify that QEMU quadlets are not visible
+  const qemuQuadlet = queryByText(QUADLETS_MOCK[1].path);
+  expect(qemuQuadlet).not.toBeInTheDocument();
 });
 
 test('all quadlets should be visible', async () => {
