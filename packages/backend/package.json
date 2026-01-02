@@ -20,6 +20,16 @@
     "watch": "vite --mode development build -w"
   },
   "contributes": {
+    "configuration": {
+      "title": "Podman Quadlet",
+      "properties": {
+        "podman-quadlet.preferredContainerEngineConnection": {
+          "type": "string",
+          "description": "Preferred Container Engine Connection.",
+          "hidden": true
+        }
+      }
+    },
     "icons": {
       "quadlet-icon": {
         "description": "Quadlet icon",

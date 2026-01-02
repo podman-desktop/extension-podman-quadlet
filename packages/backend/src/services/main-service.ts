@@ -10,6 +10,7 @@ import type {
   commands as commandsApi,
   provider,
   window,
+  configuration as configurationAPI,
   cli as cliApi,
   containerEngine,
   TelemetryLogger,
@@ -44,6 +45,9 @@ import { DialogService } from './dialog-service';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
 import { PodletJsService } from './podlet-js-service';
+import { ConfigurationService } from './configuration-service';
+import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
+import { ConfigurationApi } from '/@shared/src/apis/configuration-api';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -55,6 +59,7 @@ interface Dependencies {
   cliApi: typeof cliApi;
   commandsApi: typeof commandsApi;
   containers: typeof containerEngine;
+  configuration: typeof configurationAPI;
 }
 
 export class MainService implements Disposable, AsyncInit {
@@ -81,6 +86,12 @@ export class MainService implements Disposable, AsyncInit {
     });
     await webview.init();
     this.#disposables.push(webview);
+
+    // Configuration service
+    const configuration = new ConfigurationService({
+      configurationAPI: this.dependencies.configuration,
+    });
+    this.#disposables.push(configuration);
 
     // logger service store logs and publish them to the frontend
     const loggerService = new LoggerService({
@@ -233,5 +244,11 @@ export class MainService implements Disposable, AsyncInit {
       dialog: dialog,
     });
     rpcExtension.registerInstance<DialogApi>(DialogApi, dialogApiImpl);
+
+    // configuration api
+    const configurationApiImpl = new ConfigurationApiImpl({
+      configuration: configuration,
+    });
+    rpcExtension.registerInstance<ConfigurationApi>(ConfigurationApi, configurationApiImpl);
   }
 }
