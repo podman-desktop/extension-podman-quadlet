@@ -7,6 +7,7 @@ import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { ImageApi } from '/@shared/src/apis/image-api';
 import { LoggerApi } from '/@shared/src/apis/logger-api';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
+import { ConfigurationApi } from '/@shared/src/apis/configuration-api';
 
 /**
  * This file is the client side of the API. It is used to communicate with the backend, which allows
@@ -28,6 +29,7 @@ export const imageAPI: ImageApi = rpcBrowser.getProxy(ImageApi);
 export const podletAPI: PodletApi = rpcBrowser.getProxy(PodletApi);
 export const loggerAPI: LoggerApi = rpcBrowser.getProxy(LoggerApi);
 export const dialogAPI: DialogApi = rpcBrowser.getProxy(DialogApi);
+export const configurationAPI: ConfigurationApi = rpcBrowser.getProxy(ConfigurationApi);
 
 // The below code is used to save the state of the router in the podmanDesktopApi, so
 // that we can determine the correct route to display when the extension is reloaded.
@@ -77,4 +79,8 @@ Object.defineProperty(window, 'podletAPI', {
 
 Object.defineProperty(window, 'loggerAPI', {
   value: loggerAPI,
+});
+
+Object.defineProperty(window, 'configurationAPI', {
+  value: configurationAPI,
 });

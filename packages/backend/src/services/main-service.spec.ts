@@ -21,6 +21,7 @@ import type {
   extensions,
   process as processApi,
   commands as commandsApi,
+  configuration as configurationApi,
   provider,
   window,
   cli as cliApi,
@@ -49,6 +50,8 @@ import { ImageApi } from '/@shared/src/apis/image-api';
 import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { DialogApi } from '/@shared/src/apis/dialog-api';
+import { ConfigurationApi } from '/@shared/src/apis/configuration-api';
+import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
 
 // mock message-proxy
 vi.mock(import('/@shared/src/messages/message-proxy'));
@@ -65,6 +68,7 @@ vi.mock(import('./container-service'));
 vi.mock(import('./image-service'));
 vi.mock(import('./logger-service'));
 vi.mock(import('./dialog-service'));
+vi.mock(import('./configuration-service'));
 
 const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
 const WINDOW_API_MOCK: typeof window = {} as unknown as typeof window;
@@ -77,6 +81,7 @@ const PROVIDERS_API_MOCK: typeof provider = {} as unknown as typeof provider;
 const CLI_API_MOCK: typeof cliApi = {} as unknown as typeof cliApi;
 const COMMANDS_API_MOCK: typeof commandsApi = {} as unknown as typeof commandsApi;
 const CONTAINER_API_MOCK: typeof containerEngine = {} as unknown as typeof containerEngine;
+const CONFIGURATION_API_MOCK: typeof configurationApi = {} as unknown as typeof configurationApi;
 
 const WEBVIEW_PANEL: WebviewPanel = {
   webview: {
@@ -100,6 +105,7 @@ function getMainService(): MainService {
     cliApi: CLI_API_MOCK,
     commandsApi: COMMANDS_API_MOCK,
     containers: CONTAINER_API_MOCK,
+    configuration: CONFIGURATION_API_MOCK,
   });
 }
 
@@ -116,6 +122,7 @@ test('ensure init register all APIs', async () => {
     [PodletApi, PodletApiImpl],
     [RoutingApi, RoutingApiImpl],
     [DialogApi, DialogApiImpl],
+    [ConfigurationApi, ConfigurationApiImpl],
   ]);
 
   for (const [key, value] of APIS.entries()) {
