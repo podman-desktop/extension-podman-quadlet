@@ -19,7 +19,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, within, render } from '@testing-library/svelte';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, describe, vi } from 'vitest';
 import Select from '/@/lib/select/Select.svelte';
 
 beforeEach(() => {
@@ -46,6 +46,10 @@ export class SvelteSelectHelper {
     return !!this.container.querySelector('div[class~="svelte-select-list"]');
   }
 
+  value(): string | undefined {
+    return this.container.querySelector('div[class~="selected-item"]')?.textContent;
+  }
+
   async getOptions(): Promise<string[]> {
     if (!this.isOpen()) {
       await this.open();
@@ -57,6 +61,35 @@ export class SvelteSelectHelper {
       .filter((text): text is string => typeof text === 'string');
   }
 }
+
+describe('SvelteSelectHelper#value', () => {
+  test('ensure value is the right one', async () => {
+    const { container } = render(Select, {
+      label: 'Svelte Select Helper',
+      value: { label: 'hello', value: 'hello' },
+      items: [
+        { label: 'hello', value: 'hello' },
+        { label: 'world', value: 'world' },
+      ],
+    });
+
+    const select = new SvelteSelectHelper(container, 'Svelte Select Helper');
+    expect(select.value()).toBe('hello');
+  });
+
+  test('expect undefined when no value is selected', async () => {
+    const { container } = render(Select, {
+      label: 'Svelte Select Helper',
+      items: [
+        { label: 'hello', value: 'hello' },
+        { label: 'world', value: 'world' },
+      ],
+    });
+
+    const select = new SvelteSelectHelper(container, 'Svelte Select Helper');
+    expect(select.value()).toBeUndefined();
+  });
+});
 
 test('ensure SvelteSelectHelper return expected options', async () => {
   const { container } = render(Select, {

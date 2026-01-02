@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import QuadletsList from '/@/pages/QuadletsList.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { readable } from 'svelte/store';
 import * as quadletStore from '/@store/quadlets';
-import { dialogAPI, quadletAPI } from '/@/api/client';
+import { configurationAPI, dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
@@ -36,6 +36,8 @@ import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-insta
 import type { DialogApi } from '/@shared/src/apis/dialog-api';
 import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
+import type { ConfigurationApi } from '/@shared/src/apis/configuration-api';
+import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -56,6 +58,10 @@ const QEMU_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
   providerAPI: {} as unknown as ProviderApi,
+  configurationAPI: {
+    getPreferredContainerEngineConnection: vi.fn(),
+    setPreferredContainerEngineConnection: vi.fn(),
+  } as unknown as ConfigurationApi,
   quadletAPI: {
     remove: vi.fn(),
     refresh: vi.fn(),
@@ -93,6 +99,54 @@ beforeEach(() => {
     WSL_PROVIDER_DETAILED_INFO,
     QEMU_PROVIDER_DETAILED_INFO,
   ]);
+});
+
+describe('Container Engine Connection Filter', () => {
+  test('select filter should be empty if getPreferredContainerEngineConnection return undefined', () => {
+    vi.mocked(configurationAPI.getPreferredContainerEngineConnection).mockResolvedValue(undefined);
+
+    const { container } = render(QuadletsList);
+
+    const select = new SvelteSelectHelper(container, 'Select Container Engine');
+    expect(select.value()).toBeUndefined();
+  });
+
+  test('select filter should select corresponding provider', async () => {
+    vi.mocked(configurationAPI.getPreferredContainerEngineConnection).mockResolvedValue(
+      `${WSL_PROVIDER_DETAILED_INFO.providerId}:${WSL_PROVIDER_DETAILED_INFO.name}`,
+    );
+
+    const { container } = render(QuadletsList);
+
+    const select = new SvelteSelectHelper(container, 'Select Container Engine');
+
+    await vi.waitFor(() => {
+      expect(select.value()).toEqual(WSL_PROVIDER_DETAILED_INFO.name);
+    });
+  });
+
+  test('select should filters table content', async () => {
+    vi.mocked(configurationAPI.getPreferredContainerEngineConnection).mockResolvedValue(
+      `${WSL_PROVIDER_DETAILED_INFO.providerId}:${WSL_PROVIDER_DETAILED_INFO.name}`,
+    );
+
+    const { getAllByRole } = render(QuadletsList);
+
+    // wait until only the row count is equal to number of quadlets on the WSL + 1 (header)
+    const rows = await vi.waitFor(() => {
+      const rows = getAllByRole('row');
+      expect(rows).toHaveLength(
+        QUADLETS_MOCK.filter(quadlet => quadlet.connection === WSL_PROVIDER_DETAILED_INFO).length + 1,
+      );
+      return rows;
+    });
+
+    // ensure all the rows visible are the ones from the selected provider
+    for (let i = 1; i < rows.length; i++) {
+      const cells = within(rows[i]).getAllByRole('cell');
+      expect(cells[4]).toHaveTextContent(WSL_PROVIDER_DETAILED_INFO.name);
+    }
+  });
 });
 
 test('all quadlets should be visible', async () => {
