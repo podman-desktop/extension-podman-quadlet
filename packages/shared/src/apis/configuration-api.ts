@@ -22,7 +22,7 @@
 export type CONTAINER_ENGINE_CONNECTION_FORMAT = `${string}:${string}`;
 
 export abstract class ConfigurationApi {
-  static readonly CHANNEL: string = 'image-api';
+  static readonly CHANNEL: string = 'configuration-api';
 
   public abstract getPreferredContainerEngineConnection(): Promise<CONTAINER_ENGINE_CONNECTION_FORMAT | undefined>;
   public abstract setPreferredContainerEngineConnection(
