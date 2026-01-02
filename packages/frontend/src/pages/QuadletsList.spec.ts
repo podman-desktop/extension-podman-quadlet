@@ -143,7 +143,7 @@ describe('Container Engine Connection Filter', () => {
 
     // ensure all the rows visible are the ones from the selected provider
     for (let i = 1; i < rows.length; i++) {
-      const cells = within(rows[1]).getAllByRole('cell');
+      const cells = within(rows[i]).getAllByRole('cell');
       expect(cells[4]).toHaveTextContent(WSL_PROVIDER_DETAILED_INFO.name);
     }
   });
