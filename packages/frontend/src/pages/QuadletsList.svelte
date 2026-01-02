@@ -2,7 +2,7 @@
 import { Button, Table, TableColumn, TableRow, NavPage, TableSimpleColumn } from '@podman-desktop/ui-svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
-import { dialogAPI, quadletAPI } from '../api/client';
+import { configurationAPI, dialogAPI, quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate';
 import { quadletsInfo } from '/@store/quadlets';
@@ -19,6 +19,7 @@ import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { isTemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import { onMount } from 'svelte';
 
 type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };
 
@@ -79,78 +80,6 @@ async function refreshQuadlets(): Promise<void> {
 let containerProviderConnection: ProviderContainerConnectionDetailedInfo | undefined = $state(undefined);
 let searchTerm: string = $state('');
 let selectedItemsNumber: number = $state(0);
-
-const SELECTED_PROVIDER_KEY = 'quadlets.selectedContainerProvider';
-
-// Track the initial value after restoration to detect user changes
-let initialProviderAfterRestore: ProviderContainerConnectionDetailedInfo | undefined = $state(undefined);
-let hasCompletedRestore = $state(false);
-
-// Apply stored selection when provider list becomes available (reactive to `$providerConnectionsInfo`).
-$effect(() => {
-  // Always read the providers to ensure this effect reacts to changes
-  const providers = $providerConnectionsInfo;
-
-  // Skip if we've already completed restoration (to avoid overriding user selection)
-  if (hasCompletedRestore) return;
-
-  // If there's a stored selection, try to apply it; only then fall back to first started provider.
-  const raw = localStorage.getItem(SELECTED_PROVIDER_KEY);
-  if (!raw) {
-    // No stored preference, mark as completed so we start persisting future user changes
-    initialProviderAfterRestore = containerProviderConnection;
-    hasCompletedRestore = true;
-    return;
-  }
-
-  try {
-    const stored = JSON.parse(raw) as { providerId: string; name: string };
-    const found = providers.find(
-      p => p.providerId === stored.providerId && p.name === stored.name,
-    );
-    if (found) {
-      containerProviderConnection = found;
-      initialProviderAfterRestore = found;
-      hasCompletedRestore = true; // successfully restored
-      return;
-    }
-  } catch {
-    // ignore parse errors
-  }
-
-  // stored item existed but didn't match; fallback to first started provider if available
-  const fallback = providers.find(p => p.status === 'started');
-  if (fallback) {
-    containerProviderConnection = fallback;
-    initialProviderAfterRestore = fallback;
-    hasCompletedRestore = true; // fallback applied
-  }
-  // If no fallback found yet, wait for providers to populate (don't mark as completed)
-});
-
-// Persist selection to localStorage (but only after restoration is complete AND value has changed)
-$effect(() => {
-  if (!hasCompletedRestore) return;
-
-  // Only persist if the value has changed from the initial restored value
-  if (containerProviderConnection === initialProviderAfterRestore) return;
-
-  if (containerProviderConnection) {
-    try {
-      localStorage.setItem(
-        SELECTED_PROVIDER_KEY,
-        JSON.stringify({ providerId: containerProviderConnection.providerId, name: containerProviderConnection.name }),
-      );
-    } catch {}
-  } else {
-    try {
-      localStorage.removeItem(SELECTED_PROVIDER_KEY);
-    } catch {}
-  }
-
-  // Update the baseline so subsequent changes are also persisted
-  initialProviderAfterRestore = containerProviderConnection;
-})
 
 /**
  * A template name may appear in multiple container connections.
@@ -254,6 +183,27 @@ async function deleteSelected(): Promise<void> {
 function getQuadletInfoKey({ id }: QuadletInfo): string {
   return id;
 }
+
+async function onContainerProviderConnectionChange(
+  connection: ProviderContainerConnectionDetailedInfo | undefined,
+): Promise<void> {
+  await configurationAPI.setPreferredContainerEngineConnection(
+    connection ? `${connection.providerId}:${connection.name}` : undefined,
+  );
+}
+
+onMount(async () => {
+  // read the preferred container engine connection from the configuration API
+  const preferred = await configurationAPI.getPreferredContainerEngineConnection();
+  if (!preferred) {
+    return;
+  }
+
+  const [providerId, connectionName] = preferred.split(':');
+  containerProviderConnection = $providerConnectionsInfo.find(
+    connection => connection.providerId === providerId && connection.name === connectionName,
+  );
+});
 </script>
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
@@ -281,6 +231,7 @@ function getQuadletInfoKey({ id }: QuadletInfo): string {
       </div>
       <div class="w-[250px]">
         <ContainerProviderConnectionSelect
+          onChange={onContainerProviderConnectionChange}
           bind:value={containerProviderConnection}
           containerProviderConnections={$providerConnectionsInfo} />
       </div>
