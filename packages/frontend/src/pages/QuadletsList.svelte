@@ -2,7 +2,7 @@
 import { Button, Table, TableColumn, TableRow, NavPage, TableSimpleColumn } from '@podman-desktop/ui-svelte';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
-import { dialogAPI, quadletAPI } from '../api/client';
+import { configurationAPI, dialogAPI, quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate';
 import { quadletsInfo } from '/@store/quadlets';
@@ -19,6 +19,7 @@ import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { isTemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import { onMount } from 'svelte';
 
 type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };
 
@@ -182,6 +183,27 @@ async function deleteSelected(): Promise<void> {
 function getQuadletInfoKey({ id }: QuadletInfo): string {
   return id;
 }
+
+async function onContainerProviderConnectionChange(
+  connection: ProviderContainerConnectionDetailedInfo | undefined,
+): Promise<void> {
+  await configurationAPI.setPreferredContainerEngineConnection(
+    connection ? `${connection.providerId}:${connection.name}` : undefined,
+  );
+}
+
+onMount(async () => {
+  // read the preferred container engine connection from the configuration API
+  const preferred = await configurationAPI.getPreferredContainerEngineConnection();
+  if (!preferred) {
+    return;
+  }
+
+  const [providerId, connectionName] = preferred.split(':');
+  containerProviderConnection = $providerConnectionsInfo.find(
+    connection => connection.providerId === providerId && connection.name === connectionName,
+  );
+});
 </script>
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
@@ -209,6 +231,7 @@ function getQuadletInfoKey({ id }: QuadletInfo): string {
       </div>
       <div class="w-[250px]">
         <ContainerProviderConnectionSelect
+          onChange={onContainerProviderConnectionChange}
           bind:value={containerProviderConnection}
           containerProviderConnections={$providerConnectionsInfo} />
       </div>
