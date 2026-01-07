@@ -17,7 +17,13 @@
  ***********************************************************************/
 
 import type { BaseQuadlet } from './base-quadlet';
+import type { Quadlet } from './quadlet';
 
 export interface ServiceLessQuadlet extends BaseQuadlet {
   service: undefined;
+  stderr?: string;
+}
+
+export function isServiceLessQuadlet(quadlet: Quadlet): quadlet is ServiceLessQuadlet {
+  return 'service' in quadlet && !quadlet.service;
 }
