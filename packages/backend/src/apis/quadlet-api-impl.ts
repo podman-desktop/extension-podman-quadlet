@@ -98,6 +98,31 @@ export class QuadletApiImpl extends QuadletApi {
     }
   }
 
+  override async restart(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean> {
+    let quadlet: ServiceQuadlet;
+
+    try {
+      quadlet = this.checkQuadlet(id);
+    } catch (error) {
+      if (error instanceof Error) {
+        throw new Error(`cannot restart quadlet: ${error.message}`);
+      }
+      throw error;
+    }
+
+    const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
+
+    try {
+      return await this.dependencies.systemd.restart({
+        service: quadlet.service,
+        provider: providerConnection,
+        admin: false,
+      });
+    } finally {
+      this.dependencies.quadlet.refreshQuadletsStatuses().catch(console.error);
+    }
+  }
+
   override async remove(connection: ProviderContainerConnectionIdentifierInfo, ...ids: string[]): Promise<void> {
     const providerConnection = this.dependencies.providers.getProviderContainerConnection(connection);
 

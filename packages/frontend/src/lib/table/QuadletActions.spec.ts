@@ -35,6 +35,7 @@ vi.mock(import('/@/api/client'), () => ({
   } as unknown as DialogApi,
   quadletAPI: {
     remove: vi.fn(),
+    restart: vi.fn(),
   } as unknown as QuadletApi,
 }));
 
@@ -79,10 +80,14 @@ const STARTABLE_TEMPLATE_QUADLET_MOCK: QuadletInfo & TemplateQuadlet = {
   defaultInstance: 'bar',
 };
 
-test('expect active quadlet to have stop enabled', async () => {
+test('expect active quadlet to have stop and restart enabled', async () => {
   const { getByRole, queryByRole } = render(QuadletActions, {
     object: QUADLET_MOCK,
   });
+
+  const restartBtn = getByRole('button', { name: 'Restart quadlet' });
+  expect(restartBtn).toBeDefined();
+  expect(restartBtn).toBeEnabled();
 
   const stopBtn = getByRole('button', { name: 'Stop quadlet' });
   expect(stopBtn).toBeDefined();
@@ -168,4 +173,17 @@ test('expect startable template quadlet to have start action', async () => {
 
   const startBtn = queryByRole('button', { name: 'Start quadlet' });
   expect(startBtn).toBeDefined();
+});
+
+test('expect restart action to call quadletAPI#restart', async () => {
+  const { getByRole } = render(QuadletActions, {
+    object: QUADLET_MOCK,
+  });
+
+  const restartBtn = getByRole('button', { name: 'Restart quadlet' });
+  await fireEvent.click(restartBtn);
+
+  await vi.waitFor(() => {
+    expect(quadletAPI.restart).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+  });
 });

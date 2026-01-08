@@ -10,6 +10,7 @@ export enum TelemetryEvents {
   // systemd
   SYSTEMD_START = 'systemd-start',
   SYSTEMD_STOP = 'systemd-stop',
+  SYSTEMD_RESTART = 'systemd-restart',
   // podlet
   PODLET_GENERATE = 'podlet-generate',
   PODLET_COMPOSE = 'podlet-compose',

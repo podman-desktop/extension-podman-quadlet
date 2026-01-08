@@ -3,6 +3,7 @@ import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import ListItemButtonIcon from '/@/lib/buttons/ListItemButtonIcon.svelte';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
@@ -35,6 +36,15 @@ async function stop(): Promise<void> {
   }
 }
 
+async function restart(): Promise<void> {
+  loading = true;
+  try {
+    await quadletAPI.restart(object.connection, object.id);
+  } finally {
+    loading = false;
+  }
+}
+
 async function remove(): Promise<void> {
   const result = await dialogAPI.showWarningMessage(
     `Are you sure you want to delete ${object.path}?`,
@@ -53,6 +63,7 @@ async function remove(): Promise<void> {
 </script>
 
 {#if object.state === 'active'}
+  <ListItemButtonIcon icon={faRotateRight} onClick={restart} title="Restart quadlet" enabled={!loading && !deleting} />
   <ListItemButtonIcon icon={faStop} onClick={stop} title="Stop quadlet" enabled={!loading && !deleting} />
 {:else if startable}
   <ListItemButtonIcon icon={faPlay} onClick={start} title="Start quadlet" enabled={!loading && !deleting} />

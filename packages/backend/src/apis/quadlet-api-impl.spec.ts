@@ -38,6 +38,7 @@ const QUADLET_SERVICE: QuadletService = {
 const SYSTEMD_SERVICE: SystemdService = {
   start: vi.fn(),
   stop: vi.fn(),
+  restart: vi.fn(),
 } as unknown as SystemdService;
 const PODMAN_SERVICE: PodmanService = {
   getWorker: vi.fn(),
@@ -136,7 +137,7 @@ describe('QuadletApiImpl#readIntoMachine', () => {
   });
 });
 
-describe.each(['start', 'stop'] as Array<'start' | 'stop'>)('QuadletApiImpl#%s', func => {
+describe.each(['start', 'stop', 'restart'] as Array<'start' | 'stop' | 'restart'>)('QuadletApiImpl#%s', func => {
   test('should ensure quadlet exists', async () => {
     const api = getQuadletApiImpl();
 

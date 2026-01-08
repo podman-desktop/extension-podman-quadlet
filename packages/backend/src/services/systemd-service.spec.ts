@@ -142,3 +142,21 @@ test('expect SystemdService#stop to call PodmanService#systemctlExec', async () 
     duration: expect.any(Number),
   });
 });
+
+test('expect SystemdService#restart to call PodmanService#systemctlExec', async () => {
+  const systemd = getSystemdService();
+  await systemd.restart({
+    provider: WSL_PROVIDER_CONNECTION_MOCK,
+    service: 'dummy',
+    admin: false,
+  });
+  expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
+  
+  expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
+    args: ['--user', 'restart', 'dummy'],
+  });
+  expect(telemetryMock.logUsage).toHaveBeenCalledWith(TelemetryEvents.SYSTEMD_RESTART, {
+    admin: false,
+    duration: expect.any(Number),
+  });
+});

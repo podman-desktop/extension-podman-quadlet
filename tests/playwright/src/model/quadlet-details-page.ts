@@ -7,6 +7,7 @@ export class QuadletDetailsPage extends QuadletBasePage {
   readonly start: Locator;
   readonly stop: Locator;
   readonly remove: Locator;
+  readonly restart: Locator;
 
   constructor(page: Page, webview: Page, service: string) {
     super(page, webview, service);
@@ -17,6 +18,7 @@ export class QuadletDetailsPage extends QuadletBasePage {
     this.start = this.actions.getByRole('button', { name: 'Start quadlet' });
     this.stop = this.actions.getByRole('button', { name: 'Stop quadlet' });
     this.remove = this.actions.getByRole('button', { name: 'Remove quadlet' });
+    this.restart = this.actions.getByRole('button', { name: 'Restart quadlet' });
   }
 
   async isActive(): Promise<boolean> {
