@@ -184,7 +184,7 @@ describe.each(['start', 'stop', 'restart'] as Array<'start' | 'stop' | 'restart'
     );
   });
 
-  test('should call systemd#start with appropriate arguments', async () => {
+  test('should call systemd#[func] operation with appropriate arguments', async () => {
     const api = getQuadletApiImpl();
 
     await api[func](WSL_PROVIDER_IDENTIFIER, QUADLET_MOCK.id);

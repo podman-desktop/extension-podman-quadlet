@@ -185,7 +185,7 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       admin: options.admin,
     };
 
-    // measure time for stop operation
+    // measure time for restart operation
     const start = performance.now();
     
 

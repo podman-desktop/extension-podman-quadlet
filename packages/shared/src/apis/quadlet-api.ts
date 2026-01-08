@@ -26,10 +26,16 @@ export abstract class QuadletApi {
    * @param id the id of the quadlet
    */
   abstract stop(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean>;
+  /**
+   * Given a connection and a quadlet id, restart the corresponding systemd service
+   * @remarks throw an error if the quadlet does not have an associated systemd service
+   * @param connection the connection where the quadlet is hosted
+   * @param id the id of the quadlet
+   */
+  abstract restart(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean>;
   abstract remove(connection: ProviderContainerConnectionIdentifierInfo, ...ids: string[]): Promise<void>;
   abstract read(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<string>;
 
-  abstract restart(connection: ProviderContainerConnectionIdentifierInfo, id: string): Promise<boolean>;
   /**
    * This method will use journalctl to create a logger
    * @remarks throw an error if the quadlet does not have an associated systemd service
