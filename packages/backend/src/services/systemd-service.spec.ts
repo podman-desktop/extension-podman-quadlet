@@ -151,7 +151,7 @@ test('expect SystemdService#restart to call PodmanService#systemctlExec', async 
     admin: false,
   });
   expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_PROVIDER_CONNECTION_MOCK);
-  
+
   expect(PODMAN_WORKER_MOCK.systemctlExec).toHaveBeenCalledWith({
     args: ['--user', 'restart', 'dummy'],
   });
