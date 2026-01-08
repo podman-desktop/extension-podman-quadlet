@@ -172,4 +172,42 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       this.logUsage(TelemetryEvents.SYSTEMD_STOP, telemetry);
     }
   }
+
+  async restart(options: {
+    provider: ProviderContainerConnection;
+    service: string;
+    /**
+     * @default false (Run as systemd user)
+     */
+    admin: boolean;
+  }): Promise<boolean> {
+    const telemetry: Record<string, unknown> = {
+      admin: options.admin,
+    };
+
+    // measure time for restart operation
+    const start = performance.now();
+
+    try {
+      const args: string[] = [];
+      if (!options.admin) {
+        args.push('--user');
+      }
+      args.push(...['restart', options.service]);
+
+      // get the worker
+      const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+
+      const result = await worker.systemctlExec({
+        args,
+      });
+      return result.stderr.length === 0;
+    } catch (err: unknown) {
+      telemetry['error'] = err;
+      throw err;
+    } finally {
+      telemetry['duration'] = performance.now() - start;
+      this.logUsage(TelemetryEvents.SYSTEMD_RESTART, telemetry);
+    }
+  }
 }
