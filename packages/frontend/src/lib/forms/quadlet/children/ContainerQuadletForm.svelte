@@ -4,6 +4,9 @@ import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-i
 import { containerAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';
+import { Checkbox } from '@podman-desktop/ui-svelte';
+import type { ContainerGenerateOptions } from '/@shared/src/models/quadlet-generate-options';
+import { QuadletType } from '/@shared/src/utils/quadlet-type';
 
 let {
   loading = $bindable(),
@@ -15,6 +18,21 @@ let {
 }: QuadletChildrenFormProps = $props();
 
 let containers: SimpleContainerInfo[] | undefined = $state();
+
+const QUERY_WANTED_BY = 'container:wanted-by';
+function getContainerGenerateOptions(): ContainerGenerateOptions {
+  let wantedBy: string | undefined = undefined;
+  if (router.location.query.get(QUERY_WANTED_BY)) {
+    wantedBy = String(router.location.query.get(QUERY_WANTED_BY));
+  }
+
+  return {
+    type: QuadletType.CONTAINER,
+    wantedBy: wantedBy,
+  };
+}
+
+let options: ContainerGenerateOptions = $state(getContainerGenerateOptions());
 
 // use the query parameter containerId
 let selectedContainer: SimpleContainerInfo | undefined = $derived(
@@ -46,7 +64,7 @@ function onContainerChange(value: SimpleContainerInfo | undefined): void {
   }
 
   router.location.query.set(RESOURCE_ID_QUERY, value.id);
-  onChange();
+  onChange(options);
 }
 
 // if we mount the component, and query parameters with all the values defined
@@ -62,6 +80,16 @@ $effect(() => {
     listContainers().catch(console.error);
   }
 });
+
+function onStartOnBootChange(checked: boolean): void {
+  options.wantedBy = checked ? 'default.target' : undefined;
+  if (options.wantedBy) {
+    router.location.query.set(QUERY_WANTED_BY, options.wantedBy);
+  } else {
+    router.location.query.delete(QUERY_WANTED_BY);
+  }
+  onChange(options);
+}
 </script>
 
 <!-- container list -->
@@ -71,3 +99,15 @@ $effect(() => {
   onChange={onContainerChange}
   value={selectedContainer}
   containers={containers ?? []} />
+
+<div class="pt-4">
+  <div class="text-base font-bold text-(--pd-content-card-header-text)">Options</div>
+  <Checkbox
+    class="mx-1 my-auto"
+    title="Start on boot"
+    disabled={loading || provider === undefined || disabled}
+    checked={options.wantedBy === 'default.target'}
+    onclick={onStartOnBootChange}>
+    <div>Start on boot</div>
+  </Checkbox>
+</div>
