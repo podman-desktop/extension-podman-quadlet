@@ -25,5 +25,5 @@ export interface ServiceLessQuadlet extends BaseQuadlet {
 }
 
 export function isServiceLessQuadlet(quadlet: Quadlet): quadlet is ServiceLessQuadlet {
-  return 'service' in quadlet && !quadlet.service;
+  return !('service' in quadlet) || !quadlet.service;
 }

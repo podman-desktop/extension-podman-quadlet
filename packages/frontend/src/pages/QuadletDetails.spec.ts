@@ -20,7 +20,7 @@ import '@testing-library/jest-dom/vitest';
 
 import { render, within } from '@testing-library/svelte';
 import * as quadletStore from '/@store/quadlets';
-import { beforeEach, expect, test, vi, describe } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
 import { readable } from 'svelte/store';
@@ -35,6 +35,7 @@ import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import type { LoggerApi } from '/@shared/src/apis/logger-api';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
 import type { RpcBrowser } from '/@shared/src/messages/message-proxy';
+import type { ServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
 
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
@@ -149,6 +150,23 @@ const MULTI_RESOURCES_QUADLET_MOCK: QuadletInfo = {
   ],
 };
 
+const SERVICE_LESS_QUADLET_MOCK: QuadletInfo = {
+  connection: WSL_PROVIDER_DETAILED_INFO,
+  id: `service-less-quadlet`,
+  files: [],
+  path: '/mtn/error',
+  type: QuadletType.CONTAINER,
+  requires: [],
+  service: undefined,
+  state: 'error',
+};
+
+const ERROR_QUADLET_MOCK: QuadletInfo = {
+  ...SERVICE_LESS_QUADLET_MOCK,
+  id: `service-less-with-error-quadlet`,
+  stderr: 'foo error\nbar error',
+};
+
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(quadletStore).quadletsInfo = readable([
@@ -158,6 +176,8 @@ beforeEach(() => {
     INVALID_IMAGE_QUADLET_MOCK,
     CONTAINER_TEMPLATE_QUADLET_MOCK,
     MULTI_RESOURCES_QUADLET_MOCK,
+    SERVICE_LESS_QUADLET_MOCK,
+    ERROR_QUADLET_MOCK,
   ]);
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
 });
@@ -305,5 +325,46 @@ describe('logs tab', () => {
 
     const logs = queryByText('Logs');
     expect(logs).toBeNull();
+  });
+});
+
+describe('error tab', () => {
+  test('valid container quadlet should have not have error tab', async () => {
+    const { queryByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: CONTAINER_QUADLET_MOCK.id,
+    });
+
+    const error = queryByText('Error');
+    expect(error).toBeNull();
+  });
+
+  test('service less quadlet without stderr should not have an error tab', async () => {
+    expect(SERVICE_LESS_QUADLET_MOCK.stderr).toBeUndefined();
+
+    const { queryByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: SERVICE_LESS_QUADLET_MOCK.id,
+    });
+
+    const error = queryByText('Error');
+    expect(error).toBeNull();
+  });
+
+  test('service less quadlet with stderr should have an error tab', async () => {
+    expect(ERROR_QUADLET_MOCK.stderr).toBeDefined();
+
+    const { getByText } = render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: ERROR_QUADLET_MOCK.id,
+    });
+
+    await vi.waitFor(() => {
+      const error = getByText('Error');
+      expect(error).toBeDefined();
+    });
   });
 });
