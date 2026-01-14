@@ -23,7 +23,7 @@ import * as quadletStore from '/@store/quadlets';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
 import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import { readable } from 'svelte/store';
+import { readable, get } from 'svelte/store';
 import * as connectionStore from '/@store/connections';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';
@@ -35,6 +35,7 @@ import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import type { LoggerApi } from '/@shared/src/apis/logger-api';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
 import type { RpcBrowser } from '/@shared/src/messages/message-proxy';
+import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
@@ -365,5 +366,31 @@ describe('error tab', () => {
       const error = getByText('Error');
       expect(error).toBeDefined();
     });
+  });
+
+  test('error tab should display stderr in terminal', async () => {
+    render(QuadletDetails, {
+      connection: WSL_PROVIDER_DETAILED_INFO.name,
+      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+      id: ERROR_QUADLET_MOCK.id,
+    });
+
+    expect(XTerminal).not.toHaveBeenCalled();
+
+    // go to logs tab
+    router.goto('/error');
+
+    await vi.waitFor(() => {
+      expect(XTerminal).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.objectContaining({
+          readonly: true,
+        }),
+      );
+    });
+
+    const props = vi.mocked(XTerminal).mock.calls[0][1];
+    const content = get(props.store);
+    expect(content).toEqual(ERROR_QUADLET_MOCK.stderr);
   });
 });
