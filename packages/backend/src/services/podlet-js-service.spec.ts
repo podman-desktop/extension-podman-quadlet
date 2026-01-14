@@ -26,6 +26,7 @@ import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@p
 import { Compose, ContainerGenerator, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
+import type { PodService } from './pod-service';
 
 /**
  *  mock the podlet-js library
@@ -48,6 +49,8 @@ const CONTAINER_CONNECTION_IDENTIFIER: ProviderContainerConnectionIdentifierInfo
   providerId: 'podman',
   name: 'Podman',
 };
+
+const POD_SERVICE_MOCK: PodService = {} as unknown as PodService;
 
 const TELEMETRY_MOCK: TelemetryLogger = {
   logUsage: vi.fn(),
@@ -87,6 +90,7 @@ function getService(): PodletJsService {
     containers: CONTAINER_SERVICE_MOCK,
     images: IMAGE_SERVICE_MOCK,
     telemetry: TELEMETRY_MOCK,
+    pods: POD_SERVICE_MOCK,
   });
 }
 
