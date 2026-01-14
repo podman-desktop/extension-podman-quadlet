@@ -55,10 +55,12 @@ test('should parse stderr properly and properly set state', async () => {
   assert(!isTemplateQuadlet(image));
   assert(!isTemplateInstanceQuadlet(image));
 
-  expect(image.stderr).toEqual([
-    'quadlet-generator[13914]: Loading source unit file /home/user/.config/containers/systemd/nginx.image',
-    'quadlet-generator[13914]: converting "nginx.image": unsupported key \'Annotation\' in group \'Image\' in /home/user/.config/containers/systemd/nginx.image',
-  ].join('\n'));
+  expect(image.stderr).toEqual(
+    [
+      'quadlet-generator[13914]: Loading source unit file /home/user/.config/containers/systemd/nginx.image',
+      'quadlet-generator[13914]: converting "nginx.image": unsupported key \'Annotation\' in group \'Image\' in /home/user/.config/containers/systemd/nginx.image',
+    ].join('\n'),
+  );
 });
 
 test('overlapping stderr should be overwritten by stdout', async () => {

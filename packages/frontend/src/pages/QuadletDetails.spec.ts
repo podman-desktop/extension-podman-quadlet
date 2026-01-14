@@ -35,7 +35,6 @@ import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import type { LoggerApi } from '/@shared/src/apis/logger-api';
 import type { ProviderApi } from '/@shared/src/apis/provide-api';
 import type { RpcBrowser } from '/@shared/src/messages/message-proxy';
-import type { ServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
 
 // mock clients
 vi.mock(import('/@/api/client'), () => ({
