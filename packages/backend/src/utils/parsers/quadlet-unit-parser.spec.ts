@@ -156,6 +156,23 @@ Yaml=./ping.yaml
 ${PARTIAL_KUBE_QUADLET_MOCK}
 `;
 
+const ARTIFACT_QUADLET_EXAMPLE = `
+[X-Artifact]
+Artifact=foo/bar:0.11.1
+
+[Unit]
+Wants=podman-user-wait-network-online.service
+After=podman-user-wait-network-online.service
+SourcePath=/home/axel7083/.config/containers/systemd/demo.artifact
+RequiresMountsFor=%t/containers
+
+[Service]
+ExecStart=/usr/bin/podman artifact pull foo/bar:0.11.1
+SyslogIdentifier=%N
+Type=oneshot
+RemainAfterExit=yes
+`;
+
 test('expect path to be properly extracted', async () => {
   const parser = new QuadletUnitParser(DUMMY_SERVICE_NAME, CONTAINER_QUADLET_EXAMPLE);
   const result = parser.parse();
@@ -199,6 +216,13 @@ test('expect startable template quadlet to have proper service name', () => {
   expect(result.service).toBe('sleep-quadlet@100.service');
   expect(result.template).toBe('sleep-quadlet');
   expect(result.defaultInstance).toBe('100');
+});
+
+test('expect artifact quadlet type to be detected', () => {
+  const parser = new QuadletUnitParser('sleep-quadlet@.service', ARTIFACT_QUADLET_EXAMPLE);
+  const result = parser.parse();
+
+  expect(result.type).toBe(QuadletType.ARTIFACT);
 });
 
 describe('files', () => {

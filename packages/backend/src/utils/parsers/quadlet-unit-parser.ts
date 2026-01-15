@@ -32,6 +32,7 @@ const QUADLET_FILES_PATHS: Record<QuadletType, Array<string>> = {
   [QuadletType.NETWORK]: ['ContainersConfModule'],
   [QuadletType.POD]: ['ContainersConfModule'],
   [QuadletType.VOLUME]: ['ContainersConfModule'],
+  [QuadletType.ARTIFACT]: ['AuthFile', 'ContainersConfModule'],
 };
 
 export class QuadletUnitParser extends Parser<string, Quadlet> {
