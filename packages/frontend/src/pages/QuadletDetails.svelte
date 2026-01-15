@@ -17,7 +17,10 @@ import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet.js';
 import IconTab from '/@/lib/tab/IconTab.svelte';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
+import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
+import { isServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
+import { readable } from 'svelte/store';
 
 interface Props {
   id: string;
@@ -170,6 +173,13 @@ function onchange(content: string): void {
           url="/quadlets/{providerId}/{connection}/{id}/systemd-service"
           selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/systemd-service`} />
       {/if}
+      {#if isServiceLessQuadlet(quadlet) && quadlet.stderr}
+        <IconTab
+          title="Error"
+          url="/quadlets/{providerId}/{connection}/{id}/error"
+          icon={faWarning}
+          selected={$router.path === `/quadlets/${providerId}/${connection}/${id}/error`} />
+      {/if}
       {#if logger}
         <!-- journalctl tab -->
         <Tab
@@ -213,6 +223,12 @@ function onchange(content: string): void {
           {#if quadletSource}
             <EditorOverlay save={save} loading={loading} changed={changed} />
             <MonacoEditor class="h-full" onChange={onchange} content={quadletSource} language="ini" />
+          {/if}
+        </Route>
+
+        <Route path="/error">
+          {#if isServiceLessQuadlet(quadlet) && quadlet.stderr}
+            <XTerminal store={readable(quadlet.stderr)} readonly />
           {/if}
         </Route>
 

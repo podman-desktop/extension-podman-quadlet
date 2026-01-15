@@ -70,6 +70,9 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
 
       const type = new QuadletExtensionParser(path).parse();
 
+      // search for every line mentioning the path
+      const stderr = lines.filter(line => line.includes(path));
+
       const serviceLessQuadlet: ServiceLessQuadlet = {
         service: undefined, // do not have corresponding service
         id: randomUUID(),
@@ -78,6 +81,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         type: type,
         requires: [], // cannot detect requires
         files: [], // cannot detect resources
+        stderr: stderr.length > 0 ? stderr.join('\n') : undefined,
       };
 
       const [serviceType, result] = new QuadletServiceTypeParser({

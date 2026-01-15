@@ -1,8 +1,22 @@
-/**
- * @author axel7083
- */
+/**********************************************************************
+ * Copyright (C) 2025-2026 Red Hat, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ***********************************************************************/
 
-import { test, expect } from 'vitest';
+import { test, expect, assert } from 'vitest';
 import { QuadletDryRunParser } from './quadlet-dryrun-parser';
 import TEMPLATE_AND_INSTANCE from './tests/quadlet-stdout-template-and-instance.txt?raw';
 import MULTIPLE_QUADLETS_EXAMPLE from './tests/quadlet-stdout-multiple-quadlets.txt?raw';
@@ -51,7 +65,16 @@ test('should parse stderr properly and properly set state', async () => {
   expect(image.path).toBe('/home/user/.config/containers/systemd/nginx.image');
   expect(image.state).toBe('error');
 
-  expect(isServiceQuadlet(image)).toBeFalsy();
+  assert(!isServiceQuadlet(image));
+  assert(!isTemplateQuadlet(image));
+  assert(!isTemplateInstanceQuadlet(image));
+
+  expect(image.stderr).toEqual(
+    [
+      `quadlet-generator[13914]: Loading source unit file /home/user/.config/containers/systemd/nginx.image`,
+      `quadlet-generator[13914]: converting "nginx.image": unsupported key 'Annotation' in group 'Image' in /home/user/.config/containers/systemd/nginx.image`,
+    ].join('\n'),
+  );
 });
 
 test('overlapping stderr should be overwritten by stdout', async () => {
