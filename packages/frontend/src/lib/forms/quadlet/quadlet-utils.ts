@@ -9,13 +9,14 @@ import PodQuadletForm from '/@/lib/forms/quadlet/children/PodQuadletForm.svelte'
 import VolumeQuadletForm from '/@/lib/forms/quadlet/children/VolumeQuadletForm.svelte';
 import NetworkQuadletForm from '/@/lib/forms/quadlet/children/NetworkQuadletForm.svelte';
 import ImageQuadletForm from '/@/lib/forms/quadlet/children/ImageQuadletForm.svelte';
+import type { QuadletGenerateOptions } from '/@shared/src/models/quadlet-generate-options';
 
 export interface QuadletChildrenFormProps {
   loading: boolean;
   resourceId?: string;
   provider?: ProviderContainerConnectionDetailedInfo;
   onError: (error: string) => void;
-  onChange: () => void;
+  onChange: (options?: QuadletGenerateOptions) => void;
   disabled?: boolean;
 }
 
