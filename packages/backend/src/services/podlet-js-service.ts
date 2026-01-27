@@ -16,13 +16,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType, type QuadletTypeGenerate } from '/@shared/src/utils/quadlet-type';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
 import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@podman-desktop/api';
 import { ContainerGenerator, Compose, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
+import type { QuadletGenerateOptions } from '/@shared/src/models/quadlet-generate-options';
+import type { ContainerGeneratorOptions } from 'podlet-js';
 
 interface Dependencies {
   containers: ContainerService;
@@ -37,9 +39,14 @@ export class PodletJsService {
    * Using the `podlet-js` package, generate a stringify {@link ContainerQuadlet}
    * @param engineId
    * @param containerId
+   * @param options
    * @protected
    */
-  protected async generateContainer(engineId: string, containerId: string): Promise<string> {
+  protected async generateContainer(
+    engineId: string,
+    containerId: string,
+    options: ContainerGeneratorOptions,
+  ): Promise<string> {
     const container: ContainerInspectInfo = await this.dependencies.containers.inspectContainer(engineId, containerId);
 
     const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, container.Image);
@@ -47,6 +54,7 @@ export class PodletJsService {
     return new ContainerGenerator({
       container,
       image,
+      options,
     }).generate();
   }
 
@@ -64,9 +72,10 @@ export class PodletJsService {
     }).generate();
   }
 
-  public async generate(options: {
+  public async generate<T extends QuadletTypeGenerate>(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
-    type: QuadletType;
+    type: T;
+    options: QuadletGenerateOptions & { type: T };
     resourceId: string;
   }): Promise<string> {
     const records: Record<string, unknown> = {
@@ -76,10 +85,11 @@ export class PodletJsService {
     // Get the engine id
     const engineId = await this.dependencies.containers.getEngineId(options.connection);
 
+    const { type, ...rest } = options.options;
     try {
-      switch (options.type) {
+      switch (type) {
         case QuadletType.CONTAINER:
-          return await this.generateContainer(engineId, options.resourceId);
+          return await this.generateContainer(engineId, options.resourceId, { ...rest });
         case QuadletType.IMAGE:
           return await this.generateImage(engineId, options.resourceId);
         default:
