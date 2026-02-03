@@ -35,10 +35,9 @@ runs:
         Xvfb :99 -screen 0 1280x800x24 &
         echo "DISPLAY=:99" >> $GITHUB_ENV
 
-        flatpak run \
-          io.podman_desktop.PodmanDesktop \
-          --remote-debugging-port=${{ inputs.cdp-port }} \
-          --disable-gpu &
+        dbus-run-session -- \
+          flatpak run io.podman_desktop.PodmanDesktop \
+          --remote-debugging-port=${{ inputs.cdp-port }} &
 
         # Allow Electron to fully boot
         sleep 15
