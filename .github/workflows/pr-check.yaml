@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-2022, ubuntu-24.04, macos-15]
+        os: [windows-2025, ubuntu-24.04, macos-15]
     steps:
       - uses: actions/checkout@v6
 
@@ -116,7 +116,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ windows-2022, ubuntu-24.04 ]
+        os: [ windows-2025, ubuntu-24.04 ]
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
