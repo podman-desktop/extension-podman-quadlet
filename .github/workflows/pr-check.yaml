@@ -110,14 +110,14 @@ jobs:
           path: output/plugins/
 
   e2e-pr-check:
-    name: e2e tests smoke / ${{ matrix.os }}
+    name: e2e tests smoke / ${{ matrix.os }} (${{ matrix.mode }})
     runs-on: ${{ matrix.os }}
     needs: build-container
     strategy:
       fail-fast: true
       matrix:
         include:
-          - os: windows-2022
+          - os: windows-2025
             mode: native
           - os: ubuntu-24.04
             mode: native
