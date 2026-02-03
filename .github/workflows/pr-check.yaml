@@ -209,6 +209,7 @@ jobs:
         shell: bash
         run: pnpm test:e2e:smoke
         env:
+          ELECTRON_DISABLE_SANDBOX: '1'
           NODE_OPTIONS: --no-experimental-strip-types
 
       - uses: actions/upload-artifact@v6
