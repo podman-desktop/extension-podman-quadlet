@@ -1,0 +1,46 @@
+name: Install Podman Desktop (Flatpak)
+description: Install Podman Desktop via Flatpak and start it with Chrome DevTools Protocol
+
+inputs:
+  cdp-port:
+    description: Chrome DevTools Protocol port
+    required: false
+    default: '9222'
+
+runs:
+  using: composite
+  steps:
+    - name: Install Flatpak & Xvfb
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y flatpak xvfb
+        flatpak remote-add --if-not-exists flathub \
+          https://flathub.org/repo/flathub.flatpakrepo
+
+    - name: Install Podman Desktop (Flatpak)
+      shell: bash
+      run: |
+        flatpak install -y flathub io.podman_desktop.PodmanDesktop
+
+        # CI-only permissions
+        flatpak override --user \
+          --filesystem=home \
+          --talk-name=org.freedesktop.portal.Desktop \
+          io.podman_desktop.PodmanDesktop
+
+    - name: Start Podman Desktop (Flatpak + CDP)
+      shell: bash
+      run: |
+        Xvfb :99 -screen 0 1280x800x24 &
+        echo "DISPLAY=:99" >> $GITHUB_ENV
+
+        flatpak run \
+          io.podman_desktop.PodmanDesktop \
+          --remote-debugging-port=${{ inputs.cdp-port }} \
+          --disable-gpu &
+
+        # Allow Electron to fully boot
+        sleep 15
+
+        echo "CHROME_DEVTOOLS_PROTOCOL_ENDPOINT=http://127.0.0.1:${{ inputs.cdp-port }}" >> $GITHUB_ENV

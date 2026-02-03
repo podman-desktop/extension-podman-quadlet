@@ -1,0 +1,42 @@
+name: Install Podman Desktop (native)
+description: Install and build Podman Desktop from source for native Electron E2E tests
+
+inputs:
+  pd-api-version:
+    description: '@podman-desktop/api resolved version'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Cache Podman Desktop
+      id: cache-pd
+      uses: actions/cache@v5
+      with:
+        path: ${{ github.workspace }}/podman-desktop
+        key: pd-${{ inputs.pd-api-version }}-${{ runner.os }}
+
+    - name: Download Podman Desktop
+      if: steps.cache-pd.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo "Downloading Podman Desktop ${PD_VERSION}"
+        if [[ "${{ inputs.pd-api-version }}" =~ - ]]; then
+          curl -sL "https://github.com/podman-desktop/prereleases/archive/refs/tags/v${{ inputs.pd-api-version }}.tar.gz" | tar xvz
+        else
+          curl -sL "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v${{ inputs.pd-api-version }}.tar.gz" | tar xvz
+        fi
+        mv podman-desktop-${{ inputs.pd-api-version }}/ podman-desktop/
+
+    - name: Install deps & build Podman Desktop
+      if: steps.cache-pd.outputs.cache-hit != 'true'
+      shell: bash
+      working-directory: ${{ github.workspace }}/podman-desktop
+      run: |
+        pnpm install
+        pnpm test:e2e:build
+
+    - name: Expose native Podman Desktop path
+      shell: bash
+      run: |
+        echo "PODMAN_DESKTOP_ARGS=${{ github.workspace }}/podman-desktop" >> $GITHUB_ENV
