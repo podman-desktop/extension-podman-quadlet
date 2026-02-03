@@ -44,3 +44,9 @@ runs:
         sleep 15
 
         echo "CHROME_DEVTOOLS_PROTOCOL_ENDPOINT=http://127.0.0.1:${{ inputs.cdp-port }}" >> $GITHUB_ENV
+
+    - name: Download Quadlet Plugins
+      uses: actions/download-artifact@v7
+      with:
+        name: quadlet-plugin
+        path: ~/.local/share/containers/podman-desktop/plugins

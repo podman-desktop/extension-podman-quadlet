@@ -40,3 +40,10 @@ runs:
       shell: bash
       run: |
         echo "PODMAN_DESKTOP_ARGS=${{ github.workspace }}/podman-desktop" >> $GITHUB_ENV
+
+    # Install the quadlet extension
+    - name: Download Quadlet Plugins
+      uses: actions/download-artifact@v7
+      with:
+        name: quadlet-plugin
+        path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/

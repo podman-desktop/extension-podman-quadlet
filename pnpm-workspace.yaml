@@ -1,3 +1,6 @@
 packages:
-  - 'packages/*'
-  - 'tests/*'
+  - packages/*
+  - tests/*
+
+patchedDependencies:
+  '@podman-desktop/tests-playwright': patches/@podman-desktop__tests-playwright.patch

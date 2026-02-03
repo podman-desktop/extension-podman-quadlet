@@ -180,13 +180,6 @@ jobs:
         if: matrix.mode == 'flatpak'
         uses: ./.github/actions/install-podman-desktop-flatpak
 
-      # Install the quadlet extension
-      - name: Download Quadlet Plugins
-        uses: actions/download-artifact@v7
-        with:
-          name: quadlet-plugin
-          path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
-
       - name: Run E2E Smoke tests
         shell: bash
         run: pnpm test:e2e:smoke

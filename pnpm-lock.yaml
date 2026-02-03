@@ -8,6 +8,11 @@ overrides:
   string-width: ^4.2.0
   wrap-ansi: ^7.0.0
 
+patchedDependencies:
+  '@podman-desktop/tests-playwright':
+    hash: ff240e0ec72364d53f3d1716135807b80aee3a466775da687cbbab304087c9cd
+    path: patches/@podman-desktop__tests-playwright.patch
+
 importers:
 
   .:
@@ -302,7 +307,7 @@ importers:
         version: 1.57.0
       '@podman-desktop/tests-playwright':
         specifier: ^1.25.1
-        version: 1.25.1
+        version: 1.25.1(patch_hash=ff240e0ec72364d53f3d1716135807b80aee3a466775da687cbbab304087c9cd)
       '@types/node':
         specifier: ^24
         version: 24.10.9
@@ -4409,7 +4414,7 @@ snapshots:
     dependencies:
       '@podman-desktop/api': 1.18.0
 
-  '@podman-desktop/tests-playwright@1.25.1': {}
+  '@podman-desktop/tests-playwright@1.25.1(patch_hash=ff240e0ec72364d53f3d1716135807b80aee3a466775da687cbbab304087c9cd)': {}
 
   '@podman-desktop/ui-svelte@1.21.0-202508110854-d417fb857c4(svelte-fa@4.0.4(svelte@5.49.1))(svelte@5.49.1)':
     dependencies:

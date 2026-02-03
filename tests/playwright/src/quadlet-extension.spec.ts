@@ -24,6 +24,11 @@ const QUAY_HELLO_IMAGE = `${QUAY_HELLO_IMAGE_REPO}:${QUAY_HELLO_IMAGE_TAG}`;
 
 test.use({
   runnerOptions: new RunnerOptions({
+    cdp: process.env.CHROME_DEVTOOLS_PROTOCOL_ENDPOINT
+      ? {
+          endpointURL: process.env.CHROME_DEVTOOLS_PROTOCOL_ENDPOINT,
+        }
+      : undefined,
     customFolder: 'pd-extension-quadlet-tests',
     /**
      * For performance reasons, disable extensions which are not necessary for the e2e
