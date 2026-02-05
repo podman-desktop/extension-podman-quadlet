@@ -70,7 +70,10 @@ jobs:
           sed -i  "s#version\":\ \"\(.*\)\",#version\":\ \"${{ steps.TAG_UTIL.outputs.extVersion }}\",#g" tests/playwright/package.json
           git add package.json
           git add packages/backend/package.json
+          git add packages/podlet-js/package.json
           git add packages/frontend/package.json
+          git add packages/shared/package.json
+          git add tests/playwright/package.json
 
           # commit the changes
           git commit -m "chore: 🥁 tagging ${{ steps.TAG_UTIL.outputs.githubTag }} 🥳"
@@ -108,6 +111,7 @@ jobs:
           git add packages/backend/package.json
           git add packages/podlet-js/package.json
           git add packages/frontend/package.json
+          git add packages/shared/package.json
           git add tests/playwright/package.json
           git commit -s --amend -m "chore: bump version to ${bumpedVersion}"
           git push origin "${bumpedBranchName}"
