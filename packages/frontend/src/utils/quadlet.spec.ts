@@ -17,9 +17,9 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '@quadlet/core-api';
 import { isKubeQuadlet } from '/@/utils/quadlet';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { ProviderContainerConnectionIdentifierInfo } from '@quadlet/core-api';
 
 const PODMAN_MACHINE_DEFAULT: ProviderContainerConnectionIdentifierInfo = {
   name: 'podman-machine-default',

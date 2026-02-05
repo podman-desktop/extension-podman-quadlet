@@ -21,13 +21,15 @@ import '@testing-library/jest-dom/vitest';
 import { fireEvent, render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
 import QuadletActions from '/@/lib/table/QuadletActions.svelte';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type {
+  QuadletInfo,
+  ProviderContainerConnectionIdentifierInfo,
+  TemplateQuadlet,
+  DialogApi,
+  QuadletApi,
+} from '@quadlet/core-api';
 import { dialogAPI, quadletAPI } from '/@/api/client';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { DialogApi } from '/@shared/src/apis/dialog-api';
-import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
+import { QuadletType } from '@quadlet/core-api';
 
 vi.mock(import('/@/api/client'), () => ({
   dialogAPI: {

@@ -25,8 +25,7 @@ import * as connectionStore from '/@store/connections';
 import * as synchronisationStore from '/@store/synchronisation';
 
 import { readable } from 'svelte/store';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
-import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
+import type { ProviderContainerConnectionDetailedInfo, SynchronisationInfo } from '@quadlet/core-api';
 import type {} from 'svelte';
 
 // mock stores

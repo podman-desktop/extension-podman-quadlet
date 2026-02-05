@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { DialogService } from '../services/dialog-service';
-import { DialogApi } from '/@shared/src/apis/dialog-api';
-import type { InputBoxOptions } from '/@shared/src/models/input-box-options';
+import { DialogApi } from '@quadlet/core-api';
+import type { InputBoxOptions } from '@quadlet/core-api';
 
 interface Dependencies {
   dialog: DialogService;

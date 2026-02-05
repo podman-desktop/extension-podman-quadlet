@@ -17,22 +17,17 @@
  ***********************************************************************/
 
 import { describe, expect, test, vi, beforeEach } from 'vitest';
-import { QuadletBinaryResolver, PODMAN_SYSTEMD_GENERATOR, BINARY_FALLBACK } from './quadlet-binary-resolver';
+import { QuadletBinaryResolver, PODMAN_SYSTEMD_GENERATOR } from './quadlet-binary-resolver';
 import { join } from 'node:path/posix';
-import type { Logger, RunResult } from '@podman-desktop/api';
+import type { RunResult } from '@podman-desktop/api';
 import type { PodmanWorker } from './worker/podman-worker';
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
 const podmanWorkerMock: PodmanWorker = {
   exec: vi.fn(),
+  realPath: vi.fn(),
 } as unknown as PodmanWorker;
-
-const loggerMock: Logger = {
-  log: vi.fn(),
-  error: vi.fn(),
-  warn: vi.fn(),
-};
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -56,12 +51,6 @@ describe('QuadletBinaryResolver', () => {
             stdout: '/usr/lib/systemd/system-generators',
             command: 'systemd-path',
           };
-        case 'realpath':
-          return {
-            stderr: '',
-            stdout: QUADLET_BINARY_PATH_MOCK,
-            command: 'realpath',
-          };
         // if we try to exec on the quadlet binary return dummy result
         case QUADLET_BINARY_PATH_MOCK:
           return RUN_RESULT_MOCK;
@@ -69,6 +58,8 @@ describe('QuadletBinaryResolver', () => {
           throw new Error(`command ${command} not supported`);
       }
     });
+    vi.mocked(podmanWorkerMock.realPath).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
+
     const path = await resolver.resolve();
     expect(path).toEqual(QUADLET_BINARY_PATH_MOCK);
 
@@ -76,10 +67,9 @@ describe('QuadletBinaryResolver', () => {
       args: ['systemd-system-generator'],
       token: undefined,
     });
-    expect(podmanWorkerMock.exec).toHaveBeenCalledWith('realpath', {
-      args: [join('/usr/lib/systemd/system-generators', PODMAN_SYSTEMD_GENERATOR)],
-      token: undefined,
-    });
+    expect(podmanWorkerMock.realPath).toHaveBeenCalledWith(
+      join('/usr/lib/systemd/system-generators', PODMAN_SYSTEMD_GENERATOR),
+    );
   });
 
   test('should fail if systemd generator directory is not absolute', async () => {
@@ -91,14 +81,7 @@ describe('QuadletBinaryResolver', () => {
       command: 'systemd-path',
     } as RunResult);
 
-    const result = await resolver.resolve({
-      logger: loggerMock,
-    });
-    expect(result).toEqual(BINARY_FALLBACK);
-    expect(loggerMock.error).toHaveBeenCalledWith(
-      'something went wrong while getting the quadlet binary',
-      new Error('systemd-system-generator directory is not absolute, received "relative/path".'),
-    );
+    await expect(resolver.resolve()).rejects.toThrowError('systemd-system-generator directory is not absolute');
   });
 
   test('should cache on success', async () => {
@@ -113,12 +96,6 @@ describe('QuadletBinaryResolver', () => {
             stdout: '/usr/lib/systemd/system-generators',
             command: 'systemd-path',
           };
-        case 'realpath':
-          return {
-            stderr: '',
-            stdout: QUADLET_BINARY_PATH_MOCK,
-            command: 'realpath',
-          };
         // if we try to exec on the quadlet binary return dummy result
         case QUADLET_BINARY_PATH_MOCK:
           return RUN_RESULT_MOCK;
@@ -126,13 +103,13 @@ describe('QuadletBinaryResolver', () => {
           throw new Error(`command ${command} not supported`);
       }
     });
+    vi.mocked(podmanWorkerMock.realPath).mockResolvedValue(QUADLET_BINARY_PATH_MOCK);
+
     for (let i = 0; i < 10; i++) {
       const path = await resolver.resolve();
       expect(path).toEqual(QUADLET_BINARY_PATH_MOCK);
     }
 
-    // one for systemd-path
-    // one for realpath
-    expect(podmanWorkerMock.exec).toHaveBeenCalledTimes(2);
+    expect(podmanWorkerMock.exec).toHaveBeenCalledOnce();
   });
 });

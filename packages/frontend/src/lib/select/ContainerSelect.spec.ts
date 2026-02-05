@@ -21,8 +21,7 @@ import '@testing-library/jest-dom/vitest';
 import { render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';
-import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { SimpleContainerInfo, ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // ui object

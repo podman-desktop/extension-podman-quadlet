@@ -4,15 +4,17 @@
 
 import { Parser } from './iparser';
 import { type IIniObject, parse } from 'js-ini';
-import type { Quadlet } from '/@shared/src/models/quadlet';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type {
+  Quadlet,
+  ServiceQuadlet,
+  TemplateQuadlet,
+  TemplateInstanceQuadlet,
+  FileReference,
+} from '@quadlet/core-api';
+import { QuadletType } from '@quadlet/core-api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
-import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
 import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
-import type { FileReference } from '/@shared/src/models/base-quadlet';
 import { basename, dirname, isAbsolute, join } from 'node:path/posix';
 
 interface Unit {
@@ -21,7 +23,7 @@ interface Unit {
 }
 
 /**
- * To determine the {@link import('/@shared/src/models/base-quadlet').BaseQuadlet#files} we need to specify which
+ * To determine the {@link import('@quadlet/core-api').BaseQuadlet#files} we need to specify which
  * properties if defined correspond to a file reference
  */
 const QUADLET_FILES_PATHS: Record<QuadletType, Array<string>> = {

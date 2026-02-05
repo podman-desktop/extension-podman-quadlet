@@ -2,9 +2,9 @@
  * @author axel7083
  */
 import { RPCReadable } from '/@/utils/rpcReadable';
-import { Messages } from '/@shared/src/messages';
+import { Messages } from '@quadlet/core-api';
 import { providerAPI } from '/@/api/client';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
 
 export const providerConnectionsInfo = RPCReadable<ProviderContainerConnectionDetailedInfo[]>(
   [],

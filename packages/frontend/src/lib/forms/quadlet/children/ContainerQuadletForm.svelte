@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
+import type { SimpleContainerInfo } from '@quadlet/core-api';
 import { containerAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';

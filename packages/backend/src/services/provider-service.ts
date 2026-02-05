@@ -4,9 +4,11 @@
 import type { Disposable, provider as Provider, ProviderContainerConnection, Webview } from '@podman-desktop/api';
 import type { AsyncInit } from '../utils/async-init';
 import { Publisher } from '../utils/publisher';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
-import { Messages } from '/@shared/src/messages';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@quadlet/core-api';
+import { Messages } from '@quadlet/core-api';
 
 interface Dependencies {
   providers: typeof Provider;

@@ -33,7 +33,18 @@ import type {
 import { expect, test, vi, beforeEach } from 'vitest';
 import { MainService } from './main-service';
 import { WebviewService } from './webview-service';
-import { RpcExtension } from '/@shared/src/messages/message-proxy';
+import {
+  RpcExtension,
+  QuadletApi,
+  LoggerApi,
+  ProviderApi,
+  ContainerApi,
+  ImageApi,
+  PodletApi,
+  RoutingApi,
+  DialogApi,
+  ConfigurationApi,
+} from '@quadlet/core-api';
 import { QuadletApiImpl } from '../apis/quadlet-api-impl';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
 import { ProviderApiImpl } from '../apis/provider-api-impl';
@@ -42,19 +53,10 @@ import { ImageApiImpl } from '../apis/image-api-impl';
 import { PodletApiImpl } from '../apis/podlet-api-impl';
 import { RoutingApiImpl } from '../apis/routing-api-impl';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
-import { QuadletApi } from '/@shared/src/apis/quadlet-api';
-import { LoggerApi } from '/@shared/src/apis/logger-api';
-import { ProviderApi } from '/@shared/src/apis/provide-api';
-import { ContainerApi } from '/@shared/src/apis/container-api';
-import { ImageApi } from '/@shared/src/apis/image-api';
-import { PodletApi } from '/@shared/src/apis/podlet-api';
-import { RoutingApi } from '/@shared/src/apis/routing-api';
-import { DialogApi } from '/@shared/src/apis/dialog-api';
-import { ConfigurationApi } from '/@shared/src/apis/configuration-api';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
 
 // mock message-proxy
-vi.mock(import('/@shared/src/messages/message-proxy'));
+vi.mock(import('@quadlet/core-api'));
 // mock services
 vi.mock(import('./webview-service'));
 vi.mock(import('./podman-service'));

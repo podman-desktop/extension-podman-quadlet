@@ -23,13 +23,10 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo, ContainerApi, ProviderApi, PodletApi } from '@quadlet/core-api';
 import { containerAPI, podletAPI } from '/@/api/client';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '@quadlet/core-api';
 import type { Component, ComponentProps } from 'svelte';
-import type { ContainerApi } from '/@shared/src/apis/container-api';
-import type { ProviderApi } from '/@shared/src/apis/provide-api';
-import type { PodletApi } from '/@shared/src/apis/podlet-api';
 import { router } from 'tinro';
 
 // mock router lib

@@ -16,38 +16,40 @@ import type {
   TelemetryLogger,
 } from '@podman-desktop/api';
 import { WebviewService } from './webview-service';
-import { RpcExtension } from '/@shared/src/messages/message-proxy';
+import {
+  RpcExtension,
+  QuadletApi,
+  ProviderApi,
+  RoutingApi,
+  ContainerApi,
+  PodletApi,
+  ImageApi,
+  LoggerApi,
+  DialogApi,
+  ConfigurationApi,
+} from '@quadlet/core-api';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';
 import { QuadletApiImpl } from '../apis/quadlet-api-impl';
-import { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import type { AsyncInit } from '../utils/async-init';
 import { ProviderApiImpl } from '../apis/provider-api-impl';
-import { ProviderApi } from '/@shared/src/apis/provide-api';
 import { ProviderService } from './provider-service';
 import { CommandService } from './command-service';
 import { RoutingService } from './routing-service';
 import { RoutingApiImpl } from '../apis/routing-api-impl';
-import { RoutingApi } from '/@shared/src/apis/routing-api';
 import { ContainerService } from './container-service';
 import { ContainerApiImpl } from '../apis/container-api-impl';
-import { ContainerApi } from '/@shared/src/apis/container-api';
 import { PodletApiImpl } from '../apis/podlet-api-impl';
-import { PodletApi } from '/@shared/src/apis/podlet-api';
 import { ImageApiImpl } from '../apis/image-api-impl';
 import { ImageService } from './image-service';
-import { ImageApi } from '/@shared/src/apis/image-api';
 import { LoggerService } from './logger-service';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
-import { LoggerApi } from '/@shared/src/apis/logger-api';
 import { DialogService } from './dialog-service';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
-import { DialogApi } from '/@shared/src/apis/dialog-api';
 import { PodletJsService } from './podlet-js-service';
 import { ConfigurationService } from './configuration-service';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
-import { ConfigurationApi } from '/@shared/src/apis/configuration-api';
 
 interface Dependencies {
   extensionContext: ExtensionContext;

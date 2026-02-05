@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type { QuadletInfo } from '@quadlet/core-api';
 import { quadletsInfo } from '/@store/quadlets';
 import { DetailsPage, Tab, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { router } from 'tinro';
@@ -13,13 +13,11 @@ import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
 import { LoggerStore } from '/@store/logger-store';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
-import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet.js';
+import { isServiceQuadlet, isTemplateQuadlet, isServiceLessQuadlet } from '@quadlet/core-api';
 import IconTab from '/@/lib/tab/IconTab.svelte';
 import { faPaperclip } from '@fortawesome/free-solid-svg-icons/faPaperclip';
 import { faWarning } from '@fortawesome/free-solid-svg-icons/faWarning';
 import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
-import { isServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
 import { readable } from 'svelte/store';
 
 interface Props {

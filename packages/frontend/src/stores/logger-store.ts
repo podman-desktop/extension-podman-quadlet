@@ -1,9 +1,8 @@
 /**
  * @author axel7083
  */
-import type { LoggerApi } from '/@shared/src/apis/logger-api';
-import type { RpcBrowser, Subscriber } from '/@shared/src/messages/message-proxy';
-import { Messages } from '/@shared/src/messages';
+import type { LoggerApi, RpcBrowser, Subscriber } from '@quadlet/core-api';
+import { Messages } from '@quadlet/core-api';
 import { writable } from 'svelte/store';
 import type { Writable, Unsubscriber, Readable } from 'svelte/store';
 

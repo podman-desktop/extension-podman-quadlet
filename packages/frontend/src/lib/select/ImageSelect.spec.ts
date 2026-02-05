@@ -22,8 +22,7 @@ import { render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 import ImagesSelect from '/@/lib/select/ImagesSelect.svelte';
-import type { SimpleImageInfo } from '/@shared/src/models/simple-image-info';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { SimpleImageInfo, ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
 
 // ui object
 const WSL_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {

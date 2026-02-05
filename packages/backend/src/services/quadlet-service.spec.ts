@@ -34,14 +34,10 @@ import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
-import type { Quadlet } from '/@shared/src/models/quadlet';
-import { Messages } from '/@shared/src/messages';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { Quadlet, ServiceQuadlet, TemplateQuadlet, TemplateInstanceQuadlet } from '@quadlet/core-api';
+import { Messages, QuadletType } from '@quadlet/core-api';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
-import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 import { TelemetryEvents } from '../utils/telemetry-events';
 
 vi.mock(import('../utils/parsers/quadlet-dryrun-parser'));

@@ -7,19 +7,14 @@ import type { Disposable, ProviderContainerConnection, CancellationToken } from 
 import type { QuadletServiceDependencies } from './quadlet-helper';
 import { QuadletHelper } from './quadlet-helper';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
-import type { Quadlet } from '/@shared/src/models/quadlet';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type { Quadlet, QuadletInfo, SynchronisationInfo, Template, ServiceQuadlet } from '@quadlet/core-api';
 import type { AsyncInit } from '../utils/async-init';
 import { join as joinposix, basename, isAbsolute } from 'node:path/posix';
-import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
-import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
-import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
+import { isServiceQuadlet, isTemplateQuadlet } from '@quadlet/core-api';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;

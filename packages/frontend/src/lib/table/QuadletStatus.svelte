@@ -1,11 +1,11 @@
 <script lang="ts">
 import { StatusIcon } from '@podman-desktop/ui-svelte';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type { QuadletInfo } from '@quadlet/core-api';
 import { router } from 'tinro';
 import FileLinesIcon from './FileLinesIcon.svelte';
 import FileCodeIcon from './FileCodeIcon.svelte';
 import type { Component } from 'svelte';
-import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet.js';
+import { isTemplateQuadlet } from '@quadlet/core-api';
 
 interface Props {
   object: QuadletInfo;

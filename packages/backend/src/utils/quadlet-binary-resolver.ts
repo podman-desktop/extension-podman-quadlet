@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025-2026 Red Hat, Inc.
+ * Copyright (C) 2025 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import { isAbsolute, join } from 'node:path/posix';
 import type { PodmanWorker } from './worker/podman-worker';
 
 export const PODMAN_SYSTEMD_GENERATOR = 'podman-system-generator';
-export const BINARY_FALLBACK = '/usr/libexec/podman/quadlet';
 
 export class QuadletBinaryResolver {
   private cachedPath: string | undefined;
@@ -44,22 +43,12 @@ export class QuadletBinaryResolver {
         throw new Error(`systemd-system-generator directory is not absolute, received "${systemdGeneratorDirectory}".`);
 
       const symlink = join(systemdGeneratorDirectory, PODMAN_SYSTEMD_GENERATOR);
-      /**
-       * https://github.com/podman-desktop/extension-podman-quadlet/issues/1199
-       * On Linux when using flatpak we cannot use the {@link import('node:fs/promise').realpath} because the
-       * /usr/lib/systemd/system-generators is not accessible leading to the error
-       * `ENOENT: no such file or directory, realpath /usr/lib/systemd/system-generators/podman-system-generator`
-       */
-      const realpathResult = await this.executor.exec('realpath', {
-        args: [symlink],
-        token: options?.token,
-      });
-      const path = realpathResult.stdout.trim();
+      const path = await this.executor.realPath(symlink);
       this.cachedPath = path;
       return path;
     } catch (err: unknown) {
       options?.logger?.error('something went wrong while getting the quadlet binary', err);
-      return BINARY_FALLBACK;
+      throw err;
     }
   }
 }

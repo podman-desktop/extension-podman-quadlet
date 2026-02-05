@@ -33,7 +33,7 @@ import { stat } from 'node:fs/promises';
 import type { BigIntStats, Stats } from 'node:fs';
 import { join } from 'node:path';
 import type { ContainerInfoUI } from '../models/container-info-ui';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),

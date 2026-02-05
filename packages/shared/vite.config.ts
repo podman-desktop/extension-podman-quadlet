@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  ***********************************************************************/
 import { join } from 'node:path';
 import { builtinModules } from 'node:module';
-
+import dts from 'vite-plugin-dts';
 import { defineConfig } from 'vite';
 
 const PACKAGE_ROOT = __dirname;
@@ -35,6 +35,7 @@ export default defineConfig({
       '/@/': join(PACKAGE_ROOT, 'src') + '/',
     },
   },
+  plugins: [dts()],
   build: {
     sourcemap: 'inline',
     target: 'esnext',
@@ -42,13 +43,13 @@ export default defineConfig({
     assetsDir: '.',
     minify: process.env.MODE === 'production' ? 'esbuild' : false,
     lib: {
-      entry: 'src/extension.ts',
+      entry: 'src/index.ts',
       formats: ['cjs'],
     },
     rollupOptions: {
       external: ['@podman-desktop/api', ...builtinModules.flatMap(p => [p, `node:${p}`])],
       output: {
-        entryFileNames: '[name].js',
+        entryFileNames: '[name].cjs',
       },
     },
     emptyOutDir: true,

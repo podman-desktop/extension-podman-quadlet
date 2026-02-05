@@ -23,12 +23,9 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletComposeForm from '/@/lib/forms/compose/QuadletComposeForm.svelte';
 import type { Component, ComponentProps } from 'svelte';
 import { podletAPI, quadletAPI } from '/@/api/client';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type { ProviderContainerConnectionDetailedInfo, ProviderApi, PodletApi, QuadletApi } from '@quadlet/core-api';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
-import type { ProviderApi } from '/@shared/src/apis/provide-api';
-import type { PodletApi } from '/@shared/src/apis/podlet-api';
-import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 import { router } from 'tinro';
 
 // mock router lib

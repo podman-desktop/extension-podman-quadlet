@@ -1,9 +1,8 @@
 /**
  * @author axel7083
  */
-import { ContainerApi } from '/@shared/src/apis/container-api';
-import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import { ContainerApi } from '@quadlet/core-api';
+import type { SimpleContainerInfo, ProviderContainerConnectionIdentifierInfo } from '@quadlet/core-api';
 import type { ContainerService } from '../services/container-service';
 
 interface Dependencies {

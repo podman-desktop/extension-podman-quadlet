@@ -4,15 +4,12 @@
 
 import { Parser } from './iparser';
 import { QuadletUnitParser } from './quadlet-unit-parser';
-import type { Quadlet } from '/@shared/src/models/quadlet';
+import type { Quadlet, ServiceLessQuadlet, TemplateQuadlet, TemplateInstanceQuadlet } from '@quadlet/core-api';
 import type { RunResult } from '@podman-desktop/api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { basename, isAbsolute } from 'node:path/posix';
 import { randomUUID } from 'node:crypto';
 import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
-import type { ServiceLessQuadlet } from '/@shared/src/models/service-less-quadlet';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
 
 export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number }, Quadlet[]> {
   // match line such as 'quadlet-generator[11695]: Loading source unit file /home/user/.config/containers/systemd/nginx.image'

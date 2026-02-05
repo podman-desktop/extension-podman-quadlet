@@ -3,9 +3,8 @@
  */
 import type { Disposable, ContainerInfo, ProviderContainerConnection, ContainerInspectInfo } from '@podman-desktop/api';
 import type { AsyncInit } from '../utils/async-init';
-import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
+import type { SimpleContainerInfo, ProviderContainerConnectionIdentifierInfo } from '@quadlet/core-api';
 import type { ProviderService } from './provider-service';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import { EngineHelper, type EngineHelperDependencies } from './engine-helper';
 
 interface Dependencies extends EngineHelperDependencies {

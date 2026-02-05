@@ -8,7 +8,7 @@ import { onDestroy, onMount } from 'svelte';
 import { getRouterState, rpcBrowser } from './api/client';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
-import { Messages } from '/@shared/src/messages';
+import { Messages } from '@quadlet/core-api';
 import type { Unsubscriber } from 'svelte/store';
 import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
 import QuadletCompose from '/@/pages/QuadletCompose.svelte';

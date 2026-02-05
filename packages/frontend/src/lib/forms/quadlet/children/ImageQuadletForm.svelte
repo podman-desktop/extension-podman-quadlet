@@ -1,6 +1,6 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import type { SimpleImageInfo } from '/@shared/src/models/simple-image-info';
+import type { SimpleImageInfo } from '@quadlet/core-api';
 import { imageAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ImagesSelect from '/@/lib/select/ImagesSelect.svelte';

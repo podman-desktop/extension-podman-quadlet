@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '@quadlet/core-api';
 import { QuadletTypeParser } from './quadlet-type-parser';
 
 test.each(Object.values(QuadletType))('parsing quadlet %s', (type: QuadletType) => {

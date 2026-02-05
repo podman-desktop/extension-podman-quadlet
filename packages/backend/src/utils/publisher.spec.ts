@@ -18,7 +18,7 @@
 import { beforeEach, expect, test, vi } from 'vitest';
 import { Publisher } from './publisher';
 import type { Webview } from '@podman-desktop/api';
-import { Messages } from '/@shared/src/messages';
+import { Messages } from '@quadlet/core-api';
 
 const WEBVIEW_MOCK: Webview = {
   postMessage: vi.fn(),

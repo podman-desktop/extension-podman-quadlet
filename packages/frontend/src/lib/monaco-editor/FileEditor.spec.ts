@@ -21,10 +21,9 @@ import '@testing-library/jest-dom/vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { beforeEach, test, vi, expect, assert } from 'vitest';
 import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type { ProviderContainerConnectionIdentifierInfo, QuadletApi } from '@quadlet/core-api';
 import { quadletAPI } from '/@/api/client';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
-import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
 
 // mock monaco editor
 vi.mock(import('/@/lib/monaco-editor/MonacoEditor.svelte'));

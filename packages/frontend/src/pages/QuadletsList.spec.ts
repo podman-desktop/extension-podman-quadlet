@@ -23,20 +23,21 @@ import { fireEvent, render, within } from '@testing-library/svelte';
 import * as connectionStore from '/@store/connections';
 import { assert, beforeEach, describe, expect, test, vi } from 'vitest';
 import QuadletsList from '/@/pages/QuadletsList.svelte';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  QuadletInfo,
+  TemplateQuadlet,
+  TemplateInstanceQuadlet,
+  DialogApi,
+  QuadletApi,
+  ProviderApi,
+  ConfigurationApi,
+} from '@quadlet/core-api';
 import { readable } from 'svelte/store';
 import * as quadletStore from '/@store/quadlets';
 import { configurationAPI, dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { TemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
-import type { DialogApi } from '/@shared/src/apis/dialog-api';
-import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
-import type { ProviderApi } from '/@shared/src/apis/provide-api';
-import type { ConfigurationApi } from '/@shared/src/apis/configuration-api';
+import { QuadletType, isServiceQuadlet } from '@quadlet/core-api';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // ui object

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Select from '/@/lib/select/Select.svelte';
-import type { SimpleContainerInfo } from '/@shared/src/models/simple-container-info';
+import type { SimpleContainerInfo } from '@quadlet/core-api';
 
 interface Props {
   value: SimpleContainerInfo | undefined;

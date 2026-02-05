@@ -21,20 +21,22 @@ import '@testing-library/jest-dom/vitest';
 import { render, within } from '@testing-library/svelte';
 import * as quadletStore from '/@store/quadlets';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type {
+  QuadletInfo,
+  ProviderContainerConnectionDetailedInfo,
+  ServiceQuadlet,
+  TemplateQuadlet,
+  QuadletApi,
+  LoggerApi,
+  ProviderApi,
+  RpcBrowser,
+} from '@quadlet/core-api';
+import { QuadletType } from '@quadlet/core-api';
 import { readable, get } from 'svelte/store';
 import * as connectionStore from '/@store/connections';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';
 import { router } from 'tinro';
-import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import type { TemplateQuadlet } from '/@shared/src/models/template-quadlet';
 import { quadletAPI } from '/@/api/client';
-import type { QuadletApi } from '/@shared/src/apis/quadlet-api';
-import type { LoggerApi } from '/@shared/src/apis/logger-api';
-import type { ProviderApi } from '/@shared/src/apis/provide-api';
-import type { RpcBrowser } from '/@shared/src/messages/message-proxy';
 import XTerminal from '/@/lib/terminal/XTerminal.svelte';
 
 // mock clients
