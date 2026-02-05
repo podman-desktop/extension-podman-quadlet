@@ -3,7 +3,7 @@
     "strict": true,
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "sourceMap": true,
     "outDir": "dist",
