@@ -31,16 +31,26 @@ import { ReadOnly } from './builders/read-only';
 import { Mount } from './builders/mount';
 import { Generator } from '../utils/generator';
 import { Restart } from './builders/restart';
+import { WantedBy } from './builders/wanted-by';
 
-interface Dependencies {
-  container: ContainerInspectInfo;
-  image: ImageInspectInfo;
+export interface ContainerGeneratorOptions {
+  /**
+   * This option may be used to make the container start on boot
+   * @example `default.target`
+   */
+  wantedBy?: string;
 }
 
-export class ContainerGenerator extends Generator<Dependencies> {
+export interface ContainerGeneratorDependencies {
+  container: ContainerInspectInfo;
+  image: ImageInspectInfo;
+  options?: ContainerGeneratorOptions;
+}
+
+export class ContainerGenerator extends Generator<ContainerGeneratorDependencies> {
   override generate(): string {
     // all builders to use
-    const builders: Array<new (dep: Dependencies) => ContainerQuadletBuilder> = [
+    const builders: Array<new (dep: ContainerGeneratorDependencies) => ContainerQuadletBuilder> = [
       AddHost,
       Annotation,
       PublishPort,
@@ -52,6 +62,7 @@ export class ContainerGenerator extends Generator<Dependencies> {
       ReadOnly,
       Mount,
       Restart,
+      WantedBy,
     ];
 
     const containerQuadlet: ContainerQuadlet = builders.reduce(

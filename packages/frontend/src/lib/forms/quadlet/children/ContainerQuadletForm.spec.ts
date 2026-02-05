@@ -18,7 +18,7 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { render } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { expect, test, vi, describe, beforeEach } from 'vitest';
 import ContainerQuadletForm from '/@/lib/forms/quadlet/children/ContainerQuadletForm.svelte';
 import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
@@ -70,6 +70,20 @@ describe('disabled', () => {
     expect(input).toBeDisabled();
   });
 
+  test('disabled property should disable start on boot checkbox', async () => {
+    const { getByLabelText } = render(ContainerQuadletForm, {
+      loading: false,
+      resourceId: undefined,
+      provider: WSL_PROVIDER_DETAILED_INFO,
+      onError: vi.fn(),
+      onChange: vi.fn(),
+      disabled: true, // set disable true
+    });
+
+    const checkbox = getByLabelText('Start on boot');
+    expect(checkbox).toBeDisabled();
+  });
+
   test('disabled property should disable input', async () => {
     const { getByLabelText } = render(ContainerQuadletForm, {
       loading: false,
@@ -96,6 +110,20 @@ describe('disabled', () => {
 
     const input = getByLabelText('Select Container');
     expect(input).toBeDisabled();
+  });
+
+  test('loading property should disable start on boot checkbox', async () => {
+    const { getByLabelText } = render(ContainerQuadletForm, {
+      loading: true, // set loading true
+      resourceId: undefined,
+      provider: WSL_PROVIDER_DETAILED_INFO,
+      onError: vi.fn(),
+      onChange: vi.fn(),
+      disabled: false,
+    });
+
+    const checkbox = getByLabelText('Start on boot');
+    expect(checkbox).toBeDisabled();
   });
 });
 
@@ -125,4 +153,29 @@ test('expect containers to be listed properly', async () => {
   });
 
   expect(item).toBe(SIMPLE_CONTAINER_INFO.name.substring(1));
+});
+
+test('expect interaction with checkbox to trigger onChange props', async () => {
+  vi.mocked(containerAPI.all).mockResolvedValue([SIMPLE_CONTAINER_INFO]);
+  const onChangeMock = vi.fn();
+
+  const { getByLabelText } = render(ContainerQuadletForm, {
+    loading: false,
+    resourceId: undefined,
+    provider: WSL_PROVIDER_DETAILED_INFO,
+    onError: vi.fn(),
+    onChange: onChangeMock,
+    disabled: false,
+  });
+
+  const checkbox = getByLabelText('Start on boot');
+  await vi.waitFor(() => {
+    expect(checkbox).toBeEnabled();
+  });
+
+  await fireEvent.click(checkbox);
+
+  await vi.waitFor(() => {
+    expect(onChangeMock).toHaveBeenCalledOnce();
+  });
 });

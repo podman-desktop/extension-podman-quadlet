@@ -15,8 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator, type ContainerGeneratorOptions } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
-import { Compose } from './compose/compose';
 
-export { ImageGenerator, Compose, ContainerGenerator, type ContainerGeneratorOptions };
+export interface InstallQuadlet {
+  WantedBy?: string;
+}
