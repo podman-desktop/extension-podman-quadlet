@@ -2,8 +2,8 @@
  * @author axel7083
  */
 import { RPCReadable } from '/@/utils/rpcReadable';
-import type { QuadletInfo } from '@quadlet/core-api';
-import { Messages } from '@quadlet/core-api';
+import type { QuadletInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 import { quadletAPI } from '/@/api/client';
 import type { Readable } from 'svelte/store';
 

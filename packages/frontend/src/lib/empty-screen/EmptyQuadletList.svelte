@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
+import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate';
 import { Button, EmptyScreen } from '@podman-desktop/ui-svelte';
 import { providerConnectionsInfo } from '/@store/connections';

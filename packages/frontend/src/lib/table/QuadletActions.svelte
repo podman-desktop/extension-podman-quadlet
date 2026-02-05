@@ -1,12 +1,12 @@
 <script lang="ts">
-import type { QuadletInfo } from '@quadlet/core-api';
+import type { QuadletInfo } from '@podman-desktop/quadlet-extension-core-api';
 import ListItemButtonIcon from '/@/lib/buttons/ListItemButtonIcon.svelte';
 import { faStop } from '@fortawesome/free-solid-svg-icons/faStop';
 import { faPlay } from '@fortawesome/free-solid-svg-icons/faPlay';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import { dialogAPI, quadletAPI } from '/@/api/client';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { isTemplateQuadlet } from '@quadlet/core-api';
+import { isTemplateQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   object: QuadletInfo;

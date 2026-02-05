@@ -1,8 +1,11 @@
 /**
  * @author axel7083
  */
-import { ContainerApi } from '@quadlet/core-api';
-import type { SimpleContainerInfo, ProviderContainerConnectionIdentifierInfo } from '@quadlet/core-api';
+import { ContainerApi } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  SimpleContainerInfo,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import type { ContainerService } from '../services/container-service';
 
 interface Dependencies {

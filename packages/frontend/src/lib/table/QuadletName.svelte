@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { QuadletInfo } from '@quadlet/core-api';
+import type { QuadletInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { router } from 'tinro';
-import { isServiceQuadlet } from '@quadlet/core-api';
+import { isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   object: QuadletInfo;

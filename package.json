@@ -25,7 +25,7 @@
     "test:podlet-js": "vitest run --project podlet-js",
     "test:backend": "vitest run --project quadlet",
     "test:frontend": "vitest run --project frontend",
-    "test:shared": "vitest run --project @quadlet/core-api",
+    "test:shared": "vitest run --project @podman-desktop/quadlet-extension-core-api",
     "test:unit": "vitest run",
     "test:e2e": "cd tests/playwright && npm run test:e2e",
     "test:e2e:smoke": "cd tests/playwright && npm run test:e2e:smoke",

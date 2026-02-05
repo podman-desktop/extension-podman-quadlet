@@ -7,8 +7,8 @@ import { Publisher } from '../utils/publisher';
 import type {
   ProviderContainerConnectionDetailedInfo,
   ProviderContainerConnectionIdentifierInfo,
-} from '@quadlet/core-api';
-import { Messages } from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
   providers: typeof Provider;

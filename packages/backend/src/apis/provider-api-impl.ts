@@ -2,8 +2,8 @@
  * @author axel7083
  */
 import type { PodmanService } from '../services/podman-service';
-import { ProviderApi } from '@quadlet/core-api';
-import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
+import { ProviderApi } from '@podman-desktop/quadlet-extension-core-api';
+import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderService } from '../services/provider-service';
 
 interface Dependencies {

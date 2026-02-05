@@ -19,7 +19,7 @@ import { expect, test, vi, beforeEach } from 'vitest';
 import type { Webview } from '@podman-desktop/api';
 import { CancellationTokenSource } from '@podman-desktop/api';
 import { LoggerImpl } from './logger-impl';
-import { Messages } from '@quadlet/core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 
 const WEBVIEW_MOCK: Webview = {
   postMessage: vi.fn(),

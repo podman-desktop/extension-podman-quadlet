@@ -30,8 +30,8 @@ import type {
   LoggerApi,
   ProviderApi,
   RpcBrowser,
-} from '@quadlet/core-api';
-import { QuadletType } from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { readable, get } from 'svelte/store';
 import * as connectionStore from '/@store/connections';
 import QuadletDetails from '/@/pages/QuadletDetails.svelte';

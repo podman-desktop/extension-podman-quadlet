@@ -3,7 +3,7 @@
  */
 import type { Disposable, Webview, Logger as ILogger, CancellationToken } from '@podman-desktop/api';
 import { CancellationTokenSource } from '@podman-desktop/api';
-import { Messages } from '@quadlet/core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
   webview: Webview;

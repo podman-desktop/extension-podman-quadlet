@@ -8,8 +8,11 @@ import {
   type QuadletGenerateFormProps,
   RESOURCE_ID_QUERY,
 } from '/@/lib/forms/quadlet/quadlet-utils';
-import { QuadletType } from '@quadlet/core-api';
-import type { ProviderContainerConnectionDetailedInfo, QuadletTypeGenerate } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  QuadletTypeGenerate,
+} from '@podman-desktop/quadlet-extension-core-api';
 import { providerConnectionsInfo } from '/@store/connections';
 import { router } from 'tinro';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';

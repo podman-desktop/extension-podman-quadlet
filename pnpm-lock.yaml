@@ -127,7 +127,7 @@ importers:
       '@podman-desktop/podman-extension-api':
         specifier: ^1.18.0
         version: 1.18.0
-      '@quadlet/core-api':
+      '@podman-desktop/quadlet-extension-core-api':
         specifier: workspace:^
         version: link:../shared
       '@types/js-yaml':
@@ -157,7 +157,7 @@ importers:
 
   packages/frontend:
     dependencies:
-      '@quadlet/core-api':
+      '@podman-desktop/quadlet-extension-core-api':
         specifier: workspace:^
         version: link:../shared
       '@xterm/addon-fit':

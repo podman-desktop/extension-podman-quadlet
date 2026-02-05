@@ -20,8 +20,11 @@ import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, render } from '@testing-library/svelte';
 import { beforeEach, expect, test, vi } from 'vitest';
-import { QuadletType } from '@quadlet/core-api';
-import type { ProviderContainerConnectionIdentifierInfo, QuadletInfo } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  QuadletInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
 import { router } from 'tinro';
 

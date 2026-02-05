@@ -4,8 +4,8 @@
 
 import { test, expect, assert, describe } from 'vitest';
 import { QuadletUnitParser } from './quadlet-unit-parser';
-import { QuadletType, isTemplateQuadlet, isServiceQuadlet } from '@quadlet/core-api';
-import type { FileReference } from '@quadlet/core-api';
+import { QuadletType, isTemplateQuadlet, isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
+import type { FileReference } from '@podman-desktop/quadlet-extension-core-api';
 
 const PARTIAL_CONTAINER_QUADLET_MOCK = `
 [Service]

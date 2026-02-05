@@ -26,7 +26,7 @@ import {
   LoggerApi,
   DialogApi,
   ConfigurationApi,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 
 /**
  * This file is the client side of the API. It is used to communicate with the backend, which allows

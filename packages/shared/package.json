@@ -1,5 +1,5 @@
 {
-  "name": "@quadlet/core-api",
+  "name": "@podman-desktop/quadlet-extension-core-api",
   "private": true,
   "version": "0.13.0-next",
   "type": "module",

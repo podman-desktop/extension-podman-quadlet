@@ -25,10 +25,10 @@ import type {
   ProviderContainerConnectionIdentifierInfo,
   TemplateQuadlet,
   QuadletState,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 
 import QuadletStatus from '/@/lib/table/QuadletStatus.svelte';
-import { QuadletType } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { StatusIcon } from '@podman-desktop/ui-svelte';
 import FileCodeIcon from '/@/lib/table/FileCodeIcon.svelte';
 import FileLinesIcon from '/@/lib/table/FileLinesIcon.svelte';

@@ -2,14 +2,14 @@
  * @author axel7083
  */
 
-import { QuadletApi, isTemplateQuadlet, isServiceQuadlet } from '@quadlet/core-api';
+import { QuadletApi, isTemplateQuadlet, isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 import type {
   QuadletInfo,
   ProviderContainerConnectionIdentifierInfo,
   SynchronisationInfo,
   Template,
   ServiceQuadlet,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import type { QuadletService } from '../services/quadlet-service';
 import type { SystemdService } from '../services/systemd-service';
 import type { PodmanService } from '../services/podman-service';

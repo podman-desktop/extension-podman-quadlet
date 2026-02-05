@@ -32,12 +32,12 @@ import type {
   QuadletApi,
   ProviderApi,
   ConfigurationApi,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import { readable } from 'svelte/store';
 import * as quadletStore from '/@store/quadlets';
 import { configurationAPI, dialogAPI, quadletAPI } from '/@/api/client';
 import { router } from 'tinro';
-import { QuadletType, isServiceQuadlet } from '@quadlet/core-api';
+import { QuadletType, isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // ui object

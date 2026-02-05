@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import { QuadletType } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 
 test.each<QuadletType>(Object.values(QuadletType))('parsing file with extension %s', (type: QuadletType) => {

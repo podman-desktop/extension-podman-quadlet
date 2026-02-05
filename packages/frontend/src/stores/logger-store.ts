@@ -1,8 +1,8 @@
 /**
  * @author axel7083
  */
-import type { LoggerApi, RpcBrowser, Subscriber } from '@quadlet/core-api';
-import { Messages } from '@quadlet/core-api';
+import type { LoggerApi, RpcBrowser, Subscriber } from '@podman-desktop/quadlet-extension-core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 import { writable } from 'svelte/store';
 import type { Writable, Unsubscriber, Readable } from 'svelte/store';
 

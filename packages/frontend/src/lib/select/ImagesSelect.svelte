@@ -1,6 +1,6 @@
 <script lang="ts">
 import Select from '/@/lib/select/Select.svelte';
-import type { SimpleImageInfo } from '@quadlet/core-api';
+import type { SimpleImageInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   value: SimpleImageInfo | undefined;

@@ -1,7 +1,7 @@
 <script lang="ts">
 import Select from '/@/lib/select/Select.svelte';
-import { VMType } from '@quadlet/core-api';
-import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
+import { VMType } from '@podman-desktop/quadlet-extension-core-api';
+import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   value: ProviderContainerConnectionDetailedInfo | undefined;

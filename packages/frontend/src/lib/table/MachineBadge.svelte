@@ -3,7 +3,7 @@ import Label from '/@/lib/label/Label.svelte';
 import type {
   ProviderContainerConnectionIdentifierInfo,
   ProviderContainerConnectionDetailedInfo,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import { providerConnectionsInfo } from '/@store/connections';
 import { generateColor } from '/@/utils/colors';
 

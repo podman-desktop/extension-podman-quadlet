@@ -22,7 +22,11 @@ import TEMPLATE_AND_INSTANCE from './tests/quadlet-stdout-template-and-instance.
 import MULTIPLE_QUADLETS_EXAMPLE from './tests/quadlet-stdout-multiple-quadlets.txt?raw';
 import DRYRUN_STDERR from './tests/quadlet-stderr.txt?raw';
 import TEMPLATE_QUADLET from './tests/quadlet-stdout-container-template.txt?raw';
-import { isTemplateQuadlet, isServiceQuadlet, isTemplateInstanceQuadlet } from '@quadlet/core-api';
+import {
+  isTemplateQuadlet,
+  isServiceQuadlet,
+  isTemplateInstanceQuadlet,
+} from '@podman-desktop/quadlet-extension-core-api';
 
 test('expect result to contain two quadlets', async () => {
   const parser = new QuadletDryRunParser({

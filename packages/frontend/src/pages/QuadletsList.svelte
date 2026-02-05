@@ -4,7 +4,7 @@ import type {
   QuadletInfo,
   ProviderContainerConnectionDetailedInfo,
   ProviderContainerConnectionIdentifierInfo,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
 import { configurationAPI, dialogAPI, quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
@@ -19,7 +19,7 @@ import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
-import { isTemplateQuadlet, isTemplateInstanceQuadlet } from '@quadlet/core-api';
+import { isTemplateQuadlet, isTemplateInstanceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 import { onMount } from 'svelte';
 
 type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };

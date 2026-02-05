@@ -4,7 +4,12 @@
 
 import { Parser } from './iparser';
 import { QuadletUnitParser } from './quadlet-unit-parser';
-import type { Quadlet, ServiceLessQuadlet, TemplateQuadlet, TemplateInstanceQuadlet } from '@quadlet/core-api';
+import type {
+  Quadlet,
+  ServiceLessQuadlet,
+  TemplateQuadlet,
+  TemplateInstanceQuadlet,
+} from '@podman-desktop/quadlet-extension-core-api';
 import type { RunResult } from '@podman-desktop/api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { basename, isAbsolute } from 'node:path/posix';

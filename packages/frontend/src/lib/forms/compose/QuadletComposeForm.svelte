@@ -4,8 +4,8 @@ import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-sve
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import { podletAPI, quadletAPI } from '/@/api/client';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
-import { QuadletType } from '@quadlet/core-api';
-import type { ProviderContainerConnectionDetailedInfo } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
+import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { providerConnectionsInfo } from '/@/stores/connections';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { router } from 'tinro';

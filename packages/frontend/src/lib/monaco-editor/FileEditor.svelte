@@ -5,7 +5,7 @@ import { onMount } from 'svelte';
 import { Button, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
-import type { ProviderContainerConnectionIdentifierInfo } from '@quadlet/core-api';
+import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   connection: ProviderContainerConnectionIdentifierInfo;

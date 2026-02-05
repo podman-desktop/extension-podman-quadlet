@@ -23,9 +23,14 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
-import type { ProviderContainerConnectionDetailedInfo, ContainerApi, ProviderApi, PodletApi } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  ContainerApi,
+  ProviderApi,
+  PodletApi,
+} from '@podman-desktop/quadlet-extension-core-api';
 import { containerAPI, podletAPI } from '/@/api/client';
-import { QuadletType } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { Component, ComponentProps } from 'svelte';
 import { router } from 'tinro';
 

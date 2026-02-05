@@ -10,8 +10,8 @@ import type {
   TemplateQuadlet,
   TemplateInstanceQuadlet,
   FileReference,
-} from '@quadlet/core-api';
-import { QuadletType } from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
 import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
@@ -23,7 +23,7 @@ interface Unit {
 }
 
 /**
- * To determine the {@link import('@quadlet/core-api').BaseQuadlet#files} we need to specify which
+ * To determine the {@link import('@podman-desktop/quadlet-extension-core-api').BaseQuadlet#files} we need to specify which
  * properties if defined correspond to a file reference
  */
 const QUADLET_FILES_PATHS: Record<QuadletType, Array<string>> = {

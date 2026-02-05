@@ -23,7 +23,12 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletComposeForm from '/@/lib/forms/compose/QuadletComposeForm.svelte';
 import type { Component, ComponentProps } from 'svelte';
 import { podletAPI, quadletAPI } from '/@/api/client';
-import type { ProviderContainerConnectionDetailedInfo, ProviderApi, PodletApi, QuadletApi } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  ProviderApi,
+  PodletApi,
+  QuadletApi,
+} from '@podman-desktop/quadlet-extension-core-api';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
 import { router } from 'tinro';

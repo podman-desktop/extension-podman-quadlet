@@ -73,7 +73,7 @@
     ]
   },
   "devDependencies": {
-    "@quadlet/core-api": "workspace:^",
+    "@podman-desktop/quadlet-extension-core-api": "workspace:^",
     "@podman-desktop/api": "^1.25.1",
     "@podman-desktop/podman-extension-api": "^1.18.0",
     "@types/node": "^24",

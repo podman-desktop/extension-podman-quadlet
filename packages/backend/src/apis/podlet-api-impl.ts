@@ -1,8 +1,11 @@
 /**
  * @author axel7083
  */
-import { PodletApi } from '@quadlet/core-api';
-import type { ProviderContainerConnectionIdentifierInfo, QuadletType } from '@quadlet/core-api';
+import { PodletApi } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  QuadletType,
+} from '@podman-desktop/quadlet-extension-core-api';
 import type { PodletJsService } from '../services/podlet-js-service';
 
 interface Dependencies {

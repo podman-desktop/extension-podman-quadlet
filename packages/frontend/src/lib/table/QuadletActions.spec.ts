@@ -27,9 +27,9 @@ import type {
   TemplateQuadlet,
   DialogApi,
   QuadletApi,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import { dialogAPI, quadletAPI } from '/@/api/client';
-import { QuadletType } from '@quadlet/core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 vi.mock(import('/@/api/client'), () => ({
   dialogAPI: {

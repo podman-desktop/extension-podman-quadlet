@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import type { Disposable, configuration as configurationAPI, Configuration } from '@podman-desktop/api';
-import type { CONTAINER_ENGINE_CONNECTION_FORMAT } from '@quadlet/core-api';
+import type { CONTAINER_ENGINE_CONNECTION_FORMAT } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
   configurationAPI: typeof configurationAPI;

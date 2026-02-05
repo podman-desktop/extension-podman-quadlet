@@ -23,8 +23,12 @@ import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { LoggerService } from '../services/logger-service';
 import type { ProviderContainerConnection, RunResult } from '@podman-desktop/api';
-import type { ProviderContainerConnectionIdentifierInfo, ServiceQuadlet, TemplateQuadlet } from '@quadlet/core-api';
-import { QuadletType } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  ServiceQuadlet,
+  TemplateQuadlet,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { LoggerImpl } from '../utils/logger-impl';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 

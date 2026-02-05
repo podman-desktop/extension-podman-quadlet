@@ -44,7 +44,7 @@ import {
   RoutingApi,
   DialogApi,
   ConfigurationApi,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletApiImpl } from '../apis/quadlet-api-impl';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
 import { ProviderApiImpl } from '../apis/provider-api-impl';
@@ -56,7 +56,7 @@ import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
 
 // mock message-proxy
-vi.mock(import('@quadlet/core-api'));
+vi.mock(import('@podman-desktop/quadlet-extension-core-api'));
 // mock services
 vi.mock(import('./webview-service'));
 vi.mock(import('./podman-service'));

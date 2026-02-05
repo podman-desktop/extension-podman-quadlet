@@ -27,7 +27,7 @@ import {
   LoggerApi,
   DialogApi,
   ConfigurationApi,
-} from '@quadlet/core-api';
+} from '@podman-desktop/quadlet-extension-core-api';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';

@@ -1,8 +1,11 @@
 /**
  * @author axel7083
  */
-import type { ProviderContainerConnectionDetailedInfo, QuadletTypeGenerate } from '@quadlet/core-api';
-import { QuadletType } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  QuadletTypeGenerate,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { Component } from 'svelte';
 import ContainerQuadletForm from '/@/lib/forms/quadlet/children/ContainerQuadletForm.svelte';
 import PodQuadletForm from '/@/lib/forms/quadlet/children/PodQuadletForm.svelte';

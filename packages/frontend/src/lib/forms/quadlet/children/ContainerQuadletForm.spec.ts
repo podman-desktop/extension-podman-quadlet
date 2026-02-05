@@ -21,7 +21,10 @@ import '@testing-library/jest-dom/vitest';
 import { render } from '@testing-library/svelte';
 import { expect, test, vi, describe, beforeEach } from 'vitest';
 import ContainerQuadletForm from '/@/lib/forms/quadlet/children/ContainerQuadletForm.svelte';
-import type { ProviderContainerConnectionDetailedInfo, SimpleContainerInfo } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  SimpleContainerInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import { containerAPI } from '/@/api/client';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 

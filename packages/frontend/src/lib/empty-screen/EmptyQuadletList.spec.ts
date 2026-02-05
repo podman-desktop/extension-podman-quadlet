@@ -25,7 +25,10 @@ import * as connectionStore from '/@store/connections';
 import * as synchronisationStore from '/@store/synchronisation';
 
 import { readable } from 'svelte/store';
-import type { ProviderContainerConnectionDetailedInfo, SynchronisationInfo } from '@quadlet/core-api';
+import type {
+  ProviderContainerConnectionDetailedInfo,
+  SynchronisationInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import type {} from 'svelte';
 
 // mock stores

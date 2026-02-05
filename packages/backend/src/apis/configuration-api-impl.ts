@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { CONTAINER_ENGINE_CONNECTION_FORMAT } from '@quadlet/core-api';
-import { ConfigurationApi } from '@quadlet/core-api';
+import type { CONTAINER_ENGINE_CONNECTION_FORMAT } from '@podman-desktop/quadlet-extension-core-api';
+import { ConfigurationApi } from '@podman-desktop/quadlet-extension-core-api';
 import type { ConfigurationService } from '../services/configuration-service';
 
 interface Dependencies {

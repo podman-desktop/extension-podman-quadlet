@@ -34,8 +34,13 @@ import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import { QuadletService } from './quadlet-service';
 import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
-import type { Quadlet, ServiceQuadlet, TemplateQuadlet, TemplateInstanceQuadlet } from '@quadlet/core-api';
-import { Messages, QuadletType } from '@quadlet/core-api';
+import type {
+  Quadlet,
+  ServiceQuadlet,
+  TemplateQuadlet,
+  TemplateInstanceQuadlet,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { Messages, QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
 import { TelemetryEvents } from '../utils/telemetry-events';
