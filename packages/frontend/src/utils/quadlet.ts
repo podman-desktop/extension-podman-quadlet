@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { QuadletInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 export function isKubeQuadlet(quadlet: QuadletInfo): quadlet is QuadletInfo & { type: QuadletType.KUBE } {
   return quadlet.type === QuadletType.KUBE;

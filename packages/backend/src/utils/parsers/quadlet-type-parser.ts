@@ -2,7 +2,7 @@
  * @author axel7083
  */
 import { Parser } from './iparser';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { parse } from 'js-ini';
 
 export class QuadletTypeParser extends Parser<string, QuadletType> {

@@ -20,8 +20,8 @@ import '@testing-library/jest-dom/vitest';
 import { beforeEach, expect, test, vi, describe } from 'vitest';
 import { render, within } from '@testing-library/svelte';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
-import { VMType } from '/@shared/src/utils/vm-types';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
+import { VMType } from '@podman-desktop/quadlet-extension-core-api';
+import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 beforeEach(() => {

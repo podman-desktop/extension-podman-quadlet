@@ -3,12 +3,14 @@
  */
 import type { env, TelemetryLogger, Webview, window } from '@podman-desktop/api';
 import { Publisher } from '../utils/publisher';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
-import { Messages } from '/@shared/src/messages';
+import type {
+  QuadletInfo,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import type { ProviderService } from './provider-service';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 
 export interface QuadletServiceDependencies {
   providers: ProviderService;

@@ -1,0 +1,26 @@
+{
+  "name": "@podman-desktop/quadlet-extension-core-api",
+  "private": true,
+  "version": "0.13.0-next",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "./dist/index.cjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview",
+    "test": "vitest run --coverage --passWithNoTests",
+    "test:watch": "vitest watch --coverage --passWithNoTests"
+  },
+  "devDependencies": {
+    "vite": "^7.3.1",
+    "vite-plugin-dts": "^4.3.0",
+    "vitest": "^4.0.10",
+    "@podman-desktop/api": "^1.25.1"
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.spec.*"
+  ]
+}

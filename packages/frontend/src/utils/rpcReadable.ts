@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { writable, type Subscriber, type Unsubscriber, type Readable } from 'svelte/store';
-import type { Subscriber as SharedSubscriber } from '/@shared/src/messages/message-proxy';
+import type { Subscriber as SharedSubscriber } from '@podman-desktop/quadlet-extension-core-api';
 import { rpcBrowser } from '/@/api/client';
 
 export function RPCReadable<T>(
@@ -28,8 +28,8 @@ export function RPCReadable<T>(
   // For example, you can pass in a custom function such as "getPullingStatuses".
   updater: () => Promise<T>,
 ): Readable<T> {
-  let timeoutId: NodeJS.Timeout | undefined;
-  let timeoutThrottle: NodeJS.Timeout | undefined;
+  let timeoutId: number | undefined;
+  let timeoutThrottle: number | undefined;
 
   const debouncedUpdater = debounce(updater);
   const origWritable = writable(value);

@@ -2,11 +2,14 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "strict": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
     "preserveValueImports": false,
     "skipLibCheck": true,
-    "baseUrl": ".",
+    "rootDir": "src",
     "allowJs": true,
     "checkJs": true
   },

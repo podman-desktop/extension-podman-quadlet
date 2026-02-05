@@ -17,7 +17,7 @@
  ***********************************************************************/
 import type { Event, Webview, Disposable } from '@podman-desktop/api';
 import { EventEmitter } from '@podman-desktop/api';
-import type { Messages } from '/@shared/src/messages';
+import type { Messages } from '@podman-desktop/quadlet-extension-core-api';
 
 export class Publisher<T> implements Disposable {
   private readonly _onEvent = new EventEmitter<T>();

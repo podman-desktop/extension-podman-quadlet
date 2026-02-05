@@ -1,10 +1,12 @@
 /**
  * @author axel7083
  */
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  SimpleImageInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { ImageApi } from '@podman-desktop/quadlet-extension-core-api';
 import type { ImageService } from '../services/image-service';
-import type { SimpleImageInfo } from '/@shared/src/models/simple-image-info';
-import { ImageApi } from '/@shared/src/apis/image-api';
 
 interface Dependencies {
   images: ImageService;

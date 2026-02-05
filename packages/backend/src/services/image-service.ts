@@ -6,8 +6,10 @@ import type { AsyncInit } from '../utils/async-init';
 import type { ProviderService } from './provider-service';
 import type { EngineHelperDependencies } from './engine-helper';
 import { EngineHelper } from './engine-helper';
-import type { SimpleImageInfo } from '/@shared/src/models/simple-image-info';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type {
+  SimpleImageInfo,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies extends EngineHelperDependencies {
   providers: ProviderService;

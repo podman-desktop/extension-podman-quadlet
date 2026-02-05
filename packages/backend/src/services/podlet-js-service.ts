@@ -15,8 +15,8 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
 import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@podman-desktop/api';

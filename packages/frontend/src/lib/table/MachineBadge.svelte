@@ -1,8 +1,10 @@
 <script lang="ts">
 import Label from '/@/lib/label/Label.svelte';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  ProviderContainerConnectionDetailedInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import { providerConnectionsInfo } from '/@store/connections';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { generateColor } from '/@/utils/colors';
 
 interface Props {

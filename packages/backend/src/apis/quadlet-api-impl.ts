@@ -2,20 +2,20 @@
  * @author axel7083
  */
 
-import { QuadletApi } from '/@shared/src/apis/quadlet-api';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import { QuadletApi, isTemplateQuadlet, isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  QuadletInfo,
+  ProviderContainerConnectionIdentifierInfo,
+  SynchronisationInfo,
+  Template,
+  ServiceQuadlet,
+} from '@podman-desktop/quadlet-extension-core-api';
 import type { QuadletService } from '../services/quadlet-service';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import type { SystemdService } from '../services/systemd-service';
 import type { PodmanService } from '../services/podman-service';
 import type { ProviderService } from '../services/provider-service';
 import type { LoggerService } from '../services/logger-service';
-import type { SynchronisationInfo } from '/@shared/src/models/synchronisation';
-import type { Template } from '/@shared/src/models/template';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
-import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import type { ServiceQuadlet } from '/@shared/src/models/service-quadlet';
-import { isServiceQuadlet } from '/@shared/src/models/service-quadlet';
 
 interface Dependencies {
   quadlet: QuadletService;

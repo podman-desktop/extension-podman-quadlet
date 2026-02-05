@@ -1,6 +1,10 @@
 <script lang="ts">
 import { Button, Table, TableColumn, TableRow, NavPage, TableSimpleColumn } from '@podman-desktop/ui-svelte';
-import type { QuadletInfo } from '/@shared/src/models/quadlet-info';
+import type {
+  QuadletInfo,
+  ProviderContainerConnectionDetailedInfo,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import QuadletStatus from '../lib/table/QuadletStatus.svelte';
 import { configurationAPI, dialogAPI, quadletAPI } from '../api/client';
 import QuadletActions from '../lib/table/QuadletActions.svelte';
@@ -9,16 +13,13 @@ import { quadletsInfo } from '/@store/quadlets';
 import { router } from 'tinro';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { providerConnectionsInfo } from '/@store/connections';
-import type { ProviderContainerConnectionDetailedInfo } from '/@shared/src/models/provider-container-connection-detailed-info';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { get } from 'svelte/store';
 import QuadletName from '/@/lib/table/QuadletName.svelte';
-import { isTemplateQuadlet } from '/@shared/src/models/template-quadlet';
-import { isTemplateInstanceQuadlet } from '/@shared/src/models/template-instance-quadlet';
+import { isTemplateQuadlet, isTemplateInstanceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 import { onMount } from 'svelte';
 
 type SelectableQuadletInfo = QuadletInfo & { selected?: boolean };

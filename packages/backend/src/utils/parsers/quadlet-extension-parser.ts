@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { Parser } from './iparser';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { basename } from 'node:path/posix';
 
 export class QuadletExtensionParser extends Parser<string, QuadletType> {

@@ -9,7 +9,6 @@
     "baseUrl": ".",
     "paths": {
       "/@/*": ["./src/*"],
-      "/@shared/*": ["../shared/*"],
       "/@store/*": ["./src/stores/*"]
     },
     /**
@@ -28,7 +27,6 @@
     "src/**/*.js",
     "src/**/*.svelte",
     "../../types/**/*.d.ts",
-    "../shared/**/*.ts",
     "vite.tests.setup.ts"
   ],
   "exclude": ["vite.config.ts", "vitest.config.ts"]

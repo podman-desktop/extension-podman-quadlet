@@ -4,9 +4,8 @@
 import type { AsyncInit } from '../utils/async-init';
 import type { Disposable, WebviewPanel } from '@podman-desktop/api';
 import { Publisher } from '../utils/publisher';
-import { Messages } from '/@shared/src/messages';
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { QuadletType } from '/@shared/src/utils/quadlet-type';
+import { Messages, QuadletType } from '@podman-desktop/quadlet-extension-core-api';
+import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
   panel: WebviewPanel;

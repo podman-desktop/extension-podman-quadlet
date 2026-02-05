@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import { LoggerApi } from '/@shared/src/apis/logger-api';
+import { LoggerApi } from '@podman-desktop/quadlet-extension-core-api';
 import type { LoggerService } from '../services/logger-service';
 
 interface Dependencies {
