@@ -31,4 +31,4 @@ COPY --from=builder /app/node_modules/tweetnacl /extension/dist/node_modules/twe
 LABEL org.opencontainers.image.title="Podman Quadlet Extension" \
         org.opencontainers.image.description="Podman Quadlet Extension" \
         org.opencontainers.image.vendor="axel7083" \
-        io.podman-desktop.api.version=">= 1.14.0"
+        io.podman-desktop.api.version=">= 1.22.0"
