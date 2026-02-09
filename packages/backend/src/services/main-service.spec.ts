@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import {
   RoutingApi,
   DialogApi,
   ConfigurationApi,
+  PodApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletApiImpl } from '../apis/quadlet-api-impl';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
@@ -54,6 +55,7 @@ import { PodletApiImpl } from '../apis/podlet-api-impl';
 import { RoutingApiImpl } from '../apis/routing-api-impl';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
+import { PodApiImpl } from '../apis/pod-api-impl';
 
 // mock message-proxy
 vi.mock(import('@podman-desktop/quadlet-extension-core-api'));
@@ -71,6 +73,7 @@ vi.mock(import('./image-service'));
 vi.mock(import('./logger-service'));
 vi.mock(import('./dialog-service'));
 vi.mock(import('./configuration-service'));
+vi.mock(import('./pod-service'));
 
 const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
 const WINDOW_API_MOCK: typeof window = {} as unknown as typeof window;
@@ -125,6 +128,7 @@ test('ensure init register all APIs', async () => {
     [RoutingApi, RoutingApiImpl],
     [DialogApi, DialogApiImpl],
     [ConfigurationApi, ConfigurationApiImpl],
+    [PodApi, PodApiImpl],
   ]);
 
   for (const [key, value] of APIS.entries()) {
