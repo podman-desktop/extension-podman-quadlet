@@ -66,8 +66,8 @@ export class PodService extends EngineHelper<Dependencies> implements Disposable
     };
   }
 
-  public inspectPod(engineId: string, imageId: string): Promise<PodInspectInfo> {
-    return this.dependencies.containers.inspectPod(engineId, imageId);
+  public inspectPod(engineId: string, podId: string): Promise<PodInspectInfo> {
+    return this.dependencies.containers.inspectPod(engineId, podId);
   }
 
   dispose(): void {}
