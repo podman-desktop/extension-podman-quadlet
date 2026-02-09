@@ -80,7 +80,7 @@ export interface PodQuadlet {
      *
      * Equivalent to the Podman --hostname option. This key can be listed multiple times.
      */
-    HostName?: Array<string>;
+    HostName?: string;
     /**
      * Specify a static IPv4 address for the pod, for example 10.88.64.128. Equivalent to the Podman --ip option.
      */
