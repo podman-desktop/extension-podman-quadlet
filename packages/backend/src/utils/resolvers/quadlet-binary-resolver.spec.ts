@@ -20,7 +20,7 @@ import { describe, expect, test, vi, beforeEach } from 'vitest';
 import { QuadletBinaryResolver, PODMAN_SYSTEMD_GENERATOR, BINARY_FALLBACK } from './quadlet-binary-resolver';
 import { join } from 'node:path/posix';
 import type { Logger, RunResult } from '@podman-desktop/api';
-import type { PodmanWorker } from './worker/podman-worker';
+import type { PodmanWorker } from '../worker/podman-worker';
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 

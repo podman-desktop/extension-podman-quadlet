@@ -25,13 +25,17 @@ import type {
 } from '@podman-desktop/api';
 import type { AsyncInit } from '../async-init';
 import { isRunError } from '../run-error';
-import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
+import { QuadletBinaryResolver } from '../resolvers/quadlet-binary-resolver';
+import { PodmanVersionResolver } from '../resolvers/podman-version-resolver';
+import type { SemVer } from 'semver';
 
 export abstract class PodmanWorker implements Disposable, AsyncInit {
   protected quadletBinaryResolver: QuadletBinaryResolver;
+  protected podmanVersionResolver: PodmanVersionResolver;
 
-  constructor(protected connection: ProviderContainerConnection) {
+  protected constructor(protected connection: ProviderContainerConnection) {
     this.quadletBinaryResolver = new QuadletBinaryResolver(this);
+    this.podmanVersionResolver = new PodmanVersionResolver(this);
   }
 
   /**
@@ -138,6 +142,27 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     env?: Record<string, string>;
   }): Promise<RunResult> {
     return this.exec('journalctl', options);
+  }
+
+  /**
+   * Execute the `podman` command on the podman connection
+   * @param options the options for the exec logic
+   */
+  async podmanExec(options: {
+    args: string[];
+    logger?: Logger;
+    token?: CancellationToken;
+    env?: Record<string, string>;
+  }): Promise<RunResult> {
+    return this.exec('podman', options);
+  }
+
+  async getPodmanVersion(options?: {
+    logger?: Logger;
+    token?: CancellationToken;
+    env?: Record<string, string>;
+  }): Promise<SemVer> {
+    return this.podmanVersionResolver.resolve(options);
   }
 
   /**
