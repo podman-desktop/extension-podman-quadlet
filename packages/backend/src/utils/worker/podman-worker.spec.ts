@@ -19,7 +19,9 @@ import type { Logger, CancellationToken, RunResult, ProviderContainerConnection,
 import { PodmanWorker } from './podman-worker';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { QuadletBinaryResolver } from '../quadlet-binary-resolver';
+import { QuadletBinaryResolver } from '../resolvers/quadlet-binary-resolver';
+import { PodmanVersionResolver } from '../resolvers/podman-version-resolver';
+import { SemVer } from 'semver';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
@@ -49,7 +51,8 @@ const RUN_ERROR_MOCK: RunError = {
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
-vi.mock(import('../quadlet-binary-resolver'));
+vi.mock(import('../resolvers/quadlet-binary-resolver'));
+vi.mock(import('../resolvers/podman-version-resolver'));
 
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
@@ -160,5 +163,32 @@ describe('quadletExec', () => {
       args: ['--version'],
     });
     expect(result).toEqual(RUN_ERROR_MOCK);
+  });
+});
+
+describe('podmanExec', () => {
+  test('RunResult should passthrough', async () => {
+    const worker = getPodmanWorkerImpl();
+
+    vi.mocked(worker.callbacks.exec).mockResolvedValue(RUN_RESULT_MOCK);
+
+    const result = await worker.podmanExec({
+      args: ['--version'],
+    });
+    expect(result).toEqual(RUN_RESULT_MOCK);
+
+    expect(worker.callbacks.exec).toHaveBeenCalledWith('podman', {
+      args: ['--version'],
+    });
+  });
+});
+
+describe('getPodmanVersion', () => {
+  test('should return the podman version', async () => {
+    const worker = getPodmanWorkerImpl();
+    vi.mocked(PodmanVersionResolver.prototype.resolve).mockResolvedValue(new SemVer('5.7.1'));
+
+    const version = await worker.getPodmanVersion();
+    expect(version.version).toBe('5.7.1');
   });
 });

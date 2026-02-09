@@ -18,12 +18,13 @@
 
 import type { CancellationToken, Logger } from '@podman-desktop/api';
 import { isAbsolute, join } from 'node:path/posix';
-import type { PodmanWorker } from './worker/podman-worker';
+import type { PodmanWorker } from '../worker/podman-worker';
+import type { Resolver } from './resolver';
 
 export const PODMAN_SYSTEMD_GENERATOR = 'podman-system-generator';
 export const BINARY_FALLBACK = '/usr/libexec/podman/quadlet';
 
-export class QuadletBinaryResolver {
+export class QuadletBinaryResolver implements Resolver<string> {
   private cachedPath: string | undefined;
 
   constructor(private executor: PodmanWorker) {}
