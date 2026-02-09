@@ -1,5 +1,3 @@
-import type { CancellationToken, Logger } from '@podman-desktop/api';
-
 /**********************************************************************
  * Copyright (C) 2025 Red Hat, Inc.
  *
@@ -17,6 +15,8 @@ import type { CancellationToken, Logger } from '@podman-desktop/api';
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
+import type { CancellationToken, Logger } from '@podman-desktop/api';
+
 export interface Resolver<T> {
   resolve(options?: { token?: CancellationToken; logger?: Logger }): Promise<T>;
 }
