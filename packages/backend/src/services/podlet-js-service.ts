@@ -24,12 +24,17 @@ import { Compose, ContainerGenerator, ImageGenerator, PodGenerator } from 'podle
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
+import type { PodmanService } from './podman-service';
+import type { ProviderService } from './provider-service';
+import type { SemVer } from 'semver';
 
 interface Dependencies {
   containers: ContainerService;
   images: ImageService;
   pods: PodService;
   telemetry: TelemetryLogger;
+  providers: ProviderService;
+  podman: PodmanService;
 }
 
 export class PodletJsService {
@@ -66,10 +71,11 @@ export class PodletJsService {
     }).generate();
   }
 
-  protected async generatePod(engineId: string, podId: string): Promise<string> {
+  protected async generatePod(engineId: string, podId: string, version: string): Promise<string> {
     const pod: PodInspectInfo = await this.dependencies.pods.inspectPod(engineId, podId);
     return new PodGenerator({
       pod: pod,
+      podman: version,
     }).generate();
   }
 
@@ -84,6 +90,9 @@ export class PodletJsService {
 
     // Get the engine id
     const engineId = await this.dependencies.containers.getEngineId(options.connection);
+    const provider = this.dependencies.providers.getProviderContainerConnection(options.connection);
+    const worker = await this.dependencies.podman.getWorker(provider);
+    const podmanVersion: SemVer = await worker.getPodmanVersion();
 
     try {
       switch (options.type) {
@@ -92,7 +101,7 @@ export class PodletJsService {
         case QuadletType.IMAGE:
           return await this.generateImage(engineId, options.resourceId);
         case QuadletType.POD:
-          return await this.generatePod(engineId, options.resourceId);
+          return await this.generatePod(engineId, options.resourceId, podmanVersion.version);
         default:
           throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
       }

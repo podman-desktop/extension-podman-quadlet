@@ -27,6 +27,8 @@ import { Compose, ContainerGenerator, ImageGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
+import type { PodmanService } from './podman-service';
+import type { ProviderService } from './provider-service';
 
 /**
  *  mock the podlet-js library
@@ -69,6 +71,12 @@ const CONTAINER_INSPECT_MOCK: ContainerInspectInfo = {
   Id: 'container-id',
 } as unknown as ContainerInspectInfo;
 
+const PODMAN_SERVICE_MOCK: PodmanService = {
+
+} as unknown as PodmanService;
+
+const PROVIDER_SERVICE_MOCK: ProviderService = {} as unknown as ProviderService;
+
 const CONTAINER_GENERATE_OUTPUT: string = 'container-quadlet-content';
 const IMAGE_GENERATE_OUTPUT: string = 'image-quadlet-content';
 
@@ -91,6 +99,8 @@ function getService(): PodletJsService {
     images: IMAGE_SERVICE_MOCK,
     telemetry: TELEMETRY_MOCK,
     pods: POD_SERVICE_MOCK,
+    podman: PODMAN_SERVICE_MOCK,
+    providers: PROVIDER_SERVICE_MOCK,
   });
 }
 

@@ -201,6 +201,8 @@ export class MainService implements Disposable, AsyncInit {
       images: images,
       pods: pods,
       telemetry: this.#telemetry,
+      podman: podman,
+      providers: providers,
     });
 
     /**
