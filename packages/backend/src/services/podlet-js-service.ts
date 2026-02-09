@@ -75,8 +75,9 @@ export class PodletJsService {
     const pod: PodInspectInfo = await this.dependencies.pods.inspectPod(engineId, podId);
     return new PodGenerator({
       pod: pod,
+    }).generate({
       podman: version,
-    }).generate();
+    });
   }
 
   public async generate(options: {

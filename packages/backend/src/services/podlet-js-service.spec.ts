@@ -22,13 +22,21 @@ import type { ImageService } from './image-service';
 import { PodletJsService } from './podlet-js-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import type { ContainerInspectInfo, ImageInspectInfo, TelemetryLogger } from '@podman-desktop/api';
-import { Compose, ContainerGenerator, ImageGenerator } from 'podlet-js';
+import type {
+  ContainerInspectInfo,
+  ImageInspectInfo,
+  ProviderContainerConnection,
+  TelemetryLogger,
+  PodInspectInfo,
+} from '@podman-desktop/api';
+import { Compose, ContainerGenerator, ImageGenerator, PodGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
 import type { PodmanService } from './podman-service';
 import type { ProviderService } from './provider-service';
+import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { SemVer } from 'semver';
 
 /**
  *  mock the podlet-js library
@@ -43,16 +51,34 @@ const CONTAINER_SERVICE_MOCK: ContainerService = {
   getEngineId: vi.fn(),
 } as unknown as ContainerService;
 
+const PODMAN_WORKER_MOCK: PodmanWorker = {
+  getPodmanVersion: vi.fn(),
+} as unknown as PodmanWorker;
+
 const IMAGE_SERVICE_MOCK: ImageService = {
   inspectImage: vi.fn(),
 } as unknown as ImageService;
+
+const PROVIDER_CONTAINER_CONNECTION_MOCK: ProviderContainerConnection = {
+  providerId: 'podman',
+  connection: {
+    name: 'vps-remote',
+    type: 'podman',
+    endpoint: {
+      socketPath: '/foo.socket',
+    },
+    status: vi.fn(),
+  },
+};
 
 const CONTAINER_CONNECTION_IDENTIFIER: ProviderContainerConnectionIdentifierInfo = {
   providerId: 'podman',
   name: 'Podman',
 };
 
-const POD_SERVICE_MOCK: PodService = {} as unknown as PodService;
+const POD_SERVICE_MOCK: PodService = {
+  inspectPod: vi.fn(),
+} as unknown as PodService;
 
 const TELEMETRY_MOCK: TelemetryLogger = {
   logUsage: vi.fn(),
@@ -71,14 +97,26 @@ const CONTAINER_INSPECT_MOCK: ContainerInspectInfo = {
   Id: 'container-id',
 } as unknown as ContainerInspectInfo;
 
-const PODMAN_SERVICE_MOCK: PodmanService = {
+const POD_INSPECT_MOCK: PodInspectInfo = {
+  engineId: ENGINE_ID_MOCK,
+  Id: 'pod-id',
+} as unknown as PodInspectInfo;
 
+const PODMAN_VERSION_MOCK: SemVer = {
+  version: '5.0.0',
+} as unknown as SemVer;
+
+const PODMAN_SERVICE_MOCK: PodmanService = {
+  getWorker: vi.fn(),
 } as unknown as PodmanService;
 
-const PROVIDER_SERVICE_MOCK: ProviderService = {} as unknown as ProviderService;
+const PROVIDER_SERVICE_MOCK: ProviderService = {
+  getProviderContainerConnection: vi.fn(),
+} as unknown as ProviderService;
 
 const CONTAINER_GENERATE_OUTPUT: string = 'container-quadlet-content';
 const IMAGE_GENERATE_OUTPUT: string = 'image-quadlet-content';
+const POD_GENERATE_OUTPUT: string = 'pod-quadlet-content';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -91,6 +129,15 @@ beforeEach(() => {
 
   vi.mocked(ContainerGenerator.prototype.generate).mockReturnValue(CONTAINER_GENERATE_OUTPUT);
   vi.mocked(ImageGenerator.prototype.generate).mockReturnValue(IMAGE_GENERATE_OUTPUT);
+  vi.mocked(PodGenerator.prototype.generate).mockReturnValue(POD_GENERATE_OUTPUT);
+
+  // mock pod service
+  vi.mocked(POD_SERVICE_MOCK.inspectPod).mockResolvedValue(POD_INSPECT_MOCK);
+
+  // mock provider service
+  vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockResolvedValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
+  vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.getPodmanVersion).mockResolvedValue(PODMAN_VERSION_MOCK);
 });
 
 function getService(): PodletJsService {
@@ -208,6 +255,78 @@ describe('image quadlets', () => {
 
     // the output should match the mocked string
     expect(result).toStrictEqual(IMAGE_GENERATE_OUTPUT);
+  });
+});
+
+describe('pod quadlets', () => {
+  test('should use the pod service to inspect resources', async () => {
+    const podletJs = getService();
+
+    // generate pod quadlet
+    const result = await podletJs.generate({
+      connection: CONTAINER_CONNECTION_IDENTIFIER,
+      type: QuadletType.POD,
+      resourceId: POD_INSPECT_MOCK.Id,
+    });
+
+    // Should get the corresponding engine id
+    expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
+
+    // should get the pod inspect info
+    expect(POD_SERVICE_MOCK.inspectPod).toHaveBeenCalledExactlyOnceWith(ENGINE_ID_MOCK, POD_INSPECT_MOCK.Id);
+
+    // should properly call the podlet-js pod generator
+    expect(PodGenerator).toHaveBeenCalledExactlyOnceWith({
+      pod: POD_INSPECT_MOCK,
+    });
+
+    // should call generate with podman version
+    expect(PodGenerator.prototype.generate).toHaveBeenCalledWith({
+      podman: PODMAN_VERSION_MOCK.version,
+    });
+
+    // the output should match the mocked string
+    expect(result).toStrictEqual(POD_GENERATE_OUTPUT);
+  });
+
+  test('generate pod should send telemetry event', async () => {
+    const podletJs = getService();
+
+    // generate pod quadlet
+    await podletJs.generate({
+      connection: CONTAINER_CONNECTION_IDENTIFIER,
+      type: QuadletType.POD,
+      resourceId: POD_INSPECT_MOCK.Id,
+    });
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+        'quadlet-type': QuadletType.POD.toLowerCase(),
+      });
+    });
+  });
+
+  test('error in pod quadlet generate should send telemetry event including it', async () => {
+    const podletJs = getService();
+
+    const errorMock = new Error('dummy error');
+    vi.mocked(POD_SERVICE_MOCK.inspectPod).mockRejectedValue(errorMock);
+
+    // generate pod quadlet
+    await expect(() => {
+      return podletJs.generate({
+        connection: CONTAINER_CONNECTION_IDENTIFIER,
+        type: QuadletType.POD,
+        resourceId: POD_INSPECT_MOCK.Id,
+      });
+    }).rejects.toThrowError('dummy error');
+
+    await vi.waitFor(() => {
+      expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
+        'quadlet-type': QuadletType.POD.toLowerCase(),
+        error: errorMock,
+      });
+    });
   });
 });
 
