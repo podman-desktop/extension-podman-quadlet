@@ -1,0 +1,60 @@
+{
+  "engineName": "Podman",
+  "engineId": "podman.podman-machine-default",
+  "Id": "640cad4a852ffaed3444c1176a4bd97788175df9d764ddbd660bcc2f3994f97d",
+  "Name": "better-chatbot-postgresdb-deployment-pod",
+  "Created": "2025-08-18T10:44:54.6679243+02:00",
+  "ExitPolicy": "stop",
+  "State": "Running",
+  "Hostname": "better-chatbot-postgresdb-deployment-pod",
+  "Labels": {
+    "app": "better-chatbot-postgresdb"
+  },
+  "CreateCgroup": true,
+  "CgroupParent": "/libpod_parent",
+  "CgroupPath": "/libpod_parent/640cad4a852ffaed3444c1176a4bd97788175df9d764ddbd660bcc2f3994f97d",
+  "CreateInfra": true,
+  "InfraContainerID": "22b7f554abd8aa718c9082247a90f0d7bf963741c16523a68713acfdf6574b60",
+  "InfraConfig": {
+    "PortBindings": {
+      "5432/tcp": [
+        {
+          "HostIp": "0.0.0.0",
+          "HostPort": "5432"
+        }
+      ]
+    },
+    "HostNetwork": false,
+    "StaticIP": "",
+    "StaticMAC": "",
+    "NoManageResolvConf": false,
+    "DNSServer": null,
+    "DNSSearch": null,
+    "DNSOption": null,
+    "NoManageHostname": false,
+    "NoManageHosts": false,
+    "HostAdd": null,
+    "HostsFile": "",
+    "Networks": ["podman-default-kube-network"],
+    "NetworkOptions": null,
+    "pid_ns": "private",
+    "userns": "host",
+    "uts_ns": "private"
+  },
+  "SharedNamespaces": ["ipc", "net", "uts"],
+  "NumContainers": 2,
+  "Containers": [
+    {
+      "Id": "22b7f554abd8aa718c9082247a90f0d7bf963741c16523a68713acfdf6574b60",
+      "Name": "640cad4a852f-infra",
+      "State": "running"
+    },
+    {
+      "Id": "2e9dbdb80528e559e062d0a9bd82774b9d239c531958a2f816c8a5ffc0458fd9",
+      "Name": "better-chatbot-postgresdb-deployment-pod-postgresdb",
+      "State": "running"
+    }
+  ],
+  "RestartPolicy": "always",
+  "LockNumber": 13
+}

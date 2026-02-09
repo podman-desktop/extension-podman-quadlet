@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  ***********************************************************************/
 import type { IIniObject } from 'js-ini/src/interfaces/ini-object';
 
-export abstract class Generator<T> {
+export abstract class Generator<T, O = void> {
   constructor(protected dependencies: T) {}
 
   /**
@@ -49,5 +49,5 @@ export abstract class Generator<T> {
     );
   }
 
-  abstract generate(): string;
+  abstract generate(options: O): string;
 }
