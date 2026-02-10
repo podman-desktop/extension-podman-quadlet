@@ -27,6 +27,7 @@ import {
   LoggerApi,
   DialogApi,
   ConfigurationApi,
+  PodApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
@@ -50,6 +51,8 @@ import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { PodletJsService } from './podlet-js-service';
 import { ConfigurationService } from './configuration-service';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
+import { PodApiImpl } from '../apis/pod-api-impl';
+import { PodService } from './pod-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -173,6 +176,15 @@ export class MainService implements Disposable, AsyncInit {
     await images.init();
     this.#disposables.push(images);
 
+    // Basic manipulation of pods
+    const pods = new PodService({
+      containers: this.dependencies.containers,
+      providers: providers,
+      containerService: containers,
+    });
+    await pods.init();
+    this.#disposables.push(pods);
+
     // Register/execute commands
     const command = new CommandService({
       commandsApi: this.dependencies.commandsApi,
@@ -228,6 +240,12 @@ export class MainService implements Disposable, AsyncInit {
       images: images,
     });
     rpcExtension.registerInstance<ImageApi>(ImageApi, imageApiImpl);
+
+    // pod api
+    const podApiImpl = new PodApiImpl({
+      pods: pods,
+    });
+    rpcExtension.registerInstance<PodApi>(PodApi, podApiImpl);
 
     // podlet api
     const podletApiImpl = new PodletApiImpl({

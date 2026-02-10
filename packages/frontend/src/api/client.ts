@@ -25,6 +25,7 @@ import {
   ImageApi,
   LoggerApi,
   DialogApi,
+  PodApi,
   ConfigurationApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 
@@ -45,6 +46,7 @@ export const providerAPI: ProviderApi = rpcBrowser.getProxy(ProviderApi);
 export const routingAPI: RoutingApi = rpcBrowser.getProxy(RoutingApi);
 export const containerAPI: ContainerApi = rpcBrowser.getProxy(ContainerApi);
 export const imageAPI: ImageApi = rpcBrowser.getProxy(ImageApi);
+export const podAPI: PodApi = rpcBrowser.getProxy(PodApi);
 export const podletAPI: PodletApi = rpcBrowser.getProxy(PodletApi);
 export const loggerAPI: LoggerApi = rpcBrowser.getProxy(LoggerApi);
 export const dialogAPI: DialogApi = rpcBrowser.getProxy(DialogApi);
@@ -102,4 +104,8 @@ Object.defineProperty(window, 'loggerAPI', {
 
 Object.defineProperty(window, 'configurationAPI', {
   value: configurationAPI,
+});
+
+Object.defineProperty(window, 'podAPI', {
+  value: podAPI,
 });
