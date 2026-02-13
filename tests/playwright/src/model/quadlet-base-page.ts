@@ -18,6 +18,7 @@
 
 import type { Locator, Page } from '@playwright/test';
 import { argosScreenshot } from '@argos-ci/playwright';
+import { platform, arch } from 'node:os';
 
 export abstract class QuadletBasePage {
   readonly page: Page;
@@ -33,6 +34,6 @@ export abstract class QuadletBasePage {
   abstract waitForLoad(): Promise<void>;
 
   public async screenshot(name: string): Promise<void> {
-    await argosScreenshot(this.webview, name);
+    await argosScreenshot(this.webview, `${platform()}-${arch()}-${name}`);
   }
 }
