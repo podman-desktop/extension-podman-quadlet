@@ -1,0 +1,47 @@
+{
+  "Id": "e34bdf23e51c5f633ddda78f365d439b56fc69e815038668fcf6a3ab95f22492",
+  "Name": "limited",
+  "Created": "2026-02-09T13:18:29.169327643+01:00",
+  "CreateCommand": ["podman", "pod", "create", "--cpus=2", "--name=limited"],
+  "ExitPolicy": "stop",
+  "State": "Created",
+  "Hostname": "",
+  "CreateCgroup": true,
+  "CgroupParent": "user.slice",
+  "CgroupPath": "user.slice/user-1000.slice/user@1000.service/user.slice/user-libpod_pod_e34bdf23e51c5f633ddda78f365d439b56fc69e815038668fcf6a3ab95f22492.slice",
+  "CreateInfra": true,
+  "InfraContainerID": "c450c43155b64ad6ec689f674c564b55bf363e55d3f48a7f965e4cc1394d6ad1",
+  "InfraConfig": {
+    "PortBindings": {},
+    "HostNetwork": false,
+    "StaticIP": "",
+    "StaticMAC": "",
+    "NoManageResolvConf": false,
+    "DNSServer": null,
+    "DNSSearch": null,
+    "DNSOption": null,
+    "NoManageHostname": false,
+    "NoManageHosts": false,
+    "HostAdd": null,
+    "HostsFile": "",
+    "Networks": null,
+    "NetworkOptions": null,
+    "cpu_period": 100000,
+    "cpu_quota": 200000,
+    "pid_ns": "private",
+    "userns": "host",
+    "uts_ns": "private"
+  },
+  "SharedNamespaces": ["net", "uts", "ipc"],
+  "NumContainers": 1,
+  "Containers": [
+    {
+      "Id": "c450c43155b64ad6ec689f674c564b55bf363e55d3f48a7f965e4cc1394d6ad1",
+      "Name": "e34bdf23e51c-infra",
+      "State": "created"
+    }
+  ],
+  "cpu_period": 100000,
+  "cpu_quota": 200000,
+  "LockNumber": 8
+}

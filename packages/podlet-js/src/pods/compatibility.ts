@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,19 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
-import { Compose } from './compose/compose';
-import { PodGenerator } from './pods/pod-generator';
+import { SemVer } from 'semver';
 
-export { ImageGenerator, Compose, ContainerGenerator, PodGenerator };
+/**
+ * Podman introduce the support of .pod quadlets in 5.0.0
+ */
+export const POD_SUPPORT = new SemVer('5.0.0');
+
+export const FEATURES = {
+  Pod: {
+    /**
+     * The Label key support has been added in Podman 5.6.0
+     * https://docs.podman.io/en/v5.6.0/markdown/podman-systemd.unit.5.html#id11
+     */
+    Labels: new SemVer('5.6.0'),
+  },
+};

@@ -24,7 +24,8 @@
   "dependencies": {
     "js-ini": "^1.6.0",
     "js-yaml": "^4.1.1",
-    "compose-spec-ts": "^0.3.2"
+    "compose-spec-ts": "^0.3.2",
+    "semver": "^7.7.4"
   },
   "files": [
     "dist"
