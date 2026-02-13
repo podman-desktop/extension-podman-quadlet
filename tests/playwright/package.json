@@ -14,7 +14,8 @@
     "@podman-desktop/tests-playwright": "^1.25.1",
     "@types/node": "^24",
     "typescript": "^5.9.3",
-    "xvfb-maybe": "^0.2.1"
+    "xvfb-maybe": "^0.2.1",
+    "@argos-ci/playwright": "^6.4.1"
   },
   "type": "module"
 }
