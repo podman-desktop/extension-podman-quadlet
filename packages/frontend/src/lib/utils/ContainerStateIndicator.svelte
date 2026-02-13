@@ -15,7 +15,4 @@ let background: string = $derived.by(() => {
 });
 </script>
 
-<div
-  style="background-color: {background}"
-  class="flex w-2 h-2 me-2 rounded-full">
-</div>
+<div style="background-color: {background}" class="flex w-2 h-2 me-2 rounded-full"></div>

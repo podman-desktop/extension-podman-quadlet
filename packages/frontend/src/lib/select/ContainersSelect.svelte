@@ -42,7 +42,7 @@ function handleOnChange(nValue: SimpleContainerInfo | undefined): void {
   }))}>
   <div slot="item" let:item>
     <div class="flex items-center">
-      <ContainerStateIndicator state={item.state}/>
+      <ContainerStateIndicator state={item.state} />
       <div class="grow">
         <span>{item.name.substring(1)}</span>
       </div>
