@@ -1,9 +1,9 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import type { SimplePodInfo } from '/@shared/src/models/simple-pod-info';
 import { podAPI } from '/@/api/client';
 import { router } from 'tinro';
 import PodsSelect from '/@/lib/select/PodsSelect.svelte';
+import type { SimplePodInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 let {
   loading = $bindable(),
