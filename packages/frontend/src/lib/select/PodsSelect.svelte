@@ -1,7 +1,7 @@
 <script lang="ts">
 import Select from '/@/lib/select/Select.svelte';
-import type { SimplePodInfo } from '/@shared/src/models/simple-pod-info';
 import ContainerStateIndicator from '/@/lib/utils/ContainerStateIndicator.svelte';
+import type { SimplePodInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
   value: SimplePodInfo | undefined;
