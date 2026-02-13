@@ -45,7 +45,7 @@ beforeEach(() => {
   vi.resetAllMocks();
 });
 
-test('pods should be listed properly', async () => {
+test('images should be listed properly', async () => {
   const { container } = render(ImagesSelect, {
     images: [SIMPLE_IMAGE_INFO],
     value: undefined,

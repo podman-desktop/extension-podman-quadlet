@@ -35,9 +35,6 @@ import { Restart } from './builders/restart';
 interface Dependencies {
   container: ContainerInspectInfo;
   image: ImageInspectInfo;
-  options?: {
-    pod?: string;
-  },
 }
 
 export class ContainerGenerator extends Generator<Dependencies> {
@@ -61,22 +58,11 @@ export class ContainerGenerator extends Generator<Dependencies> {
       (accumulator, current) => {
         return new current(this.dependencies).build(accumulator);
       },
-      this.getBaseContainerQuadlet(),
+      {
+        Container: {},
+      } as ContainerQuadlet,
     );
 
     return stringify(this.format(containerQuadlet));
-  }
-
-  protected getBaseContainerQuadlet(): ContainerQuadlet {
-    const output: ContainerQuadlet = {
-      Container: {},
-    };
-
-    // add pod if provided
-    if(this.dependencies.options?.pod) {
-      output.Container.Pod = this.dependencies.options.pod;
-    }
-
-    return output;
   }
 }
