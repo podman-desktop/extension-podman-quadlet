@@ -10,7 +10,6 @@ import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
 import { handleWebview } from './utils/webviewHandler';
 import { QuadletDetailsPage } from './model/quadlet-details-page';
-import { join } from 'node:path';
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
