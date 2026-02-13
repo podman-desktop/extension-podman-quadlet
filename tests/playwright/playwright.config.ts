@@ -17,7 +17,6 @@
  ***********************************************************************/
 
 import { defineConfig, devices } from '@playwright/test';
-import { createArgosReporterOptions } from '@argos-ci/playwright/reporter';
 
 export default defineConfig({
   outputDir: './output/',
@@ -28,14 +27,6 @@ export default defineConfig({
     ['junit', { outputFile: './output/junit-results.xml' }],
     ['json', { outputFile: './output/json-results.json' }],
     ['html', { open: 'never', outputFolder: './output/html-results/' }],
-    // Add Argos reporter.
-    [
-      '@argos-ci/playwright/reporter',
-      createArgosReporterOptions({
-        // Upload to Argos on CI only.
-        uploadToArgos: !!process.env.CI,
-      }),
-    ],
   ],
 
   projects: [
@@ -43,6 +34,7 @@ export default defineConfig({
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+        viewport: { width: 1280, height: 960 },
       },
     },
   ],
