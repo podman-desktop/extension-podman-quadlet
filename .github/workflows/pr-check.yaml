@@ -220,3 +220,7 @@ jobs:
             tests/playwright/output/
             tests/playwright/tests/
 
+      - name: Upload screenshots to argos-ci
+        shell: bash
+        run: cd tests/playwright && pnpm run
+
