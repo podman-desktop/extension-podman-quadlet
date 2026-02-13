@@ -128,11 +128,17 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await quadletListPage.waitForLoad();
     });
 
+    test('screenshot quadlet list page empty', async () => {
+      await quadletListPage.screenshot('quadlet-list-page-empty');
+    });
+
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
       test.setTimeout(150_000);
 
       const generateForm = await quadletListPage.navigateToGenerateForm();
       await generateForm.waitForLoad();
+
+      await generateForm.screenshot('quadlet-generate-form-default');
 
       await playExpect(generateForm.cancelButton).toBeEnabled();
       await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
@@ -224,6 +230,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // read the title (either 'RUNNING' or '')
       const title = await status.getAttribute('title');
       playExpect(title).not.toBe('RUNNING');
+
+      await quadletListPage.screenshot('quadlet-list-page-one-quadlet');
 
       // open the details page
       await status.click();

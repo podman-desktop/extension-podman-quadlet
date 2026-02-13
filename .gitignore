@@ -5,3 +5,5 @@ dist
 **/coverage
 .idea
 output
+
+tests/playwright/screenshots
