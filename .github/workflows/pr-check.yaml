@@ -220,7 +220,42 @@ jobs:
             tests/playwright/output/
             tests/playwright/tests/
 
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v6
+        with:
+          name: e2e-screenshots-${{ matrix.os }}
+          path: tests/playwright/screenshots/
+
+
+  upload-screenshots-argos:
+    name: Upload screenshots to Argos
+    runs-on: ubuntu-latest
+    needs: e2e-pr-check
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        with:
+          run_install: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+
+      - name: Download all screenshots
+        uses: actions/download-artifact@v6
+        with:
+          pattern: e2e-screenshots-*
+          path: tests/playwright/screenshots
+          merge-multiple: true
+
+      - name: Execute pnpm install
+        run: pnpm install
+
       - name: Upload screenshots to argos-ci
         shell: bash
-        run: cd tests/playwright && pnpm run args:upload
+        working-directory: tests/playwright
+        run: pnpm run args:upload
 
