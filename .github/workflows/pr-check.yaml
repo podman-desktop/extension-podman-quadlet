@@ -222,5 +222,5 @@ jobs:
 
       - name: Upload screenshots to argos-ci
         shell: bash
-        run: cd tests/playwright && pnpm run
+        run: cd tests/playwright && pnpm run args:upload
 
