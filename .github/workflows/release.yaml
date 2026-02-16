@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024 Red Hat, Inc.
+# Copyright (C) 2024-2026 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ jobs:
       releaseId: ${{ steps.create_release.outputs.id}}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ github.event.inputs.branch }}
       - name: Generate tag utilities
@@ -82,7 +82,7 @@ jobs:
           git push origin ${{ steps.TAG_UTIL.outputs.githubTag }}
       - name: Create Release
         id: create_release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@b7eabc95ff50cbeeedec83973935c8f306dfcd0b # v1.20.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -133,7 +133,7 @@ jobs:
       contents: read
       packages: write
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: ${{ needs.tag.outputs.githubTag }}
 
@@ -159,7 +159,7 @@ jobs:
         run: echo the release id is ${{ needs.tag.outputs.releaseId}}
 
       - name: Publish release
-        uses: StuYarrow/publish-release@v1.1.2
+        uses: StuYarrow/publish-release@01f2a1365bacd77bad861873a7fdf274ab49eefd # v1.1.2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
