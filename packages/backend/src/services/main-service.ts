@@ -28,6 +28,7 @@ import {
   DialogApi,
   ConfigurationApi,
   PodApi,
+  VolumeApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
@@ -52,7 +53,9 @@ import { PodletJsService } from './podlet-js-service';
 import { ConfigurationService } from './configuration-service';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
 import { PodApiImpl } from '../apis/pod-api-impl';
+import { VolumeApiImpl } from '../apis/volume-api-impl';
 import { PodService } from './pod-service';
+import { VolumeService } from './volume-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -185,6 +188,14 @@ export class MainService implements Disposable, AsyncInit {
     await pods.init();
     this.#disposables.push(pods);
 
+    // Basic manipulation of volumes
+    const volumes = new VolumeService({
+      containers: this.dependencies.containers,
+      providers: providers,
+    });
+    await volumes.init();
+    this.#disposables.push(volumes);
+
     // Register/execute commands
     const command = new CommandService({
       commandsApi: this.dependencies.commandsApi,
@@ -200,6 +211,7 @@ export class MainService implements Disposable, AsyncInit {
       containers: containers,
       images: images,
       pods: pods,
+      volumes: volumes,
       telemetry: this.#telemetry,
       podman: podman,
       providers: providers,
@@ -249,6 +261,12 @@ export class MainService implements Disposable, AsyncInit {
       pods: pods,
     });
     rpcExtension.registerInstance<PodApi>(PodApi, podApiImpl);
+
+    // volume api
+    const volumeApiImpl = new VolumeApiImpl({
+      volumes: volumes,
+    });
+    rpcExtension.registerInstance<VolumeApi>(VolumeApi, volumeApiImpl);
 
     // podlet api
     const podletApiImpl = new PodletApiImpl({
