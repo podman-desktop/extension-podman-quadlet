@@ -5,7 +5,8 @@
   "scripts": {
     "test:e2e:setup": "xvfb-maybe --auto-servernum --server-args='-screen 0 1280x960x24' --",
     "test:e2e": "npm run test:e2e:setup playwright test src/",
-    "test:e2e:smoke": "npm run test:e2e:setup playwright test src/ --grep @smoke"
+    "test:e2e:smoke": "npm run test:e2e:setup playwright test src/ --grep @smoke",
+    "argos-ci:upload": "argos upload ./screenshots"
   },
   "publisher": "podman-desktop",
   "license": "Apache-2.0",
@@ -14,7 +15,8 @@
     "@podman-desktop/tests-playwright": "^1.25.1",
     "@types/node": "^24",
     "typescript": "^5.9.3",
-    "xvfb-maybe": "^0.2.1"
+    "xvfb-maybe": "^0.2.1",
+    "@argos-ci/cli": "^4.1.0"
   },
   "type": "module"
 }

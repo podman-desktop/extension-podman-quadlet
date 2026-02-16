@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2024 Red Hat, Inc.
+ * Copyright (C) 2024-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
  ***********************************************************************/
 
 import type { Locator, Page } from '@playwright/test';
+import { platform, arch } from 'node:os';
+import type { PageScreenshotOptions } from 'playwright-core';
 
 export abstract class QuadletBasePage {
   readonly page: Page;
@@ -30,4 +32,11 @@ export abstract class QuadletBasePage {
   }
 
   abstract waitForLoad(): Promise<void>;
+
+  public async screenshot(name: string, options?: PageScreenshotOptions): Promise<void> {
+    await this.webview.screenshot({
+      ...options,
+      path: `screenshots/${platform()}-${arch()}-${name}.png`,
+    });
+  }
 }

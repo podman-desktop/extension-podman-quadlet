@@ -128,6 +128,10 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await quadletListPage.waitForLoad();
     });
 
+    test('screenshot quadlet list page empty', async () => {
+      await quadletListPage.screenshot('quadlet-list-page-empty');
+    });
+
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
       test.setTimeout(150_000);
 
@@ -143,6 +147,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           timeout: 5_000,
         })
         .toBeFalsy();
+
+      await generateForm.screenshot('quadlet-generate-form-default');
 
       // select the image
       const options = await generateForm.quadletType.getOptions();
@@ -224,6 +230,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       // read the title (either 'RUNNING' or '')
       const title = await status.getAttribute('title');
       playExpect(title).not.toBe('RUNNING');
+
+      await quadletListPage.screenshot('quadlet-list-page-one-quadlet');
 
       // open the details page
       await status.click();
