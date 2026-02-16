@@ -1,0 +1,9 @@
+{
+  "CreatedAt": "2026-02-16T14:12:18+01:00",
+  "Driver": "local",
+  "Labels": {},
+  "Mountpoint": "/var/lib/containers/storage/volumes/dummy/_data",
+  "Name": "dummy",
+  "Options": {},
+  "Scope": "local"
+}

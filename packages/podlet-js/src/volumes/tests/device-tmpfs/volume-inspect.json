@@ -1,0 +1,13 @@
+{
+  "CreatedAt": "2026-02-16T14:14:31+01:00",
+  "Driver": "local",
+  "Labels": {},
+  "Mountpoint": "/var/lib/containers/storage/volumes/myvol/_data",
+  "Name": "myvol",
+  "Options": {
+    "device": "tmpfs",
+    "o": "nodev,noexec",
+    "type": "tmpfs"
+  },
+  "Scope": "local"
+}
