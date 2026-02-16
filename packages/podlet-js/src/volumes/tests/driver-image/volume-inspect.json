@@ -1,0 +1,11 @@
+{
+  "CreatedAt": "2026-02-16T13:59:51+01:00",
+  "Driver": "image",
+  "Labels": {},
+  "Mountpoint": "",
+  "Name": "fedoraVol",
+  "Options": {
+    "image": "registry.fedoraproject.org/fedora:latest"
+  },
+  "Scope": "local"
+}
