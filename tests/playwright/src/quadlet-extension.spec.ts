@@ -138,8 +138,6 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const generateForm = await quadletListPage.navigateToGenerateForm();
       await generateForm.waitForLoad();
 
-      await generateForm.screenshot('quadlet-generate-form-default');
-
       await playExpect(generateForm.cancelButton).toBeEnabled();
       await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
 
@@ -149,6 +147,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
           timeout: 5_000,
         })
         .toBeFalsy();
+
+      await generateForm.screenshot('quadlet-generate-form-default');
 
       // select the image
       const options = await generateForm.quadletType.getOptions();

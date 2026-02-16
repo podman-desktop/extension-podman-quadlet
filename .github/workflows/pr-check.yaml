@@ -257,5 +257,5 @@ jobs:
       - name: Upload screenshots to argos-ci
         shell: bash
         working-directory: tests/playwright
-        run: pnpm run args:upload
+        run: pnpm run argos-ci:upload
 
