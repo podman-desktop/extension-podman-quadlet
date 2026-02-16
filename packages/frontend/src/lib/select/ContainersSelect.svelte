@@ -1,6 +1,7 @@
 <script lang="ts">
 import Select from '/@/lib/select/Select.svelte';
 import type { SimpleContainerInfo } from '@podman-desktop/quadlet-extension-core-api';
+import ContainerStateIndicator from '/@/lib/utils/ContainerStateIndicator.svelte';
 
 interface Props {
   value: SimpleContainerInfo | undefined;
@@ -25,15 +26,6 @@ function handleOnChange(nValue: SimpleContainerInfo | undefined): void {
   value = nValue;
   onChange?.(value);
 }
-
-function getContainerStatusColor(item: SimpleContainerInfo): string {
-  switch (item.state) {
-    case 'running':
-      return 'bg-[var(--pd-status-running)]';
-    default:
-      return 'bg-[var(--pd-status-stopped)]';
-  }
-}
 </script>
 
 <Select
@@ -50,7 +42,7 @@ function getContainerStatusColor(item: SimpleContainerInfo): string {
   }))}>
   <div slot="item" let:item>
     <div class="flex items-center">
-      <div class="flex w-2 h-2 me-2 rounded-full {getContainerStatusColor(item)}"></div>
+      <ContainerStateIndicator state={item.state} />
       <div class="grow">
         <span>{item.name.substring(1)}</span>
       </div>
