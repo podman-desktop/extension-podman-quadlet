@@ -91,9 +91,6 @@ export class PodletJsService {
 
     // Get the engine id
     const engineId = await this.dependencies.containers.getEngineId(options.connection);
-    const provider = this.dependencies.providers.getProviderContainerConnection(options.connection);
-    const worker = await this.dependencies.podman.getWorker(provider);
-    const podmanVersion: SemVer = await worker.getPodmanVersion();
 
     try {
       switch (options.type) {
@@ -101,8 +98,13 @@ export class PodletJsService {
           return await this.generateContainer(engineId, options.resourceId);
         case QuadletType.IMAGE:
           return await this.generateImage(engineId, options.resourceId);
-        case QuadletType.POD:
+        case QuadletType.POD: {
+          const provider = this.dependencies.providers.getProviderContainerConnection(options.connection);
+          const worker = await this.dependencies.podman.getWorker(provider);
+          const podmanVersion: SemVer = await worker.getPodmanVersion();
+
           return await this.generatePod(engineId, options.resourceId, podmanVersion.version);
+        }
         default:
           throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
       }

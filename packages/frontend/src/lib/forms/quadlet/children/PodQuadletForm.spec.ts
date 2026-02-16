@@ -121,7 +121,7 @@ test('expect pods to be listed properly', async () => {
   const item = await vi.waitFor(async () => {
     // get all options available
     const items: string[] = await select.getOptions();
-    // ensure we have two options
+    // ensure we have one option
     expect(items).toHaveLength(1);
     return items[0];
   });

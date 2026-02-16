@@ -135,7 +135,7 @@ beforeEach(() => {
   vi.mocked(POD_SERVICE_MOCK.inspectPod).mockResolvedValue(POD_INSPECT_MOCK);
 
   // mock provider service
-  vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockResolvedValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
+  vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
   vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
   vi.mocked(PODMAN_WORKER_MOCK.getPodmanVersion).mockResolvedValue(PODMAN_VERSION_MOCK);
 });
