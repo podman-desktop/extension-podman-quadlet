@@ -28,8 +28,9 @@ import type {
   ProviderContainerConnection,
   TelemetryLogger,
   PodInspectInfo,
+  VolumeInfo,
 } from '@podman-desktop/api';
-import { Compose, ContainerGenerator, ImageGenerator, PodGenerator } from 'podlet-js';
+import { Compose, ContainerGenerator, ImageGenerator, PodGenerator, VolumeGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
@@ -37,6 +38,7 @@ import type { PodmanService } from './podman-service';
 import type { ProviderService } from './provider-service';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import type { SemVer } from 'semver';
+import type { VolumeService } from './volume-service';
 
 /**
  *  mock the podlet-js library
@@ -102,6 +104,11 @@ const POD_INSPECT_MOCK: PodInspectInfo = {
   Id: 'pod-id',
 } as unknown as PodInspectInfo;
 
+const VOLUME_INFO_MOCK: VolumeInfo = {
+  engineId: ENGINE_ID_MOCK,
+  Name: 'volume-name',
+} as unknown as VolumeInfo;
+
 const PODMAN_VERSION_MOCK: SemVer = {
   version: '5.0.0',
 } as unknown as SemVer;
@@ -114,9 +121,14 @@ const PROVIDER_SERVICE_MOCK: ProviderService = {
   getProviderContainerConnection: vi.fn(),
 } as unknown as ProviderService;
 
+const VOLUME_SERVICE_MOCK: VolumeService = {
+  inspectVolume: vi.fn(),
+} as unknown as VolumeService;
+
 const CONTAINER_GENERATE_OUTPUT: string = 'container-quadlet-content';
 const IMAGE_GENERATE_OUTPUT: string = 'image-quadlet-content';
 const POD_GENERATE_OUTPUT: string = 'pod-quadlet-content';
+const VOLUME_GENERATE_OUTPUT: string = 'volume-quadlet-content';
 
 beforeEach(() => {
   vi.resetAllMocks();
@@ -130,9 +142,13 @@ beforeEach(() => {
   vi.mocked(ContainerGenerator.prototype.generate).mockReturnValue(CONTAINER_GENERATE_OUTPUT);
   vi.mocked(ImageGenerator.prototype.generate).mockReturnValue(IMAGE_GENERATE_OUTPUT);
   vi.mocked(PodGenerator.prototype.generate).mockReturnValue(POD_GENERATE_OUTPUT);
+  vi.mocked(VolumeGenerator.prototype.generate).mockReturnValue(VOLUME_GENERATE_OUTPUT);
 
   // mock pod service
   vi.mocked(POD_SERVICE_MOCK.inspectPod).mockResolvedValue(POD_INSPECT_MOCK);
+
+  // mock volume service
+  vi.mocked(VOLUME_SERVICE_MOCK.inspectVolume).mockResolvedValue(VOLUME_INFO_MOCK);
 
   // mock provider service
   vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
@@ -148,6 +164,7 @@ function getService(): PodletJsService {
     pods: POD_SERVICE_MOCK,
     podman: PODMAN_SERVICE_MOCK,
     providers: PROVIDER_SERVICE_MOCK,
+    volumes: VOLUME_SERVICE_MOCK,
   });
 }
 
@@ -255,6 +272,30 @@ describe('image quadlets', () => {
 
     // the output should match the mocked string
     expect(result).toStrictEqual(IMAGE_GENERATE_OUTPUT);
+  });
+});
+
+describe('volume quadlets', () => {
+  test('should use the volume service to inspect resources', async () => {
+    const podletJs = getService();
+
+    // generate volume quadlet
+    const result = await podletJs.generate({
+      connection: CONTAINER_CONNECTION_IDENTIFIER,
+      type: QuadletType.VOLUME,
+      resourceId: VOLUME_INFO_MOCK.Name,
+    });
+
+    // should get the volume info
+    expect(VOLUME_SERVICE_MOCK.inspectVolume).toHaveBeenCalledExactlyOnceWith(ENGINE_ID_MOCK, VOLUME_INFO_MOCK.Name);
+
+    // should properly call the podlet-js volume generator
+    expect(VolumeGenerator).toHaveBeenCalledExactlyOnceWith({
+      volume: VOLUME_INFO_MOCK,
+    });
+
+    // the output should match the mocked string
+    expect(result).toStrictEqual(VOLUME_GENERATE_OUTPUT);
   });
 });
 

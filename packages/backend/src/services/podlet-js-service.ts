@@ -19,19 +19,27 @@ import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
-import type { ContainerInspectInfo, ImageInspectInfo, PodInspectInfo, TelemetryLogger } from '@podman-desktop/api';
-import { Compose, ContainerGenerator, ImageGenerator, PodGenerator } from 'podlet-js';
+import type {
+  ContainerInspectInfo,
+  ImageInspectInfo,
+  PodInspectInfo,
+  TelemetryLogger,
+  VolumeInfo,
+} from '@podman-desktop/api';
+import { Compose, ContainerGenerator, ImageGenerator, PodGenerator, VolumeGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
 import type { PodmanService } from './podman-service';
 import type { ProviderService } from './provider-service';
+import type { VolumeService } from './volume-service';
 import type { SemVer } from 'semver';
 
 interface Dependencies {
   containers: ContainerService;
   images: ImageService;
   pods: PodService;
+  volumes: VolumeService;
   telemetry: TelemetryLogger;
   providers: ProviderService;
   podman: PodmanService;
@@ -80,6 +88,13 @@ export class PodletJsService {
     });
   }
 
+  protected async generateVolume(engineId: string, volumeName: string): Promise<string> {
+    const volume: VolumeInfo = await this.dependencies.volumes.inspectVolume(engineId, volumeName);
+    return new VolumeGenerator({
+      volume: volume,
+    }).generate();
+  }
+
   public async generate(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     type: QuadletType;
@@ -105,6 +120,8 @@ export class PodletJsService {
 
           return await this.generatePod(engineId, options.resourceId, podmanVersion.version);
         }
+        case QuadletType.VOLUME:
+          return await this.generateVolume(engineId, options.resourceId);
         default:
           throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
       }

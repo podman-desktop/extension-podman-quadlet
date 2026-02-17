@@ -45,6 +45,7 @@ import {
   DialogApi,
   ConfigurationApi,
   PodApi,
+  VolumeApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletApiImpl } from '../apis/quadlet-api-impl';
 import { LoggerApiImpl } from '../apis/logger-api-impl';
@@ -56,6 +57,7 @@ import { RoutingApiImpl } from '../apis/routing-api-impl';
 import { DialogApiImpl } from '../apis/dialog-api-impl';
 import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
 import { PodApiImpl } from '../apis/pod-api-impl';
+import { VolumeApiImpl } from '../apis/volume-api-impl';
 
 // mock message-proxy
 vi.mock(import('@podman-desktop/quadlet-extension-core-api'));
@@ -74,6 +76,7 @@ vi.mock(import('./logger-service'));
 vi.mock(import('./dialog-service'));
 vi.mock(import('./configuration-service'));
 vi.mock(import('./pod-service'));
+vi.mock(import('./volume-service'));
 
 const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
 const WINDOW_API_MOCK: typeof window = {} as unknown as typeof window;
@@ -129,6 +132,7 @@ test('ensure init register all APIs', async () => {
     [DialogApi, DialogApiImpl],
     [ConfigurationApi, ConfigurationApiImpl],
     [PodApi, PodApiImpl],
+    [VolumeApi, VolumeApiImpl],
   ]);
 
   for (const [key, value] of APIS.entries()) {
