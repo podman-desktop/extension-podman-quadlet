@@ -279,7 +279,7 @@ describe('volume quadlets', () => {
   test('should use the volume service to inspect resources', async () => {
     const podletJs = getService();
 
-    // generate pod quadlet
+    // generate volume quadlet
     const result = await podletJs.generate({
       connection: CONTAINER_CONNECTION_IDENTIFIER,
       type: QuadletType.VOLUME,
@@ -289,7 +289,7 @@ describe('volume quadlets', () => {
     // should get the volume info
     expect(VOLUME_SERVICE_MOCK.inspectVolume).toHaveBeenCalledExactlyOnceWith(ENGINE_ID_MOCK, VOLUME_INFO_MOCK.Name);
 
-    // should properly call the podlet-js image generator
+    // should properly call the podlet-js volume generator
     expect(VolumeGenerator).toHaveBeenCalledExactlyOnceWith({
       volume: VOLUME_INFO_MOCK,
     });
