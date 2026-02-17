@@ -212,6 +212,10 @@ function resetGenerate(): void {
             label: 'pod',
             id: QuadletType.POD,
           },
+          {
+            label: 'Volume',
+            id: QuadletType.VOLUME,
+          },
         ]} />
 
       <!-- each form is individual -->
