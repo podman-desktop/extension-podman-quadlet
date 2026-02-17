@@ -10,9 +10,6 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "types": ["node"],
-    "paths": {
-      "/@shared/*": ["../shared/*"]
-    },
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true
