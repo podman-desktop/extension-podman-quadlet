@@ -15,9 +15,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ProviderContainerConnectionIdentifierInfo } from '/@shared/src/models/provider-container-connection-identifier-info';
-import { PodApi } from '/@shared/src/apis/pod-api';
-import type { SimplePodInfo } from '/@shared/src/models/simple-pod-info';
+import type {
+  ProviderContainerConnectionIdentifierInfo,
+  SimplePodInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
+import { PodApi } from '@podman-desktop/quadlet-extension-core-api';
 import type { PodService } from '../services/pod-service';
 
 interface Dependencies {
