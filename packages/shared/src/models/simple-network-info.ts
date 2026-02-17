@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,11 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
-import { Compose } from './compose/compose';
-import { PodGenerator } from './pods/pod-generator';
-import { VolumeGenerator } from './volumes/volume-generator';
-import { NetworkGenerator } from './networks/network-generator';
+import type { ProviderContainerConnectionIdentifierInfo } from './provider-container-connection-identifier-info';
 
-export { ImageGenerator, Compose, ContainerGenerator, PodGenerator, VolumeGenerator, NetworkGenerator };
+export interface SimpleNetworkInfo {
+  id: string;
+  name: string;
+  driver: string;
+  connection: ProviderContainerConnectionIdentifierInfo;
+}
