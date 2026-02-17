@@ -41,6 +41,6 @@ describe('generate', async () => {
     const result = new NetworkGenerator({
       network: JSON.parse(network),
     }).generate();
-    expect(result.trim().replace(/\r\n/g, '\n')).toBe(expected.trim().replace(/\r\n/g, '\n'));
+    expect(result.trim()).toBe(expected.trim());
   });
 });

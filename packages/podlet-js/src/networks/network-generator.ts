@@ -33,6 +33,14 @@ export class NetworkGenerator extends Generator<Dependencies> {
       },
     };
 
+    if (this.dependencies.network.Internal) {
+      quadlet.Network.Internal = true;
+    }
+
+    if (this.dependencies.network.Labels) {
+      quadlet.Network.Label = Object.entries(this.dependencies.network.Labels).map(([key, value]) => `${key}=${value}`);
+    }
+
     return stringify(this.format(quadlet));
   }
 }
