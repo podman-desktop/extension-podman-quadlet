@@ -87,9 +87,3 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test:unit
-
-  e2e:
-    needs: [lint-format-typecheck, unit-tests]
-    uses: ./.github/workflows/e2e.yaml
-    secrets: inherit
-

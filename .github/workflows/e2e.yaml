@@ -15,10 +15,17 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-name: E2E
+name: e2e
 
 on:
-  workflow_call:
+  pull_request:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # Dedicated step to build the quadlet extension image
