@@ -194,6 +194,10 @@ function resetGenerate(): void {
             label: 'Volume',
             id: QuadletType.VOLUME,
           },
+          {
+            label: 'Network',
+            id: QuadletType.NETWORK,
+          },
         ]} />
 
       <!-- each form is individual -->
