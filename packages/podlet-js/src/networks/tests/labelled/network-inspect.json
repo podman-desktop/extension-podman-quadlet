@@ -1,0 +1,34 @@
+{
+  "Name": "labelled",
+  "Id": "886460181f563c12579a065e49abd21e5737a54d7ecec95113254a01625bd48f",
+  "Created": "2026-02-17T17:28:55.87662147+01:00",
+  "Scope": "local",
+  "Driver": "bridge",
+  "EnableIPv4": false,
+  "EnableIPv6": false,
+  "IPAM": {
+    "Driver": "default",
+    "Options": {
+      "driver": "host-local"
+    },
+    "Config": [
+      {
+        "Subnet": "10.89.3.0/24",
+        "Gateway": "10.89.3.1"
+      }
+    ]
+  },
+  "Internal": false,
+  "Attachable": false,
+  "Ingress": false,
+  "ConfigFrom": {
+    "Network": ""
+  },
+  "ConfigOnly": false,
+  "Containers": {},
+  "Options": {},
+  "Labels": {
+    "bar": "foo",
+    "foo": "bar"
+  }
+}

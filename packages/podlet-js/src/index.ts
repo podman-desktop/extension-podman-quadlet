@@ -20,5 +20,6 @@ import { ImageGenerator } from './images/image-generator';
 import { Compose } from './compose/compose';
 import { PodGenerator } from './pods/pod-generator';
 import { VolumeGenerator } from './volumes/volume-generator';
+import { NetworkGenerator } from './networks/network-generator';
 
-export { ImageGenerator, Compose, ContainerGenerator, PodGenerator, VolumeGenerator };
+export { ImageGenerator, Compose, ContainerGenerator, PodGenerator, VolumeGenerator, NetworkGenerator };
