@@ -1,0 +1,31 @@
+{
+  "Name": "dummy",
+  "Id": "4feb35101d672610f8503c65e19986990851dbcbf3c9ffd3dc0417dd8c0cb941",
+  "Created": "2026-02-17T17:22:47.479855363+01:00",
+  "Scope": "local",
+  "Driver": "bridge",
+  "EnableIPv4": false,
+  "EnableIPv6": false,
+  "IPAM": {
+    "Driver": "default",
+    "Options": {
+      "driver": "host-local"
+    },
+    "Config": [
+      {
+        "Subnet": "10.89.0.0/24",
+        "Gateway": "10.89.0.1"
+      }
+    ]
+  },
+  "Internal": false,
+  "Attachable": false,
+  "Ingress": false,
+  "ConfigFrom": {
+    "Network": ""
+  },
+  "ConfigOnly": false,
+  "Containers": {},
+  "Options": {},
+  "Labels": {}
+}

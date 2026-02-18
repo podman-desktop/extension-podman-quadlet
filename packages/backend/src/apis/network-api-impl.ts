@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,24 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { ContainerGenerator } from './containers/container-generator';
-import { ImageGenerator } from './images/image-generator';
-import { Compose } from './compose/compose';
-import { PodGenerator } from './pods/pod-generator';
-import { VolumeGenerator } from './volumes/volume-generator';
-import { NetworkGenerator } from './networks/network-generator';
 
-export { ImageGenerator, Compose, ContainerGenerator, PodGenerator, VolumeGenerator, NetworkGenerator };
+import {
+  type ProviderContainerConnectionIdentifierInfo,
+  type SimpleNetworkInfo,
+  NetworkApi,
+} from '@podman-desktop/quadlet-extension-core-api';
+import type { NetworkService } from '../services/network-service';
+
+interface Dependencies {
+  networks: NetworkService;
+}
+
+export class NetworkApiImpl extends NetworkApi {
+  constructor(private dependencies: Dependencies) {
+    super();
+  }
+
+  override all(provider: ProviderContainerConnectionIdentifierInfo): Promise<SimpleNetworkInfo[]> {
+    return this.dependencies.networks.all(provider);
+  }
+}

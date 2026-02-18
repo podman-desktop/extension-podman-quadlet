@@ -1,0 +1,31 @@
+{
+  "Name": "internal",
+  "Id": "f300c883e7f2838a3ca6bdb4a3d0781e9d18849ff832c611374e98c27a64a832",
+  "Created": "2026-02-17T17:27:29.232581629+01:00",
+  "Scope": "local",
+  "Driver": "bridge",
+  "EnableIPv4": false,
+  "EnableIPv6": false,
+  "IPAM": {
+    "Driver": "default",
+    "Options": {
+      "driver": "host-local"
+    },
+    "Config": [
+      {
+        "Subnet": "10.89.2.0/24",
+        "Gateway": "10.89.2.1"
+      }
+    ]
+  },
+  "Internal": true,
+  "Attachable": false,
+  "Ingress": false,
+  "ConfigFrom": {
+    "Network": ""
+  },
+  "ConfigOnly": false,
+  "Containers": {},
+  "Options": {},
+  "Labels": {}
+}

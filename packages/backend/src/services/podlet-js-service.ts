@@ -25,14 +25,23 @@ import type {
   PodInspectInfo,
   TelemetryLogger,
   VolumeInfo,
+  NetworkInspectInfo,
 } from '@podman-desktop/api';
-import { Compose, ContainerGenerator, ImageGenerator, PodGenerator, VolumeGenerator } from 'podlet-js';
+import {
+  Compose,
+  ContainerGenerator,
+  ImageGenerator,
+  PodGenerator,
+  VolumeGenerator,
+  NetworkGenerator,
+} from 'podlet-js';
 import { readFile } from 'node:fs/promises';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import type { PodService } from './pod-service';
 import type { PodmanService } from './podman-service';
 import type { ProviderService } from './provider-service';
 import type { VolumeService } from './volume-service';
+import type { NetworkService } from './network-service';
 import type { SemVer } from 'semver';
 
 interface Dependencies {
@@ -40,6 +49,7 @@ interface Dependencies {
   images: ImageService;
   pods: PodService;
   volumes: VolumeService;
+  networks: NetworkService;
   telemetry: TelemetryLogger;
   providers: ProviderService;
   podman: PodmanService;
@@ -95,6 +105,13 @@ export class PodletJsService {
     }).generate();
   }
 
+  protected async generateNetwork(engineId: string, networkIdOrName: string): Promise<string> {
+    const network: NetworkInspectInfo = await this.dependencies.networks.inspectNetwork(engineId, networkIdOrName);
+    return new NetworkGenerator({
+      network: network,
+    }).generate();
+  }
+
   public async generate(options: {
     connection: ProviderContainerConnectionIdentifierInfo;
     type: QuadletType;
@@ -122,6 +139,8 @@ export class PodletJsService {
         }
         case QuadletType.VOLUME:
           return await this.generateVolume(engineId, options.resourceId);
+        case QuadletType.NETWORK:
+          return await this.generateNetwork(engineId, options.resourceId);
         default:
           throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
       }
