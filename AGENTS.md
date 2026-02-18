@@ -36,6 +36,7 @@ The main difference is that podlet-js uses resource inspect to generate Quadlet 
 - `shared`
 
 In the `packages/shared/package.json`, the name field is set to `@podman-desktop/quadlet-extension-core-api`.
+It contains code / types shared between the backend and the frontend.
 
 ## `@podman-desktop/extensions-api`
 
