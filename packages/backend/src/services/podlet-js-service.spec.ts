@@ -29,6 +29,7 @@ import type {
   TelemetryLogger,
   PodInspectInfo,
   VolumeInfo,
+  NetworkInspectInfo,
 } from '@podman-desktop/api';
 import { Compose, ContainerGenerator, ImageGenerator, PodGenerator, VolumeGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
@@ -39,6 +40,7 @@ import type { ProviderService } from './provider-service';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import type { SemVer } from 'semver';
 import type { VolumeService } from './volume-service';
+import type { NetworkService } from './network-service';
 
 /**
  *  mock the podlet-js library
@@ -109,6 +111,10 @@ const VOLUME_INFO_MOCK: VolumeInfo = {
   Name: 'volume-name',
 } as unknown as VolumeInfo;
 
+const NETWORK_INSPECT_MOCK: NetworkInspectInfo = {
+  Name: 'foo',
+} as unknown as NetworkInspectInfo;
+
 const PODMAN_VERSION_MOCK: SemVer = {
   version: '5.0.0',
 } as unknown as SemVer;
@@ -124,6 +130,10 @@ const PROVIDER_SERVICE_MOCK: ProviderService = {
 const VOLUME_SERVICE_MOCK: VolumeService = {
   inspectVolume: vi.fn(),
 } as unknown as VolumeService;
+
+const NETWORK_SERVICE_MOCK: NetworkService = {
+  inspectNetwork: vi.fn(),
+} as unknown as NetworkService;
 
 const CONTAINER_GENERATE_OUTPUT: string = 'container-quadlet-content';
 const IMAGE_GENERATE_OUTPUT: string = 'image-quadlet-content';
@@ -150,6 +160,9 @@ beforeEach(() => {
   // mock volume service
   vi.mocked(VOLUME_SERVICE_MOCK.inspectVolume).mockResolvedValue(VOLUME_INFO_MOCK);
 
+  // mock network service
+  vi.mocked(NETWORK_SERVICE_MOCK.inspectNetwork).mockResolvedValue(NETWORK_INSPECT_MOCK);
+
   // mock provider service
   vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
   vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
@@ -165,6 +178,7 @@ function getService(): PodletJsService {
     podman: PODMAN_SERVICE_MOCK,
     providers: PROVIDER_SERVICE_MOCK,
     volumes: VOLUME_SERVICE_MOCK,
+    networks: NETWORK_SERVICE_MOCK,
   });
 }
 
