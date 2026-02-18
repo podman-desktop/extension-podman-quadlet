@@ -92,7 +92,7 @@ export interface NetworkQuadlet {
      *
      * This is equivalent to the Podman --ipv6 option
      */
-    IPv6?: string;
+    IPv6?: boolean;
     /**
      * Set one or more OCI labels on the network. The format is a list of key=value items, similar to Environment.
      *
