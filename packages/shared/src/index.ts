@@ -28,6 +28,7 @@ export * from './apis/quadlet-api';
 export * from './apis/routing-api';
 export * from './apis/pod-api';
 export * from './apis/volume-api';
+export * from './apis/network-api';
 
 // export messaging logic
 export * from './messages/message-proxy';
@@ -50,6 +51,7 @@ export * from './models/template-instance-quadlet';
 export * from './models/template-quadlet';
 export * from './models/simple-pod-info';
 export * from './models/simple-volume-info';
+export * from './models/simple-network-info';
 
 // export utility enums & constants
 export * from './utils/quadlet-type';

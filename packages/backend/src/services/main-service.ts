@@ -29,6 +29,7 @@ import {
   ConfigurationApi,
   PodApi,
   VolumeApi,
+  NetworkApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { PodmanService } from './podman-service';
 import { SystemdService } from './systemd-service';
@@ -56,6 +57,8 @@ import { PodApiImpl } from '../apis/pod-api-impl';
 import { VolumeApiImpl } from '../apis/volume-api-impl';
 import { PodService } from './pod-service';
 import { VolumeService } from './volume-service';
+import { NetworkApiImpl } from '../apis/network-api-impl';
+import { NetworkService } from './network-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -196,6 +199,14 @@ export class MainService implements Disposable, AsyncInit {
     await volumes.init();
     this.#disposables.push(volumes);
 
+    // Basic manipulation of networks
+    const networks = new NetworkService({
+      containers: this.dependencies.containers,
+      providers: providers,
+    });
+    await networks.init();
+    this.#disposables.push(networks);
+
     // Register/execute commands
     const command = new CommandService({
       commandsApi: this.dependencies.commandsApi,
@@ -212,6 +223,7 @@ export class MainService implements Disposable, AsyncInit {
       images: images,
       pods: pods,
       volumes: volumes,
+      networks: networks,
       telemetry: this.#telemetry,
       podman: podman,
       providers: providers,
@@ -267,6 +279,12 @@ export class MainService implements Disposable, AsyncInit {
       volumes: volumes,
     });
     rpcExtension.registerInstance<VolumeApi>(VolumeApi, volumeApiImpl);
+
+    // network api
+    const networkApiImpl = new NetworkApiImpl({
+      networks: networks,
+    });
+    rpcExtension.registerInstance<NetworkApi>(NetworkApi, networkApiImpl);
 
     // podlet api
     const podletApiImpl = new PodletApiImpl({
