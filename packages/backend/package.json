@@ -59,6 +59,12 @@
           "command": "podlet.compose",
           "title": "Generate Quadlet"
         }
+      ],
+      "dashboard/volume": [
+        {
+          "command": "podlet.generate.container",
+          "title": "Generate Quadlet"
+        }
       ]
     },
     "commands": [

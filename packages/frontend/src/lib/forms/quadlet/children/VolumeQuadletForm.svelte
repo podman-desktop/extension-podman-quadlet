@@ -1,9 +1,11 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import { volumeAPI } from '/@/api/client';
+import { podletAPI, volumeAPI } from '/@/api/client';
 import { router } from 'tinro';
 import VolumesSelect from '/@/lib/select/VolumesSelect.svelte';
 import type { SimpleVolumeInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { Button } from '@podman-desktop/ui-svelte';
 
 let {
   loading = $bindable(),
@@ -12,12 +14,15 @@ let {
   onError,
   onChange,
   disabled,
+  onGenerated,
 }: QuadletChildrenFormProps = $props();
 
 let volumes: Array<SimpleVolumeInfo> | undefined = $state();
 
 // use the query parameter volumeName
 let selectedVolume: SimpleVolumeInfo | undefined = $derived(volumes?.find(v => v.name === volumeName));
+
+let generatable = $derived(!!provider && !!volumeName && !disabled && !loading);
 
 async function listVolumes(): Promise<void> {
   if (!provider) throw new Error('no container provider connection selected');
@@ -44,6 +49,18 @@ function onVolumeChange(value: SimpleVolumeInfo | undefined): void {
   onChange();
 }
 
+function generate(): void {
+  if (!provider || !volumeName) return;
+
+  loading = true;
+
+  podletAPI
+    .generateVolume(provider, volumeName)
+    .then(onGenerated)
+    .catch(onError)
+    .finally(() => (loading = false));
+}
+
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the volumes
 $effect(() => {
@@ -60,3 +77,9 @@ $effect(() => {
   onChange={onVolumeChange}
   value={selectedVolume}
   volumes={volumes ?? []} />
+
+<div class="w-full flex flex-row gap-x-2 justify-end pt-4">
+  <Button type="secondary" onclick={close} title="cancel">Cancel</Button>
+  <Button disabled={!generatable} inProgress={loading} icon={faCode} title="Generate" onclick={generate}
+    >Generate</Button>
+</div>

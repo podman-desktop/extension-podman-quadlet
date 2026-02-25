@@ -23,14 +23,14 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
 import * as connectionStore from '/@store/connections';
 import { readable } from 'svelte/store';
-import type {
-  ProviderContainerConnectionDetailedInfo,
-  ContainerApi,
-  ProviderApi,
-  PodletApi,
+import {
+  type ProviderContainerConnectionDetailedInfo,
+  type ContainerApi,
+  type ProviderApi,
+  type PodletApi,
+  QuadletType,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { containerAPI, podletAPI } from '/@/api/client';
-import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { Component, ComponentProps } from 'svelte';
 import { router } from 'tinro';
 
@@ -46,7 +46,11 @@ vi.mock(import('/@/api/client'), () => ({
     all: vi.fn(),
   } as unknown as ProviderApi,
   podletAPI: {
-    generate: vi.fn(),
+    generateContainer: vi.fn(),
+    generateImage: vi.fn(),
+    generatePod: vi.fn(),
+    generateVolume: vi.fn(),
+    generateNetwork: vi.fn(),
   } as unknown as PodletApi,
 }));
 // mock stores
@@ -69,7 +73,11 @@ const PODLET_GENERATE_RUN_RESULT: string = `
 beforeEach(() => {
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
   vi.mocked(containerAPI.all).mockResolvedValue([]);
-  vi.mocked(podletAPI.generate).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
+  vi.mocked(podletAPI.generateContainer).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
+  vi.mocked(podletAPI.generateImage).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
+  vi.mocked(podletAPI.generatePod).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
+  vi.mocked(podletAPI.generateVolume).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
+  vi.mocked(podletAPI.generateNetwork).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
 });
 
 describe('Step options', () => {
@@ -113,10 +121,19 @@ describe('Step options', () => {
     expect(generate).toBeDisabled();
   });
 
-  test('expect generate to be enabled if provider and resource are defined', async () => {
+  test.each<{
+    method: keyof PodletApi;
+    type: QuadletType;
+  }>([
+    {
+      method: 'generateContainer',
+      type: QuadletType.CONTAINER,
+    },
+  ])('expect method $method to be called for typ $radio', async ({ method, type }) => {
     const { getByRole } = render(QuadletGenerateForm, {
       providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
       connection: WSL_PROVIDER_DETAILED_INFO.name,
+      quadletType: type,
       resourceId: 'dummy-resource-id',
       loading: false,
       close: vi.fn(),
@@ -132,11 +149,7 @@ describe('Step options', () => {
     await fireEvent.click(generate);
 
     await vi.waitFor(() => {
-      expect(podletAPI.generate).toHaveBeenCalledWith({
-        connection: WSL_PROVIDER_DETAILED_INFO,
-        resourceId: 'dummy-resource-id',
-        type: QuadletType.CONTAINER,
-      });
+      expect(podletAPI[method]).toHaveBeenCalledWith(WSL_PROVIDER_DETAILED_INFO, 'dummy-resource-id');
     });
   });
 });

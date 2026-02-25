@@ -66,6 +66,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Volume');
@@ -80,6 +82,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: true,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Volume');
@@ -94,6 +98,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Volume');
@@ -111,6 +117,8 @@ test('expect volumes to be listed properly', async () => {
     onError: vi.fn(),
     onChange: vi.fn(),
     disabled: false,
+    onGenerated: vi.fn(),
+    close: vi.fn(),
   });
 
   await vi.waitFor(() => {
@@ -140,6 +148,8 @@ test('expect error to be called if volumeAPI.all fails', async () => {
     onError: onErrorMock,
     onChange: vi.fn(),
     disabled: false,
+    onGenerated: vi.fn(),
+    close: vi.fn(),
   });
 
   await vi.waitFor(() => {
