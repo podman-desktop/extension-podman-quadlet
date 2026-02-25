@@ -141,7 +141,7 @@ describe('Step options', () => {
       method: 'generateVolume',
       type: QuadletType.VOLUME,
     },
-  ])('expect method $method to be called for typ $radio', async ({ method, type }) => {
+  ])('expect method $method to be called for type $type', async ({ method, type }) => {
     const { getByRole } = render(QuadletGenerateForm, {
       providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
       connection: WSL_PROVIDER_DETAILED_INFO.name,
