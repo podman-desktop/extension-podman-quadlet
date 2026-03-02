@@ -1,9 +1,11 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import { networkAPI } from '/@/api/client';
+import { networkAPI, podletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import NetworksSelect from '/@/lib/select/NetworksSelect.svelte';
 import type { SimpleNetworkInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { Button } from '@podman-desktop/ui-svelte';
 
 let {
   loading = $bindable(),
@@ -12,9 +14,13 @@ let {
   onError,
   onChange,
   disabled,
+  onGenerated,
+  close,
 }: QuadletChildrenFormProps = $props();
 
 let networks: Array<SimpleNetworkInfo> | undefined = $state();
+
+let generatable = $derived(!!provider && !!networkId && !disabled && !loading);
 
 // use the query parameter resourceId
 let selectedNetwork: SimpleNetworkInfo | undefined = $derived(networks?.find(n => n.id === networkId));
@@ -44,6 +50,18 @@ function onNetworkChange(value: SimpleNetworkInfo | undefined): void {
   onChange();
 }
 
+function generate(): void {
+  if (!provider || !networkId) return;
+
+  loading = true;
+
+  podletAPI
+    .generateNetwork(provider, networkId)
+    .then(onGenerated)
+    .catch(onError)
+    .finally(() => (loading = false));
+}
+
 // if we mount the component, and query parameters with all the values defined
 // we need to fetch manually the networks
 $effect(() => {
@@ -60,3 +78,9 @@ $effect(() => {
   onChange={onNetworkChange}
   value={selectedNetwork}
   networks={networks ?? []} />
+
+<div class="w-full flex flex-row gap-x-2 justify-end pt-4">
+  <Button type="secondary" onclick={close} title="cancel">Cancel</Button>
+  <Button disabled={!generatable} inProgress={loading} icon={faCode} title="Generate" onclick={generate}
+    >Generate</Button>
+</div>
