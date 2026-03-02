@@ -92,7 +92,7 @@ $effect(() => {
   containers={containers ?? []} />
 
 <div class="pt-4">
-  <div class="text-base font-bold text-(--pd-content-card-header-text)">Options</div>
+  <div class="text-base font-bold mb-2 text-(--pd-content-card-header-text)">Options</div>
   <Checkbox class="mx-1 my-auto" title="Start on boot" disabled={!generatable} bind:checked={options.startOnBoot}>
     <div>Start on boot</div>
   </Checkbox>
