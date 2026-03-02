@@ -17,6 +17,7 @@
  ***********************************************************************/
 import type { ProviderContainerConnectionIdentifierInfo } from '../models/provider-container-connection-identifier-info';
 import type { QuadletType } from '../utils/quadlet-type';
+import type { ContainerGeneratorOptions } from '../models/container-generator-options';
 
 export abstract class PodletApi {
   static readonly CHANNEL: string = 'podlet-api';
@@ -24,6 +25,7 @@ export abstract class PodletApi {
   abstract generateContainer(
     connection: ProviderContainerConnectionIdentifierInfo,
     containerId: string,
+    options?: ContainerGeneratorOptions,
   ): Promise<string>;
   abstract generateImage(connection: ProviderContainerConnectionIdentifierInfo, imageId: string): Promise<string>;
   abstract generatePod(connection: ProviderContainerConnectionIdentifierInfo, podId: string): Promise<string>;

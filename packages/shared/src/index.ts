@@ -52,6 +52,7 @@ export * from './models/template-quadlet';
 export * from './models/simple-pod-info';
 export * from './models/simple-volume-info';
 export * from './models/simple-network-info';
+export * from './models/container-generator-options';
 
 // export utility enums & constants
 export * from './utils/quadlet-type';

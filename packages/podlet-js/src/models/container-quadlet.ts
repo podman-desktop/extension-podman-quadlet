@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ServiceQuadlet } from './service-quadlet';
+import type { BaseQuadlet } from './base-quadlet';
 
 /**
  * Learn more about Container Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#container-units-container
  */
-export interface ContainerQuadlet {
-  Service?: ServiceQuadlet;
+export interface ContainerQuadlet extends BaseQuadlet {
   Container: {
     /**
      * Add these capabilities, in addition to the default Podman capability set, to the container.

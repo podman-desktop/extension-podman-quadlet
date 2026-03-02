@@ -37,8 +37,12 @@ interface Dependencies {
   image: ImageInspectInfo;
 }
 
-export class ContainerGenerator extends Generator<Dependencies> {
-  override generate(): string {
+export interface Options {
+  startOnBoot?: boolean;
+}
+
+export class ContainerGenerator extends Generator<Dependencies, Options> {
+  override generate(options: Options): string {
     // all builders to use
     const builders: Array<new (dep: Dependencies) => ContainerQuadletBuilder> = [
       AddHost,
@@ -63,6 +67,16 @@ export class ContainerGenerator extends Generator<Dependencies> {
       } as ContainerQuadlet,
     );
 
-    return stringify(this.format(containerQuadlet));
+    return stringify(this.format(this.applyOptions(options, containerQuadlet)));
+  }
+
+  protected applyOptions(options: Options, quadlet: ContainerQuadlet): ContainerQuadlet {
+    if (options.startOnBoot) {
+      quadlet.Install = {
+        ...quadlet.Install,
+        WantedBy: 'default.target',
+      };
+    }
+    return quadlet;
   }
 }

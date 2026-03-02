@@ -1,11 +1,11 @@
 <script lang="ts">
 import { type QuadletChildrenFormProps, RESOURCE_ID_QUERY } from '/@/lib/forms/quadlet/quadlet-utils';
-import type { SimpleContainerInfo } from '@podman-desktop/quadlet-extension-core-api';
+import type { ContainerGeneratorOptions, SimpleContainerInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { containerAPI, podletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ContainersSelect from '/@/lib/select/ContainersSelect.svelte';
 import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
-import { Button } from '@podman-desktop/ui-svelte';
+import { Button, Checkbox } from '@podman-desktop/ui-svelte';
 
 let {
   loading = $bindable(),
@@ -19,6 +19,7 @@ let {
 }: QuadletChildrenFormProps = $props();
 
 let containers: SimpleContainerInfo[] | undefined = $state();
+let options: ContainerGeneratorOptions = $state({});
 
 // use the query parameter containerId
 let selectedContainer: SimpleContainerInfo | undefined = $derived(
@@ -61,7 +62,7 @@ function generate(): void {
   loading = true;
 
   podletAPI
-    .generateContainer(provider, containerId)
+    .generateContainer(provider, containerId, $state.snapshot(options))
     .then(onGenerated)
     .catch(onError)
     .finally(() => (loading = false));
@@ -89,6 +90,13 @@ $effect(() => {
   onChange={onContainerChange}
   value={selectedContainer}
   containers={containers ?? []} />
+
+<div class="pt-4">
+  <div class="text-base font-bold text-(--pd-content-card-header-text)">Options</div>
+  <Checkbox class="mx-1 my-auto" title="Start on boot" disabled={!generatable} bind:checked={options.startOnBoot}>
+    <div>Start on boot</div>
+  </Checkbox>
+</div>
 
 <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
   <Button type="secondary" onclick={close} title="cancel">Cancel</Button>

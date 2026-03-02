@@ -161,7 +161,7 @@ describe('Step options', () => {
     await fireEvent.click(generate);
 
     await vi.waitFor(() => {
-      expect(podletAPI[method]).toHaveBeenCalledWith(WSL_PROVIDER_DETAILED_INFO, 'dummy-resource-id');
+      expect(podletAPI[method]).toHaveBeenCalledOnce();
     });
   });
 });

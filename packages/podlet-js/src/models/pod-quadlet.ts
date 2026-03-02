@@ -15,13 +15,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ServiceQuadlet } from './service-quadlet';
+import type { BaseQuadlet } from './base-quadlet';
 
 /**
  * Learn more about Pod Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#pod-units-pod
  */
-export interface PodQuadlet {
-  Service?: ServiceQuadlet;
+export interface PodQuadlet extends BaseQuadlet {
   Pod: {
     /**
      * Add host-to-IP mapping to /etc/hosts. The format is hostname:ip.
