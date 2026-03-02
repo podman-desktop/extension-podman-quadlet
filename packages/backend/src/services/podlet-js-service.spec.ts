@@ -187,11 +187,7 @@ describe('container quadlets', () => {
     const podletJs = getService();
 
     // generate container quadlet
-    const result = await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.CONTAINER,
-      resourceId: CONTAINER_INSPECT_MOCK.Id,
-    });
+    const result = await podletJs.generateContainer(CONTAINER_CONNECTION_IDENTIFIER, CONTAINER_INSPECT_MOCK.Id);
 
     // Should get the corresponding engine id
     expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
@@ -222,11 +218,7 @@ describe('container quadlets', () => {
     const podletJs = getService();
 
     // generate container quadlet
-    await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.CONTAINER,
-      resourceId: CONTAINER_INSPECT_MOCK.Id,
-    });
+    await podletJs.generateContainer(CONTAINER_CONNECTION_IDENTIFIER, CONTAINER_INSPECT_MOCK.Id);
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
@@ -243,11 +235,7 @@ describe('container quadlets', () => {
 
     // generate container quadlet
     await expect(() => {
-      return podletJs.generate({
-        connection: CONTAINER_CONNECTION_IDENTIFIER,
-        type: QuadletType.CONTAINER,
-        resourceId: CONTAINER_INSPECT_MOCK.Id,
-      });
+      return podletJs.generateContainer(CONTAINER_CONNECTION_IDENTIFIER, CONTAINER_INSPECT_MOCK.Id);
     }).rejects.toThrowError('dummy error');
 
     await vi.waitFor(() => {
@@ -264,11 +252,7 @@ describe('image quadlets', () => {
     const podletJs = getService();
 
     // generate container quadlet
-    const result = await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.IMAGE,
-      resourceId: IMAGE_INSPECT_MOCK.Id,
-    });
+    const result = await podletJs.generateImage(CONTAINER_CONNECTION_IDENTIFIER, IMAGE_INSPECT_MOCK.Id);
 
     // Should get the corresponding engine id
     expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
@@ -294,11 +278,7 @@ describe('volume quadlets', () => {
     const podletJs = getService();
 
     // generate volume quadlet
-    const result = await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.VOLUME,
-      resourceId: VOLUME_INFO_MOCK.Name,
-    });
+    const result = await podletJs.generateVolume(CONTAINER_CONNECTION_IDENTIFIER, VOLUME_INFO_MOCK.Name);
 
     // should get the volume info
     expect(VOLUME_SERVICE_MOCK.inspectVolume).toHaveBeenCalledExactlyOnceWith(ENGINE_ID_MOCK, VOLUME_INFO_MOCK.Name);
@@ -318,11 +298,7 @@ describe('pod quadlets', () => {
     const podletJs = getService();
 
     // generate pod quadlet
-    const result = await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.POD,
-      resourceId: POD_INSPECT_MOCK.Id,
-    });
+    const result = await podletJs.generatePod(CONTAINER_CONNECTION_IDENTIFIER, POD_INSPECT_MOCK.Id);
 
     // Should get the corresponding engine id
     expect(CONTAINER_SERVICE_MOCK.getEngineId).toHaveBeenCalledExactlyOnceWith(CONTAINER_CONNECTION_IDENTIFIER);
@@ -348,11 +324,7 @@ describe('pod quadlets', () => {
     const podletJs = getService();
 
     // generate pod quadlet
-    await podletJs.generate({
-      connection: CONTAINER_CONNECTION_IDENTIFIER,
-      type: QuadletType.POD,
-      resourceId: POD_INSPECT_MOCK.Id,
-    });
+    await podletJs.generatePod(CONTAINER_CONNECTION_IDENTIFIER, POD_INSPECT_MOCK.Id);
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
@@ -369,11 +341,7 @@ describe('pod quadlets', () => {
 
     // generate pod quadlet
     await expect(() => {
-      return podletJs.generate({
-        connection: CONTAINER_CONNECTION_IDENTIFIER,
-        type: QuadletType.POD,
-        resourceId: POD_INSPECT_MOCK.Id,
-      });
+      return podletJs.generatePod(CONTAINER_CONNECTION_IDENTIFIER, POD_INSPECT_MOCK.Id);
     }).rejects.toThrowError('dummy error');
 
     await vi.waitFor(() => {

@@ -16,8 +16,7 @@ import type {
 import { providerConnectionsInfo } from '/@store/connections';
 import { router } from 'tinro';
 import RadioButtons from '/@/lib/buttons/RadioButtons.svelte';
-import { podletAPI, quadletAPI } from '/@/api/client';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { quadletAPI } from '/@/api/client';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import Stepper from '/@/lib/stepper/Stepper.svelte';
 import { faCheck } from '@fortawesome/free-solid-svg-icons/faCheck';
@@ -103,27 +102,6 @@ function onError(err: string): void {
 function onGenerated(value: string): void {
   error = undefined;
   quadlet = value;
-}
-
-async function generate(): Promise<void> {
-  if (!selectedContainerProviderConnection || !resourceId) return;
-  loading = true;
-
-  podletAPI
-    .generate({
-      connection: $state.snapshot(selectedContainerProviderConnection),
-      resourceId: $state.snapshot(resourceId),
-      type: quadletType as QuadletTypeGenerate,
-    })
-    .then(onGenerated)
-    .catch((err: unknown) => {
-      onError(
-        `Something went wrong while generating quadlet for provider ${selectedContainerProviderConnection.providerId}: ${String(err)}`,
-      );
-    })
-    .finally(() => {
-      loading = false;
-    });
 }
 
 async function saveIntoMachine(): Promise<void> {
@@ -222,25 +200,17 @@ function resetGenerate(): void {
       {#key selectedContainerProviderConnection}
         <ChildForm
           onChange={resetGenerate}
+          onGenerated={onGenerated}
           onError={onError}
           bind:loading={loading}
           provider={selectedContainerProviderConnection}
           resourceId={resourceId}
+          close={close}
           disabled={selectedContainerProviderConnection?.status !== 'started'} />
       {/key}
       {#if error}
         <ErrorMessage error={error} />
       {/if}
-
-      <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
-        <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button
-          disabled={!!error || selectedContainerProviderConnection?.status !== 'started' || !resourceId || loading}
-          inProgress={loading}
-          icon={faCode}
-          title="Generate"
-          on:click={generate}>Generate</Button>
-      </div>
 
       <!-- step 2 edit -->
     {:else if step === 'edit' && quadlet !== undefined}

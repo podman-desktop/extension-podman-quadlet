@@ -20,6 +20,8 @@ export interface QuadletChildrenFormProps {
   onError: (error: string) => void;
   onChange: () => void;
   disabled?: boolean;
+  onGenerated: (value: string) => void;
+  close: () => void;
 }
 
 export const RESOURCE_ID_QUERY = 'resourceId';

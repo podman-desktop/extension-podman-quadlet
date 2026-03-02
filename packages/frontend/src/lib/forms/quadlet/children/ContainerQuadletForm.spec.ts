@@ -66,6 +66,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Container');
@@ -80,6 +82,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: true, // set disable true
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Container');
@@ -94,6 +98,8 @@ describe('disabled', () => {
       onError: vi.fn(),
       onChange: vi.fn(),
       disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
     });
 
     const input = getByLabelText('Select Container');
@@ -111,6 +117,8 @@ test('expect containers to be listed properly', async () => {
     onError: vi.fn(),
     onChange: vi.fn(),
     disabled: false,
+    onGenerated: vi.fn(),
+    close: vi.fn(),
   });
 
   await vi.waitFor(() => {

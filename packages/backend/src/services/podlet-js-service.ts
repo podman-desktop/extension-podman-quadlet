@@ -64,15 +64,31 @@ export class PodletJsService {
    * @param containerId
    * @protected
    */
-  protected async generateContainer(engineId: string, containerId: string): Promise<string> {
-    const container: ContainerInspectInfo = await this.dependencies.containers.inspectContainer(engineId, containerId);
+  public async generateContainer(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    containerId: string,
+  ): Promise<string> {
+    return this.withTelemetry(
+      async () => {
+        // Get the engine id
+        const engineId = await this.dependencies.containers.getEngineId(connection);
 
-    const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, container.Image);
+        const container: ContainerInspectInfo = await this.dependencies.containers.inspectContainer(
+          engineId,
+          containerId,
+        );
 
-    return new ContainerGenerator({
-      container,
-      image,
-    }).generate();
+        const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, container.Image);
+
+        return new ContainerGenerator({
+          container,
+          image,
+        }).generate();
+      },
+      {
+        'quadlet-type': QuadletType.CONTAINER.toLowerCase(),
+      },
+    );
   }
 
   /**
@@ -81,74 +97,95 @@ export class PodletJsService {
    * @param imageId
    * @protected
    */
-  protected async generateImage(engineId: string, imageId: string): Promise<string> {
-    const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, imageId);
+  public async generateImage(connection: ProviderContainerConnectionIdentifierInfo, imageId: string): Promise<string> {
+    return this.withTelemetry(
+      async () => {
+        // Get the engine id
+        const engineId = await this.dependencies.containers.getEngineId(connection);
 
-    return new ImageGenerator({
-      image: image,
-    }).generate();
+        const image: ImageInspectInfo = await this.dependencies.images.inspectImage(engineId, imageId);
+
+        return new ImageGenerator({
+          image: image,
+        }).generate();
+      },
+      {
+        'quadlet-type': QuadletType.IMAGE.toLowerCase(),
+      },
+    );
   }
 
-  protected async generatePod(engineId: string, podId: string, version: string): Promise<string> {
-    const pod: PodInspectInfo = await this.dependencies.pods.inspectPod(engineId, podId);
-    return new PodGenerator({
-      pod: pod,
-    }).generate({
-      podman: version,
-    });
+  public async generatePod(connection: ProviderContainerConnectionIdentifierInfo, podId: string): Promise<string> {
+    return this.withTelemetry(
+      async () => {
+        // Get the engine id
+        const engineId = await this.dependencies.containers.getEngineId(connection);
+
+        const provider = this.dependencies.providers.getProviderContainerConnection(connection);
+        const worker = await this.dependencies.podman.getWorker(provider);
+        const podmanVersion: SemVer = await worker.getPodmanVersion();
+
+        const pod: PodInspectInfo = await this.dependencies.pods.inspectPod(engineId, podId);
+        return new PodGenerator({
+          pod: pod,
+        }).generate({
+          podman: podmanVersion.version,
+        });
+      },
+      {
+        'quadlet-type': QuadletType.POD.toLowerCase(),
+      },
+    );
   }
 
-  protected async generateVolume(engineId: string, volumeName: string): Promise<string> {
-    const volume: VolumeInfo = await this.dependencies.volumes.inspectVolume(engineId, volumeName);
-    return new VolumeGenerator({
-      volume: volume,
-    }).generate();
+  public async generateVolume(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    volumeName: string,
+  ): Promise<string> {
+    return this.withTelemetry(
+      async () => {
+        // Get the engine id
+        const engineId = await this.dependencies.containers.getEngineId(connection);
+
+        const volume: VolumeInfo = await this.dependencies.volumes.inspectVolume(engineId, volumeName);
+        return new VolumeGenerator({
+          volume: volume,
+        }).generate();
+      },
+      {
+        'quadlet-type': QuadletType.VOLUME.toLowerCase(),
+      },
+    );
   }
 
-  protected async generateNetwork(engineId: string, networkIdOrName: string): Promise<string> {
-    const network: NetworkInspectInfo = await this.dependencies.networks.inspectNetwork(engineId, networkIdOrName);
-    return new NetworkGenerator({
-      network: network,
-    }).generate();
+  public async generateNetwork(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    networkIdOrName: string,
+  ): Promise<string> {
+    return this.withTelemetry(
+      async () => {
+        // Get the engine id
+        const engineId = await this.dependencies.containers.getEngineId(connection);
+
+        const network: NetworkInspectInfo = await this.dependencies.networks.inspectNetwork(engineId, networkIdOrName);
+        return new NetworkGenerator({
+          network: network,
+        }).generate();
+      },
+      {
+        'quadlet-type': QuadletType.NETWORK.toLowerCase(),
+      },
+    );
   }
 
-  public async generate(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    type: QuadletType;
-    resourceId: string;
-  }): Promise<string> {
-    const records: Record<string, unknown> = {
-      'quadlet-type': options.type.toLowerCase(),
-    };
-
-    // Get the engine id
-    const engineId = await this.dependencies.containers.getEngineId(options.connection);
-
+  protected async withTelemetry<T>(fn: () => Promise<T>, telemetry: Record<string, unknown>): Promise<T> {
     try {
-      switch (options.type) {
-        case QuadletType.CONTAINER:
-          return await this.generateContainer(engineId, options.resourceId);
-        case QuadletType.IMAGE:
-          return await this.generateImage(engineId, options.resourceId);
-        case QuadletType.POD: {
-          const provider = this.dependencies.providers.getProviderContainerConnection(options.connection);
-          const worker = await this.dependencies.podman.getWorker(provider);
-          const podmanVersion: SemVer = await worker.getPodmanVersion();
-
-          return await this.generatePod(engineId, options.resourceId, podmanVersion.version);
-        }
-        case QuadletType.VOLUME:
-          return await this.generateVolume(engineId, options.resourceId);
-        case QuadletType.NETWORK:
-          return await this.generateNetwork(engineId, options.resourceId);
-        default:
-          throw new Error(`cannot generate quadlet type ${options.type}: unsupported`);
-      }
+      return await fn();
     } catch (err: unknown) {
-      records['error'] = err;
+      telemetry['error'] = err;
       throw err;
     } finally {
-      this.dependencies.telemetry.logUsage(TelemetryEvents.PODLET_GENERATE, records);
+      this.dependencies.telemetry.logUsage(TelemetryEvents.PODLET_GENERATE, telemetry);
     }
   }
 

@@ -17,12 +17,23 @@ export class PodletApiImpl extends PodletApi {
     super();
   }
 
-  override async generate(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    type: QuadletType;
-    resourceId: string;
-  }): Promise<string> {
-    return this.dependencies.podletJS.generate(options);
+  override generateContainer(
+    connection: ProviderContainerConnectionIdentifierInfo,
+    containerId: string,
+  ): Promise<string> {
+    return this.dependencies.podletJS.generateContainer(connection, containerId);
+  }
+  override generateImage(connection: ProviderContainerConnectionIdentifierInfo, imageId: string): Promise<string> {
+    return this.dependencies.podletJS.generateImage(connection, imageId);
+  }
+  override generatePod(connection: ProviderContainerConnectionIdentifierInfo, podId: string): Promise<string> {
+    return this.dependencies.podletJS.generatePod(connection, podId);
+  }
+  override generateVolume(connection: ProviderContainerConnectionIdentifierInfo, volumeId: string): Promise<string> {
+    return this.dependencies.podletJS.generateVolume(connection, volumeId);
+  }
+  override generateNetwork(connection: ProviderContainerConnectionIdentifierInfo, networkId: string): Promise<string> {
+    return this.dependencies.podletJS.generateNetwork(connection, networkId);
   }
 
   override async compose(options: {
