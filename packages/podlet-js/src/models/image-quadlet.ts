@@ -15,13 +15,12 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ServiceQuadlet } from './service-quadlet';
+import type { BaseQuadlet } from './base-quadlet';
 
 /**
  * Learn more about Image Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#image-units-image
  */
-export interface ImageQuadlet {
-  Service?: ServiceQuadlet;
+export interface ImageQuadlet extends BaseQuadlet {
   Image: {
     /**
      * All tagged images in the repository are pulled.

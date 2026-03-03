@@ -18,14 +18,14 @@
 
 import '@testing-library/jest-dom/vitest';
 
-import { render } from '@testing-library/svelte';
+import { fireEvent, render } from '@testing-library/svelte';
 import { expect, test, vi, describe, beforeEach } from 'vitest';
 import ContainerQuadletForm from '/@/lib/forms/quadlet/children/ContainerQuadletForm.svelte';
 import type {
   ProviderContainerConnectionDetailedInfo,
   SimpleContainerInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
-import { containerAPI } from '/@/api/client';
+import { containerAPI, podletAPI } from '/@/api/client';
 import { SvelteSelectHelper } from '/@/lib/select/svelte-select-helper.spec';
 
 // mock clients
@@ -33,12 +33,22 @@ vi.mock(import('/@/api/client'), () => ({
   containerAPI: {
     all: vi.fn(),
   },
+  podletAPI: {
+    generateContainer: vi.fn(),
+    generateImage: vi.fn(),
+    generatePod: vi.fn(),
+    generateVolume: vi.fn(),
+    generateNetwork: vi.fn(),
+    compose: vi.fn(),
+  },
 }));
 
 beforeEach(() => {
   vi.resetAllMocks();
   // mock scrollIntoView
   window.HTMLElement.prototype.scrollIntoView = vi.fn();
+
+  vi.mocked(podletAPI.generateContainer).mockResolvedValue('dummy');
 });
 
 // ui object
@@ -135,4 +145,70 @@ test('expect containers to be listed properly', async () => {
   });
 
   expect(item).toBe(SIMPLE_CONTAINER_INFO.name.substring(1));
+});
+
+describe('options', () => {
+  beforeEach(() => {
+    vi.mocked(containerAPI.all).mockResolvedValue([SIMPLE_CONTAINER_INFO]);
+  });
+
+  test('start on boot should be unchecked by default', async () => {
+    const { getByRole } = render(ContainerQuadletForm, {
+      loading: false,
+      resourceId: SIMPLE_CONTAINER_INFO.id,
+      provider: WSL_PROVIDER_DETAILED_INFO,
+      onError: vi.fn(),
+      onChange: vi.fn(),
+      disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
+    });
+
+    const generateBtn = await vi.waitFor(() => {
+      const element = getByRole('button', { name: 'Generate' });
+      expect(element).toBeEnabled();
+      return element;
+    });
+
+    const checkbox = getByRole('checkbox', { name: 'Start on boot' });
+    expect(checkbox).not.toBeChecked();
+
+    await fireEvent.click(generateBtn);
+
+    expect(podletAPI.generateContainer).toHaveBeenCalledWith(WSL_PROVIDER_DETAILED_INFO, SIMPLE_CONTAINER_INFO.id, {
+      startOnBoot: false,
+    });
+  });
+
+  test('start on boot checkbox value should be reflected in api', async () => {
+    const { getByRole } = render(ContainerQuadletForm, {
+      loading: false,
+      resourceId: SIMPLE_CONTAINER_INFO.id,
+      provider: WSL_PROVIDER_DETAILED_INFO,
+      onError: vi.fn(),
+      onChange: vi.fn(),
+      disabled: false,
+      onGenerated: vi.fn(),
+      close: vi.fn(),
+    });
+
+    const generateBtn = await vi.waitFor(() => {
+      const element = getByRole('button', { name: 'Generate' });
+      expect(element).toBeEnabled();
+      return element;
+    });
+
+    const checkbox = getByRole('checkbox', { name: 'Start on boot' });
+    expect(checkbox).not.toBeChecked();
+
+    await fireEvent.click(checkbox);
+
+    expect(checkbox).toBeChecked();
+
+    await fireEvent.click(generateBtn);
+
+    expect(podletAPI.generateContainer).toHaveBeenCalledWith(WSL_PROVIDER_DETAILED_INFO, SIMPLE_CONTAINER_INFO.id, {
+      startOnBoot: true,
+    });
+  });
 });

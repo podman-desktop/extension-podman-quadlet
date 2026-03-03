@@ -3,6 +3,7 @@
  */
 import { PodletApi } from '@podman-desktop/quadlet-extension-core-api';
 import type {
+  ContainerGeneratorOptions,
   ProviderContainerConnectionIdentifierInfo,
   QuadletType,
 } from '@podman-desktop/quadlet-extension-core-api';
@@ -20,8 +21,9 @@ export class PodletApiImpl extends PodletApi {
   override generateContainer(
     connection: ProviderContainerConnectionIdentifierInfo,
     containerId: string,
+    options?: ContainerGeneratorOptions,
   ): Promise<string> {
-    return this.dependencies.podletJS.generateContainer(connection, containerId);
+    return this.dependencies.podletJS.generateContainer(connection, containerId, options);
   }
   override generateImage(connection: ProviderContainerConnectionIdentifierInfo, imageId: string): Promise<string> {
     return this.dependencies.podletJS.generateImage(connection, imageId);

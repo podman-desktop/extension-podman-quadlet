@@ -15,7 +15,10 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
+import type {
+  ContainerGeneratorOptions,
+  ProviderContainerConnectionIdentifierInfo,
+} from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ContainerService } from './container-service';
 import type { ImageService } from './image-service';
@@ -60,13 +63,15 @@ export class PodletJsService {
 
   /**
    * Using the `podlet-js` package, generate a stringify {@link ContainerQuadlet}
-   * @param engineId
+   * @param connection
    * @param containerId
+   * @param options
    * @protected
    */
   public async generateContainer(
     connection: ProviderContainerConnectionIdentifierInfo,
     containerId: string,
+    options: ContainerGeneratorOptions = {},
   ): Promise<string> {
     return this.withTelemetry(
       async () => {
@@ -83,7 +88,7 @@ export class PodletJsService {
         return new ContainerGenerator({
           container,
           image,
-        }).generate();
+        }).generate(options);
       },
       {
         'quadlet-type': QuadletType.CONTAINER.toLowerCase(),

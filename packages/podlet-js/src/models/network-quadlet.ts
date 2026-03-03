@@ -16,10 +16,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
+import type { BaseQuadlet } from './base-quadlet';
+
 /**
  * Learn more about Network Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#network-units-network
  */
-export interface NetworkQuadlet {
+export interface NetworkQuadlet extends BaseQuadlet {
   Network: {
     /**
      * Load the specified containers.conf(5) module. Equivalent to the Podman --module option.

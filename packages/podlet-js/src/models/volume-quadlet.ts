@@ -16,10 +16,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
+import type { BaseQuadlet } from './base-quadlet';
+
 /**
  * Learn more about Volume Quadlet https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html#volume-units-volume
  */
-export interface VolumeQuadlet {
+export interface VolumeQuadlet extends BaseQuadlet {
   Volume: {
     /**
      * Load the specified containers.conf module.
