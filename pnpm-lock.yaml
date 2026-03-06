@@ -115,8 +115,8 @@ importers:
         specifier: ^1.17.0
         version: 1.17.0
       ssh2-sftp-client:
-        specifier: ^12.0.1
-        version: 12.0.1
+        specifier: ^12.1.0
+        version: 12.1.0
     devDependencies:
       '@codecov/vite-plugin':
         specifier: ^1.9.1
@@ -3675,8 +3675,8 @@ packages:
   sprintf-js@1.0.3:
     resolution: {integrity: sha512-D9cPgkvLlV3t3IzL0D0YLvGA9Ahk4PcvVwUbN0dSGr1aP0Nrt4AEnTUbuGvquEC0mA64Gqt1fzirlRs5ibXx8g==}
 
-  ssh2-sftp-client@12.0.1:
-    resolution: {integrity: sha512-ICJ1L2PmBel2Q2ctbyxzTFZCPKSHYYD6s2TFZv7NXmZDrDNGk8lHBb/SK2WgXLMXNANH78qoumeJzxlWZqSqWg==}
+  ssh2-sftp-client@12.1.0:
+    resolution: {integrity: sha512-f8+EylryHXPg+pMHYqtK+jPOPXJTBDOdgwOPYNS7mJTkk5bPsLQfOFUVl99PQvUkE5MkbyR5jThBlfeQMXcvrA==}
     engines: {node: '>=18.20.4'}
 
   ssh2@1.17.0:
@@ -7732,7 +7732,7 @@ snapshots:
 
   sprintf-js@1.0.3: {}
 
-  ssh2-sftp-client@12.0.1:
+  ssh2-sftp-client@12.1.0:
     dependencies:
       concat-stream: 2.0.0
       ssh2: 1.17.0
