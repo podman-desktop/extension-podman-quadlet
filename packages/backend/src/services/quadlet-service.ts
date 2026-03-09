@@ -276,7 +276,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   async readIntoMachine(options: { provider: ProviderContainerConnection; path: string }): Promise<string> {
     // Get the worker
     const worker: PodmanWorker = await this.podman.getWorker(options.provider);
-    return worker.read(options.path);
+    const expanded = await this.dependencies.specifiers.expand(options.provider, options.path);
+
+    return worker.read(expanded);
   }
 
   /**
@@ -316,7 +318,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
             let destination: string;
-            if (isAbsolute(filename) || filename.startsWith('~/')) {
+            if (isAbsolute(filename) || filename.startsWith('~/') || filename.startsWith('%')) {
               destination = filename;
             } else {
               if (options.admin) {
@@ -331,11 +333,13 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (base.length === 0) throw new Error('invalid filename: empty name not allowed');
             if (!base.includes('.')) throw new Error('invalid filename: file without extension are not allowed');
 
+            const expanded = await this.dependencies.specifiers.expand(options.provider, destination);
+
             // write the file
             try {
-              await worker.write(destination, content);
+              await worker.write(expanded, content);
             } catch (err: unknown) {
-              console.error(`Something went wrong while trying to write file to ${destination}`, err);
+              console.error(`Something went wrong while trying to write file to ${expanded}`, err);
               throw err;
             }
           }

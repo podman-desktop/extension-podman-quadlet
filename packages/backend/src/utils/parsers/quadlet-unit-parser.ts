@@ -76,7 +76,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
   }
 
   protected toAbsolute(sourcePath: string, path: string): string {
-    if (isAbsolute(path) || path.startsWith('~')) return path;
+    if (isAbsolute(path) || path.startsWith('~') || path.startsWith('%')) return path;
     return join(dirname(sourcePath), path);
   }
 
