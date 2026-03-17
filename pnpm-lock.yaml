@@ -270,8 +270,8 @@ importers:
   packages/podlet-js:
     dependencies:
       compose-spec-ts:
-        specifier: ^0.3.2
-        version: 0.3.2
+        specifier: ^0.4.0
+        version: 0.4.0
       js-ini:
         specifier: ^1.6.0
         version: 1.6.0
@@ -2184,8 +2184,8 @@ packages:
   compare-versions@6.1.1:
     resolution: {integrity: sha512-4hm4VPpIecmlg59CHXnRDnqGplJFrbLG4aFEl5vl6cK1u76ws3LLvX7ikFnTDl5vo39sjWD6AaDPYodJp/NNHg==}
 
-  compose-spec-ts@0.3.2:
-    resolution: {integrity: sha512-+SyLdwbWOhK+imI0S6fAShB8qRdWInBMHe20rtq1bKQwaJnkQDhLAu23DEFma5BmrssNpAGQ/EtsxzWnGYqYOw==}
+  compose-spec-ts@0.4.0:
+    resolution: {integrity: sha512-l3le8rNMm9RAnrVcV+wct0kkdCPy1f/+ERwZ3jjxxkOA/OH9+RMpnhnUyaPI/27B+Wi/UnSvA+TGOAYwVwpqFQ==}
 
   concat-map@0.0.1:
     resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
@@ -6281,7 +6281,7 @@ snapshots:
 
   compare-versions@6.1.1: {}
 
-  compose-spec-ts@0.3.2: {}
+  compose-spec-ts@0.4.0: {}
 
   concat-map@0.0.1: {}
 
