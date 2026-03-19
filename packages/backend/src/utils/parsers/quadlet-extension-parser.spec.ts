@@ -28,11 +28,11 @@ test.each<QuadletType>(Object.values(QuadletType))('parsing file with extension 
 test('path without extension should throw an error', () => {
   expect(() => {
     new QuadletExtensionParser(`/example/foo`).parse();
-  }).toThrowError('cannot find quadlet type from path: /example/foo');
+  }).toThrow('cannot find quadlet type from path: /example/foo');
 });
 
 test('unknown extension should throw an error', () => {
   expect(() => {
     new QuadletExtensionParser(`/example/foo.txt`).parse();
-  }).toThrowError('cannot find quadlet type from path: /example/foo.txt');
+  }).toThrow('cannot find quadlet type from path: /example/foo.txt');
 });

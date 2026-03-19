@@ -114,7 +114,7 @@ describe('VolumeService#all', () => {
     vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue(PROVIDER_CONTAINER_CONNECTION_MOCK);
     vi.mocked(CONTAINER_ENGINE_MOCK.listInfos).mockResolvedValue([]);
 
-    await expect(volumeService.all({ providerId: 'p1', name: 'connection-1' })).rejects.toThrowError(
+    await expect(volumeService.all({ providerId: 'p1', name: 'connection-1' })).rejects.toThrow(
       'cannot find matching info for connection connection-1',
     );
   });
@@ -155,7 +155,7 @@ describe('VolumeService#inspectVolume', () => {
       },
     ] as unknown as VolumeListInfo[]);
 
-    await expect(volumeService.inspectVolume('engine-1', 'volume-1')).rejects.toThrowError(
+    await expect(volumeService.inspectVolume('engine-1', 'volume-1')).rejects.toThrow(
       'Volume volume-1 not found on engine engine-1',
     );
   });

@@ -281,7 +281,7 @@ describe('QuadletService#collectPodmanQuadlet', () => {
 
     await expect(async () => {
       await quadlet.collectPodmanQuadlet();
-    }).rejects.toThrowError('fake error');
+    }).rejects.toThrow('fake error');
 
     expect(WINDOW_MOCK.withProgress).toHaveBeenCalledOnce();
 
@@ -347,7 +347,7 @@ describe('QuadletService#getQuadletVersion', () => {
 
     await expect(() => {
       return quadlet.getQuadletVersion(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
-    }).rejects.toThrowError('cannot get quadlet version (1): stderr content');
+    }).rejects.toThrow('cannot get quadlet version (1): stderr content');
   });
 });
 
@@ -511,7 +511,7 @@ describe('QuadletService#remove', () => {
         provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
         ids: ['invalid-id'],
       });
-    }).rejects.toThrowError('cannot found quadlet with id invalid-id and provider podman:podman-machine');
+    }).rejects.toThrow('cannot found quadlet with id invalid-id and provider podman:podman-machine');
   });
 
   test('error should trigger a QuadletService#collectPodmanQuadlet', async () => {
@@ -527,7 +527,7 @@ describe('QuadletService#remove', () => {
         provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
         ids: ['invalid-id'],
       });
-    }).rejects.toThrowError();
+    }).rejects.toThrow();
 
     expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledOnce();
   });
@@ -585,7 +585,7 @@ describe('QuadletService#getQuadlet', () => {
     const quadlet = getQuadletService();
     expect(() => {
       quadlet.getQuadlet('invalid-id');
-    }).toThrowError('cannot found quadlet with id invalid-id');
+    }).toThrow('cannot found quadlet with id invalid-id');
   });
 
   test('should contain provider synchronisation', async () => {
@@ -723,7 +723,7 @@ describe('QuadletService#writeIntoMachine', () => {
           },
         ],
       });
-    }).rejects.toThrowError('invalid filename: empty name not allowed');
+    }).rejects.toThrow('invalid filename: empty name not allowed');
   });
 
   test('basename without extension should throw an error', async () => {
@@ -739,6 +739,6 @@ describe('QuadletService#writeIntoMachine', () => {
           },
         ],
       });
-    }).rejects.toThrowError('invalid filename: file without extension are not allowed');
+    }).rejects.toThrow('invalid filename: file without extension are not allowed');
   });
 });

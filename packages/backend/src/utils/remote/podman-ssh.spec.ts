@@ -189,7 +189,7 @@ describe('exec', () => {
 
     await expect(async () => {
       await execPromise;
-    }).rejects.toThrowError('dummy');
+    }).rejects.toThrow('dummy');
   });
 
   test('exit with 0 should resolve', async () => {

@@ -154,7 +154,7 @@ describe.each(['start', 'stop', 'restart'] as Array<'start' | 'stop' | 'restart'
 
     await expect(() => {
       return api[func](WSL_PROVIDER_IDENTIFIER, TEMPLATE_QUADLET_MOCK.id);
-    }).rejects.toThrowError(`cannot ${func} quadlet: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
+    }).rejects.toThrow(`cannot ${func} quadlet: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
   });
 
   test('calling with a startable template should work', async () => {
@@ -181,7 +181,7 @@ describe.each(['start', 'stop', 'restart'] as Array<'start' | 'stop' | 'restart'
 
     await expect(() => {
       return api[func](WSL_PROVIDER_IDENTIFIER, QUADLET_MOCK.id);
-    }).rejects.toThrowError(
+    }).rejects.toThrow(
       `cannot ${func} quadlet: quadlet with id ${QUADLET_MOCK.id} does not have an associated systemd service`,
     );
   });
@@ -230,7 +230,7 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
         connection: WSL_PROVIDER_IDENTIFIER,
         quadletId: TEMPLATE_QUADLET_MOCK.id,
       });
-    }).rejects.toThrowError(`cannot create quadlet logger: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
+    }).rejects.toThrow(`cannot create quadlet logger: quadlet with id ${TEMPLATE_QUADLET_MOCK.id} is a template`);
   });
 
   test('should call podman#journalctlExec with appropriate arguments', async () => {

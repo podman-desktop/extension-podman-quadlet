@@ -68,6 +68,6 @@ describe('PodApiImpl#all', () => {
 
     await expect(() => {
       return api.all(provider);
-    }).rejects.toThrowError('Something went wrong');
+    }).rejects.toThrow('Something went wrong');
   });
 });

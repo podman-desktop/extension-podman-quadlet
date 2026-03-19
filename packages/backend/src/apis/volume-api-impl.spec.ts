@@ -66,5 +66,5 @@ test('expect error to be propagated', async () => {
       providerId: 'my-provider',
       name: 'my-connection',
     });
-  }).rejects.toThrowError('Something went wrong');
+  }).rejects.toThrow('Something went wrong');
 });

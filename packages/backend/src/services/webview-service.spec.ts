@@ -45,7 +45,7 @@ test('non-init service should throw an error trying to access webview', async ()
 
   expect(() => {
     webview.getPanel();
-  }).toThrowError('webview panel is not initialized.');
+  }).toThrow('webview panel is not initialized.');
 });
 
 test('expect init to define html content', async () => {
