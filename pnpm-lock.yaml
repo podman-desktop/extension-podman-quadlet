@@ -322,8 +322,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^4.1.1
-        version: 4.1.1
+        specifier: ^4.1.2
+        version: 4.1.2
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -368,17 +368,17 @@ packages:
     resolution: {integrity: sha512-BG6g+AZABKN8W2syzfPWKhPxxrAB9Wjp2iNS11R4IskHDV6T41+qeQDpT88GOq6eUZ64Sjzoh/nXG+9EpNxtfw==}
     engines: {node: '>=20.0.0'}
 
-  '@argos-ci/cli@4.1.1':
-    resolution: {integrity: sha512-r9qKSleXiIKRWViGtAmT9wrcYfrsG1ogqLfx7tQlYhXVqhFxdMlMaV6S5aiFuov82F+LK3t897EkVuSm6y2OIw==}
+  '@argos-ci/cli@4.1.2':
+    resolution: {integrity: sha512-qOkjNRBWzJnvpxj7pv4NeEP5qlYs91yjPZYoe1vCF9ihoRzY7IifzROrec9nmR7dCZQ9Nw0VE6BzRUN7R2x11A==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
-  '@argos-ci/core@5.1.1':
-    resolution: {integrity: sha512-RI5pYb5wmWUoXzWefNCjKSqGA3BroUB2ac9awlYV3McJjSAW8nCGJUt2Eds90Shkp+i4S6KbMLnLG56slhTCsg==}
+  '@argos-ci/core@5.1.2':
+    resolution: {integrity: sha512-CIZWhd3JFgjaA8OGhraYS5UbJnBz2ZwaP3zpkF8xuDVvpsn92OgQACAtXszzAEjXNoHBXutTwCeedS89vAjUqQ==}
     engines: {node: '>=20.0.0'}
 
-  '@argos-ci/util@3.2.0':
-    resolution: {integrity: sha512-/Bn0qCH8VsdPv5WB9TUEf3oTgsIqsTMUEjPVDopHLzKK+j7nQYGOF3MnN7VhBow82BXeStBfJCS3UiZ6cgxRlw==}
+  '@argos-ci/util@3.3.0':
+    resolution: {integrity: sha512-TeLTLCR4wiN+OqXPKeXvbgjIURNN4s9pLR3759lEVxWu7uUFKoWUFxewM2hHiCZ/A9FRJv4dSiKObpbOLHo3aw==}
     engines: {node: '>=20.0.0'}
 
   '@asamuzakjp/css-color@5.0.1':
@@ -542,9 +542,6 @@ packages:
 
   '@emnapi/runtime@1.4.3':
     resolution: {integrity: sha512-pBPWdu6MLKROBX05wSNKcNb++m5Er+KQ9QkB+WVM+pW2Kx9hoSrVTnu3BdkI5eBLZoKu/J6mW/B6i6bJB2ytXQ==}
-
-  '@emnapi/runtime@1.8.1':
-    resolution: {integrity: sha512-mehfKSMWjjNol8659Z8KxEMrdSJDDot5SXMq00dM8BN4o+CLNXQ0xH2V7EchNHV4RmbZLmmPdEaXZc5H2FXmDg==}
 
   '@emnapi/runtime@1.9.0':
     resolution: {integrity: sha512-QN75eB0IH2ywSpRpNddCRfQIhmJYBCJ1x5Lb3IscKAL8bMnVAKnRg8dCoXbHzVLLH7P38N2Z3mtulB7W0J0FKw==}
@@ -826,8 +823,8 @@ packages:
     resolution: {integrity: sha512-bV0Tgo9K4hfPCek+aMAn81RppFKv2ySDQeMoSZuvTASywNTnVJCArCZE2FWqpvIatKu7VMRLWlR1EazvVhDyhQ==}
     engines: {node: '>=18.18'}
 
-  '@img/colour@1.0.0':
-    resolution: {integrity: sha512-A5P/LfWGFSl6nsckYtjw9da+19jB8hkJ6ACTGcDfEJ0aE+l2n2El7dsVM7UVHZQ9s2lmYMWlrS21YLy2IR1LUw==}
+  '@img/colour@1.1.0':
+    resolution: {integrity: sha512-Td76q7j57o/tLVdgS746cYARfSyxk8iEfRxewL9h4OMzYhbW4TAcppl0mT4eyqXddh6L/jwoM75mo7ixa/pCeQ==}
     engines: {node: '>=18'}
 
   '@img/sharp-darwin-arm64@0.34.5':
@@ -4499,19 +4496,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@4.1.1':
+  '@argos-ci/cli@4.1.2':
     dependencies:
-      '@argos-ci/core': 5.1.1
+      '@argos-ci/core': 5.1.2
       commander: 14.0.3
       ora: 9.3.0
       update-notifier: 7.3.1
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/core@5.1.1':
+  '@argos-ci/core@5.1.2':
     dependencies:
       '@argos-ci/api-client': 0.16.0
-      '@argos-ci/util': 3.2.0
+      '@argos-ci/util': 3.3.0
       convict: 6.2.4
       debug: 4.4.3
       fast-glob: 3.3.3
@@ -4521,7 +4518,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/util@3.2.0': {}
+  '@argos-ci/util@3.3.0': {}
 
   '@asamuzakjp/css-color@5.0.1':
     dependencies:
@@ -4736,11 +4733,6 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@emnapi/runtime@1.8.1':
-    dependencies:
-      tslib: 2.8.1
-    optional: true
-
   '@emnapi/runtime@1.9.0':
     dependencies:
       tslib: 2.8.1
@@ -4937,7 +4929,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.4.3': {}
 
-  '@img/colour@1.0.0': {}
+  '@img/colour@1.1.0': {}
 
   '@img/sharp-darwin-arm64@0.34.5':
     optionalDependencies:
@@ -5021,7 +5013,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.34.5':
     dependencies:
-      '@emnapi/runtime': 1.8.1
+      '@emnapi/runtime': 1.9.0
     optional: true
 
   '@img/sharp-win32-arm64@0.34.5':
@@ -7957,7 +7949,7 @@ snapshots:
 
   sharp@0.34.5:
     dependencies:
-      '@img/colour': 1.0.0
+      '@img/colour': 1.1.0
       detect-libc: 2.1.2
       semver: 7.7.4
     optionalDependencies:
