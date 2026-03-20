@@ -88,7 +88,7 @@ test('getRunningProviderContainerConnectionByEngineId should throw an error if n
 
   await expect(async () => {
     await container.getRunningProviderContainerConnectionByEngineId('dummy engine id');
-  }).rejects.toThrowError('connection not found');
+  }).rejects.toThrow('connection not found');
   expect(CONTAINER_ENGINE_MOCK.listInfos).not.toHaveBeenCalled();
 });
 

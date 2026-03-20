@@ -207,7 +207,7 @@ describe('isMachineRootful', () => {
 
     await expect(() => {
       return podman.isMachineRootful(NATIVE_PROVIDER_CONNECTION_MOCK);
-    }).rejects.toThrowError('connection provided is not a podman machine (native connection)');
+    }).rejects.toThrow('connection provided is not a podman machine (native connection)');
   });
 
   test('connection should be forwarded to podman#exec', async () => {

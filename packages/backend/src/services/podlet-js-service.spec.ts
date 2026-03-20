@@ -236,7 +236,7 @@ describe('container quadlets', () => {
     // generate container quadlet
     await expect(() => {
       return podletJs.generateContainer(CONTAINER_CONNECTION_IDENTIFIER, CONTAINER_INSPECT_MOCK.Id);
-    }).rejects.toThrowError('dummy error');
+    }).rejects.toThrow('dummy error');
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
@@ -342,7 +342,7 @@ describe('pod quadlets', () => {
     // generate pod quadlet
     await expect(() => {
       return podletJs.generatePod(CONTAINER_CONNECTION_IDENTIFIER, POD_INSPECT_MOCK.Id);
-    }).rejects.toThrowError('dummy error');
+    }).rejects.toThrow('dummy error');
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_GENERATE, {
@@ -414,7 +414,7 @@ describe('compose', () => {
         type: QuadletType.KUBE,
         filepath: 'dummy-path',
       });
-    }).rejects.toThrowError('dummy error');
+    }).rejects.toThrow('dummy error');
 
     await vi.waitFor(() => {
       expect(TELEMETRY_MOCK.logUsage).toHaveBeenCalledWith(TelemetryEvents.PODLET_COMPOSE, {

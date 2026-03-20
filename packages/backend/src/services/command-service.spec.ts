@@ -129,7 +129,7 @@ describe(`${PODLET_COMPOSE_CMD} command`, () => {
       return handler({
         containers: [],
       } as unknown as ComposeInfoUI);
-    }).rejects.toThrowError('cannot generate quadlet without containers in the compose project');
+    }).rejects.toThrow('cannot generate quadlet without containers in the compose project');
   });
 
   test(`non-file config file will throw an error`, async () => {
@@ -149,7 +149,7 @@ describe(`${PODLET_COMPOSE_CMD} command`, () => {
           },
         ],
       } as unknown as ComposeInfoUI);
-    }).rejects.toThrowError(`invalid compose configuration file: ${join('working-dir', 'config.compose')}`);
+    }).rejects.toThrow(`invalid compose configuration file: ${join('working-dir', 'config.compose')}`);
   });
 
   test.each([COMPOSE_LABEL_WORKING_DIR, COMPOSE_LABEL_CONFIG_FILES])(
@@ -168,7 +168,7 @@ describe(`${PODLET_COMPOSE_CMD} command`, () => {
             },
           ],
         } as unknown as ComposeInfoUI);
-      }).rejects.toThrowError(
+      }).rejects.toThrow(
         'Missing labels com.docker.compose.project.config_files and com.docker.compose.project.config_files in compose containers',
       );
     },
