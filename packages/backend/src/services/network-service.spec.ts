@@ -113,7 +113,7 @@ describe('NetworkService#inspectNetwork', () => {
 
     vi.mocked(CONTAINER_ENGINE_MOCK.listNetworks).mockResolvedValue([]);
 
-    await expect(networkService.inspectNetwork('engine-1', 'network-1')).rejects.toThrowError(
+    await expect(networkService.inspectNetwork('engine-1', 'network-1')).rejects.toThrow(
       'Network network-1 not found on engine engine-1',
     );
   });

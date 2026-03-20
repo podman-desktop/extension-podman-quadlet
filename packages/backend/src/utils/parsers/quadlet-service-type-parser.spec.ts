@@ -62,7 +62,7 @@ test('filename without extension should throw an error', () => {
 
   expect(() => {
     parser.parse();
-  }).toThrowError('service potatoes does not have an extension');
+  }).toThrow('service potatoes does not have an extension');
 });
 
 test('filename extension not matching expected should throw an error', () => {
@@ -73,5 +73,5 @@ test('filename extension not matching expected should throw an error', () => {
 
   expect(() => {
     parser.parse();
-  }).toThrowError('extension of the file potatoes.bar is not service');
+  }).toThrow('extension of the file potatoes.bar is not service');
 });
