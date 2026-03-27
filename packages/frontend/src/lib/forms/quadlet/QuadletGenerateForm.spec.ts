@@ -117,7 +117,10 @@ describe('Step options', () => {
       close: vi.fn(),
     });
 
-    const generate = getByRole('button', { name: 'Generate' });
+    const generate = await vi.waitFor(() => {
+      return getByRole('button', { name: 'Generate' });
+    });
+
     expect(generate).toBeDisabled();
   });
 
