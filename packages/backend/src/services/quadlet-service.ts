@@ -15,12 +15,13 @@ import type {
   ServiceQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
 import type { AsyncInit } from '../utils/async-init';
-import { join as joinposix, basename, isAbsolute } from 'node:path/posix';
+import { join as joinposix, basename } from 'node:path/posix';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { isServiceQuadlet, isTemplateQuadlet } from '@podman-desktop/quadlet-extension-core-api';
+import { isRelative } from '../utils/path';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -318,7 +319,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
             let destination: string;
-            if (isAbsolute(filename) || filename.startsWith('~/') || filename.startsWith('%')) {
+            if (!isRelative(filename)) {
               destination = filename;
             } else {
               if (options.admin) {

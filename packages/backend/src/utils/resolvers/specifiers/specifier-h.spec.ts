@@ -59,7 +59,7 @@ test('should throw error if the resolved path is not absolute', async () => {
     command: 'echo "$HOME"',
   });
 
-  await expect(specifier.resolve()).rejects.toThrowError(
+  await expect(specifier.resolve()).rejects.toThrow(
     'cannot determine home directory: relative/path is not an absolute path',
   );
 });

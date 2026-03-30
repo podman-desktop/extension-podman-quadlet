@@ -59,7 +59,7 @@ describe('SpecifierService', () => {
   test('expand: unsupported specifier should throw error', async () => {
     const service = new SpecifierService({ podman: PODMAN_SERVICE_MOCK });
     const path = '%x/foo';
-    await expect(service.expand(CONNECTION_MOCK, path)).rejects.toThrowError('specifier %x is not yet supported');
+    await expect(service.expand(CONNECTION_MOCK, path)).rejects.toThrow('specifier %x is not yet supported');
   });
 
   test('expand: %h should resolve and cache', async () => {
