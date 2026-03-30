@@ -44,6 +44,7 @@ import { Messages, QuadletType } from '@podman-desktop/quadlet-extension-core-ap
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
 import { TelemetryEvents } from '../utils/telemetry-events';
+import type { SpecifierService } from './specifier-service';
 
 vi.mock(import('../utils/parsers/quadlet-dryrun-parser'));
 vi.mock(import('../utils/parsers/quadlet-type-parser'));
@@ -94,6 +95,9 @@ const TELEMETRY_LOGGER_MOCK: TelemetryLogger = {
 const WEBVIEW_MOCK: Webview = {
   postMessage: vi.fn(),
 } as unknown as Webview;
+const SPECIFIERS_MOCK: SpecifierService = {
+  expand: vi.fn(),
+} as unknown as SpecifierService;
 
 const RUN_RESULT_MOCK: RunResult = {
   stdout: 'dummy-stdout',
@@ -178,6 +182,8 @@ beforeEach(() => {
     [QUADLET_MOCK.service]: true,
   });
 
+  vi.mocked(SPECIFIERS_MOCK.expand).mockImplementation(async (_, path) => path);
+
   vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
   vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([
@@ -209,6 +215,7 @@ function getQuadletService(): QuadletServiceTest {
     systemd: SYSTEMD_SERVICE_MOCK,
     window: WINDOW_MOCK,
     telemetry: TELEMETRY_LOGGER_MOCK,
+    specifiers: SPECIFIERS_MOCK,
   });
 }
 
@@ -568,6 +575,20 @@ describe('QuadletService#readIntoMachine', () => {
     // ensure the result match the output of mocked worker#read
     expect(result).toEqual('foo: bar');
   });
+
+  test('expanded path should be used', async () => {
+    vi.mocked(SPECIFIERS_MOCK.expand).mockResolvedValue('/home/user/bar.yaml');
+
+    const quadlet = getQuadletService();
+
+    await quadlet.readIntoMachine({
+      path: '%h/bar.yaml',
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    });
+
+    expect(SPECIFIERS_MOCK.expand).toHaveBeenCalledExactlyOnceWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK, '%h/bar.yaml');
+    expect(PODMAN_WORKER_MOCK.read).toHaveBeenCalledExactlyOnceWith('/home/user/bar.yaml');
+  });
 });
 
 describe('QuadletService#getSynchronisationInfo', () => {
@@ -740,5 +761,23 @@ describe('QuadletService#writeIntoMachine', () => {
         ],
       });
     }).rejects.toThrow('invalid filename: file without extension are not allowed');
+  });
+
+  test('should used expanded path', async () => {
+    const quadlet = getQuadletService();
+    vi.mocked(SPECIFIERS_MOCK.expand).mockResolvedValue('/home/user/bar.yaml');
+
+    await quadlet.writeIntoMachine({
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      files: [
+        {
+          filename: '%h/bar.yaml',
+          content: 'dummy-content',
+        },
+      ],
+    });
+
+    expect(PODMAN_WORKER_MOCK.write).toHaveBeenCalledWith('/home/user/bar.yaml', 'dummy-content');
+    expect(SPECIFIERS_MOCK.expand).toHaveBeenCalledExactlyOnceWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK, '%h/bar.yaml');
   });
 });

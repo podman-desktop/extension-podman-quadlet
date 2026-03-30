@@ -59,6 +59,7 @@ import { PodService } from './pod-service';
 import { VolumeService } from './volume-service';
 import { NetworkApiImpl } from '../apis/network-api-impl';
 import { NetworkService } from './network-service';
+import { SpecifierService } from './specifier-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;
@@ -161,6 +162,12 @@ export class MainService implements Disposable, AsyncInit {
     await systemd.init();
     this.#disposables.push(systemd);
 
+    // specifier service expand systemd specifier
+    const specifiers = new SpecifierService({
+      podman: podman,
+    });
+    this.#disposables.push(specifiers);
+
     // quadlet service is responsible for interacting with the Quadlet CLI
     const quadletService = new QuadletService({
       systemd,
@@ -170,6 +177,7 @@ export class MainService implements Disposable, AsyncInit {
       providers: providers,
       window: this.dependencies.window,
       telemetry: this.#telemetry,
+      specifiers,
     });
     await quadletService.init();
     this.#disposables.push(quadletService);

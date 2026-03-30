@@ -15,12 +15,13 @@ import type {
   ServiceQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
 import type { AsyncInit } from '../utils/async-init';
-import { join as joinposix, basename, isAbsolute } from 'node:path/posix';
+import { join as joinposix, basename } from 'node:path/posix';
 import { TelemetryEvents } from '../utils/telemetry-events';
 import { isRunError } from '../utils/run-error';
 import templates from '../assets/templates.json';
 import type { PodmanWorker } from '../utils/worker/podman-worker';
 import { isServiceQuadlet, isTemplateQuadlet } from '@podman-desktop/quadlet-extension-core-api';
+import { isRelative } from '../utils/path';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
@@ -276,7 +277,9 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
   async readIntoMachine(options: { provider: ProviderContainerConnection; path: string }): Promise<string> {
     // Get the worker
     const worker: PodmanWorker = await this.podman.getWorker(options.provider);
-    return worker.read(options.path);
+    const expanded = await this.dependencies.specifiers.expand(options.provider, options.path);
+
+    return worker.read(expanded);
   }
 
   /**
@@ -316,7 +319,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
             let destination: string;
-            if (isAbsolute(filename) || filename.startsWith('~/')) {
+            if (!isRelative(filename)) {
               destination = filename;
             } else {
               if (options.admin) {
@@ -331,11 +334,13 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (base.length === 0) throw new Error('invalid filename: empty name not allowed');
             if (!base.includes('.')) throw new Error('invalid filename: file without extension are not allowed');
 
+            const expanded = await this.dependencies.specifiers.expand(options.provider, destination);
+
             // write the file
             try {
-              await worker.write(destination, content);
+              await worker.write(expanded, content);
             } catch (err: unknown) {
-              console.error(`Something went wrong while trying to write file to ${destination}`, err);
+              console.error(`Something went wrong while trying to write file to ${expanded}`, err);
               throw err;
             }
           }

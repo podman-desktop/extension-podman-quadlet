@@ -11,6 +11,7 @@ import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 import type { PodmanService } from './podman-service';
 import type { SystemdService } from './systemd-service';
 import type { ProviderService } from './provider-service';
+import type { SpecifierService } from './specifier-service';
 
 export interface QuadletServiceDependencies {
   providers: ProviderService;
@@ -20,6 +21,7 @@ export interface QuadletServiceDependencies {
   systemd: SystemdService;
   window: typeof window;
   telemetry: TelemetryLogger;
+  specifiers: SpecifierService;
 }
 
 type ProviderIdentifier = `${string}:${string}`;

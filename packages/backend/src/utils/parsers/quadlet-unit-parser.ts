@@ -15,7 +15,8 @@ import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletExtensionParser } from './quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
 import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
-import { basename, dirname, isAbsolute, join } from 'node:path/posix';
+import { basename, dirname, join } from 'node:path/posix';
+import { isRelative } from '../path';
 
 interface Unit {
   SourcePath: string;
@@ -76,7 +77,7 @@ export class QuadletUnitParser extends Parser<string, Quadlet> {
   }
 
   protected toAbsolute(sourcePath: string, path: string): string {
-    if (isAbsolute(path) || path.startsWith('~')) return path;
+    if (!isRelative(path)) return path;
     return join(dirname(sourcePath), path);
   }
 
