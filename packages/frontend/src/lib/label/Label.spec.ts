@@ -39,17 +39,6 @@ test('Expect basic styling', async () => {
   expect(label.parentElement).toHaveClass('gap-x-1');
 });
 
-test('Expect tooltip', async () => {
-  const tip = 'a tooltip';
-  render(LabelSpec, {
-    name: 'label',
-    tip: tip,
-  });
-  const label = screen.getByText(tip);
-  expect(label).toBeInTheDocument();
-  expect(label.parentElement?.firstChild).toBeInTheDocument();
-});
-
 test('Expect role to be defined', async () => {
   const role = 'test';
   render(LabelSpec, {

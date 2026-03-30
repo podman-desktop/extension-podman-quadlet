@@ -122,11 +122,11 @@ importers:
         specifier: ^1.9.1
         version: 1.9.1(vite@8.0.3(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.6.1))
       '@podman-desktop/api':
-        specifier: ^1.25.1
-        version: 1.25.1
+        specifier: ^1.26.1
+        version: 1.26.1
       '@podman-desktop/podman-extension-api':
-        specifier: ^1.18.0
-        version: 1.18.0
+        specifier: ^1.26.1
+        version: 1.26.1
       '@podman-desktop/quadlet-extension-core-api':
         specifier: workspace:^
         version: link:../shared
@@ -192,8 +192,8 @@ importers:
         specifier: ^7.2.0
         version: 7.2.0
       '@podman-desktop/ui-svelte':
-        specifier: ^1.21.0-202508060751-06c73451b76
-        version: 1.21.0-202508110854-d417fb857c4(svelte-fa@4.0.4(svelte@5.55.1))(svelte@5.55.1)
+        specifier: ^1.26.1
+        version: 1.26.1(svelte-fa@4.0.4(svelte@5.55.1))(svelte@5.55.1)
       '@sveltejs/vite-plugin-svelte':
         specifier: 7.0.0
         version: 7.0.0(svelte@5.55.1)(vite@8.0.3(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.6.1))
@@ -286,8 +286,8 @@ importers:
         specifier: ^1.9.1
         version: 1.9.1(vite@8.0.3(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.6.1))
       '@podman-desktop/api':
-        specifier: ^1.25.1
-        version: 1.25.1
+        specifier: ^1.26.1
+        version: 1.26.1
       '@types/js-yaml':
         specifier: ^4.0.9
         version: 4.0.9
@@ -307,8 +307,8 @@ importers:
   packages/shared:
     devDependencies:
       '@podman-desktop/api':
-        specifier: ^1.25.1
-        version: 1.25.1
+        specifier: ^1.26.1
+        version: 1.26.1
       vite:
         specifier: ^8.0.3
         version: 8.0.3(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)(yaml@2.6.1)
@@ -328,8 +328,8 @@ importers:
         specifier: 1.57.0
         version: 1.57.0
       '@podman-desktop/tests-playwright':
-        specifier: ^1.25.1
-        version: 1.25.1
+        specifier: ^1.26.1
+        version: 1.26.1
       '@types/node':
         specifier: ^24
         version: 24.10.9
@@ -781,8 +781,17 @@ packages:
   '@floating-ui/core@1.6.8':
     resolution: {integrity: sha512-7XJ9cPU+yI2QeLS+FCSlqNFZJq8arvswefkZrYI1yQBbftw6FyrZOxYSh+9S7z7TpeWlRt9zJ5IhM1WIL334jA==}
 
+  '@floating-ui/core@1.7.5':
+    resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
+
   '@floating-ui/dom@1.6.12':
     resolution: {integrity: sha512-NP83c0HjokcGVEMeoStg317VD9W7eDlGK7457dMBANbKA6GJZdc7rjujdgqzTaz93jkGgc5P/jeWbaCHnMNc+w==}
+
+  '@floating-ui/dom@1.7.6':
+    resolution: {integrity: sha512-9gZSAI5XM36880PPMm//9dfiEngYoC6Am2izES1FF406YFsjvyBMmeJ2g4SAju3xWwtuynNRFL2s9hgxpLI5SQ==}
+
+  '@floating-ui/utils@0.2.11':
+    resolution: {integrity: sha512-RiB/yIh78pcIxl6lLMG0CgBXAZ2Y0eVHqMPYugu+9U0AeT6YBeiJpf7lbdJNIugFP5SIjwNRgo4DhR1Qxi26Gg==}
 
   '@floating-ui/utils@0.2.8':
     resolution: {integrity: sha512-kym7SodPp8/wloecOpcmSnWJsK7M0E5Wg8UcFA+uO4B9s5d0ywXOEro/8HM9x0rW+TljRzul/14UYz3TleT3ig==}
@@ -1080,20 +1089,17 @@ packages:
     resolution: {integrity: sha512-h104Kh26rR8tm+a3Qkc5S4VLYint3FE48as7+/5oCEcKR2idC/pF1G6AhIXKI+eHPJa/3J9i5z0Al47IeGHPkA==}
     engines: {node: '>=12'}
 
-  '@podman-desktop/api@1.18.0':
-    resolution: {integrity: sha512-+6MeXHxTPxcf0dT+Hmyer5o0QFQXYdBaZPoy68pd0Cx6O60EKeuWh7T4zcanf8m2cdZ63/iqfnrCwo26c3DZbg==}
+  '@podman-desktop/api@1.26.1':
+    resolution: {integrity: sha512-mp6+UgOY/lzAy6ieeyWL9xPEdYiYEig5a5vLbmDFZu7/y/uihvxUQQ75VGZQeq37I2xpDztll95fY/NdypoZ1w==}
 
-  '@podman-desktop/api@1.25.1':
-    resolution: {integrity: sha512-OTsf2q0g5GavfalYFpOtyn8QVVkLKKJOH1zMabqcIK7yTpu093FRCQY/hBdUYx25UyEXhtX4v7QAP0+lc9B+jw==}
+  '@podman-desktop/podman-extension-api@1.26.1':
+    resolution: {integrity: sha512-OUj+f3WVHdU602hn2OKXEbSTSM4VLR4rL1a4qBAWf2H8I/KrKJmPPDopKd0/pUeeSyUfElyfwAERrHHYDVjU7w==}
 
-  '@podman-desktop/podman-extension-api@1.18.0':
-    resolution: {integrity: sha512-CjRv0LDSmYZzPEtdOasPsRe8kzBYQOdK7+jjK9qhoy8l6NlOLjYPRKUIjZ/kZzNCKv1jd0D5mPxNmk0XtsBSTQ==}
+  '@podman-desktop/tests-playwright@1.26.1':
+    resolution: {integrity: sha512-hzHKJ2Bz28Ml5TIZuKkm0NsmApy1qtpQkB2qyH3vOfZ8MC+7icjzW6TD+68mhA58kWsbFRqIyOsS8uONVTbNSQ==}
 
-  '@podman-desktop/tests-playwright@1.25.1':
-    resolution: {integrity: sha512-Jn3QPkVraSZ6etiuZEaCGYss9EzA7SjPKz8xGG9wEVQDBZsq3KlQeRPalzcd1lAj1o6+LAKNsV67bqp6OqftBg==}
-
-  '@podman-desktop/ui-svelte@1.21.0-202508110854-d417fb857c4':
-    resolution: {integrity: sha512-IbFpnX8QjoJPPHHhQQYzLMAoZ8cPsPOUK+Hs2HFxzaF7S/w9Fzw7qth4hq+AiC+X6E0Z40e+ff9frcB2qw/qpQ==}
+  '@podman-desktop/ui-svelte@1.26.1':
+    resolution: {integrity: sha512-8oYg+5mc0ReMeeCSfXX2TmqOqln+A69UoRPw3XQ8qmtWOkV+cnATRfNGztE9Dqs9OS9srngoCZ210t6U5IhdjA==}
     peerDependencies:
       svelte: ^4.0.0 || ^5.0.0
       svelte-fa: ^4.0.0
@@ -4834,10 +4840,21 @@ snapshots:
     dependencies:
       '@floating-ui/utils': 0.2.8
 
+  '@floating-ui/core@1.7.5':
+    dependencies:
+      '@floating-ui/utils': 0.2.11
+
   '@floating-ui/dom@1.6.12':
     dependencies:
       '@floating-ui/core': 1.6.8
       '@floating-ui/utils': 0.2.8
+
+  '@floating-ui/dom@1.7.6':
+    dependencies:
+      '@floating-ui/core': 1.7.5
+      '@floating-ui/utils': 0.2.11
+
+  '@floating-ui/utils@0.2.11': {}
 
   '@floating-ui/utils@0.2.8': {}
 
@@ -5125,18 +5142,17 @@ snapshots:
       '@pnpm/network.ca-file': 1.0.2
       config-chain: 1.1.13
 
-  '@podman-desktop/api@1.18.0': {}
+  '@podman-desktop/api@1.26.1': {}
 
-  '@podman-desktop/api@1.25.1': {}
-
-  '@podman-desktop/podman-extension-api@1.18.0':
+  '@podman-desktop/podman-extension-api@1.26.1':
     dependencies:
-      '@podman-desktop/api': 1.18.0
+      '@podman-desktop/api': 1.26.1
 
-  '@podman-desktop/tests-playwright@1.25.1': {}
+  '@podman-desktop/tests-playwright@1.26.1': {}
 
-  '@podman-desktop/ui-svelte@1.21.0-202508110854-d417fb857c4(svelte-fa@4.0.4(svelte@5.55.1))(svelte@5.55.1)':
+  '@podman-desktop/ui-svelte@1.26.1(svelte-fa@4.0.4(svelte@5.55.1))(svelte@5.55.1)':
     dependencies:
+      '@floating-ui/dom': 1.7.6
       '@fortawesome/fontawesome-free': 7.2.0
       '@fortawesome/free-brands-svg-icons': 7.2.0
       '@fortawesome/free-regular-svg-icons': 7.2.0
