@@ -55,7 +55,9 @@ export class QuadletApiImpl extends QuadletApi {
       quadlet = this.checkQuadlet(id);
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`cannot start quadlet: ${error.message}`);
+        throw new Error(`cannot start quadlet: ${error.message}`, {
+          cause: error,
+        });
       }
       throw error;
     }
@@ -80,7 +82,9 @@ export class QuadletApiImpl extends QuadletApi {
       quadlet = this.checkQuadlet(id);
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`cannot stop quadlet: ${error.message}`);
+        throw new Error(`cannot stop quadlet: ${error.message}`, {
+          cause: error,
+        });
       }
       throw error;
     }
@@ -105,7 +109,9 @@ export class QuadletApiImpl extends QuadletApi {
       quadlet = this.checkQuadlet(id);
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`cannot restart quadlet: ${error.message}`);
+        throw new Error(`cannot restart quadlet: ${error.message}`, {
+          cause: error,
+        });
       }
       throw error;
     }
@@ -157,7 +163,9 @@ export class QuadletApiImpl extends QuadletApi {
       quadlet = this.checkQuadlet(options.quadletId);
     } catch (error) {
       if (error instanceof Error) {
-        throw new Error(`cannot create quadlet logger: ${error.message}`);
+        throw new Error(`cannot create quadlet logger: ${error.message}`, {
+          cause: error,
+        });
       }
       throw error;
     }
