@@ -17,7 +17,9 @@ let { connection, loading, disabled, refreshQuadlets }: Props = $props();
 
 let runningConnection: number = $derived(
   $providerConnectionsInfo.reduce((accumulator, connection) => {
-    if (connection.status === 'started') return ++accumulator;
+    if (connection.status === 'started') {
+      accumulator++;
+    }
     return accumulator;
   }, 0),
 );
