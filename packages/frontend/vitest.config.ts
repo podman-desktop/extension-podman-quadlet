@@ -20,8 +20,6 @@ import viteConfig from './vite.config';
 import { join } from 'node:path';
 import { svelteTesting } from '@testing-library/svelte/vite';
 
-const WORKSPACE_ROOT = join(__dirname, '..', '..');
-
 export default mergeConfig(viteConfig, {
   plugins: [svelteTesting()],
   test: {
@@ -30,10 +28,6 @@ export default mergeConfig(viteConfig, {
     environment: 'jsdom',
     alias: [
       { find: '@testing-library/svelte', replacement: '@testing-library/svelte/svelte5' },
-      {
-        find: /^monaco-editor$/,
-        replacement: `${WORKSPACE_ROOT}/node_modules/monaco-editor/esm/vs/editor/editor.api`,
-      },
     ],
     setupFiles: ['./vite.tests.setup.ts'],
   },
