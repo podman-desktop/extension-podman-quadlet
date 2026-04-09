@@ -17,7 +17,6 @@
  ***********************************************************************/
 import { mergeConfig } from 'vitest/config';
 import viteConfig from './vite.config';
-import { join } from 'node:path';
 import { svelteTesting } from '@testing-library/svelte/vite';
 
 export default mergeConfig(viteConfig, {
@@ -26,9 +25,7 @@ export default mergeConfig(viteConfig, {
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     globals: true,
     environment: 'jsdom',
-    alias: [
-      { find: '@testing-library/svelte', replacement: '@testing-library/svelte/svelte5' },
-    ],
+    alias: [{ find: '@testing-library/svelte', replacement: '@testing-library/svelte/svelte5' }],
     setupFiles: ['./vite.tests.setup.ts'],
   },
 });
