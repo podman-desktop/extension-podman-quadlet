@@ -21,7 +21,7 @@ import {
   CONFIGURATION_SECTION,
   ConfigurationService,
   PREFERRED_CONTAINER_ENGINE_CONNECTION_KEY,
-} from './configuration-service';
+} from '/@/services/configuration-service';
 import type { CONTAINER_ENGINE_CONNECTION_FORMAT } from '@podman-desktop/quadlet-extension-core-api';
 
 const CONFIGURATION_VALUE_MOCK: CONTAINER_ENGINE_CONNECTION_FORMAT = 'podman:podman-machine-default';

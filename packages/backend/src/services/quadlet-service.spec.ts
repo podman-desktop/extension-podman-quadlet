@@ -29,11 +29,11 @@ import type {
   window,
 } from '@podman-desktop/api';
 import { ProgressLocation } from '@podman-desktop/api';
-import type { ProviderService } from './provider-service';
-import type { PodmanService } from './podman-service';
-import type { SystemdService } from './systemd-service';
-import { QuadletService } from './quadlet-service';
-import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
+import type { ProviderService } from '/@/services/provider-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { SystemdService } from '/@/services/systemd-service';
+import { QuadletService } from '/@/services/quadlet-service';
+import { QuadletDryRunParser } from '/@/utils/parsers/quadlet-dryrun-parser';
 import type {
   Quadlet,
   ServiceQuadlet,
@@ -41,13 +41,13 @@ import type {
   TemplateInstanceQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { Messages, QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { join as joinposix } from 'node:path/posix';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import type { SpecifierService } from './specifier-service';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import type { SpecifierService } from '/@/services/specifier-service';
 
-vi.mock(import('../utils/parsers/quadlet-dryrun-parser'));
-vi.mock(import('../utils/parsers/quadlet-type-parser'));
+vi.mock(import('/@/utils/parsers/quadlet-dryrun-parser'));
+vi.mock(import('/@/utils/parsers/quadlet-type-parser'));
 
 const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

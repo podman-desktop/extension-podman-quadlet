@@ -22,17 +22,17 @@ import {
   COMPOSE_LABEL_WORKING_DIR,
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
-} from '../utils/constants';
-import { CommandService } from './command-service';
+} from '/@/utils/constants';
+import { CommandService } from '/@/services/command-service';
 import type { commands as commandsApi, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
-import type { RoutingService } from './routing-service';
-import type { ContainerService } from './container-service';
-import type { ProviderService } from './provider-service';
-import type { ComposeInfoUI } from '../models/compose-info-ui';
+import type { RoutingService } from '/@/services/routing-service';
+import type { ContainerService } from '/@/services/container-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { ComposeInfoUI } from '/@/models/compose-info-ui';
 import { stat } from 'node:fs/promises';
 import type { BigIntStats, Stats } from 'node:fs';
 import { join } from 'node:path';
-import type { ContainerInfoUI } from '../models/container-info-ui';
+import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 const COMMAND_API_MOCK: typeof commandsApi = {

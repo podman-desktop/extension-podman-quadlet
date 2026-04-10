@@ -17,9 +17,9 @@
  ***********************************************************************/
 
 import { beforeEach, vi, describe, test, expect } from 'vitest';
-import { PodService } from './pod-service';
-import type { ProviderService } from './provider-service';
-import type { ContainerService } from './container-service';
+import { PodService } from '/@/services/pod-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { ContainerService } from '/@/services/container-service';
 import type { containerEngine, PodInfo, PodInspectInfo, ProviderContainerConnection } from '@podman-desktop/api';
 
 const PROVIDER_CONTAINER_CONNECTION_MOCK: ProviderContainerConnection = {

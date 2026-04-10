@@ -17,9 +17,9 @@
  ***********************************************************************/
 
 import { expect, test } from 'vitest';
-import type { PodmanWorker } from '../../worker/podman-worker';
-import { Specifiers } from './specifiers';
-import type { SpecifierResolver } from './specifier-resolver';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import { Specifiers } from '/@/utils/resolvers/specifiers/specifiers';
+import type { SpecifierResolver } from '/@/utils/resolvers/specifiers/specifier-resolver';
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {} as unknown as PodmanWorker;
 

@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { beforeEach, expect, test, vi } from 'vitest';
-import { Publisher } from './publisher';
+import { Publisher } from '/@/utils/publisher';
 import type { Webview } from '@podman-desktop/api';
 import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 

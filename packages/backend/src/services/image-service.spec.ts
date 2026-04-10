@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { beforeEach, vi, test, expect } from 'vitest';
-import { ImageService } from './image-service';
-import type { ProviderService } from './provider-service';
+import { ImageService } from '/@/services/image-service';
+import type { ProviderService } from '/@/services/provider-service';
 import type { containerEngine } from '@podman-desktop/api';
 
 const PROVIDER_SERVICE_MOCK: ProviderService = {

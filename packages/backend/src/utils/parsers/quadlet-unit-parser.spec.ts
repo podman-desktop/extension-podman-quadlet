@@ -3,7 +3,7 @@
  */
 
 import { test, expect, assert, describe } from 'vitest';
-import { QuadletUnitParser } from './quadlet-unit-parser';
+import { QuadletUnitParser } from '/@/utils/parsers/quadlet-unit-parser';
 import { QuadletType, isTemplateQuadlet, isServiceQuadlet } from '@podman-desktop/quadlet-extension-core-api';
 import type { FileReference } from '@podman-desktop/quadlet-extension-core-api';
 

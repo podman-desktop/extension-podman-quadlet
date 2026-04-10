@@ -18,15 +18,15 @@
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { PodmanSSHWorker } from './podman-ssh-worker';
+import { PodmanSSHWorker } from '/@/utils/worker/podman-ssh-worker';
 import type { ProviderContainerConnection } from '@podman-desktop/api';
-import { PodmanSFTP } from '../remote/podman-sftp';
-import { PodmanSSH } from '../remote/podman-ssh';
-import type { PodmanWorker } from './podman-worker';
+import { PodmanSFTP } from '/@/utils/remote/podman-sftp';
+import { PodmanSSH } from '/@/utils/remote/podman-ssh';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import type { ConnectConfig } from 'ssh2';
 
-vi.mock(import('../remote/podman-sftp'));
-vi.mock(import('../remote/podman-ssh'));
+vi.mock(import('/@/utils/remote/podman-sftp'));
+vi.mock(import('/@/utils/remote/podman-ssh'));
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

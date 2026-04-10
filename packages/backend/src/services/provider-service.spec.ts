@@ -4,7 +4,7 @@
 import type { provider as Provider, ProviderContainerConnection, Webview } from '@podman-desktop/api';
 
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { ProviderService } from './provider-service';
+import { ProviderService } from '/@/services/provider-service';
 
 const PROVIDER_API_MOCK: typeof Provider = {
   getContainerConnections: vi.fn(),

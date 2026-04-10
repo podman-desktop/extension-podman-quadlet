@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { expect, test, vi, beforeEach } from 'vitest';
-import { SpecifierH } from './specifier-h';
-import type { PodmanWorker } from '../../worker/podman-worker';
+import { SpecifierH } from '/@/utils/resolvers/specifiers/specifier-h';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import type { CancellationToken, Logger } from '@podman-desktop/api';
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {

@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { beforeEach, vi, describe, test, expect } from 'vitest';
-import { NetworkService } from './network-service';
-import type { ProviderService } from './provider-service';
+import { NetworkService } from '/@/services/network-service';
+import type { ProviderService } from '/@/services/provider-service';
 import type { containerEngine, ProviderContainerConnection, NetworkInspectInfo } from '@podman-desktop/api';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 

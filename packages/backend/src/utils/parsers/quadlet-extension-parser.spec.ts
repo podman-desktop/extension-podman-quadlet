@@ -18,7 +18,7 @@
 
 import { test, expect } from 'vitest';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import { QuadletExtensionParser } from './quadlet-extension-parser';
+import { QuadletExtensionParser } from '/@/utils/parsers/quadlet-extension-parser';
 
 test.each<QuadletType>(Object.values(QuadletType))('parsing file with extension %s', (type: QuadletType) => {
   const result = new QuadletExtensionParser(`/example/foo.${type.toLowerCase()}`).parse();

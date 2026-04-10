@@ -16,11 +16,11 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { Logger, CancellationToken, RunResult, ProviderContainerConnection, RunError } from '@podman-desktop/api';
-import { PodmanWorker } from './podman-worker';
+import { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { QuadletBinaryResolver } from '../resolvers/quadlet-binary-resolver';
-import { PodmanVersionResolver } from '../resolvers/podman-version-resolver';
+import { QuadletBinaryResolver } from '/@/utils/resolvers/quadlet-binary-resolver';
+import { PodmanVersionResolver } from '/@/utils/resolvers/podman-version-resolver';
 import { SemVer } from 'semver';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
@@ -51,8 +51,8 @@ const RUN_ERROR_MOCK: RunError = {
 
 const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
-vi.mock(import('../resolvers/quadlet-binary-resolver'));
-vi.mock(import('../resolvers/podman-version-resolver'));
+vi.mock(import('/@/utils/resolvers/quadlet-binary-resolver'));
+vi.mock(import('/@/utils/resolvers/podman-version-resolver'));
 
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
