@@ -31,3 +31,8 @@ updates:
         applies-to: version-updates
         patterns:
           - "@xterm/*"
+      vitest:
+        applies-to: version-updates
+        patterns:
+          - "@vitest/*"
+          - "vitest"
