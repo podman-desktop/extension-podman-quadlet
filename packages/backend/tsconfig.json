@@ -14,7 +14,7 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "paths": {
-      "/@/*": ["./src/*"],
+      "/@/*": ["./src/*"]
     }
   },
   "include": ["src", "vitest.setup.*", "types/*.d.ts", "../../types/*.d.ts"],
