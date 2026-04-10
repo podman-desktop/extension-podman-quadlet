@@ -7,7 +7,7 @@ import type {
   ProviderContainerConnectionIdentifierInfo,
   QuadletType,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { PodletJsService } from '../services/podlet-js-service';
+import type { PodletJsService } from '/@/services/podlet-js-service';
 
 interface Dependencies {
   podletJS: PodletJsService;

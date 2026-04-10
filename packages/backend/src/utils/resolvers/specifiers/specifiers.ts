@@ -15,9 +15,9 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { SpecifierH } from './specifier-h';
-import type { SpecifierResolver } from './specifier-resolver';
-import type { PodmanWorker } from '../../worker/podman-worker';
+import { SpecifierH } from '/@/utils/resolvers/specifiers/specifier-h';
+import type { SpecifierResolver } from '/@/utils/resolvers/specifiers/specifier-resolver';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 export const Specifiers: Record<string, new (worker: PodmanWorker) => SpecifierResolver> = {
   // User home directory

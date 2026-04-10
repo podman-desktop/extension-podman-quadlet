@@ -17,15 +17,15 @@
  ***********************************************************************/
 
 import type { Disposable, PodInfo, PodInspectInfo } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
-import type { EngineHelperDependencies } from './engine-helper';
-import { EngineHelper } from './engine-helper';
-import type { ProviderService } from './provider-service';
+import type { AsyncInit } from '/@/utils/async-init';
+import type { EngineHelperDependencies } from '/@/services/engine-helper';
+import { EngineHelper } from '/@/services/engine-helper';
+import type { ProviderService } from '/@/services/provider-service';
 import type {
   SimplePodInfo,
   ProviderContainerConnectionIdentifierInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { ContainerService } from './container-service';
+import type { ContainerService } from '/@/services/container-service';
 
 interface Dependencies extends EngineHelperDependencies {
   providers: ProviderService;

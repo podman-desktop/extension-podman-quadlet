@@ -20,8 +20,8 @@ import type {
   ProviderContainerConnectionIdentifierInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import type { ContainerService } from './container-service';
-import type { ImageService } from './image-service';
+import type { ContainerService } from '/@/services/container-service';
+import type { ImageService } from '/@/services/image-service';
 import type {
   ContainerInspectInfo,
   ImageInspectInfo,
@@ -39,12 +39,12 @@ import {
   NetworkGenerator,
 } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import type { PodService } from './pod-service';
-import type { PodmanService } from './podman-service';
-import type { ProviderService } from './provider-service';
-import type { VolumeService } from './volume-service';
-import type { NetworkService } from './network-service';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import type { PodService } from '/@/services/pod-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { VolumeService } from '/@/services/volume-service';
+import type { NetworkService } from '/@/services/network-service';
 import type { SemVer } from 'semver';
 
 interface Dependencies {

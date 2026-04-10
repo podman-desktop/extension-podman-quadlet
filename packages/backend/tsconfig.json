@@ -12,7 +12,10 @@
     "types": ["node"],
     "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "paths": {
+      "/@/*": ["./src/*"]
+    }
   },
   "include": ["src", "vitest.setup.*", "types/*.d.ts", "../../types/*.d.ts"],
   "exclude": ["vite.config.ts", "vitest.config.ts"]

@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { PodmanService } from './podman-service';
+import type { PodmanService } from '/@/services/podman-service';
 import type { TelemetryLogger } from '@podman-desktop/api';
 
 export interface SystemdServiceDependencies {

@@ -18,7 +18,7 @@
 
 import { test, expect } from 'vitest';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import { QuadletTypeParser } from './quadlet-type-parser';
+import { QuadletTypeParser } from '/@/utils/parsers/quadlet-type-parser';
 
 test.each(Object.values(QuadletType))('parsing quadlet %s', (type: QuadletType) => {
   const result = new QuadletTypeParser(`[${type}]\nfoo=bar`).parse();

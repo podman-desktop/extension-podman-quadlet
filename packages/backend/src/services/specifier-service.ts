@@ -17,8 +17,8 @@
  ***********************************************************************/
 import type { CancellationToken, Disposable, Logger, ProviderContainerConnection } from '@podman-desktop/api';
 import { sep, join } from 'node:path/posix';
-import { Specifiers } from '../utils/resolvers/specifiers/specifiers';
-import type { PodmanService } from './podman-service';
+import { Specifiers } from '/@/utils/resolvers/specifiers/specifiers';
+import type { PodmanService } from '/@/services/podman-service';
 
 interface Dependencies {
   podman: PodmanService;

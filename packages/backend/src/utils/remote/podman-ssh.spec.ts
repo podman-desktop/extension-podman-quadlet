@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { vi, test, expect, beforeEach, afterEach, assert, describe } from 'vitest';
-import { PodmanSSH } from './podman-ssh';
+import { PodmanSSH } from '/@/utils/remote/podman-ssh';
 import type { ClientCallback, ClientChannel, ConnectConfig } from 'ssh2';
 import { Client } from 'ssh2';
 import type { CancellationToken, Logger, RunResult } from '@podman-desktop/api';

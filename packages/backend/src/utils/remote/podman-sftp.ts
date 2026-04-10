@@ -18,7 +18,7 @@
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
-import { ConnectionHandler } from './connection-handler';
+import { ConnectionHandler } from '/@/utils/remote/connection-handler';
 
 export class PodmanSFTP extends ConnectionHandler {
   #sshConfig: ConnectConfig;

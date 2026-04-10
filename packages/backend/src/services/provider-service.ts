@@ -2,8 +2,8 @@
  * @author axel7083
  */
 import type { Disposable, provider as Provider, ProviderContainerConnection, Webview } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
-import { Publisher } from '../utils/publisher';
+import type { AsyncInit } from '/@/utils/async-init';
+import { Publisher } from '/@/utils/publisher';
 import type {
   ProviderContainerConnectionDetailedInfo,
   ProviderContainerConnectionIdentifierInfo,

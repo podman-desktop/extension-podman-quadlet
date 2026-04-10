@@ -12,20 +12,20 @@ import type {
   Uri,
 } from '@podman-desktop/api';
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { PodmanService } from './podman-service';
+import { PodmanService } from '/@/services/podman-service';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
-import { PODMAN_EXTENSION_ID } from '../utils/constants';
-import type { ProviderService } from './provider-service';
+import { PODMAN_EXTENSION_ID } from '/@/utils/constants';
+import type { ProviderService } from '/@/services/provider-service';
 import { homedir } from 'node:os';
-import type { PodmanConnection } from '../models/podman-connection';
-import { PodmanSSHWorker } from '../utils/worker/podman-ssh-worker';
-import { PodmanNativeWorker } from '../utils/worker/podman-native-worker';
+import type { PodmanConnection } from '/@/models/podman-connection';
+import { PodmanSSHWorker } from '/@/utils/worker/podman-ssh-worker';
+import { PodmanNativeWorker } from '/@/utils/worker/podman-native-worker';
 
 vi.mock(import('node:fs/promises'));
 vi.mock(import('node:os'));
 // mock podman-workers
-vi.mock(import('../utils/worker/podman-ssh-worker'));
-vi.mock(import('../utils/worker/podman-native-worker'));
+vi.mock(import('/@/utils/worker/podman-ssh-worker'));
+vi.mock(import('/@/utils/worker/podman-native-worker'));
 
 const extensionsMock: typeof extensions = {
   getExtension: vi.fn(),

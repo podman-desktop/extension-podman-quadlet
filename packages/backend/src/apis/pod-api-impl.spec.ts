@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { PodApiImpl } from './pod-api-impl';
-import type { PodService } from '../services/pod-service';
+import { PodApiImpl } from '/@/apis/pod-api-impl';
+import type { PodService } from '/@/services/pod-service';
 import type {
   SimplePodInfo,
   ProviderContainerConnectionIdentifierInfo,

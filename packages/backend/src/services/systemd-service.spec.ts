@@ -1,12 +1,12 @@
 /**
  * @author axel7083
  */
-import type { PodmanService } from './podman-service';
+import type { PodmanService } from '/@/services/podman-service';
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { SystemdService } from './systemd-service';
+import { SystemdService } from '/@/services/systemd-service';
 import type { CancellationToken, ProviderContainerConnection, TelemetryLogger } from '@podman-desktop/api';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {

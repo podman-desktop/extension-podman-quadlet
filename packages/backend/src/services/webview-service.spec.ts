@@ -4,7 +4,7 @@
 import { expect, test, vi, beforeEach } from 'vitest';
 import type { WebviewPanel, window as windowsApi } from '@podman-desktop/api';
 import { Uri } from '@podman-desktop/api';
-import { WebviewService } from './webview-service';
+import { WebviewService } from '/@/services/webview-service';
 import { readFile } from 'node:fs/promises';
 
 vi.mock(import('node:fs/promises'));

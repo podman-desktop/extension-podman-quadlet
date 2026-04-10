@@ -1,9 +1,9 @@
 /**
  * @author axel7083
  */
-import type { AsyncInit } from '../utils/async-init';
+import type { AsyncInit } from '/@/utils/async-init';
 import type { Disposable, WebviewPanel } from '@podman-desktop/api';
-import { Publisher } from '../utils/publisher';
+import { Publisher } from '/@/utils/publisher';
 import { Messages, QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 

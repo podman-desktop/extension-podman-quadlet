@@ -18,8 +18,8 @@
 
 import type { CancellationToken, Logger } from '@podman-desktop/api';
 import { isAbsolute, join } from 'node:path/posix';
-import type { PodmanWorker } from '../worker/podman-worker';
-import type { Resolver } from './resolver';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import type { Resolver } from '/@/utils/resolvers/resolver';
 
 export const PODMAN_SYSTEMD_GENERATOR = 'podman-system-generator';
 export const BINARY_FALLBACK = '/usr/libexec/podman/quadlet';

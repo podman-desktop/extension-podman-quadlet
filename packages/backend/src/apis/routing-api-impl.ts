@@ -2,7 +2,7 @@
  * @author axel7083
  */
 import { RoutingApi } from '@podman-desktop/quadlet-extension-core-api';
-import type { RoutingService } from '../services/routing-service';
+import type { RoutingService } from '/@/services/routing-service';
 
 interface Dependencies {
   routing: RoutingService;

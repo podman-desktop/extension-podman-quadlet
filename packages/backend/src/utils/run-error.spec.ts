@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { expect, test } from 'vitest';
-import { isRunError } from './run-error';
+import { isRunError } from '/@/utils/run-error';
 
 test.each<{
   value: unknown;

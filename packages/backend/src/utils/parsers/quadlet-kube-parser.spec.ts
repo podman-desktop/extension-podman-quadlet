@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import { QuadletKubeParser } from './quadlet-kube-parser';
+import { QuadletKubeParser } from '/@/utils/parsers/quadlet-kube-parser';
 
 const KUBE_QUADLET_EXAMPLE = `
 # example.kube

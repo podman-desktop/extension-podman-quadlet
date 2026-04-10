@@ -17,12 +17,12 @@
  ***********************************************************************/
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import { PodmanNativeWorker } from './podman-native-worker';
+import { PodmanNativeWorker } from '/@/utils/worker/podman-native-worker';
 import { homedir } from 'node:os';
 import { readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 import type { process as ProcessApi, ProviderContainerConnection } from '@podman-desktop/api';
-import type { PodmanWorker } from './podman-worker';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 // mock node packages
 vi.mock(import('node:fs/promises'));

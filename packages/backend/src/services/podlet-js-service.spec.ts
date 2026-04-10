@@ -17,9 +17,9 @@
  ***********************************************************************/
 
 import { beforeEach, describe, expect, test, vi } from 'vitest';
-import type { ContainerService } from './container-service';
-import type { ImageService } from './image-service';
-import { PodletJsService } from './podlet-js-service';
+import type { ContainerService } from '/@/services/container-service';
+import type { ImageService } from '/@/services/image-service';
+import { PodletJsService } from '/@/services/podlet-js-service';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type {
@@ -33,14 +33,14 @@ import type {
 } from '@podman-desktop/api';
 import { Compose, ContainerGenerator, ImageGenerator, PodGenerator, VolumeGenerator } from 'podlet-js';
 import { readFile } from 'node:fs/promises';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import type { PodService } from './pod-service';
-import type { PodmanService } from './podman-service';
-import type { ProviderService } from './provider-service';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import type { PodService } from '/@/services/pod-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import type { SemVer } from 'semver';
-import type { VolumeService } from './volume-service';
-import type { NetworkService } from './network-service';
+import type { VolumeService } from '/@/services/volume-service';
+import type { NetworkService } from '/@/services/network-service';
 
 /**
  *  mock the podlet-js library

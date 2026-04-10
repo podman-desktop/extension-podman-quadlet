@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import type { QuadletServiceTypeParserResult } from './quadlet-service-type-parser';
-import { ServiceType, QuadletServiceTypeParser } from './quadlet-service-type-parser';
+import type { QuadletServiceTypeParserResult } from '/@/utils/parsers/quadlet-service-type-parser';
+import { ServiceType, QuadletServiceTypeParser } from '/@/utils/parsers/quadlet-service-type-parser';
 
 interface TestCase {
   name: string;

@@ -3,7 +3,7 @@
  */
 import type { Disposable, Webview } from '@podman-desktop/api';
 import { randomUUID } from 'node:crypto';
-import { LoggerImpl } from '../utils/logger-impl';
+import { LoggerImpl } from '/@/utils/logger-impl';
 
 interface Dependencies {
   webview: Webview;

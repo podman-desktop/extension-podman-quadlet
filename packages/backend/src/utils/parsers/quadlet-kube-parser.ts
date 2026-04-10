@@ -2,7 +2,7 @@
  * @author axel7083
  */
 
-import { Parser } from './iparser';
+import { Parser } from '/@/utils/parsers/iparser';
 import { parse } from 'js-ini';
 
 export interface XKube {

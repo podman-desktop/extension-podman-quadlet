@@ -31,8 +31,8 @@ import type {
 } from '@podman-desktop/api';
 
 import { expect, test, vi, beforeEach } from 'vitest';
-import { MainService } from './main-service';
-import { WebviewService } from './webview-service';
+import { MainService } from '/@/services/main-service';
+import { WebviewService } from '/@/services/webview-service';
 import {
   RpcExtension,
   QuadletApi,
@@ -48,38 +48,38 @@ import {
   VolumeApi,
   NetworkApi,
 } from '@podman-desktop/quadlet-extension-core-api';
-import { QuadletApiImpl } from '../apis/quadlet-api-impl';
-import { LoggerApiImpl } from '../apis/logger-api-impl';
-import { ProviderApiImpl } from '../apis/provider-api-impl';
-import { ContainerApiImpl } from '../apis/container-api-impl';
-import { ImageApiImpl } from '../apis/image-api-impl';
-import { PodletApiImpl } from '../apis/podlet-api-impl';
-import { RoutingApiImpl } from '../apis/routing-api-impl';
-import { DialogApiImpl } from '../apis/dialog-api-impl';
-import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
-import { PodApiImpl } from '../apis/pod-api-impl';
-import { VolumeApiImpl } from '../apis/volume-api-impl';
-import { NetworkApiImpl } from '../apis/network-api-impl';
+import { QuadletApiImpl } from '/@/apis/quadlet-api-impl';
+import { LoggerApiImpl } from '/@/apis/logger-api-impl';
+import { ProviderApiImpl } from '/@/apis/provider-api-impl';
+import { ContainerApiImpl } from '/@/apis/container-api-impl';
+import { ImageApiImpl } from '/@/apis/image-api-impl';
+import { PodletApiImpl } from '/@/apis/podlet-api-impl';
+import { RoutingApiImpl } from '/@/apis/routing-api-impl';
+import { DialogApiImpl } from '/@/apis/dialog-api-impl';
+import { ConfigurationApiImpl } from '/@/apis/configuration-api-impl';
+import { PodApiImpl } from '/@/apis/pod-api-impl';
+import { VolumeApiImpl } from '/@/apis/volume-api-impl';
+import { NetworkApiImpl } from '/@/apis/network-api-impl';
 
 // mock message-proxy
 vi.mock(import('@podman-desktop/quadlet-extension-core-api'));
 // mock services
-vi.mock(import('./webview-service'));
-vi.mock(import('./podman-service'));
-vi.mock(import('./systemd-service'));
-vi.mock(import('./quadlet-service'));
-vi.mock(import('./provider-service'));
-vi.mock(import('./podlet-js-service'));
-vi.mock(import('./command-service'));
-vi.mock(import('./routing-service'));
-vi.mock(import('./container-service'));
-vi.mock(import('./image-service'));
-vi.mock(import('./logger-service'));
-vi.mock(import('./dialog-service'));
-vi.mock(import('./configuration-service'));
-vi.mock(import('./pod-service'));
-vi.mock(import('./volume-service'));
-vi.mock(import('./network-service'));
+vi.mock(import('/@/services/webview-service'));
+vi.mock(import('/@/services/podman-service'));
+vi.mock(import('/@/services/systemd-service'));
+vi.mock(import('/@/services/quadlet-service'));
+vi.mock(import('/@/services/provider-service'));
+vi.mock(import('/@/services/podlet-js-service'));
+vi.mock(import('/@/services/command-service'));
+vi.mock(import('/@/services/routing-service'));
+vi.mock(import('/@/services/container-service'));
+vi.mock(import('/@/services/image-service'));
+vi.mock(import('/@/services/logger-service'));
+vi.mock(import('/@/services/dialog-service'));
+vi.mock(import('/@/services/configuration-service'));
+vi.mock(import('/@/services/pod-service'));
+vi.mock(import('/@/services/volume-service'));
+vi.mock(import('/@/services/network-service'));
 
 const EXTENSION_CONTEXT_MOCK: ExtensionContext = {} as unknown as ExtensionContext;
 const WINDOW_API_MOCK: typeof window = {} as unknown as typeof window;

@@ -2,18 +2,18 @@
  * @author axel7083
  */
 import type { Disposable, commands as commandsApi, ProviderContainerConnection } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
+import type { AsyncInit } from '/@/utils/async-init';
 import {
   COMPOSE_LABEL_CONFIG_FILES,
   COMPOSE_LABEL_WORKING_DIR,
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
-} from '../utils/constants';
-import type { ContainerInfoUI } from '../models/container-info-ui';
-import type { RoutingService } from './routing-service';
-import type { ContainerService } from './container-service';
-import type { ProviderService } from './provider-service';
-import type { ComposeInfoUI } from '../models/compose-info-ui';
+} from '/@/utils/constants';
+import type { ContainerInfoUI } from '/@/models/container-info-ui';
+import type { RoutingService } from '/@/services/routing-service';
+import type { ContainerService } from '/@/services/container-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { ComposeInfoUI } from '/@/models/compose-info-ui';
 import { stat } from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
 

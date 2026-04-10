@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { expect, test, vi, beforeEach } from 'vitest';
-import { PodmanVersionResolver, VERSION_FALLBACK } from './podman-version-resolver';
-import type { PodmanWorker } from '../worker/podman-worker';
+import { PodmanVersionResolver, VERSION_FALLBACK } from '/@/utils/resolvers/podman-version-resolver';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { SemVer } from 'semver';
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {

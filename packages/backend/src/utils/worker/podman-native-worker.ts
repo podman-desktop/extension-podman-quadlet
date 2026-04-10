@@ -22,7 +22,7 @@ import type {
   ProviderContainerConnection,
   process as ProcessApi,
 } from '@podman-desktop/api';
-import { PodmanWorker } from './podman-worker';
+import { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { homedir } from 'node:os';
 import { mkdir, readFile, rm, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';

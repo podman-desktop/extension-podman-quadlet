@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { vi, test, expect, beforeEach, afterEach } from 'vitest';
-import { ConnectionHandler } from './connection-handler';
+import { ConnectionHandler } from '/@/utils/remote/connection-handler';
 
 class ConnectionHandlerImpl extends ConnectionHandler {
   #counter: number = 0;

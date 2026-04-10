@@ -6,7 +6,7 @@ import type {
   SimpleImageInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { ImageApi } from '@podman-desktop/quadlet-extension-core-api';
-import type { ImageService } from '../services/image-service';
+import type { ImageService } from '/@/services/image-service';
 
 interface Dependencies {
   images: ImageService;

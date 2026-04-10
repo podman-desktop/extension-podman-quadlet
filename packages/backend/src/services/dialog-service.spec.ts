@@ -18,7 +18,7 @@
 import type { InputBoxOptions, window } from '@podman-desktop/api';
 
 import { beforeEach, vi, test, expect } from 'vitest';
-import { DialogService } from './dialog-service';
+import { DialogService } from '/@/services/dialog-service';
 
 beforeEach(() => {
   vi.resetAllMocks();

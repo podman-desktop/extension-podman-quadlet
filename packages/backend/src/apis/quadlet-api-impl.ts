@@ -10,12 +10,12 @@ import type {
   Template,
   ServiceQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { QuadletService } from '../services/quadlet-service';
-import type { SystemdService } from '../services/systemd-service';
-import type { PodmanService } from '../services/podman-service';
-import type { ProviderService } from '../services/provider-service';
-import type { LoggerService } from '../services/logger-service';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { QuadletService } from '/@/services/quadlet-service';
+import type { SystemdService } from '/@/services/systemd-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { LoggerService } from '/@/services/logger-service';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 interface Dependencies {
   quadlet: QuadletService;

@@ -17,8 +17,8 @@
  ***********************************************************************/
 
 import { beforeEach, vi, describe, test, expect } from 'vitest';
-import { VolumeService } from './volume-service';
-import type { ProviderService } from './provider-service';
+import { VolumeService } from '/@/services/volume-service';
+import type { ProviderService } from '/@/services/provider-service';
 import type { containerEngine, ProviderContainerConnection, VolumeListInfo, VolumeInfo } from '@podman-desktop/api';
 import type {
   ProviderContainerConnectionIdentifierInfo,

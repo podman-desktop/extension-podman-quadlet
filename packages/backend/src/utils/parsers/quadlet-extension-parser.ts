@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import { Parser } from './iparser';
+import { Parser } from '/@/utils/parsers/iparser';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import { basename } from 'node:path/posix';
 

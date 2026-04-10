@@ -4,7 +4,7 @@
 import { Uri } from '@podman-desktop/api';
 import type { Disposable, WebviewOptions, WebviewPanel, window } from '@podman-desktop/api';
 import { readFile } from 'node:fs/promises';
-import type { AsyncInit } from '../utils/async-init';
+import type { AsyncInit } from '/@/utils/async-init';
 
 interface Dependencies {
   extensionUri: Uri;

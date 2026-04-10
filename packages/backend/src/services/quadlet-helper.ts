@@ -2,16 +2,16 @@
  * @author axel7083
  */
 import type { env, TelemetryLogger, Webview, window } from '@podman-desktop/api';
-import { Publisher } from '../utils/publisher';
+import { Publisher } from '/@/utils/publisher';
 import type {
   QuadletInfo,
   ProviderContainerConnectionIdentifierInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { Messages } from '@podman-desktop/quadlet-extension-core-api';
-import type { PodmanService } from './podman-service';
-import type { SystemdService } from './systemd-service';
-import type { ProviderService } from './provider-service';
-import type { SpecifierService } from './specifier-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { SystemdService } from '/@/services/systemd-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { SpecifierService } from '/@/services/specifier-service';
 
 export interface QuadletServiceDependencies {
   providers: ProviderService;

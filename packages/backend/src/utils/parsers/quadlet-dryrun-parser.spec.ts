@@ -17,11 +17,11 @@
  ***********************************************************************/
 
 import { test, expect, assert } from 'vitest';
-import { QuadletDryRunParser } from './quadlet-dryrun-parser';
-import TEMPLATE_AND_INSTANCE from './tests/quadlet-stdout-template-and-instance.txt?raw';
-import MULTIPLE_QUADLETS_EXAMPLE from './tests/quadlet-stdout-multiple-quadlets.txt?raw';
-import DRYRUN_STDERR from './tests/quadlet-stderr.txt?raw';
-import TEMPLATE_QUADLET from './tests/quadlet-stdout-container-template.txt?raw';
+import { QuadletDryRunParser } from '/@/utils/parsers/quadlet-dryrun-parser';
+import TEMPLATE_AND_INSTANCE from '/@/utils/parsers/tests/quadlet-stdout-template-and-instance.txt?raw';
+import MULTIPLE_QUADLETS_EXAMPLE from '/@/utils/parsers/tests/quadlet-stdout-multiple-quadlets.txt?raw';
+import DRYRUN_STDERR from '/@/utils/parsers/tests/quadlet-stderr.txt?raw';
+import TEMPLATE_QUADLET from '/@/utils/parsers/tests/quadlet-stdout-container-template.txt?raw';
 import {
   isTemplateQuadlet,
   isServiceQuadlet,

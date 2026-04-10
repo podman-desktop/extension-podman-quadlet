@@ -17,10 +17,10 @@
  ***********************************************************************/
 
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { SpecifierService } from './specifier-service';
-import type { PodmanService } from './podman-service';
+import { SpecifierService } from '/@/services/specifier-service';
+import type { PodmanService } from '/@/services/podman-service';
 import type { ProviderContainerConnection, RunResult } from '@podman-desktop/api';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {
   exec: vi.fn(),

@@ -2,13 +2,13 @@
  * @author axel7083
  */
 import type { Disposable, ContainerInfo, ProviderContainerConnection, ContainerInspectInfo } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
+import type { AsyncInit } from '/@/utils/async-init';
 import type {
   SimpleContainerInfo,
   ProviderContainerConnectionIdentifierInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { ProviderService } from './provider-service';
-import { EngineHelper, type EngineHelperDependencies } from './engine-helper';
+import type { ProviderService } from '/@/services/provider-service';
+import { EngineHelper, type EngineHelperDependencies } from '/@/services/engine-helper';
 
 interface Dependencies extends EngineHelperDependencies {
   providers: ProviderService;

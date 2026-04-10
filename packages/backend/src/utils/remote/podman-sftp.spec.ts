@@ -18,7 +18,7 @@
 import { vi, test, expect, beforeEach, afterEach, describe, assert } from 'vitest';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
-import { PodmanSFTP } from './podman-sftp';
+import { PodmanSFTP } from '/@/utils/remote/podman-sftp';
 
 vi.mock(import('ssh2'));
 vi.mock(import('ssh2-sftp-client'));

@@ -16,12 +16,12 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { expect, test, vi, beforeEach, describe } from 'vitest';
-import { QuadletApiImpl } from './quadlet-api-impl';
-import type { QuadletService } from '../services/quadlet-service';
-import type { SystemdService } from '../services/systemd-service';
-import type { PodmanService } from '../services/podman-service';
-import type { ProviderService } from '../services/provider-service';
-import type { LoggerService } from '../services/logger-service';
+import { QuadletApiImpl } from '/@/apis/quadlet-api-impl';
+import type { QuadletService } from '/@/services/quadlet-service';
+import type { SystemdService } from '/@/services/systemd-service';
+import type { PodmanService } from '/@/services/podman-service';
+import type { ProviderService } from '/@/services/provider-service';
+import type { LoggerService } from '/@/services/logger-service';
 import type { ProviderContainerConnection, RunResult } from '@podman-desktop/api';
 import type {
   ProviderContainerConnectionIdentifierInfo,
@@ -29,8 +29,8 @@ import type {
   TemplateQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import type { LoggerImpl } from '../utils/logger-impl';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { LoggerImpl } from '/@/utils/logger-impl';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 const QUADLET_SERVICE: QuadletService = {
   readIntoMachine: vi.fn(),
