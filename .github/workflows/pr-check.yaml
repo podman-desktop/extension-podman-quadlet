@@ -87,3 +87,11 @@ jobs:
 
       - name: Run unit tests
         run: pnpm test:unit
+
+  oci-build:
+    runs-on: ubuntu-24.04
+    outputs:
+      artifact-id: ${{ steps.build.outputs.artifact-id }}
+    steps:
+      - uses: axel7083/gh-extensions-actions/.github/actions/oci-build@feature/introduce-oci-actions
+        id: build
