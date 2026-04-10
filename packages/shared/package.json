@@ -15,7 +15,7 @@
   },
   "devDependencies": {
     "vite": "^8.0.8",
-    "vite-plugin-dts": "^4.3.0",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.0.10",
     "@podman-desktop/api": "^1.26.1"
   },
