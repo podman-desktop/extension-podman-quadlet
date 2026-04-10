@@ -2,7 +2,7 @@
  * @author axel7083
  */
 
-import { Parser } from './iparser';
+import { Parser } from '/@/utils/parsers/iparser';
 import { type IIniObject, parse } from 'js-ini';
 import type {
   Quadlet,
@@ -12,11 +12,11 @@ import type {
   FileReference,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
-import { QuadletExtensionParser } from './quadlet-extension-parser';
+import { QuadletExtensionParser } from '/@/utils/parsers/quadlet-extension-parser';
 import { randomUUID } from 'node:crypto';
-import { QuadletServiceTypeParser, ServiceType } from './quadlet-service-type-parser';
+import { QuadletServiceTypeParser, ServiceType } from '/@/utils/parsers/quadlet-service-type-parser';
 import { basename, dirname, join } from 'node:path/posix';
-import { isRelative } from '../path';
+import { isRelative } from '/@/utils/path';
 
 interface Unit {
   SourcePath: string;

@@ -21,7 +21,7 @@ import {
   type ProviderContainerConnectionIdentifierInfo,
   VolumeApi,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { VolumeService } from '../services/volume-service';
+import type { VolumeService } from '/@/services/volume-service';
 
 interface Dependencies {
   volumes: VolumeService;

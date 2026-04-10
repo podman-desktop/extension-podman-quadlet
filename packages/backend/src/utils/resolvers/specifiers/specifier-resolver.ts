@@ -15,10 +15,10 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import type { Resolver } from '../resolver';
+import type { Resolver } from '/@/utils/resolvers/resolver';
 import type { CancellationToken, Logger } from '@podman-desktop/api';
-import type { PodmanWorker } from '../../worker/podman-worker';
-import type { Specifiers } from './specifiers';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import type { Specifiers } from '/@/utils/resolvers/specifiers/specifiers';
 
 export abstract class SpecifierResolver implements Resolver<string> {
   constructor(protected readonly worker: PodmanWorker) {}

@@ -2,14 +2,14 @@
  * @author axel7083
  */
 import type { ProviderContainerConnection, Disposable } from '@podman-desktop/api';
-import type { PodmanDependencies } from './podman-helper';
-import { PodmanHelper } from './podman-helper';
-import type { AsyncInit } from '../utils/async-init';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
-import { PodmanNativeWorker } from '../utils/worker/podman-native-worker';
+import type { PodmanDependencies } from '/@/services/podman-helper';
+import { PodmanHelper } from '/@/services/podman-helper';
+import type { AsyncInit } from '/@/utils/async-init';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import { PodmanNativeWorker } from '/@/utils/worker/podman-native-worker';
 import { readFile } from 'node:fs/promises';
-import { PodmanSSHWorker } from '../utils/worker/podman-ssh-worker';
-import type { PodmanConnection } from '../models/podman-connection';
+import { PodmanSSHWorker } from '/@/utils/worker/podman-ssh-worker';
+import type { PodmanConnection } from '/@/models/podman-connection';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;

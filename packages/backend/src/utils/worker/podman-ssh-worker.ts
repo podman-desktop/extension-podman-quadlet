@@ -17,10 +17,10 @@
  ***********************************************************************/
 
 import type { Logger, CancellationToken, RunResult, ProviderContainerConnection } from '@podman-desktop/api';
-import { PodmanWorker } from './podman-worker';
+import { PodmanWorker } from '/@/utils/worker/podman-worker';
 import type { ConnectConfig } from 'ssh2';
-import { PodmanSFTP } from '../remote/podman-sftp';
-import { PodmanSSH } from '../remote/podman-ssh';
+import { PodmanSFTP } from '/@/utils/remote/podman-sftp';
+import { PodmanSSH } from '/@/utils/remote/podman-ssh';
 
 export class PodmanSSHWorker extends PodmanWorker {
   #podmanSFTP: PodmanSFTP;

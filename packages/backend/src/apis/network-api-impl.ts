@@ -21,7 +21,7 @@ import {
   type SimpleNetworkInfo,
   NetworkApi,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { NetworkService } from '../services/network-service';
+import type { NetworkService } from '/@/services/network-service';
 
 interface Dependencies {
   networks: NetworkService;

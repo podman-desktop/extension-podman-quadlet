@@ -2,11 +2,11 @@
  * @author axel7083
  */
 import type { CancellationToken, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
-import type { SystemdServiceDependencies } from './systemd-helper';
-import { SystemdHelper } from './systemd-helper';
-import type { AsyncInit } from '../utils/async-init';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import type { SystemdServiceDependencies } from '/@/services/systemd-helper';
+import { SystemdHelper } from '/@/services/systemd-helper';
+import type { AsyncInit } from '/@/utils/async-init';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { performance } from 'node:perf_hooks';
 
 export class SystemdService extends SystemdHelper implements Disposable, AsyncInit {

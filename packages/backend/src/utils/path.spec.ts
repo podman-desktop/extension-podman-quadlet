@@ -17,7 +17,7 @@
  ***********************************************************************/
 
 import { test, expect } from 'vitest';
-import { isRelative } from './path';
+import { isRelative } from '/@/utils/path';
 
 interface TestCase {
   name: string;

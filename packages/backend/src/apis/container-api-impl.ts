@@ -6,7 +6,7 @@ import type {
   SimpleContainerInfo,
   ProviderContainerConnectionIdentifierInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { ContainerService } from '../services/container-service';
+import type { ContainerService } from '/@/services/container-service';
 
 interface Dependencies {
   containers: ContainerService;

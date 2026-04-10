@@ -3,9 +3,9 @@
  */
 import type { env, extensions as Extensions, process as ProcessApi } from '@podman-desktop/api';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
-import { PODMAN_EXTENSION_ID } from '../utils/constants';
-import type { ProviderService } from './provider-service';
-import type { PodmanConnection } from '../models/podman-connection';
+import { PODMAN_EXTENSION_ID } from '/@/utils/constants';
+import type { ProviderService } from '/@/services/provider-service';
+import type { PodmanConnection } from '/@/models/podman-connection';
 
 export interface PodmanDependencies {
   extensions: typeof Extensions;

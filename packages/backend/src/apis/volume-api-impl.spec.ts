@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { expect, test, vi, beforeEach } from 'vitest';
-import { VolumeApiImpl } from './volume-api-impl';
-import type { VolumeService } from '../services/volume-service';
+import { VolumeApiImpl } from '/@/apis/volume-api-impl';
+import type { VolumeService } from '/@/services/volume-service';
 import type {
   ProviderContainerConnectionIdentifierInfo,
   SimpleVolumeInfo,

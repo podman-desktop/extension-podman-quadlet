@@ -16,8 +16,8 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { expect, test, vi, beforeEach } from 'vitest';
-import { DialogApiImpl } from './dialog-api-impl';
-import type { DialogService } from '../services/dialog-service';
+import { DialogApiImpl } from '/@/apis/dialog-api-impl';
+import type { DialogService } from '/@/services/dialog-service';
 
 const DIALOG_SERVICE_MOCK: DialogService = {
   showWarningMessage: vi.fn(),

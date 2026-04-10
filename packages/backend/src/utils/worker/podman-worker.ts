@@ -23,10 +23,10 @@ import type {
   ProviderContainerConnection,
   RunError,
 } from '@podman-desktop/api';
-import type { AsyncInit } from '../async-init';
-import { isRunError } from '../run-error';
-import { QuadletBinaryResolver } from '../resolvers/quadlet-binary-resolver';
-import { PodmanVersionResolver } from '../resolvers/podman-version-resolver';
+import type { AsyncInit } from '/@/utils/async-init';
+import { isRunError } from '/@/utils/run-error';
+import { QuadletBinaryResolver } from '/@/utils/resolvers/quadlet-binary-resolver';
+import { PodmanVersionResolver } from '/@/utils/resolvers/podman-version-resolver';
 import type { SemVer } from 'semver';
 
 export abstract class PodmanWorker implements Disposable, AsyncInit {

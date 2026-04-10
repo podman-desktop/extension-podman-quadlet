@@ -13,7 +13,7 @@ import {
   commands as commandsApi,
   configuration as configurationApi,
 } from '@podman-desktop/api';
-import { MainService } from './services/main-service';
+import { MainService } from '/@/services/main-service';
 
 let main: MainService | undefined;
 

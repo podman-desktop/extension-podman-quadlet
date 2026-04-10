@@ -15,7 +15,7 @@ import type {
   containerEngine,
   TelemetryLogger,
 } from '@podman-desktop/api';
-import { WebviewService } from './webview-service';
+import { WebviewService } from '/@/services/webview-service';
 import {
   RpcExtension,
   QuadletApi,
@@ -31,35 +31,35 @@ import {
   VolumeApi,
   NetworkApi,
 } from '@podman-desktop/quadlet-extension-core-api';
-import { PodmanService } from './podman-service';
-import { SystemdService } from './systemd-service';
-import { QuadletService } from './quadlet-service';
-import { QuadletApiImpl } from '../apis/quadlet-api-impl';
-import type { AsyncInit } from '../utils/async-init';
-import { ProviderApiImpl } from '../apis/provider-api-impl';
-import { ProviderService } from './provider-service';
-import { CommandService } from './command-service';
-import { RoutingService } from './routing-service';
-import { RoutingApiImpl } from '../apis/routing-api-impl';
-import { ContainerService } from './container-service';
-import { ContainerApiImpl } from '../apis/container-api-impl';
-import { PodletApiImpl } from '../apis/podlet-api-impl';
-import { ImageApiImpl } from '../apis/image-api-impl';
-import { ImageService } from './image-service';
-import { LoggerService } from './logger-service';
-import { LoggerApiImpl } from '../apis/logger-api-impl';
-import { DialogService } from './dialog-service';
-import { DialogApiImpl } from '../apis/dialog-api-impl';
-import { PodletJsService } from './podlet-js-service';
-import { ConfigurationService } from './configuration-service';
-import { ConfigurationApiImpl } from '../apis/configuration-api-impl';
-import { PodApiImpl } from '../apis/pod-api-impl';
-import { VolumeApiImpl } from '../apis/volume-api-impl';
-import { PodService } from './pod-service';
-import { VolumeService } from './volume-service';
-import { NetworkApiImpl } from '../apis/network-api-impl';
-import { NetworkService } from './network-service';
-import { SpecifierService } from './specifier-service';
+import { PodmanService } from '/@/services/podman-service';
+import { SystemdService } from '/@/services/systemd-service';
+import { QuadletService } from '/@/services/quadlet-service';
+import { QuadletApiImpl } from '/@/apis/quadlet-api-impl';
+import type { AsyncInit } from '/@/utils/async-init';
+import { ProviderApiImpl } from '/@/apis/provider-api-impl';
+import { ProviderService } from '/@/services/provider-service';
+import { CommandService } from '/@/services/command-service';
+import { RoutingService } from '/@/services/routing-service';
+import { RoutingApiImpl } from '/@/apis/routing-api-impl';
+import { ContainerService } from '/@/services/container-service';
+import { ContainerApiImpl } from '/@/apis/container-api-impl';
+import { PodletApiImpl } from '/@/apis/podlet-api-impl';
+import { ImageApiImpl } from '/@/apis/image-api-impl';
+import { ImageService } from '/@/services/image-service';
+import { LoggerService } from '/@/services/logger-service';
+import { LoggerApiImpl } from '/@/apis/logger-api-impl';
+import { DialogService } from '/@/services/dialog-service';
+import { DialogApiImpl } from '/@/apis/dialog-api-impl';
+import { PodletJsService } from '/@/services/podlet-js-service';
+import { ConfigurationService } from '/@/services/configuration-service';
+import { ConfigurationApiImpl } from '/@/apis/configuration-api-impl';
+import { PodApiImpl } from '/@/apis/pod-api-impl';
+import { VolumeApiImpl } from '/@/apis/volume-api-impl';
+import { PodService } from '/@/services/pod-service';
+import { VolumeService } from '/@/services/volume-service';
+import { NetworkApiImpl } from '/@/apis/network-api-impl';
+import { NetworkService } from '/@/services/network-service';
+import { SpecifierService } from '/@/services/specifier-service';
 
 interface Dependencies {
   extensionContext: ExtensionContext;

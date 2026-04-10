@@ -4,9 +4,9 @@
 
 import { ProgressLocation } from '@podman-desktop/api';
 import type { Disposable, ProviderContainerConnection, CancellationToken } from '@podman-desktop/api';
-import type { QuadletServiceDependencies } from './quadlet-helper';
-import { QuadletHelper } from './quadlet-helper';
-import { QuadletDryRunParser } from '../utils/parsers/quadlet-dryrun-parser';
+import type { QuadletServiceDependencies } from '/@/services/quadlet-helper';
+import { QuadletHelper } from '/@/services/quadlet-helper';
+import { QuadletDryRunParser } from '/@/utils/parsers/quadlet-dryrun-parser';
 import type {
   Quadlet,
   QuadletInfo,
@@ -14,14 +14,14 @@ import type {
   Template,
   ServiceQuadlet,
 } from '@podman-desktop/quadlet-extension-core-api';
-import type { AsyncInit } from '../utils/async-init';
+import type { AsyncInit } from '/@/utils/async-init';
 import { join as joinposix, basename } from 'node:path/posix';
-import { TelemetryEvents } from '../utils/telemetry-events';
-import { isRunError } from '../utils/run-error';
-import templates from '../assets/templates.json';
-import type { PodmanWorker } from '../utils/worker/podman-worker';
+import { TelemetryEvents } from '/@/utils/telemetry-events';
+import { isRunError } from '/@/utils/run-error';
+import templates from '/@/assets/templates.json';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { isServiceQuadlet, isTemplateQuadlet } from '@podman-desktop/quadlet-extension-core-api';
-import { isRelative } from '../utils/path';
+import { isRelative } from '/@/utils/path';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;

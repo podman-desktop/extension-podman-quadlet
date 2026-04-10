@@ -17,9 +17,9 @@
  ***********************************************************************/
 
 import type { Disposable, NetworkInspectInfo } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
-import type { ProviderService } from './provider-service';
-import { EngineHelper, type EngineHelperDependencies } from './engine-helper';
+import type { AsyncInit } from '/@/utils/async-init';
+import type { ProviderService } from '/@/services/provider-service';
+import { EngineHelper, type EngineHelperDependencies } from '/@/services/engine-helper';
 import type {
   ProviderContainerConnectionIdentifierInfo,
   SimpleNetworkInfo,

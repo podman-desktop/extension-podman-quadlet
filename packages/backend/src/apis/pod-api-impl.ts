@@ -20,7 +20,7 @@ import type {
   SimplePodInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
 import { PodApi } from '@podman-desktop/quadlet-extension-core-api';
-import type { PodService } from '../services/pod-service';
+import type { PodService } from '/@/services/pod-service';
 
 interface Dependencies {
   pods: PodService;

@@ -2,10 +2,10 @@
  * @author axel7083
  */
 import type { Disposable, ImageInfo, ImageInspectInfo } from '@podman-desktop/api';
-import type { AsyncInit } from '../utils/async-init';
-import type { ProviderService } from './provider-service';
-import type { EngineHelperDependencies } from './engine-helper';
-import { EngineHelper } from './engine-helper';
+import type { AsyncInit } from '/@/utils/async-init';
+import type { ProviderService } from '/@/services/provider-service';
+import type { EngineHelperDependencies } from '/@/services/engine-helper';
+import { EngineHelper } from '/@/services/engine-helper';
 import type {
   SimpleImageInfo,
   ProviderContainerConnectionIdentifierInfo,

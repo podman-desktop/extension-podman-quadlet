@@ -16,9 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { CancellationToken, Logger } from '@podman-desktop/api';
-import { SpecifierResolver } from './specifier-resolver';
+import { SpecifierResolver } from '/@/utils/resolvers/specifiers/specifier-resolver';
 import { isAbsolute } from 'node:path/posix';
-import type { Specifiers } from './specifiers';
+import type { Specifiers } from '/@/utils/resolvers/specifiers/specifiers';
 
 export class SpecifierH extends SpecifierResolver {
   override get key(): keyof typeof Specifiers {

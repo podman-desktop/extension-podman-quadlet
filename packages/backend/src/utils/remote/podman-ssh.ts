@@ -18,7 +18,7 @@
 import type { CancellationToken, Logger, RunResult } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import { Client } from 'ssh2';
-import { ConnectionHandler } from './connection-handler';
+import { ConnectionHandler } from '/@/utils/remote/connection-handler';
 
 export class PodmanSSH extends ConnectionHandler {
   #sshConfig: ConnectConfig;

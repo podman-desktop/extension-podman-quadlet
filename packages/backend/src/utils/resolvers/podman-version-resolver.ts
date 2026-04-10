@@ -16,9 +16,9 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import { SemVer } from 'semver';
-import type { Resolver } from './resolver';
+import type { Resolver } from '/@/utils/resolvers/resolver';
 import type { CancellationToken, Logger } from '@podman-desktop/api';
-import type { PodmanWorker } from '../worker/podman-worker';
+import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 export const VERSION_FALLBACK = new SemVer('0.0.1');
 

@@ -15,7 +15,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
-import { Parser } from './iparser';
+import { Parser } from '/@/utils/parsers/iparser';
 
 interface Options {
   // filename to parse and validate
