@@ -52,7 +52,7 @@
     "tailwindcss": "^4.2.2",
     "vite": "^8.0.8",
     "vitest": "^4.1.4",
-    "@codecov/vite-plugin": "^1.9.1",
+    "@codecov/vite-plugin": "^2.0.1",
     "svelte-select": "^5.8.3"
   }
 }
