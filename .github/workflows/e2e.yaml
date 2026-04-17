@@ -63,9 +63,6 @@ jobs:
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
-      PODMAN_DESKTOP_ARGS: ${{ github.workspace }}/podman-desktop
-      # by default playwright cache browsers binaries in ~/.cache/ms-playwright on Linux and %USERPROFILE%\AppData\Local\ms-playwright on Windows
-      PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/podman-desktop/pw-browsers
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
@@ -106,40 +103,22 @@ jobs:
           echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
           echo "Using @podman-desktop/api $PD_VERSION"
 
-      # Check cache for existing podman-desktop
-      - name: Cache Podman Desktop
-        id: cache-pd
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: ${{ github.workspace }}/podman-desktop
-          key: pd-${{ steps.pd-api-version.outputs.PD_VERSION }}-${{ runner.os }}
-
-      # Download Podman Desktop repository based on version defined in package.json
+      # Download Podman Desktop binary
       - name: Download Podman Desktop
-        if: steps.cache-pd.outputs.cache-hit != 'true'
         shell: bash
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
         run: |
-          echo "Downloading PD desktop to ${{ github.workspace }}/podman-desktop"
-          # Stable release are available podman-desktop/podman-desktop
-          # Prerelease are available under podman-desktop/prereleases
-          if [[ "$PD_VERSION" =~ - ]]; then
-            curl -sL "https://github.com/podman-desktop/prereleases/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+          echo "Downloading PD desktop $PD_VERSION"
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.tar.gz" -o podman-desktop.tar.gz
+            mkdir podman-desktop-dir
+            tar -xzf podman-desktop.tar.gz -C podman-desktop-dir --strip-components=1
+            echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop-dir/podman-desktop" >> $GITHUB_ENV
           else
-            curl -sL "https://github.com/podman-desktop/podman-desktop/archive/refs/tags/v$PD_VERSION.tar.gz" | tar xvz
+            curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.exe" -o podman-desktop.exe
+            echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop.exe" >> $GITHUB_ENV
           fi
-          # Move the extracted folder to the podman-desktop folder
-          mv podman-desktop-$PD_VERSION/ podman-desktop/
-
-      # Install and build podman-desktop
-      - name: Install pnpm deps and build Podman Desktop
-        if: steps.cache-pd.outputs.cache-hit != 'true'
-        shell: bash
-        working-directory: ${{ github.workspace }}/podman-desktop
-        run: |
-          pnpm install
-          pnpm test:e2e:build
 
       # Install the quadlet extension
       - name: Download Quadlet Plugins
@@ -154,6 +133,8 @@ jobs:
         env:
           ELECTRON_DISABLE_SANDBOX: '1'
           NODE_OPTIONS: --no-experimental-strip-types
+          DEBUGGING_PORT: 2222
+          PODMAN_DESKTOP_BINARY: ${{ env.PODMAN_DESKTOP_BINARY }}
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
