@@ -133,7 +133,7 @@ jobs:
         env:
           ELECTRON_DISABLE_SANDBOX: '1'
           NODE_OPTIONS: --no-experimental-strip-types
-          DEBUGGING_PORT: 2222
+          DEBUGGING_PORT: 9222
           PODMAN_DESKTOP_BINARY: ${{ env.PODMAN_DESKTOP_BINARY }}
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
