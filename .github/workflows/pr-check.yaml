@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2024-2025 Red Hat, Inc.
+# Copyright (C) 2024-2026 Red Hat, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,3 +99,12 @@ jobs:
         uses: podman-desktop/gh-extensions-actions/.github/actions/oci-build@2e7a02e8c8e9256a2fa466fb166e215175130dd7 # v0.1.2
         with:
           ref: ${{ github.ref }}
+
+  e2e:
+    needs: build-oci
+    uses: ./.github/workflows/e2e.yaml
+    with:
+      artifact-id: ${{ needs.oci-build.outputs.artifact-id }}
+      run-id: ${{ github.run_id }}
+    secrets:
+      github-token: ${{ secrets.GITHUB_TOKEN }}
