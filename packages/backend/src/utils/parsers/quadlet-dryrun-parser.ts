@@ -52,7 +52,7 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
         serviceName = match[1].trim();
         buffer = undefined;
       } else {
-        buffer = buffer ? buffer + '\n' + line : line;
+        buffer = buffer ? `${buffer}\n${line}` : line;
       }
     }
     flush();
