@@ -22,6 +22,7 @@ import TEMPLATE_AND_INSTANCE from '/@/utils/parsers/tests/quadlet-stdout-templat
 import MULTIPLE_QUADLETS_EXAMPLE from '/@/utils/parsers/tests/quadlet-stdout-multiple-quadlets.txt?raw';
 import DRYRUN_STDERR from '/@/utils/parsers/tests/quadlet-stderr.txt?raw';
 import TEMPLATE_QUADLET from '/@/utils/parsers/tests/quadlet-stdout-container-template.txt?raw';
+import QUADLET_WITH_COMMENTS from '/@/utils/parsers/tests/quadlet-stdout-with-comments.txt?raw';
 import {
   isTemplateQuadlet,
   isServiceQuadlet,
@@ -128,4 +129,21 @@ test('expect template and instance quadlet to be recognised', async () => {
   // an instance is not a template
   expect(isTemplateQuadlet(instance)).toBeFalsy();
   expect(isTemplateInstanceQuadlet(instance)).toBeTruthy();
+});
+
+test('expect quadlet with section comments containing --- to be parsed correctly', async () => {
+  const parser = new QuadletDryRunParser({
+    stdout: QUADLET_WITH_COMMENTS,
+    stderr: '',
+    command: '',
+  });
+
+  const result = parser.parse();
+  expect(result).toHaveLength(1);
+
+  const [quadlet] = result;
+
+  assert(isServiceQuadlet(quadlet));
+
+  expect(quadlet.service).toBe('socket-proxy.service');
 });
