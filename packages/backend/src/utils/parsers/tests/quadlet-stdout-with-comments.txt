@@ -1,0 +1,31 @@
+---socket-proxy.service---
+[Unit]
+Wants=network-online.target
+After=network-online.target
+SourcePath=/home/user/.config/containers/systemd/socket-proxy.container
+RequiresMountsFor=%t/containers
+
+[X-Container]
+# --- Primary Properties ---
+Image=lscr.io/linuxserver/socket-proxy:latest
+ContainerName=socket-proxy_authentik
+ReadOnly=true
+
+# --- Storage & Mounts ---
+Tmpfs=/run
+Volume=/run/user/1000/podman/podman.sock:/var/run/docker.sock:ro,z
+
+[Service]
+Restart=always
+Environment=PODMAN_SYSTEMD_UNIT=%n
+KillMode=mixed
+ExecStop=/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+ExecStopPost=-/usr/bin/podman rm -v -f -i --cidfile=%t/%N.cid
+Delegate=yes
+Type=notify
+NotifyAccess=all
+SyslogIdentifier=%N
+ExecStart=/usr/bin/podman run --name=socket-proxy_authentik --cidfile=%t/%N.cid --replace --rm --cgroups=split --sdnotify=conmon -d --read-only --tmpfs /run --volume /run/user/1000/podman/podman.sock:/var/run/docker.sock:ro,z lscr.io/linuxserver/socket-proxy:latest
+
+[Install]
+WantedBy=default.target

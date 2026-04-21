@@ -28,18 +28,34 @@ export class QuadletDryRunParser extends Parser<RunResult & { exitCode?: number 
   }
 
   protected parseStdout(): Quadlet[] {
-    // Regular expression to match the structure of the content
-    // eslint-disable-next-line sonarjs/slow-regex
-    const serviceRegex = /---(.*?)---\n([\s\S]*?)(?=---|$)/g;
-    let match;
+    const lines = this.content.stdout.split(/\r?\n/);
+    const regex = RegExp(/^---([^\r\n]+\.service)---$/);
 
-    while ((match = serviceRegex.exec(this.content.stdout))) {
-      const serviceName = match[1].trim();
+    let buffer: string | undefined = undefined;
+    let serviceName: string | undefined = undefined;
 
-      // parse the quadlet unit
-      const quadletUnitParser = new QuadletUnitParser(serviceName, match[2].trim());
-      this.services[serviceName] = quadletUnitParser.parse();
+    const flush = (): void => {
+      if (!serviceName || !buffer) {
+        return;
+      }
+
+      this.services[serviceName] = new QuadletUnitParser(serviceName, buffer).parse();
+      serviceName = undefined;
+      buffer = undefined;
+    };
+
+    for (const line of lines) {
+      const match = regex.exec(line);
+      if (match) {
+        flush();
+
+        serviceName = match[1].trim();
+        buffer = undefined;
+      } else {
+        buffer = buffer ? `${buffer}\n${line}` : line;
+      }
     }
+    flush();
 
     this.parsed = true;
     return Object.values(this.services);
