@@ -59,17 +59,37 @@ jobs:
           github-token: ${{ secrets.github-token }}
           path: .
 
-      - name: Extract Files
-        id: extract-image
+      - name: Load image
+        id: load-image
+        shell: bash
         run: |
-          mkdir ./extracted
-          tar -xf oci-image.tar -C ./extracted
+          set -euo pipefail
+          
+          OUTPUT=$(podman load -i oci-image.tar)
+          echo "$OUTPUT"
+          
+          IMAGE=$(echo "$OUTPUT" | awk -F': ' '/Loaded image:/ {print $2}' | tail -n1)
+          
+          if [ -z "$IMAGE" ]; then
+          echo "❌ Failed to determine loaded image name"
+          exit 1
+          fi
+          
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
+      - name: Build Image and Extract Files
+        id: build-image
+        run: |
+          CONTAINER_ID=$(podman create "${{ steps.load-image.outputs.image }}" --entrypoint "")
+          mkdir -p output/plugins
+          podman export $CONTAINER_ID | tar -x -C output/plugins/
+          podman rm -f $CONTAINER_ID
 
       - name: Upload Quadlet Image Artifact
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: quadlet-plugin
-          path: ./extracted
+          path: output/plugins/
 
   e2e:
     name: e2e tests smoke / ${{ matrix.os }}
