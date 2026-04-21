@@ -14,7 +14,7 @@
     "test:watch": "vitest watch --coverage --passWithNoTests"
   },
   "devDependencies": {
-    "vite": "^8.0.8",
+    "vite": "^8.0.9",
     "vite-plugin-dts": "^4.3.0",
     "vitest": "^4.1.4",
     "@podman-desktop/api": "^1.26.2"
