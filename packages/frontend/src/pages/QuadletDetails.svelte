@@ -218,7 +218,7 @@ function onchange(content: string): void {
               <ErrorMessage error={quadletSourceError} />
             {/if}
           </div>
-          {#if quadletSource}
+          {#if quadletSource !== undefined}
             <EditorOverlay save={save} loading={loading} changed={changed} />
             <MonacoEditor class="h-full" onChange={onchange} content={quadletSource} language="ini" />
           {/if}
