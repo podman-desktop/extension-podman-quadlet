@@ -69,7 +69,7 @@
     "typescript-eslint": "^8.59.1",
     "vite": "^8.0.10",
     "vitest": "^4.1.5",
-    "globals": "^17.5.0"
+    "globals": "^17.6.0"
   },
   "workspaces": {
     "packages": [
