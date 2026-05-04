@@ -110,7 +110,7 @@ importers:
         version: 8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   packages/backend:
     dependencies:
@@ -168,7 +168,7 @@ importers:
         version: 8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   packages/frontend:
     dependencies:
@@ -246,8 +246,8 @@ importers:
         specifier: ^3.33.2
         version: 3.33.2
       jsdom:
-        specifier: ^29.1.0
-        version: 29.1.0
+        specifier: ^29.1.1
+        version: 29.1.1
       moment:
         specifier: ^2.30.1
         version: 2.30.1
@@ -280,7 +280,7 @@ importers:
         version: 8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   packages/podlet-js:
     dependencies:
@@ -317,7 +317,7 @@ importers:
         version: 4.5.4(@types/node@24.10.9)(typescript@5.9.3)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   packages/shared:
     devDependencies:
@@ -332,7 +332,7 @@ importers:
         version: 4.5.4(@types/node@24.10.9)(typescript@5.9.3)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
       vitest:
         specifier: ^4.1.5
-        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+        version: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   tests/playwright:
     devDependencies:
@@ -2954,8 +2954,8 @@ packages:
     resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
     hasBin: true
 
-  jsdom@29.1.0:
-    resolution: {integrity: sha512-YNUc7fB9QuvSSQWfrH0xF+TyABkxUwx8sswgIDaCrw4Hol8BghdZDkITtZheRJeMtzWlnTfsM3bBBusRvpO1wg==}
+  jsdom@29.1.1:
+    resolution: {integrity: sha512-ECi4Fi2f7BdJtUKTflYRTiaMxIB0O6zfR1fX0GXpUrf6flp8QIYn1UT20YQqdSOfk2dfkCwS8LAFoJDEppNK5Q==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24.0.0}
     peerDependencies:
       canvas: ^3.0.0
@@ -3884,11 +3884,11 @@ packages:
     resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
-  tldts-core@7.0.28:
-    resolution: {integrity: sha512-7W5Efjhsc3chVdFhqtaU0KtK32J37Zcr9RKtID54nG+tIpcY79CQK/veYPODxtD/LJ4Lue66jvrQzIX2Z2/pUQ==}
+  tldts-core@7.0.30:
+    resolution: {integrity: sha512-uiHN8PIB1VmWyS98eZYja4xzlYqeFZVjb4OuYlJQnZAuJhMw4PbKQOKgHKhBdJR3FE/t5mUQ1Kd80++B+qhD1Q==}
 
-  tldts@7.0.28:
-    resolution: {integrity: sha512-+Zg3vWhRUv8B1maGSTFdev9mjoo8Etn2Ayfs4cnjlD3CsGkxXX4QyW3j2WJ0wdjYcYmy7Lx2RDsZMhgCWafKIw==}
+  tldts@7.0.30:
+    resolution: {integrity: sha512-ELrFxuqsDdHUwoh0XxDbxuLD3Wnz49Z57IFvTtvWy1hJdcMZjXLIuonjilCiWHlT2GbE4Wlv1wKVTzDFnXH1aw==}
     hasBin: true
 
   tmp@0.2.5:
@@ -5229,7 +5229,7 @@ snapshots:
       svelte: 5.55.5(@typescript-eslint/types@8.59.1)
     optionalDependencies:
       vite: 8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)
-      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   '@testing-library/user-event@14.6.1(@testing-library/dom@10.4.1)':
     dependencies:
@@ -5601,7 +5601,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
 
   '@vitest/eslint-plugin@1.6.16(@typescript-eslint/eslint-plugin@8.59.1(@typescript-eslint/parser@8.59.1(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3)(vitest@4.1.5)':
     dependencies:
@@ -5611,7 +5611,7 @@ snapshots:
     optionalDependencies:
       '@typescript-eslint/eslint-plugin': 8.59.1(@typescript-eslint/parser@8.59.1(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.3.0(jiti@2.6.1))(typescript@5.9.3)
       typescript: 5.9.3
-      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
+      vitest: 4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
     transitivePeerDependencies:
       - supports-color
 
@@ -6972,7 +6972,7 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
-  jsdom@29.1.0:
+  jsdom@29.1.1:
     dependencies:
       '@asamuzakjp/css-color': 5.1.11
       '@asamuzakjp/dom-selector': 7.1.1
@@ -7902,11 +7902,11 @@ snapshots:
 
   tinyrainbow@3.1.0: {}
 
-  tldts-core@7.0.28: {}
+  tldts-core@7.0.30: {}
 
-  tldts@7.0.28:
+  tldts@7.0.30:
     dependencies:
-      tldts-core: 7.0.28
+      tldts-core: 7.0.30
 
   tmp@0.2.5: {}
 
@@ -7916,7 +7916,7 @@ snapshots:
 
   tough-cookie@6.0.1:
     dependencies:
-      tldts: 7.0.28
+      tldts: 7.0.30
 
   tr46@6.0.0:
     dependencies:
@@ -8126,7 +8126,7 @@ snapshots:
     optionalDependencies:
       vite: 8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)
 
-  vitest@4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.0)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)):
+  vitest@4.1.5(@types/node@24.10.9)(@vitest/coverage-v8@4.1.5)(jsdom@29.1.1)(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1)):
     dependencies:
       '@vitest/expect': 4.1.5
       '@vitest/mocker': 4.1.5(vite@8.0.10(@types/node@24.10.9)(esbuild@0.27.2)(jiti@2.6.1))
@@ -8151,7 +8151,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.10.9
       '@vitest/coverage-v8': 4.1.5(vitest@4.1.5)
-      jsdom: 29.1.0
+      jsdom: 29.1.1
     transitivePeerDependencies:
       - msw
 
