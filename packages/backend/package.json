@@ -7,6 +7,8 @@
   "publisher": "podman-desktop",
   "type": "module",
   "license": "Apache-2.0",
+  "repository": "https://github.com/podman-desktop/extension-podman-quadlet",
+  "homepage": "https://github.com/podman-desktop/extension-podman-quadlet#readme",
   "engines": {
     "podman-desktop": ">=1.22.0"
   },
