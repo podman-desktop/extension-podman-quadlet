@@ -337,8 +337,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^4.3.1
-        version: 4.3.1
+        specifier: ^5.0.1
+        version: 5.0.1
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -382,22 +382,22 @@ packages:
     resolution: {integrity: sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==}
     engines: {node: '>=6.0.0'}
 
-  '@argos-ci/api-client@0.19.0':
-    resolution: {integrity: sha512-6nxyWg0DBqBeRMIV/Efa881yHYPtFuzonkY5ckLwnOnAZqhk3pz6tVAn1WILJ/pL4eZvA98nQQt9WVofA+Mrfw==}
-    engines: {node: '>=20.0.0'}
+  '@argos-ci/api-client@0.20.1':
+    resolution: {integrity: sha512-nQRalmeY08eiC+OTQE689F3M2H0ywAq14gYyZvVdRJenHjhpqCqaSn2KSd5oTVaCGQlgjhCafNG9cYH2P68dwg==}
+    engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@4.3.1':
-    resolution: {integrity: sha512-dVp3zPNQp4AnOLkvMyiVWI796PHbTO9Twl/pr6wsSWaUkAOT1BC5RcJnISInAfpQaA/rjkK/gdl9rctieJYVvQ==}
-    engines: {node: '>=20.0.0'}
+  '@argos-ci/cli@5.0.1':
+    resolution: {integrity: sha512-UBnrEdpM5wXdGjo22ANy0Y55u4HZoVd+BbB7zsnWX+NSHAjq30wrGWT4PQSZr8tcioHmaVp5Wj5swfdWQho6Eg==}
+    engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@5.3.1':
-    resolution: {integrity: sha512-lU8IOeb0pHJHUSS/pl7oVG7mTdNslOH7PiVbIW2w8004nhSYQciqhM98vWLrfmRLQfHJjpPIM3KCVg2qBKPKXQ==}
-    engines: {node: '>=20.0.0'}
+  '@argos-ci/core@6.0.1':
+    resolution: {integrity: sha512-AwveEfywZ6iNwHwar5AQl0ZKHSDOSQFPCH7330rSDl9pWJzxo66G0sVZZsF5DA5c8HejXJx11yff+/CiGxrGmg==}
+    engines: {node: '>=22.0.0'}
 
-  '@argos-ci/util@3.4.0':
-    resolution: {integrity: sha512-rPa8xu6k0TkK1V4CIapcx2x/ncB7dvGa0adXCkflQf+rZZvZaVI3jCVXR57bCZn+S5AWndj4+A/7pX5xV9krvQ==}
-    engines: {node: '>=20.0.0'}
+  '@argos-ci/util@4.0.0':
+    resolution: {integrity: sha512-2yrJr81OVpa2TkvSjzGZlGv6SVqZcxF62AVk6M79aZ7nXkwWFg3tjA8awbFwn2mODI67gkP5FarAD29bzx3P3w==}
+    engines: {node: '>=22.0.0'}
 
   '@asamuzakjp/css-color@5.1.11':
     resolution: {integrity: sha512-KVw6qIiCTUQhByfTd78h2yD1/00waTmm9uy/R7Ck/ctUyAPj+AEDLkQIdJW0T8+qGgj3j5bpNKK7Q3G+LedJWg==}
@@ -1149,6 +1149,12 @@ packages:
     resolution: {integrity: sha512-zY1bul7OWr7DFBiJ++wofXvnr8B45ce3QsQUhKrIhXsygAh7bTkwyeM1bi1a2g5C/yC/N8TZyGDEoMfm/l9mpg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [ppc64]
+    os: [linux]
+
+  '@rolldown/binding-linux-s390x-gnu@1.0.1':
+    resolution: {integrity: sha512-0frlsT/f4Ft6I7SMESTKnF3cZsdicQn1dCMkF/jT9wDLE+gGoiQfv1nmT9e+s7s/fekvvy6tZM2jHvI2tkbJDQ==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    cpu: [s390x]
     os: [linux]
 
   '@rolldown/binding-linux-x64-gnu@1.0.1':
@@ -2813,6 +2819,10 @@ packages:
     resolution: {integrity: sha512-5KoIu2Ngpyek75jXodFvnafB6DJgr3u8uuK0LEZJjrU19DrMD3EVERaR8sjz8CCGgpZvxPl9SuE1GMVPFHx1mw==}
     engines: {node: '>= 0.4'}
 
+  is-network-error@1.3.2:
+    resolution: {integrity: sha512-PhBY86zaxNZUuWP6h13Vu5oFe0XY6/UlKzQnYFELzGVHygP3MxmvTfYSG7GN3aIab/iWudSMgjSnG9Dq+nHrgA==}
+    engines: {node: '>=16'}
+
   is-npm@6.1.0:
     resolution: {integrity: sha512-O2z4/kNgyjhQwVR1Wpkbfc19JIhggF97NZNCpWTnjH7kVcZMUrnut9XSN7txI7VdyIYk5ZatOq3zvSuWpU8hoA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -3268,6 +3278,10 @@ packages:
   p-locate@5.0.0:
     resolution: {integrity: sha512-LaNjtRWUBY++zB5nE/NwcaoMylSPk+S+ZHNB1TzdbMJMny6dynpAGt7X/tl/QYq3TIeE6nxHppbo2LGymrG5Pw==}
     engines: {node: '>=10'}
+
+  p-retry@8.0.0:
+    resolution: {integrity: sha512-kFVqH1HxOHp8LupNsOys7bSV09VYTRLxarH/mokO4Rqhk6wGi70E0jh4VzvVGXfEVNggHoHLAMWsQqHyU1Ey9A==}
+    engines: {node: '>=22'}
 
   package-json@10.0.1:
     resolution: {integrity: sha512-ua1L4OgXSBdsu1FPb7F3tYH0F48a6kxvod4pLUlGY9COeJAJQNX/sNH2IiEmsxw7lqYiAwrdHMjz1FctOsyDQg==}
@@ -4325,17 +4339,18 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
     optional: true
 
-  '@argos-ci/api-client@0.19.0':
+  '@argos-ci/api-client@0.20.1':
     dependencies:
       debug: 4.4.3
       openapi-fetch: 0.17.0
+      p-retry: 8.0.0
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@4.3.1':
+  '@argos-ci/cli@5.0.1':
     dependencies:
-      '@argos-ci/api-client': 0.19.0
-      '@argos-ci/core': 5.3.1
+      '@argos-ci/api-client': 0.20.1
+      '@argos-ci/core': 6.0.1
       commander: 14.0.3
       open: 11.0.0
       ora: 9.4.0
@@ -4343,10 +4358,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/core@5.3.1':
+  '@argos-ci/core@6.0.1':
     dependencies:
-      '@argos-ci/api-client': 0.19.0
-      '@argos-ci/util': 3.4.0
+      '@argos-ci/api-client': 0.20.1
+      '@argos-ci/util': 4.0.0
       convict: 6.2.5
       debug: 4.4.3
       fast-glob: 3.3.3
@@ -4356,7 +4371,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/util@3.4.0': {}
+  '@argos-ci/util@4.0.0': {}
 
   '@asamuzakjp/css-color@5.1.11':
     dependencies:
@@ -5048,6 +5063,9 @@ snapshots:
     optional: true
 
   '@rolldown/binding-linux-ppc64-gnu@1.0.1':
+    optional: true
+
+  '@rolldown/binding-linux-s390x-gnu@1.0.1':
     optional: true
 
   '@rolldown/binding-linux-x64-gnu@1.0.1':
@@ -6866,6 +6884,8 @@ snapshots:
 
   is-negative-zero@2.0.3: {}
 
+  is-network-error@1.3.2: {}
+
   is-npm@6.1.0: {}
 
   is-number-object@1.1.1:
@@ -7300,6 +7320,10 @@ snapshots:
     dependencies:
       p-limit: 3.1.0
 
+  p-retry@8.0.0:
+    dependencies:
+      is-network-error: 1.3.2
+
   package-json@10.0.1:
     dependencies:
       ky: 1.14.3
@@ -7548,6 +7572,7 @@ snapshots:
       '@rolldown/binding-linux-arm64-gnu': 1.0.1
       '@rolldown/binding-linux-arm64-musl': 1.0.1
       '@rolldown/binding-linux-ppc64-gnu': 1.0.1
+      '@rolldown/binding-linux-s390x-gnu': 1.0.1
       '@rolldown/binding-linux-x64-gnu': 1.0.1
       '@rolldown/binding-linux-x64-musl': 1.0.1
       '@rolldown/binding-openharmony-arm64': 1.0.1
