@@ -73,7 +73,7 @@ jobs:
       # Installing Podman
       # ==============================================
       - name: Install Podman
-        uses: redhat-actions/podman-install@256b8c40fdcb0b494704d72e325ce635d255ff8e
+        uses: redhat-actions/podman-install@aea6ff44f2a4a82da13d22061ce73443a125925d
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           ubuntu-version: '24.04'
