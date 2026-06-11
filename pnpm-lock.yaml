@@ -126,8 +126,8 @@ importers:
         specifier: workspace:^
         version: link:../podlet-js
       semver:
-        specifier: ^7.8.1
-        version: 7.8.1
+        specifier: ^7.8.4
+        version: 7.8.4
       ssh2:
         specifier: ^1.17.0
         version: 1.17.0
@@ -296,8 +296,8 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0
       semver:
-        specifier: ^7.8.1
-        version: 7.8.1
+        specifier: ^7.8.4
+        version: 7.8.4
     devDependencies:
       '@codecov/vite-plugin':
         specifier: ^2.0.1
@@ -3630,11 +3630,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  semver@7.8.1:
-    resolution: {integrity: sha512-rkVq3IXh+4FDGch+KwzX3aV9W3kO54GyEgpvBzSyctDA6Xtd7RJQV1xmXbeQp5v7+VzLOfVqiutSE6GICgPFvg==}
-    engines: {node: '>=10'}
-    hasBin: true
-
   semver@7.8.4:
     resolution: {integrity: sha512-rUCObTnP32Q08R2uuIrt7r9PlEonuTmtuXYcW6s5kjdlj3xbnwe+21yXptAUYcMAABLkYYTtnmzb3w3EDZfueA==}
     engines: {node: '>=10'}
@@ -4566,7 +4561,7 @@ snapshots:
       '@actions/core': 3.0.0
       '@actions/github': 9.1.0
       chalk: 4.1.2
-      semver: 7.8.1
+      semver: 7.8.4
       unplugin: 1.16.1
       zod: 3.25.76
 
@@ -6508,7 +6503,7 @@ snapshots:
       lodash.merge: 4.6.2
       minimatch: 10.2.5
       scslre: 0.3.0
-      semver: 7.8.1
+      semver: 7.8.4
       ts-api-utils: 2.5.0(typescript@5.9.3)
       typescript: 5.9.3
 
@@ -6523,7 +6518,7 @@ snapshots:
       postcss: 8.5.12
       postcss-load-config: 3.1.4(postcss@8.5.12)
       postcss-safe-parser: 7.0.1(postcss@8.5.12)
-      semver: 7.8.1
+      semver: 7.8.4
       svelte-eslint-parser: 1.8.0(svelte@5.56.0(@typescript-eslint/types@8.61.0))
     optionalDependencies:
       svelte: 5.56.0(@typescript-eslint/types@8.61.0)
@@ -6547,7 +6542,7 @@ snapshots:
       pluralize: 8.0.0
       regexp-tree: 0.1.27
       regjsparser: 0.13.0
-      semver: 7.8.1
+      semver: 7.8.4
       strip-indent: 4.1.1
 
   eslint-scope@5.1.1:
@@ -7720,8 +7715,6 @@ snapshots:
       lru-cache: 6.0.0
     optional: true
 
-  semver@7.8.1: {}
-
   semver@7.8.4: {}
 
   set-function-length@1.2.2:
@@ -8228,7 +8221,7 @@ snapshots:
       is-npm: 6.1.0
       latest-version: 9.0.0
       pupa: 3.3.0
-      semver: 7.8.1
+      semver: 7.8.4
       xdg-basedir: 5.1.0
 
   uri-js@4.4.1:
