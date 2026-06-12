@@ -339,8 +339,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^5.0.4
-        version: 5.0.4
+        specifier: ^5.0.5
+        version: 5.0.5
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -388,13 +388,13 @@ packages:
     resolution: {integrity: sha512-CzMDTZXT6+0fvtfdwUwu4NIzyS0zhEJoGd/0m/zSFIK+kXvWIJyIl/eZqyGRr5+B6OPFR1cRtOI9pX5w3u4i8A==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@5.0.4':
-    resolution: {integrity: sha512-QwptIp6u32mDKKzppPIVH35T9sDiTt6ub1Tpw1q1I/X4UQSwmAPlQajJWFUJ3cYcoP6FYuKU6juPXTZ095FDkg==}
+  '@argos-ci/cli@5.0.5':
+    resolution: {integrity: sha512-ZeAmYjwSmQadW2yP6QyFP5Wj4LaV0xuN0VN8OYDNYJRbMC6LHDMNlkbbftMNq77o5oTjYBf9hdvR1ZupSe0+pw==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.1.0':
-    resolution: {integrity: sha512-rWgUgpUDEpWuAOuDewgrmoJttgp62VGysezYrNQ55hBeNU/A/PL9pMUCby7M79AZ6C1hQKlqlZ7uDAgLlmprNA==}
+  '@argos-ci/core@6.1.1':
+    resolution: {integrity: sha512-8W8GYhnMAaxr3HKydsCmLN21PSExEMI+iBerzEoFXRlKgFilCg3HssVBxLKCXrhh/IBPYyQnspgRll5n9QsNeQ==}
     engines: {node: '>=22.0.0'}
 
   '@argos-ci/util@4.0.0':
@@ -1096,8 +1096,8 @@ packages:
     resolution: {integrity: sha512-YcPQ8a0jwYU9bTdJDpXjMi7Brhkr1mXsXrUJvjqM2mQDgkRiz8jFaQGOdaLxgjtUfQgZhKy/O3cG/YwmgKaxLA==}
     engines: {node: '>=12.22.0'}
 
-  '@pnpm/npm-conf@3.0.2':
-    resolution: {integrity: sha512-h104Kh26rR8tm+a3Qkc5S4VLYint3FE48as7+/5oCEcKR2idC/pF1G6AhIXKI+eHPJa/3J9i5z0Al47IeGHPkA==}
+  '@pnpm/npm-conf@3.0.3':
+    resolution: {integrity: sha512-//0sR/cow/s4ICQaYoAobOl4aU8cjU6x/V24V7XkKotb9+O+3zySIYp146vpaobYHnxa4pZX8NkV54Z5AwbDKA==}
     engines: {node: '>=12'}
 
   '@podman-desktop/api@1.26.1':
@@ -4357,10 +4357,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@5.0.4':
+  '@argos-ci/cli@5.0.5':
     dependencies:
       '@argos-ci/api-client': 0.22.0
-      '@argos-ci/core': 6.1.0
+      '@argos-ci/core': 6.1.1
       commander: 14.0.3
       open: 11.0.0
       ora: 9.4.0
@@ -4368,7 +4368,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/core@6.1.0':
+  '@argos-ci/core@6.1.1':
     dependencies:
       '@argos-ci/api-client': 0.22.0
       '@argos-ci/util': 4.0.0
@@ -5041,7 +5041,7 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.10
 
-  '@pnpm/npm-conf@3.0.2':
+  '@pnpm/npm-conf@3.0.3':
     dependencies:
       '@pnpm/config.env-replace': 1.1.0
       '@pnpm/network.ca-file': 1.0.2
@@ -7501,7 +7501,7 @@ snapshots:
 
   registry-auth-token@5.1.1:
     dependencies:
-      '@pnpm/npm-conf': 3.0.2
+      '@pnpm/npm-conf': 3.0.3
 
   registry-url@6.0.1:
     dependencies:
