@@ -18,10 +18,26 @@
 name: e2e
 
 on:
-  pull_request:
-  push:
-    branches:
-      - main
+  workflow_call:
+    inputs:
+      run-id:
+        required: true
+        description: 'The id of the workflow run where the desired download artifact was uploaded from.'
+        type: string
+        default: '${{ github.run_id }}'
+
+      artifact-id:
+        required: false
+        description: 'The id of the artifact to publish'
+        type: string
+
+      artifact-name:
+        required: false
+        description: 'The id of the artifact to publish'
+        type: string
+    secrets:
+      github-token:
+        required: true
 
 permissions:
   contents: read
@@ -31,23 +47,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Dedicated step to build the quadlet extension image
-  build-container:
-    name: Build Extension Image
+  download-oci:
+    name: extract oci image
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          run-id: ${{ inputs.run-id }}
+          name: ${{ inputs.artifact-name }}
+          artifact-ids: ${{ inputs.artifact-id }}
+          github-token: ${{ secrets.github-token }}
+          path: .
+
+      - name: Load image
+        id: load-image
+        shell: bash
+        run: |
+          set -euo pipefail
+          
+          OUTPUT=$(podman load -i oci-image.tar)
+          echo "$OUTPUT"
+          
+          IMAGE=$(echo "$OUTPUT" | awk -F': ' '/Loaded image:/ {print $2}' | tail -n1)
+          
+          if [ -z "$IMAGE" ]; then
+          echo "❌ Failed to determine loaded image name"
+          exit 1
+          fi
+          
+          echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
+
       - name: Build Image and Extract Files
         id: build-image
         run: |
-          podman build -t local_image ./
-          CONTAINER_ID=$(podman create localhost/local_image --entrypoint "")
+          CONTAINER_ID=$(podman create "${{ steps.load-image.outputs.image }}" --entrypoint "")
           mkdir -p output/plugins
           podman export $CONTAINER_ID | tar -x -C output/plugins/
           podman rm -f $CONTAINER_ID
-          podman rmi -f localhost/local_image:latest
+
       - name: Upload Quadlet Image Artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: quadlet-plugin
           path: output/plugins/
@@ -55,7 +94,7 @@ jobs:
   e2e:
     name: e2e tests smoke / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    needs: build-container
+    needs: download-oci
     strategy:
       fail-fast: true
       matrix:
