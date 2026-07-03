@@ -16,7 +16,13 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 export type ServiceRestartPolicy =
-  'no' | 'on-success' | 'on-failure' | 'on-abnormal' | 'on-watchdog' | 'on-abort' | 'always';
+  | 'no'
+  | 'on-success'
+  | 'on-failure'
+  | 'on-abnormal'
+  | 'on-watchdog'
+  | 'on-abort'
+  | 'always';
 
 /**
  * Learn more https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
