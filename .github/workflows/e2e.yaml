@@ -116,8 +116,10 @@ jobs:
             tar -xzf podman-desktop.tar.gz -C podman-desktop-dir --strip-components=1
             echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop-dir/podman-desktop" >> $GITHUB_ENV
           else
-            curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.exe" -o podman-desktop.exe
-            echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop.exe" >> $GITHUB_ENV
+            curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.zip" -o podman-desktop.zip
+            mkdir podman-desktop-dir
+            unzip podman-desktop.zip -d podman-desktop-dir
+            echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop-dir/podman-desktop.exe"
           fi
 
       # Install the quadlet extension
