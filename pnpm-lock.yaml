@@ -343,8 +343,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.1.0
-        version: 6.1.0(@types/node@24.10.9)
+        specifier: ^6.1.4
+        version: 6.1.4(@types/node@24.10.9)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -384,21 +384,21 @@ packages:
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
 
-  '@argos-ci/api-client@0.24.0':
-    resolution: {integrity: sha512-pWEkmqVyD2CbGGG9KsTQgufWIYRzMsZVWyLY4d3lI2pUbuTlv0W0pvvmJybmKkIk3Tcn1T5vMBjT2DYuUiZbqQ==}
+  '@argos-ci/api-client@0.24.4':
+    resolution: {integrity: sha512-TQ5HNYPt8wF4T+kWBjpHL2H6rOy4LimxjxyVISjV1o02tJmMH8kvdbhDSbsfElCrBqufn+qwPHcA5RilhQuFNA==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.1.0':
-    resolution: {integrity: sha512-QGGiMgIDIlxI5dzzcpA6KTsTy1bpCcKfkqDItx6cHAo+or4B2DNVWvrFbHkWPIL5jKulRd9sdirv++4dNFsS+Q==}
+  '@argos-ci/cli@6.1.4':
+    resolution: {integrity: sha512-bMGFywYF+JnrIRKZP0EbhUQ4CwZvMTFwgwDwyV6+gi1T1E/LWeFg/WFEV/AX2v63IJKkByQcky2wCCtjjrefow==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.4.0':
-    resolution: {integrity: sha512-YUySBUbjHpI8GZKe96n4VzgPPXl90hjw/GCHLQ3U6xbbIEZczCBCHeHB/MDjyXCHyk+9T7FUJSE0ddWnpDRI8Q==}
+  '@argos-ci/core@6.5.3':
+    resolution: {integrity: sha512-iP9wqJToiP9vybz+Q+tY2+68BNZ/mF2qNvbDjZxh+2fJDkrtILTVnP2g4Gx0aJsnVspsLuy94QaGislPd7wxNg==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/util@4.0.0':
-    resolution: {integrity: sha512-2yrJr81OVpa2TkvSjzGZlGv6SVqZcxF62AVk6M79aZ7nXkwWFg3tjA8awbFwn2mODI67gkP5FarAD29bzx3P3w==}
+  '@argos-ci/util@4.0.4':
+    resolution: {integrity: sha512-n1GW34fXijCXSZTZrgtNLSOVnehniOGZ6cKdV6Hrw8dSiFKCMrXFASMc8huwLKtcH29nE6wOAabFq7IpDCaoTg==}
     engines: {node: '>=22.0.0'}
 
   '@asamuzakjp/css-color@5.1.11':
@@ -510,6 +510,9 @@ packages:
 
   '@emnapi/runtime@1.11.1':
     resolution: {integrity: sha512-vgj7R3y3Wgx24IQaGPA/R6YFXLHVMOZ0uVEyIQPaWs+rd1AzfEMXlAC22FYwO1XkKR6NPsq7mUandH8oIRdZFw==}
+
+  '@emnapi/runtime@1.11.2':
+    resolution: {integrity: sha512-kyOl3X0DuTiT1h2ft8r2fYO8JYtU9a9Xis/zBSiGArNaagCOWx90N1k2wxp18czFDH+OgcWGb5ZP/XMt3dcyPA==}
 
   '@emnapi/wasi-threads@1.2.1':
     resolution: {integrity: sha512-uTII7OYF+/Mes/MrcIOYp5yOtSMLBWSIoLPpcgwipoiKbli6k322tcoFsxoIIxPDqW01SQGAgko4EzZi2BNv2w==}
@@ -4186,7 +4189,7 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@argos-ci/api-client@0.24.0':
+  '@argos-ci/api-client@0.24.4':
     dependencies:
       debug: 4.4.3
       openapi-fetch: 0.17.0
@@ -4194,10 +4197,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.1.0(@types/node@24.10.9)':
+  '@argos-ci/cli@6.1.4(@types/node@24.10.9)':
     dependencies:
-      '@argos-ci/api-client': 0.24.0
-      '@argos-ci/core': 6.4.0(@types/node@24.10.9)
+      '@argos-ci/api-client': 0.24.4
+      '@argos-ci/core': 6.5.3(@types/node@24.10.9)
       commander: 15.0.0
       open: 11.0.0
       ora: 9.4.1
@@ -4206,10 +4209,10 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.4.0(@types/node@24.10.9)':
+  '@argos-ci/core@6.5.3(@types/node@24.10.9)':
     dependencies:
-      '@argos-ci/api-client': 0.24.0
-      '@argos-ci/util': 4.0.0
+      '@argos-ci/api-client': 0.24.4
+      '@argos-ci/util': 4.0.4
       convict: 6.2.5
       debug: 4.4.3
       fast-glob: 3.3.3
@@ -4221,7 +4224,7 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/util@4.0.0': {}
+  '@argos-ci/util@4.0.4': {}
 
   '@asamuzakjp/css-color@5.1.11':
     dependencies:
@@ -4329,6 +4332,11 @@ snapshots:
     optional: true
 
   '@emnapi/runtime@1.11.1':
+    dependencies:
+      tslib: 2.8.1
+    optional: true
+
+  '@emnapi/runtime@1.11.2':
     dependencies:
       tslib: 2.8.1
     optional: true
@@ -4542,7 +4550,7 @@ snapshots:
 
   '@img/sharp-wasm32@0.35.3':
     dependencies:
-      '@emnapi/runtime': 1.11.1
+      '@emnapi/runtime': 1.11.2
     optional: true
 
   '@img/sharp-webcontainers-wasm32@0.35.3':
