@@ -48,7 +48,7 @@
     "@vitest/eslint-plugin": "^1.6.22",
     "autoprefixer": "^10.5.2",
     "concurrently": "^10.0.3",
-    "eslint": "^10.6.0",
+    "eslint": "^10.7.0",
     "@eslint/js": "^10.0.1",
     "@eslint/compat": "^2.1.0",
     "@eslint/eslintrc": "^3.3.6",
