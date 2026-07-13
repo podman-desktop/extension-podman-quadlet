@@ -343,8 +343,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.1.4
-        version: 6.1.4(@types/node@24.10.9)
+        specifier: ^6.3.0
+        version: 6.3.0(@types/node@24.10.9)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -384,17 +384,17 @@ packages:
   '@adobe/css-tools@4.4.4':
     resolution: {integrity: sha512-Elp+iwUx5rN5+Y8xLt5/GRoG20WGoDCQ/1Fb+1LiGtvwbDavuSk0jhD/eZdckHAuzcDzccnkv+rEjyWfRx18gg==}
 
-  '@argos-ci/api-client@0.24.4':
-    resolution: {integrity: sha512-TQ5HNYPt8wF4T+kWBjpHL2H6rOy4LimxjxyVISjV1o02tJmMH8kvdbhDSbsfElCrBqufn+qwPHcA5RilhQuFNA==}
+  '@argos-ci/api-client@0.26.0':
+    resolution: {integrity: sha512-bbTW/YBOJ1pkwN+VYxz+Yc2GrScHRCr/SN1fJK19YTWpUI1o+YWM4OZm+ZspOxw6eGRFfUrM93Z1q48uyHKNiQ==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.1.4':
-    resolution: {integrity: sha512-bMGFywYF+JnrIRKZP0EbhUQ4CwZvMTFwgwDwyV6+gi1T1E/LWeFg/WFEV/AX2v63IJKkByQcky2wCCtjjrefow==}
+  '@argos-ci/cli@6.3.0':
+    resolution: {integrity: sha512-/VOBokj8vgyYCUZdf6DnNKau8vPbPVbUPxKGJsFqlBZPOwDvykE9b43mptipiEFbxkpwOue7MqInqq8WKb8t+g==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.5.3':
-    resolution: {integrity: sha512-iP9wqJToiP9vybz+Q+tY2+68BNZ/mF2qNvbDjZxh+2fJDkrtILTVnP2g4Gx0aJsnVspsLuy94QaGislPd7wxNg==}
+  '@argos-ci/core@6.6.1':
+    resolution: {integrity: sha512-QN4PvPT+nPzOWiYWryM9aTEr2PoCGcaDxUd50rUIZ5yeAHDs590evxpEg53uHTjHdfQ+z/BBpNQ3IOD4Sc9Z/w==}
     engines: {node: '>=22.0.0'}
 
   '@argos-ci/util@4.0.4':
@@ -4186,7 +4186,7 @@ snapshots:
 
   '@adobe/css-tools@4.4.4': {}
 
-  '@argos-ci/api-client@0.24.4':
+  '@argos-ci/api-client@0.26.0':
     dependencies:
       debug: 4.4.3
       openapi-fetch: 0.17.0
@@ -4194,10 +4194,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.1.4(@types/node@24.10.9)':
+  '@argos-ci/cli@6.3.0(@types/node@24.10.9)':
     dependencies:
-      '@argos-ci/api-client': 0.24.4
-      '@argos-ci/core': 6.5.3(@types/node@24.10.9)
+      '@argos-ci/api-client': 0.26.0
+      '@argos-ci/core': 6.6.1(@types/node@24.10.9)
       commander: 15.0.0
       open: 11.0.0
       ora: 9.4.1
@@ -4206,9 +4206,9 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.5.3(@types/node@24.10.9)':
+  '@argos-ci/core@6.6.1(@types/node@24.10.9)':
     dependencies:
-      '@argos-ci/api-client': 0.24.4
+      '@argos-ci/api-client': 0.26.0
       '@argos-ci/util': 4.0.4
       convict: 6.2.5
       debug: 4.4.3
