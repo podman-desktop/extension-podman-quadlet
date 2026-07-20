@@ -33,12 +33,16 @@ function onclick(id: string): void {
         role="radio"
         aria-checked={selected}
         onclick={onclick.bind(undefined, option.id)}
-        class={['inline-block w-full h-full', {
-          'bg-(--pd-button-primary-bg) text-(--pd-button-primary-text)': selected && !disabled,
-          'text-[var(--pd-button-secondary-text)] hover:bg-[var(--pd-button-secondary-hover-bg)]': !selected && !disabled,
-          'bg-(--pd-button-disabled) text-(--pd-button-disabled-text) cursor-not-allowed': disabled,
-          'cursor-pointer': !disabled,
-        }]}
+        class={[
+          'inline-block w-full h-full',
+          {
+            'bg-(--pd-button-primary-bg) text-(--pd-button-primary-text)': selected && !disabled,
+            'text-[var(--pd-button-secondary-text)] hover:bg-[var(--pd-button-secondary-hover-bg)]':
+              !selected && !disabled,
+            'bg-(--pd-button-disabled) text-(--pd-button-disabled-text) cursor-not-allowed': disabled,
+            'cursor-pointer': !disabled,
+          },
+        ]}
         title={option.label}
         aria-label={option.label}
         aria-current="page">
