@@ -70,7 +70,8 @@ test('disable radio buttons should have proper styling', async () => {
   const buttons = getAllByRole('radio');
   expect(buttons).toHaveLength(OPTIONS.length);
   for (const button of buttons) {
-    expect(button).toHaveClass('bg-[var(--pd-button-disabled)]');
-    expect(button).toHaveClass('text-[var(--pd-button-disabled-text)]');
+    expect(button).toHaveClass('bg-(--pd-button-disabled)');
+    expect(button).toHaveClass('text-(--pd-button-disabled-text)');
+    expect(button).toHaveClass('cursor-not-allowed');
   }
 });
