@@ -39,10 +39,19 @@ export class RootlessResolver implements Resolver<boolean> {
         args: ['info', '--format', '{{.Host.Security.Rootless}}'],
         ...options,
       });
-      this.cached = result.stdout.trim() === 'true';
+      const rootless = result.stdout.trim();
+      if (rootless !== 'true' && rootless !== 'false') {
+        throw new Error(`unexpected rootless status: "${rootless}"`);
+      }
+      this.cached = rootless === 'true';
       return this.cached;
     } catch (err: unknown) {
       console.error('something went wrong while getting the rootless status', err);
+      // cache the fallback (unless we were cancelled) so a single collection cycle can't
+      // observe two different scopes for the same connection if a retry later succeeds
+      if (!options?.token?.isCancellationRequested) {
+        this.cached = ROOTLESS_FALLBACK;
+      }
       return ROOTLESS_FALLBACK;
     }
   }

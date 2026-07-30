@@ -19,6 +19,7 @@
 import { expect, test, vi, beforeEach } from 'vitest';
 import { RootlessResolver, ROOTLESS_FALLBACK } from '/@/utils/resolvers/rootless-resolver';
 import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import type { CancellationToken } from '@podman-desktop/api';
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {
   podmanExec: vi.fn(),
@@ -74,4 +75,42 @@ test('error in podmanExec should fallback to ROOTLESS_FALLBACK', async () => {
   vi.mocked(PODMAN_WORKER_MOCK.podmanExec).mockRejectedValue(new Error('Something went wrong'));
 
   await expect(resolver.resolve()).resolves.toBe(ROOTLESS_FALLBACK);
+});
+
+test('malformed stdout should fallback to ROOTLESS_FALLBACK rather than resolving to rootful', async () => {
+  const resolver = new RootlessResolver(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.podmanExec).mockResolvedValue({
+    stdout: '',
+    stderr: 'some unexpected error output',
+    command: 'podman info --format {{.Host.Security.Rootless}}',
+  });
+
+  await expect(resolver.resolve()).resolves.toBe(ROOTLESS_FALLBACK);
+});
+
+test('should cache the fallback after a non-cancellation failure', async () => {
+  const resolver = new RootlessResolver(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.podmanExec).mockRejectedValue(new Error('Something went wrong'));
+
+  for (let i = 0; i < 10; i++) {
+    await expect(resolver.resolve()).resolves.toBe(ROOTLESS_FALLBACK);
+  }
+
+  // cached after the first failure: podmanExec should not be retried on subsequent calls
+  expect(PODMAN_WORKER_MOCK.podmanExec).toHaveBeenCalledOnce();
+});
+
+test('should not cache the fallback when cancelled, and retry on the next call', async () => {
+  const resolver = new RootlessResolver(PODMAN_WORKER_MOCK);
+  vi.mocked(PODMAN_WORKER_MOCK.podmanExec).mockRejectedValue(new Error('Something went wrong'));
+
+  const cancelledToken: CancellationToken = {
+    isCancellationRequested: true,
+    onCancellationRequested: vi.fn(),
+  };
+
+  await expect(resolver.resolve({ token: cancelledToken })).resolves.toBe(ROOTLESS_FALLBACK);
+  await expect(resolver.resolve({ token: cancelledToken })).resolves.toBe(ROOTLESS_FALLBACK);
+
+  expect(PODMAN_WORKER_MOCK.podmanExec).toHaveBeenCalledTimes(2);
 });
