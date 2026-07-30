@@ -197,6 +197,23 @@ describe.each(['start', 'stop', 'restart'] as Array<'start' | 'stop' | 'restart'
       admin: false,
     });
   });
+
+  test('should call systemd#[func] with admin:true for a rootful (system-wide) quadlet', async () => {
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue({
+      ...QUADLET_MOCK,
+      admin: true,
+    });
+
+    const api = getQuadletApiImpl();
+
+    await api[func](WSL_PROVIDER_IDENTIFIER, QUADLET_MOCK.id);
+
+    expect(SYSTEMD_SERVICE[func]).toHaveBeenCalledWith({
+      provider: WSL_PROVIDER_CONNECTION_MOCK,
+      service: QUADLET_MOCK.service,
+      admin: true,
+    });
+  });
 });
 
 describe('QuadletApiImpl#createQuadletLogger', () => {
@@ -245,6 +262,29 @@ describe('QuadletApiImpl#createQuadletLogger', () => {
 
     expect(PODMAN_WORKER_MOCK.journalctlExec).toHaveBeenCalledWith({
       args: ['--user', '--follow', `--unit=${QUADLET_MOCK.service}`, '--output=cat'],
+      logger: LOGGER_MOCK,
+      token: expect.anything(),
+      env: {
+        SYSTEMD_COLORS: 'true',
+      },
+    });
+  });
+
+  test('should not pass --user for a rootful (system-wide) quadlet', async () => {
+    vi.mocked(QUADLET_SERVICE.getQuadlet).mockReturnValue({
+      ...QUADLET_MOCK,
+      admin: true,
+    });
+
+    const api = getQuadletApiImpl();
+
+    await api.createQuadletLogger({
+      connection: WSL_PROVIDER_IDENTIFIER,
+      quadletId: QUADLET_MOCK.id,
+    });
+
+    expect(PODMAN_WORKER_MOCK.journalctlExec).toHaveBeenCalledWith({
+      args: ['--follow', `--unit=${QUADLET_MOCK.service}`, '--output=cat'],
       logger: LOGGER_MOCK,
       token: expect.anything(),
       env: {
