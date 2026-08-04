@@ -13,7 +13,7 @@
   "devDependencies": {
     "@argos-ci/cli": "^6.5.0",
     "@playwright/test": "1.57.0",
-    "@podman-desktop/tests-playwright": "1.29.0",
+    "@podman-desktop/tests-playwright": "1.29.1",
     "@types/node": "^24",
     "typescript": "^5.9.3",
     "xvfb-maybe": "^0.2.1"
