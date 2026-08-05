@@ -94,8 +94,18 @@ jobs:
     outputs:
       artifact-id: ${{ steps.build.outputs.artifact-id }}
     steps:
-      - name: Build OCI
-        id: build
-        uses: podman-desktop/gh-extensions-actions/.github/actions/oci-build@2e7a02e8c8e9256a2fa466fb166e215175130dd7 # v0.1.2
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.ref }}
+
+      - uses: axel7083/gh-extensions-actions/.github/actions/hermeto-prefetch@e581983d59b5d783e6ec1530470607847643c5ce
+        id: hermeto
+        with:
+          packages: '[{"type":"generic","path":"."},{"type":"pnpm","path":"."}]'
+
+      - name: Build OCI
+        id: build
+        uses: axel7083/gh-extensions-actions/.github/actions/oci-build@e581983d59b5d783e6ec1530470607847643c5ce
+        with:
+          skip-checkout: true
+          extra-args: ${{ steps.hermeto.outputs.extra-args }}
