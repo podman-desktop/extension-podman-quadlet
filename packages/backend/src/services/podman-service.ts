@@ -72,13 +72,37 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     this.#connections = new Map<string, PodmanConnection>(connections.map(connection => [connection.Name, connection]));
   }
 
-  public hasConnection(connection: ProviderContainerConnection): boolean {
-    return this.#connections?.has(connection.connection.name) ?? false;
+  /**
+   * Podman Desktop provides a list of {@link ProviderContainerConnection} however,
+   * it does not provide a way to know if a connection is rootful or not.
+   *
+   * To get the corresponding `podman system connection ls` if rootful, we need to add the `-root` suffix
+   *
+   * @param connection
+   * @param rootful
+   * @protected
+   */
+  protected getConnectionName(connection: ProviderContainerConnection, rootful: boolean): string {
+    if (rootful) {
+      // only connection on machine can have a rootful version
+      if (!connection.connection.vmType) {
+        throw new Error('connection provided is not a podman machine');
+      }
+      return `${connection.connection.name}-root`;
+    }
+
+    return connection.connection.name;
   }
 
-  public getConnection(connection: ProviderContainerConnection): PodmanConnection {
-    const remote = this.#connections?.get(connection.connection.name);
-    if (!remote) throw new Error(`could not get remote connection for connection ${connection.connection.name}`);
+  protected hasConnection(connection: ProviderContainerConnection, rootful: boolean): boolean {
+    return this.#connections?.has(this.getConnectionName(connection, rootful)) ?? false;
+  }
+
+  protected getConnection(connection: ProviderContainerConnection, rootful: boolean): PodmanConnection {
+    const name = this.getConnectionName(connection, rootful);
+
+    const remote = this.#connections?.get(name);
+    if (!remote) throw new Error(`could not get remote connection for connection ${name}`);
     return remote;
   }
 
@@ -99,8 +123,12 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     const worker = this.#pools.get(key);
     if (worker) return worker;
 
-    // detect podman linux native
-    if (this.isLinux && !this.hasConnection(connection)) {
+    /**
+     * Detect podman linux native
+     * - it does not have a vmType
+     * - it does not have a connection with the same name
+     */
+    if (this.isLinux && !connection.connection.vmType && !this.hasConnection(connection, false)) {
       const native = new PodmanNativeWorker(connection, this.dependencies.processApi);
       // init
       await native.init();
@@ -109,8 +137,18 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       return native;
     }
 
+    /**
+     * A machine can be either rootful or rootless.
+     */
+    let rootfull: boolean;
+    if (connection.connection.vmType) {
+      rootfull = await this.isMachineRootful(connection);
+    } else {
+      rootfull = false;
+    }
+
     // create PodmanSSHWorker
-    const { URI, Identity, IsMachine } = this.getConnection(connection);
+    const { URI, Identity, IsMachine } = this.getConnection(connection, rootfull);
     if (!IsMachine) {
       console.warn('[PodmanWorkers] detected remote connection: this is an experimental feature');
     }
