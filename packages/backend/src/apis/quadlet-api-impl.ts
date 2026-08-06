@@ -68,7 +68,7 @@ export class QuadletApiImpl extends QuadletApi {
       return await this.dependencies.systemd.start({
         service: quadlet.service,
         provider: providerConnection,
-        admin: false,
+        admin: quadlet.admin ?? false,
       });
     } finally {
       this.dependencies.quadlet.refreshQuadletsStatuses().catch(console.error);
@@ -95,7 +95,7 @@ export class QuadletApiImpl extends QuadletApi {
       return await this.dependencies.systemd.stop({
         service: quadlet.service,
         provider: providerConnection,
-        admin: false,
+        admin: quadlet.admin ?? false,
       });
     } finally {
       this.dependencies.quadlet.refreshQuadletsStatuses().catch(console.error);
@@ -122,7 +122,7 @@ export class QuadletApiImpl extends QuadletApi {
       return await this.dependencies.systemd.restart({
         service: quadlet.service,
         provider: providerConnection,
-        admin: false,
+        admin: quadlet.admin ?? false,
       });
     } finally {
       this.dependencies.quadlet.refreshQuadletsStatuses().catch(console.error);
@@ -136,7 +136,6 @@ export class QuadletApiImpl extends QuadletApi {
       return await this.dependencies.quadlet.remove({
         provider: providerConnection,
         ids: ids,
-        admin: false,
       });
     } finally {
       this.dependencies.quadlet.refreshQuadletsStatuses().catch(console.error);
@@ -149,7 +148,6 @@ export class QuadletApiImpl extends QuadletApi {
     return await this.dependencies.quadlet.read({
       provider: providerConnection,
       id: id,
-      admin: false,
     });
   }
 
@@ -177,10 +175,12 @@ export class QuadletApiImpl extends QuadletApi {
     // get the worker
     const worker: PodmanWorker = await this.dependencies.podman.getWorker(providerConnection);
 
+    const journalctlArgs = quadlet.admin ? [] : ['--user'];
+
     // do not wait for the returned value as we --follow
     worker
       .journalctlExec({
-        args: ['--user', '--follow', `--unit=${quadlet.service}`, '--output=cat'],
+        args: [...journalctlArgs, '--follow', `--unit=${quadlet.service}`, '--output=cat'],
         env: {
           SYSTEMD_COLORS: 'true',
         },

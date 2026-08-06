@@ -66,6 +66,15 @@ const WSL_CONNECTION_INFO_MOCK: PodmanConnection = {
   ReadWrite: true,
 };
 
+const WSL_ROOTFUL_CONNECTION_INFO_MOCK: PodmanConnection = {
+  Name: `${WSL_PROVIDER_CONNECTION_MOCK.connection.name}-root`,
+  IsMachine: true,
+  URI: 'ssh://root@127.0.0.1:34427/run/podman/podman.sock',
+  Identity: '/home/potatoes/machine.socket',
+  Default: false,
+  ReadWrite: true,
+};
+
 const NATIVE_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
   connection: {
     type: 'podman',
@@ -134,7 +143,7 @@ describe('PodmanService#init', () => {
     const connections = await podman.getPodmanConnections();
     expect(connections).toHaveLength(1);
 
-    expect(podman.getConnection(WSL_PROVIDER_CONNECTION_MOCK)).toStrictEqual(WSL_CONNECTION_INFO_MOCK);
+    expect(connections[0]).toStrictEqual(WSL_CONNECTION_INFO_MOCK);
   });
 });
 
@@ -142,7 +151,7 @@ describe('PodmanService#getWorker', () => {
   let podman: PodmanService;
   beforeEach(async () => {
     vi.mocked(podmanExtensionApiMock.exports.exec).mockResolvedValue({
-      stdout: JSON.stringify([WSL_CONNECTION_INFO_MOCK]),
+      stdout: JSON.stringify([WSL_CONNECTION_INFO_MOCK, WSL_ROOTFUL_CONNECTION_INFO_MOCK]),
       stderr: '',
       command: 'dummy-command',
     });
@@ -198,6 +207,29 @@ describe('PodmanService#getWorker', () => {
     // only created once
     expect(PodmanNativeWorker).toHaveBeenCalledOnce();
     expect(PodmanSSHWorker).not.toHaveBeenCalled();
+  });
+
+  test('rootful remote connection should be created', async () => {
+    podman = getPodmanService({
+      isWindows: true,
+    });
+    await podman.init();
+
+    // mock machine rootful
+    vi.spyOn(podman, 'isMachineRootful').mockResolvedValue(true);
+
+    const worker = await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(worker).toBeDefined();
+
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+    expect(PodmanNativeWorker).not.toHaveBeenCalled();
+
+    expect(PodmanSSHWorker).toHaveBeenCalledExactlyOnceWith(
+      WSL_PROVIDER_CONNECTION_MOCK,
+      expect.objectContaining({
+        username: 'root',
+      }),
+    );
   });
 });
 

@@ -27,15 +27,18 @@ import type { AsyncInit } from '/@/utils/async-init';
 import { isRunError } from '/@/utils/run-error';
 import { QuadletBinaryResolver } from '/@/utils/resolvers/quadlet-binary-resolver';
 import { PodmanVersionResolver } from '/@/utils/resolvers/podman-version-resolver';
+import { RootlessResolver } from '/@/utils/resolvers/rootless-resolver';
 import type { SemVer } from 'semver';
 
 export abstract class PodmanWorker implements Disposable, AsyncInit {
   protected quadletBinaryResolver: QuadletBinaryResolver;
   protected podmanVersionResolver: PodmanVersionResolver;
+  protected rootlessResolver: RootlessResolver;
 
   protected constructor(protected connection: ProviderContainerConnection) {
     this.quadletBinaryResolver = new QuadletBinaryResolver(this);
     this.podmanVersionResolver = new PodmanVersionResolver(this);
+    this.rootlessResolver = new RootlessResolver(this);
   }
 
   /**
@@ -163,6 +166,14 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
     env?: Record<string, string>;
   }): Promise<SemVer> {
     return this.podmanVersionResolver.resolve(options);
+  }
+
+  /**
+   * Whether the engine behind this connection is rootless. Used to decide, per connection,
+   * whether quadlet/systemctl operations should target the user (--user) or system-wide scope.
+   */
+  async isRootless(options?: { logger?: Logger; token?: CancellationToken }): Promise<boolean> {
+    return this.rootlessResolver.resolve(options);
   }
 
   /**
