@@ -299,10 +299,6 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    */
   async writeIntoMachine(options: {
     provider: ProviderContainerConnection;
-    /**
-     * @default false (Run as systemd user)
-     */
-    admin?: boolean;
     files: Array<{ filename: string; content: string }>;
     /**
      * When writing to the machine, by default the code will call systemd daemon-reload
@@ -310,9 +306,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     skipSystemdDaemonReload?: boolean;
   }): Promise<void> {
-    const telemetry: Record<string, unknown> = {
-      admin: options.admin,
-    };
+    const telemetry: Record<string, unknown> = {};
 
     // note the number of files we update
     telemetry['files-length'] = options.files.length;
@@ -327,6 +321,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         async () => {
           // Get the worker
           const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+          const rootless = await worker.isRootless();
 
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
@@ -334,7 +329,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (!isRelative(filename)) {
               destination = filename;
             } else {
-              if (options.admin) {
+              if (!rootless) {
                 destination = joinposix('/etc/containers/systemd', filename);
               } else {
                 destination = joinposix('~/.config/containers/systemd', filename);
@@ -360,7 +355,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           if (!options.skipSystemdDaemonReload) {
             // reload
             await this.dependencies.systemd.daemonReload({
-              admin: options.admin ?? false,
+              admin: !rootless,
               provider: options.provider,
             });
 
@@ -461,14 +456,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * read the source of the given quadlet
    * @param options
    */
-  async read(options: {
-    id: string;
-    provider: ProviderContainerConnection;
-    /**
-     * @default false (Run as systemd user)
-     */
-    admin?: boolean;
-  }): Promise<string> {
+  async read(options: { id: string; provider: ProviderContainerConnection }): Promise<string> {
     const quadlet = this.findQuadlet({
       provider: options.provider,
       id: options.id,

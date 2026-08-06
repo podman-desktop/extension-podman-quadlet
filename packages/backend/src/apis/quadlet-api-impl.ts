@@ -148,7 +148,6 @@ export class QuadletApiImpl extends QuadletApi {
     return await this.dependencies.quadlet.read({
       provider: providerConnection,
       id: id,
-      admin: false,
     });
   }
 
