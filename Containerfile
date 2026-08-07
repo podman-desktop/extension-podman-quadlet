@@ -1,11 +1,11 @@
 FROM node:24-slim AS builder
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN npm i -g corepack@0.31.0 && corepack enable
 
-COPY . /app
+RUN npm install -g /cachi2/output/deps/generic/pnpm-*.tgz
+
 WORKDIR /app
-RUN pnpm install --frozen-lockfile
+COPY . .
+
+RUN . /tmp/hermeto.env && pnpm install --frozen-lockfile
 RUN pnpm build
 
 FROM scratch
