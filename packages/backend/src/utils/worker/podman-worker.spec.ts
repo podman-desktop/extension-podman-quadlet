@@ -21,6 +21,7 @@ import { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { QuadletBinaryResolver } from '/@/utils/resolvers/quadlet-binary-resolver';
 import { PodmanVersionResolver } from '/@/utils/resolvers/podman-version-resolver';
+import { RootlessResolver } from '/@/utils/resolvers/rootless-resolver';
 import { SemVer } from 'semver';
 
 const WSL_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
@@ -53,6 +54,7 @@ const QUADLET_BINARY_PATH_MOCK = '/usr/libexec/podman/quadlet';
 
 vi.mock(import('/@/utils/resolvers/quadlet-binary-resolver'));
 vi.mock(import('/@/utils/resolvers/podman-version-resolver'));
+vi.mock(import('/@/utils/resolvers/rootless-resolver'));
 
 class PodmanWorkerImpl extends PodmanWorker {
   constructor(
@@ -190,5 +192,14 @@ describe('getPodmanVersion', () => {
 
     const version = await worker.getPodmanVersion();
     expect(version.version).toBe('5.7.1');
+  });
+});
+
+describe('isRootless', () => {
+  test('should return the resolved rootless status', async () => {
+    const worker = getPodmanWorkerImpl();
+    vi.mocked(RootlessResolver.prototype.resolve).mockResolvedValue(false);
+
+    await expect(worker.isRootless()).resolves.toBe(false);
   });
 });

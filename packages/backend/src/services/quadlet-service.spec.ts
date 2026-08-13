@@ -77,6 +77,7 @@ const PODMAN_WORKER_MOCK: PodmanWorker = {
   exec: vi.fn(),
   systemctlExec: vi.fn(),
   quadletExec: vi.fn(),
+  isRootless: vi.fn(),
 } as unknown as PodmanWorker;
 
 const SYSTEMD_SERVICE_MOCK: SystemdService = {
@@ -185,6 +186,8 @@ beforeEach(() => {
   vi.mocked(SPECIFIERS_MOCK.expand).mockImplementation(async (_, path) => path);
 
   vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockResolvedValue(PODMAN_WORKER_MOCK);
+  // default: rootless connection, matching the extension's pre-existing (--user only) behaviour
+  vi.mocked(PODMAN_WORKER_MOCK.isRootless).mockResolvedValue(true);
   vi.mocked(PODMAN_WORKER_MOCK.quadletExec).mockResolvedValue(RUN_RESULT_MOCK);
   vi.mocked(QuadletDryRunParser.prototype.parse).mockResolvedValue([
     QUADLET_MOCK,
@@ -298,18 +301,36 @@ describe('QuadletService#collectPodmanQuadlet', () => {
     });
   });
 
-  test('should use PodmanService#quadletExec to get quadlet dry-run', async () => {
+  test('should use PodmanService#quadletExec with -user for a rootless connection', async () => {
+    vi.mocked(PODMAN_WORKER_MOCK.isRootless).mockResolvedValue(true);
+
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
 
     expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
 
-    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledWith({
+    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledExactlyOnceWith({
       args: ['-dryrun', '-user'],
       token: CANCELLATION_TOKEN,
     });
 
     expect(quadlet.all()).toHaveLength(5);
+    expect(quadlet.all().every(q => q.admin === false)).toBe(true);
+  });
+
+  test('should use PodmanService#quadletExec without -user for a rootful connection', async () => {
+    vi.mocked(PODMAN_WORKER_MOCK.isRootless).mockResolvedValue(false);
+
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+
+    expect(PODMAN_WORKER_MOCK.quadletExec).toHaveBeenCalledExactlyOnceWith({
+      args: ['-dryrun'],
+      token: CANCELLATION_TOKEN,
+    });
+
+    expect(quadlet.all()).toHaveLength(5);
+    expect(quadlet.all().every(q => q.admin === true)).toBe(true);
   });
 });
 

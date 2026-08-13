@@ -165,7 +165,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }
 
     const parser = new QuadletDryRunParser(result);
-    return parser.parse();
+    // tag each quadlet with the scope it was collected from, so later operations
+    // (start/stop/status/remove) know whether to use `--user` or not.
+    return Promise.resolve(parser.parse()).then(quadlets =>
+      quadlets.map(quadlet => ({ ...quadlet, admin: options.admin ?? false })),
+    );
   }
 
   async collectPodmanQuadlet(): Promise<void> {
@@ -198,8 +202,12 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
               message: `Collecting quadlets ${provider.connection.name}`,
             });
 
-            // 1. get the quadlets
-            const quadlets = await this.getPodmanQuadlets({ provider, token, admin: false });
+            // 1. determine whether this connection's engine is rootless or rootful, and only
+            // collect quadlets from the matching scope (mirrors how the Containers page never
+            // mixes rootful/rootless content for a single connection)
+            const worker: PodmanWorker = await this.podman.getWorker(provider);
+            const rootless = await worker.isRootless({ token });
+            const quadlets = await this.getPodmanQuadlets({ provider, token, admin: !rootless });
 
             // 2. update internally but do not notify (we need to collect the statuses)
             this.update(provider, quadlets, false);
@@ -252,10 +260,14 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         // filter service quadlet and filter out template quadlet
         .filter((quadlet): quadlet is ServiceQuadlet => isServiceQuadlet(quadlet) && !isTemplateQuadlet(quadlet));
 
-      // get the statuses of the quadlets with a corresponding service
+      // a connection only ever collects quadlets from a single scope (see collectPodmanQuadlet),
+      // so a single status check in that same scope covers every quadlet here
+      const worker: PodmanWorker = await this.podman.getWorker(provider);
+      const rootless = await worker.isRootless();
+
       const statuses = await this.dependencies.systemd.getActiveStatus({
         provider: provider,
-        admin: false,
+        admin: !rootless,
         services: serviceQuadlets.map(quadlet => quadlet.service),
       });
 
@@ -287,10 +299,6 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    */
   async writeIntoMachine(options: {
     provider: ProviderContainerConnection;
-    /**
-     * @default false (Run as systemd user)
-     */
-    admin?: boolean;
     files: Array<{ filename: string; content: string }>;
     /**
      * When writing to the machine, by default the code will call systemd daemon-reload
@@ -298,9 +306,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
      */
     skipSystemdDaemonReload?: boolean;
   }): Promise<void> {
-    const telemetry: Record<string, unknown> = {
-      admin: options.admin,
-    };
+    const telemetry: Record<string, unknown> = {};
 
     // note the number of files we update
     telemetry['files-length'] = options.files.length;
@@ -315,6 +321,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
         async () => {
           // Get the worker
           const worker: PodmanWorker = await this.podman.getWorker(options.provider);
+          const rootless = await worker.isRootless();
 
           // write all files sequentially - do not try to run them in parallel
           for (const { filename, content } of options.files) {
@@ -322,7 +329,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             if (!isRelative(filename)) {
               destination = filename;
             } else {
-              if (options.admin) {
+              if (!rootless) {
                 destination = joinposix('/etc/containers/systemd', filename);
               } else {
                 destination = joinposix('~/.config/containers/systemd', filename);
@@ -348,7 +355,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
           if (!options.skipSystemdDaemonReload) {
             // reload
             await this.dependencies.systemd.daemonReload({
-              admin: options.admin ?? false,
+              admin: !rootless,
               provider: options.provider,
             });
 
@@ -366,19 +373,10 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       });
   }
 
-  async remove(options: {
-    ids: string[];
-    provider: ProviderContainerConnection;
-    /**
-     * @default false (Run as systemd user)
-     */
-    admin?: boolean;
-  }): Promise<void> {
+  async remove(options: { ids: string[]; provider: ProviderContainerConnection }): Promise<void> {
     if (options.ids.length === 0) throw new Error('cannot delete zero quadlets.');
 
-    const telemetry: Record<string, unknown> = {
-      admin: options.admin,
-    };
+    const telemetry: Record<string, unknown> = {};
 
     // title depends on the number of quadlets
     const title: string =
@@ -432,10 +430,11 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
             progress.report({ message: `Removed quadlet ${quadlets[0].id}.` });
           }
 
-          // 3. reload systemctl
+          // 3. reload systemctl, in this connection's scope
           console.debug(`[QuadletService] Reloading systemctl`);
+          const rootless = await worker.isRootless();
           await this.dependencies.systemd.daemonReload({
-            admin: options.admin ?? false,
+            admin: !rootless,
             provider: options.provider,
           });
         },
@@ -457,14 +456,7 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
    * read the source of the given quadlet
    * @param options
    */
-  async read(options: {
-    id: string;
-    provider: ProviderContainerConnection;
-    /**
-     * @default false (Run as systemd user)
-     */
-    admin?: boolean;
-  }): Promise<string> {
+  async read(options: { id: string; provider: ProviderContainerConnection }): Promise<string> {
     const quadlet = this.findQuadlet({
       provider: options.provider,
       id: options.id,

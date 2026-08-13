@@ -53,4 +53,10 @@ export interface BaseQuadlet {
    * A Quadlet can have files associated with them (E.g., Yaml= for Kube Quadlet)
    */
   files: Array<FileReference>;
+  /**
+   * true if this is a system-wide (rootful) quadlet, managed with `systemctl`/`quadlet -dryrun` (no `-user`).
+   * false/undefined if it is a user (rootless) quadlet, managed with `systemctl --user`/`quadlet -dryrun -user`.
+   * @default false
+   */
+  admin?: boolean;
 }
