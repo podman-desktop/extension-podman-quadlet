@@ -40,12 +40,12 @@ function handleOnChange(nValue: SimpleContainerInfo | undefined): void {
     value: container.name,
     label: container.name,
   }))}>
-  <div slot="item" let:item>
+  {#snippet item({ item })}
     <div class="flex items-center">
       <ContainerStateIndicator state={item.state} />
       <div class="grow">
         <span>{item.name.substring(1)}</span>
       </div>
     </div>
-  </div>
+  {/snippet}
 </Select>

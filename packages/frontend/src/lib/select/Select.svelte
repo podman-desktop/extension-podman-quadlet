@@ -1,19 +1,33 @@
-<script lang="ts">
+<script lang="ts" generics="T extends { label: string; value: string }">
 import Select from 'svelte-select';
+import type { Snippet } from 'svelte';
 
-type T = $$Generic<{ label: string; value: string }>;
-export let disabled: boolean = false;
+interface Props {
+  disabled?: boolean;
+  value?: T;
+  items: T[];
+  placeholder?: string;
+  label?: string;
+  name?: string;
+  onchange?: (value: T | undefined) => void;
+  clearable?: boolean;
+  item?: Snippet<[{ item: T }]>;
+}
 
-export let value: T | undefined = undefined;
-export let items: T[] = [];
-export let placeholder: string | undefined = undefined;
-export let label: string | undefined = undefined;
-export let name: string | undefined = undefined;
-export let onchange: ((value: T | undefined) => void) | undefined = undefined;
-export let clearable: boolean = true;
+let {
+  disabled = false,
+  items = [],
+  item: itemSnippet,
+  value = $bindable(),
+  placeholder,
+  label,
+  name,
+  onchange,
+  clearable = true,
+}: Props = $props();
 
-function handleOnChange(e: CustomEvent<T | undefined>): void {
-  value = e.detail;
+function handleOnChange(item: T): void {
+  value = item;
   onchange?.(value);
 }
 
@@ -23,13 +37,17 @@ function handleOnClear(): void {
 }
 </script>
 
+{#snippet item({ item }: { item: { label: string; value: string } })}
+  <div>{item.label}</div>
+{/snippet}
+
 <Select
   inputAttributes={{ 'aria-label': label }}
   name={name}
   disabled={disabled}
   value={value}
-  on:clear={handleOnClear}
-  on:change={handleOnChange}
+  onclear={handleOnClear}
+  onchange={handleOnChange}
   --item-color="var(--pd-dropdown-item-text)"
   --item-is-active-color="var(--pd-dropdown-item-text)"
   --item-hover-color="var(--pd-dropdown-item-hover-text)"
@@ -56,10 +74,5 @@ function handleOnClear(): void {
   clearable={clearable}
   class="!bg-[var(--pd-content-bg)] !text-[var(--pd-content-card-text)]"
   items={items}
-  showChevron={!disabled}>
-  <div slot="item" let:item>
-    <slot name="item" item={item}>
-      <div>{item.label}</div>
-    </slot>
-  </div>
-</Select>
+  showChevron={!disabled}
+  item={(itemSnippet ?? item) as Snippet<[{ item: Record<string, unknown> }]>} />
