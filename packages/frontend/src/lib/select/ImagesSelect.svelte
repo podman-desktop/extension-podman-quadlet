@@ -39,11 +39,11 @@ function handleOnChange(nValue: SimpleImageInfo | undefined): void {
     value: image.name,
     label: image.name,
   }))}>
-  <div slot="item" let:item>
+  {#snippet item({ item })}
     <div class="flex items-center">
       <div class="grow">
         <span>{item.name}</span>
       </div>
     </div>
-  </div>
+  {/snippet}
 </Select>

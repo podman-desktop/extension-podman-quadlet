@@ -40,7 +40,7 @@ function handleOnChange(nValue: SimplePodInfo | undefined): void {
     value: pod.name,
     label: pod.name,
   }))}>
-  <div slot="item" let:item>
+  {#snippet item({ item })}
     <div class="flex flex-row items-center">
       <span class="grow">{item.name}</span>
       <div class="flex flex-row gap-x-1">
@@ -49,5 +49,5 @@ function handleOnChange(nValue: SimplePodInfo | undefined): void {
         {/each}
       </div>
     </div>
-  </div>
+  {/snippet}
 </Select>
