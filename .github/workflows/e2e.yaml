@@ -102,7 +102,7 @@ jobs:
         shell: bash
         run: |
           # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
-          export PD_VERSION=$(pnpm why -C packages/backend "@podman-desktop/api" --json | jq .[0].version)
+          export PD_VERSION=$(pnpm why -C packages/backend "@podman-desktop/api" --json | jq '.[0].devDependencies."@podman-desktop/api".version')
           echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
           echo "Using @podman-desktop/api $PD_VERSION"
 
