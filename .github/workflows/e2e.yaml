@@ -118,15 +118,15 @@ jobs:
 
       - name: Download and Install Podman Desktop (Windows)
         if: runner.os == 'Windows'
-        shell: bash
+        shell: pwsh
         env:
           PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
         run: |
-          echo "Downloading PD desktop $PD_VERSION for Windows"
-          curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-setup-x64.exe" -o podman-desktop-setup.exe
-          ./podman-desktop-setup.exe /S
-          PD_INSTALL_DIR="$LOCALAPPDATA/Programs/Podman Desktop"
-          echo "PODMAN_DESKTOP_BINARY=$PD_INSTALL_DIR/Podman Desktop.exe" >> $GITHUB_ENV
+          Write-Host "Downloading PD desktop $env:PD_VERSION for Windows"
+          curl.exe -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$env:PD_VERSION/podman-desktop-$env:PD_VERSION-setup-x64.exe" -o podman-desktop-setup.exe
+          Start-Process -FilePath .\podman-desktop-setup.exe -ArgumentList '/S' -Wait
+          $binary = "$env:LOCALAPPDATA\Programs\Podman Desktop\Podman Desktop.exe"
+          echo "PODMAN_DESKTOP_BINARY=$binary" >> $env:GITHUB_ENV
 
       # Install the quadlet extension
       - name: Download Quadlet Plugins
