@@ -103,30 +103,11 @@ jobs:
           echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
           echo "Using @podman-desktop/api $PD_VERSION"
 
-      # Download Podman Desktop binary
-      - name: Download Podman Desktop (Linux)
-        if: runner.os == 'Linux'
-        shell: bash
-        env:
-          PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
-        run: |
-          echo "Downloading PD desktop $PD_VERSION for Linux"
-          curl -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.tar.gz" -o podman-desktop.tar.gz
-          mkdir podman-desktop-dir
-          tar -xzf podman-desktop.tar.gz -C podman-desktop-dir --strip-components=1
-          echo "PODMAN_DESKTOP_BINARY=$(pwd)/podman-desktop-dir/podman-desktop" >> $GITHUB_ENV
-
-      - name: Download and Install Podman Desktop (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        env:
-          PD_VERSION: ${{ steps.pd-api-version.outputs.PD_VERSION }}
-        run: |
-          Write-Host "Downloading PD desktop $env:PD_VERSION for Windows"
-          curl.exe -sL "https://github.com/podman-desktop/podman-desktop/releases/download/v$env:PD_VERSION/podman-desktop-$env:PD_VERSION-setup-x64.exe" -o podman-desktop-setup.exe
-          Start-Process -FilePath .\podman-desktop-setup.exe -ArgumentList '/S' -Wait
-          $binary = "$env:LOCALAPPDATA\Programs\Podman Desktop\Podman Desktop.exe"
-          echo "PODMAN_DESKTOP_BINARY=$binary" >> $env:GITHUB_ENV
+      - name: Install Podman Desktop
+        uses: podman-desktop/gh-extensions-actions/.github/actions/podman-desktop-install@70a326d6b40ef4e8da6088cc49717f2260bf1917
+        with:
+          version: ${{ steps.pd-api-version.outputs.PD_VERSION }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
 
       # Install the quadlet extension
       - name: Download Quadlet Plugins
