@@ -29,7 +29,7 @@ concurrency:
 jobs:
   lint-format-typecheck:
     name: linter, formatters
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
@@ -65,7 +65,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [windows-2025, ubuntu-24.04, macos-15]
+        os: [windows-2025, ubuntu-26.04, macos-15]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
@@ -90,7 +90,7 @@ jobs:
 
   build-oci:
     name: build oci image
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       artifact-id: ${{ steps.build.outputs.artifact-id }}
     steps:
