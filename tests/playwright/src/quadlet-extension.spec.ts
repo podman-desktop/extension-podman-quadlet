@@ -29,7 +29,7 @@ test.use({
      * For performance reasons, disable extensions which are not necessary for the e2e
      */
     customSettings: {
-      'update.reminder': 'never',
+      'preferences.update.reminder': 'never',
       'extensions.disabled': [
         'podman-desktop.compose',
         'podman-desktop.docker',
