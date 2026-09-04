@@ -34,7 +34,7 @@ jobs:
   # Dedicated step to build the quadlet extension image
   build-container:
     name: Build Extension Image
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Build Image and Extract Files
@@ -59,7 +59,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ windows-2025, ubuntu-24.04 ]
+        os: [ windows-2025, ubuntu-26.04 ]
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
@@ -68,15 +68,6 @@ jobs:
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/podman-desktop/pw-browsers
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-
-      # ==============================================
-      # Installing Podman
-      # ==============================================
-      - name: Install Podman
-        uses: redhat-actions/podman-install@aea6ff44f2a4a82da13d22061ce73443a125925d
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          ubuntu-version: '24.04'
 
       # ==============================================
       # Installing Podman Desktop
