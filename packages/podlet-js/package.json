@@ -15,7 +15,7 @@
   "devDependencies": {
     "typescript": "5.9.3",
     "vite": "^8.2.2",
-    "vitest": "^4.1.11",
+    "vitest": "^5.0.0",
     "@codecov/vite-plugin": "^2.0.1",
     "vite-plugin-dts": "^5.1.0",
     "@types/js-yaml": "^4.0.9",
