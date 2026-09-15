@@ -345,8 +345,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.9.2
-        version: 6.9.2(@types/node@24.10.9)(supports-color@10.2.2)
+        specifier: ^6.9.3
+        version: 6.9.3(@types/node@24.10.9)(supports-color@10.2.2)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -390,13 +390,13 @@ packages:
     resolution: {integrity: sha512-7EdoiHRc4BvuDxp6/8CbkehCMu5bFYEJPjssYFvOR5FqCq50hT9+GxDuQ4pULpbXUZOVl1vhZ4b8ed4fe7rVCQ==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.9.2':
-    resolution: {integrity: sha512-R4HzhgsV2xBd+j3QkOGU1JvThzUiGiY3Etithmu1FBsu/BJ8YT2E/Kf+8kUAW60sJYxl69YaXwGtXhlxBE+K1w==}
+  '@argos-ci/cli@6.9.3':
+    resolution: {integrity: sha512-D3fTU+ZH8eoWC0LrJL9Q8zGfM4n5eRF6jxtvC/6Cd3FtK4qJZ7VcOy9lkTTcrcKzUFN8Qa2+iqhQ2w7w8XFAHQ==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.8.3':
-    resolution: {integrity: sha512-nMg7oiEJQnno1N4oZ6/iF1c/bQ49Ig3ZJEJr8yUxrSFlWDj9DS3jMlO88D93lMVeIJ/403D+jH+TxhvSfrCGBQ==}
+  '@argos-ci/core@6.8.4':
+    resolution: {integrity: sha512-NbXsI4+/Yb/CIApcM1Kf7n4wH9D7RXmIlADXJOUG/ZbL1zuuGeuuRb7YGbSuuM/QKrthfQ8eeH4YJZEW4fT2Kw==}
     engines: {node: '>=22.0.0'}
 
   '@argos-ci/util@4.2.0':
@@ -3143,8 +3143,8 @@ packages:
     resolution: {integrity: sha512-VXJjc87FScF88uafS3JllDgvAm+c/Slfz06lorj2uAY34rlUu0Nt+v8wreiImcrgAjjIHp1rXpTDlLOGw29WwQ==}
     engines: {node: '>=18'}
 
-  open@11.0.2:
-    resolution: {integrity: sha512-RWqF+pBSkqecEvCKOn8QYhaNdRMJDZRIrlS/7rTDdLHaPcfXGCZ/h8zb413NfvdeAV0MR7T1yJcA34/q+CSm1Q==}
+  open@11.0.3:
+    resolution: {integrity: sha512-b3souUgU0VaAvMmzA4+9cRgrOgMdE0vc9H9VhQ0FYnjjcyZ8R/f9DiwMU9V8rl+vjf05On9UJhbgb06fsTs87Q==}
     engines: {node: '>=20'}
 
   openapi-fetch@0.17.0:
@@ -4259,19 +4259,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.9.2(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/cli@6.9.3(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
       '@argos-ci/api-client': 0.31.0(supports-color@10.2.2)
-      '@argos-ci/core': 6.8.3(@types/node@24.10.9)(supports-color@10.2.2)
+      '@argos-ci/core': 6.8.4(@types/node@24.10.9)(supports-color@10.2.2)
       '@vercel/detect-agent': 1.2.5
       commander: 15.0.0
-      open: 11.0.2
+      open: 11.0.3
       ora: 9.4.1
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.8.3(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/core@6.8.4(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
       '@argos-ci/api-client': 0.31.0(supports-color@10.2.2)
       '@argos-ci/util': 4.2.0
@@ -7000,7 +7000,7 @@ snapshots:
     dependencies:
       mimic-function: 5.0.1
 
-  open@11.0.2:
+  open@11.0.3:
     dependencies:
       default-browser: 5.5.1
       define-lazy-prop: 3.0.0
