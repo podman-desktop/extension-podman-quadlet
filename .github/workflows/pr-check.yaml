@@ -96,6 +96,6 @@ jobs:
     steps:
       - name: Build OCI
         id: build
-        uses: podman-desktop/gh-extensions-actions/.github/actions/oci-build@0abcba929bec797400b7fc1d6229f2907e1d4c1d # v0.2.0
+        uses: axel7083/gh-extensions-actions/.github/actions/oci-build@5fb378399ff0c3b030459d9a40fd287a6d215e7b # test: fix/oci-build-buildah-v3
         with:
           ref: ${{ github.ref }}
