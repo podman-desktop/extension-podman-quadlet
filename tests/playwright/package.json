@@ -15,7 +15,7 @@
     "@playwright/test": "1.57.0",
     "@podman-desktop/tests-playwright": "1.29.1",
     "@types/node": "^24",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "xvfb-maybe": "^0.2.1"
   },
   "type": "module"
