@@ -16,9 +16,15 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { Page } from '@playwright/test';
+import type { ElectronApplication, Page } from '@playwright/test';
 import type { NavigationBar, Runner } from '@podman-desktop/tests-playwright';
 import { expect as playExpect } from '@podman-desktop/tests-playwright';
+
+// Runner#getWindows only exists since @podman-desktop/tests-playwright 1.27: fallback to the electron app windows
+function getWindows(runner: Runner): Page[] {
+  if (typeof runner.getWindows === 'function') return runner.getWindows();
+  return (runner as unknown as { getElectronApp(): ElectronApplication }).getElectronApp().windows();
+}
 
 export async function handleWebview(runner: Runner, page: Page, navigationBar: NavigationBar): Promise<[Page, Page]> {
   const PODMAN_QUADLET_NAVBAR_EXTENSION_LABEL: string = 'Quadlet';
@@ -34,7 +40,7 @@ export async function handleWebview(runner: Runner, page: Page, navigationBar: N
   const webView = page.getByRole('document', { name: PODMAN_QUADLET_PAGE_BODY_LABEL });
   await playExpect(webView).toBeVisible();
   await new Promise(resolve => setTimeout(resolve, 1_000));
-  const [mainPage, webViewPage] = runner.getWindows();
+  const [mainPage, webViewPage] = getWindows(runner);
   await mainPage.evaluate(() => {
     const element = document.querySelector('webview');
     if (element) {

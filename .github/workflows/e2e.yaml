@@ -53,13 +53,16 @@ jobs:
           path: output/plugins/
 
   e2e:
-    name: e2e tests smoke / ${{ matrix.os }}
+    name: e2e tests smoke / ${{ matrix.os }} / Podman Desktop ${{ matrix.pd-version }}
     runs-on: ${{ matrix.os }}
     needs: build-container
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         os: [ windows-2025, ubuntu-24.04 ]
+        # minimum: lowest version supported by the extension (engines.podman-desktop in packages/backend/package.json)
+        # latest: latest stable release of podman-desktop/podman-desktop
+        pd-version: [ minimum, latest ]
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
@@ -93,23 +96,90 @@ jobs:
       - name: Execute pnpm in Podman Quadlet Extension
         run: pnpm install
 
-      # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
-      - name: Extract @podman-desktop/api version
-        id: pd-api-version
+      # Resolve the matrix alias (minimum / latest) to a stable Podman Desktop version (and store to $GITHUB_OUTPUT)
+      # The podman-desktop-install action only accepts an explicit stable version (omitting it installs the latest
+      # prerelease), so the latest stable release has to be resolved here
+      - name: Resolve Podman Desktop version
+        id: pd-version
         shell: bash
+        env:
+          PD_VERSION_ALIAS: ${{ matrix.pd-version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Using pnpm list to get the resolved version (E.g. getting 1.15.0 when ^1.15.0)
-          export PD_VERSION=$(pnpm why -C packages/backend "@podman-desktop/api" --json | jq -r '.[0].version')
-          echo "PD_VERSION=$PD_VERSION" >> $GITHUB_OUTPUT
-          echo "Using @podman-desktop/api $PD_VERSION"
+          set -euo pipefail
+
+          case "$PD_VERSION_ALIAS" in
+            minimum)
+              # E.g. getting 1.22.0 when >=1.22.0
+              PD_VERSION=$(jq -r '.engines."podman-desktop"' packages/backend/package.json | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
+              ;;
+            latest)
+              PD_VERSION=$(gh api repos/podman-desktop/podman-desktop/releases/latest --jq '.tag_name')
+              PD_VERSION="${PD_VERSION#v}"
+              ;;
+            *)
+              echo "::error::Unknown Podman Desktop version alias: $PD_VERSION_ALIAS"
+              exit 1
+              ;;
+          esac
+
+          # @podman-desktop/tests-playwright is not published for every Podman Desktop patch release
+          # (E.g. 1.29.3 has no matching version), so we target the latest one of the same minor
+          TESTS_PLAYWRIGHT_RANGE="~${PD_VERSION%.*}.0"
+
+          # Before 1.25 the Linux x64 archive was published as podman-desktop-<version>.tar.gz (no -x64 suffix),
+          # which the podman-desktop-install action does not know about
+          LINUX_LEGACY_ARCHIVE=false
+          if [[ "$RUNNER_OS" == "Linux" ]] && ! curl -sfIL -o /dev/null "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION-x64.tar.gz"; then
+            LINUX_LEGACY_ARCHIVE=true
+          fi
+
+          echo "PD_VERSION=$PD_VERSION" >> "$GITHUB_OUTPUT"
+          echo "TESTS_PLAYWRIGHT_RANGE=$TESTS_PLAYWRIGHT_RANGE" >> "$GITHUB_OUTPUT"
+          echo "LINUX_LEGACY_ARCHIVE=$LINUX_LEGACY_ARCHIVE" >> "$GITHUB_OUTPUT"
+          echo "Using Podman Desktop $PD_VERSION with @podman-desktop/tests-playwright@$TESTS_PLAYWRIGHT_RANGE"
+
+      # The UI changes between Podman Desktop versions: the test framework must match the installed version
+      - name: Align @podman-desktop/tests-playwright with Podman Desktop
+        shell: bash
+        env:
+          TESTS_PLAYWRIGHT_RANGE: ${{ steps.pd-version.outputs.TESTS_PLAYWRIGHT_RANGE }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "$(npm view "@podman-desktop/tests-playwright@$TESTS_PLAYWRIGHT_RANGE" version 2>/dev/null || true)" ]]; then
+            echo "::warning::No @podman-desktop/tests-playwright matching $TESTS_PLAYWRIGHT_RANGE, keeping the pinned version"
+            exit 0
+          fi
+
+          pnpm --recursive update "@podman-desktop/tests-playwright@$TESTS_PLAYWRIGHT_RANGE"
+          pnpm why -C tests/playwright "@podman-desktop/tests-playwright"
 
       # Download and install the Podman Desktop production binary (Linux & Windows)
       - name: Install Podman Desktop
         id: podman-desktop-install
+        if: steps.pd-version.outputs.LINUX_LEGACY_ARCHIVE != 'true'
         uses: podman-desktop/gh-extensions-actions/.github/actions/podman-desktop-install@3c89b3ea20c3262cb0f05894d0da4354d8c269a6 # v0.9.0
         with:
-          version: ${{ steps.pd-api-version.outputs.PD_VERSION }}
+          version: ${{ steps.pd-version.outputs.PD_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      # TODO: move the legacy archive name fallback to the podman-desktop-install action
+      - name: Install Podman Desktop (Linux, legacy archive name)
+        id: podman-desktop-install-legacy
+        if: steps.pd-version.outputs.LINUX_LEGACY_ARCHIVE == 'true'
+        shell: bash
+        env:
+          PD_VERSION: ${{ steps.pd-version.outputs.PD_VERSION }}
+        run: |
+          set -euo pipefail
+
+          echo "Downloading Podman Desktop $PD_VERSION for Linux"
+          curl -sfL "https://github.com/podman-desktop/podman-desktop/releases/download/v$PD_VERSION/podman-desktop-$PD_VERSION.tar.gz" -o podman-desktop.tar.gz
+          mkdir -p podman-desktop-dir
+          tar -xzf podman-desktop.tar.gz -C podman-desktop-dir --strip-components=1
+
+          echo "binary=$(pwd)/podman-desktop-dir/podman-desktop" >> "$GITHUB_OUTPUT"
 
       # Install the quadlet extension
       - name: Download Quadlet Plugins
@@ -125,17 +195,19 @@ jobs:
           ELECTRON_DISABLE_SANDBOX: '1'
           NODE_OPTIONS: --no-experimental-strip-types
           DEBUGGING_PORT: 9222
-          PODMAN_DESKTOP_BINARY: ${{ steps.podman-desktop-install.outputs.binary }}
+          PODMAN_DESKTOP_BINARY: ${{ steps.podman-desktop-install.outputs.binary || steps.podman-desktop-install-legacy.outputs.binary }}
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: e2e-results-${{ matrix.os }}
+          name: e2e-results-${{ matrix.os }}-${{ matrix.pd-version }}
           path: |
             tests/playwright/output/
             tests/playwright/tests/
 
+      # Screenshots are named after the platform only: keep a single Podman Desktop version as Argos reference
       - name: Upload screenshots
+        if: matrix.pd-version == 'latest'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-screenshots-${{ matrix.os }}
