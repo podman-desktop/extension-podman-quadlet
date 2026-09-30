@@ -4,7 +4,7 @@ import type { SimpleImageInfo } from '@podman-desktop/quadlet-extension-core-api
 import { imageAPI, podletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import ImagesSelect from '/@/lib/select/ImagesSelect.svelte';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faHammer } from '@fortawesome/free-solid-svg-icons/faHammer';
 import { Button } from '@podman-desktop/ui-svelte';
 
 let {
@@ -80,6 +80,6 @@ $effect(() => {
 
 <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
   <Button type="secondary" onclick={close} title="cancel">Cancel</Button>
-  <Button disabled={!generatable} inProgress={loading} icon={faCode} title="Generate" onclick={generate}
+  <Button disabled={!generatable} inProgress={loading} icon={faHammer} title="Generate" onclick={generate}
     >Generate</Button>
 </div>

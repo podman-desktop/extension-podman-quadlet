@@ -53,13 +53,15 @@
       "dashboard/container": [
         {
           "command": "podlet.generate.container",
-          "title": "Generate Quadlet"
+          "title": "Generate Quadlet",
+          "icon": "fas fa-hammer"
         }
       ],
       "dashboard/compose": [
         {
           "command": "podlet.compose",
-          "title": "Generate Quadlet"
+          "title": "Generate Quadlet",
+          "icon": "fas fa-hammer"
         }
       ]
     },

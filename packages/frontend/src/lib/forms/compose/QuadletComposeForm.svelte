@@ -1,7 +1,7 @@
 <script lang="ts">
 import Stepper from '/@/lib/stepper/Stepper.svelte';
 import { Button, EmptyScreen, ErrorMessage, Input } from '@podman-desktop/ui-svelte';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faHammer } from '@fortawesome/free-solid-svg-icons/faHammer';
 import { podletAPI, quadletAPI } from '/@/api/client';
 import { faTruckPickup } from '@fortawesome/free-solid-svg-icons/faTruckPickup';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
@@ -212,7 +212,7 @@ function back(): void {
 
       <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
         <Button type="secondary" on:click={close} title="cancel">Cancel</Button>
-        <Button class="" disabled={!filepath} icon={faCode} title="Generate" on:click={generateYAML}>Generate</Button>
+        <Button class="" disabled={!filepath} icon={faHammer} title="Generate" on:click={generateYAML}>Generate</Button>
       </div>
 
       <!-- EDIT KUBE YAML -->
