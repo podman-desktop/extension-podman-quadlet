@@ -19,7 +19,7 @@
 import '@testing-library/jest-dom/vitest';
 
 import { render } from '@testing-library/svelte';
-import { beforeEach, expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi, describe } from 'vitest';
 import App from '/@/App.svelte';
 import QuadletGenerate from '/@/pages/QuadletGenerate.svelte';
 import QuadletCompose from '/@/pages/QuadletCompose.svelte';
@@ -41,21 +41,40 @@ beforeEach(() => {
   vi.mocked(rpcBrowser.subscribe).mockReturnValue({ unsubscribe: vi.fn() });
 });
 
-test('generate route should decode query parameters', async () => {
-  const query = {
-    providerId: 'podman',
-    connection: 'podman-machine/default',
-    quadletType: 'image',
-    resourceId: 'quay.io/podman/hello@sha256:abc',
-  };
-  vi.mocked(getRouterState).mockResolvedValue({
-    url: `/quadlets/generate?${new URLSearchParams(query).toString()}`,
+describe('quadlets generate', () => {
+  test('undefined queries should be undefined props', async () => {
+    vi.mocked(getRouterState).mockResolvedValue({
+      url: `/quadlets/generate`,
+    });
+
+    render(App);
+
+    await vi.waitFor(() => {
+      expect(QuadletGenerate).toHaveBeenCalledWith(expect.anything(), {
+        providerId: undefined,
+        connection: undefined,
+        quadletType: undefined,
+        resourceId: undefined,
+      });
+    });
   });
 
-  render(App);
+  test('generate route should decode query parameters', async () => {
+    const query = {
+      providerId: 'podman',
+      connection: 'podman-machine/default',
+      quadletType: 'image',
+      resourceId: 'quay.io/podman/hello@sha256:abc',
+    };
+    vi.mocked(getRouterState).mockResolvedValue({
+      url: `/quadlets/generate?${new URLSearchParams(query).toString()}`,
+    });
 
-  await vi.waitFor(() => {
-    expect(QuadletGenerate).toHaveBeenCalledWith(expect.anything(), query);
+    render(App);
+
+    await vi.waitFor(() => {
+      expect(QuadletGenerate).toHaveBeenCalledWith(expect.anything(), query);
+    });
   });
 });
 
