@@ -18,7 +18,7 @@
 import { vi, test, expect, beforeEach, afterEach, describe, assert } from 'vitest';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
-import { PodmanSFTP } from '/@/utils/remote/podman-sftp';
+import { DEFAULT_FILE_MODE, PodmanSFTP } from '/@/utils/remote/podman-sftp';
 
 vi.mock(import('ssh2'));
 vi.mock(import('ssh2-sftp-client'));
@@ -124,13 +124,13 @@ describe('write', () => {
     await podmanSFTP.write('/foo/bar.txt', 'hello');
 
     expect(SftpClient.prototype.mkdir).toHaveBeenCalledWith('/foo', true);
-    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
+    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt', expect.anything());
   });
 
   test('content should be converted to buffer', async () => {
     await podmanSFTP.write('/foo/bar.txt', 'hello');
 
-    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt');
+    expect(SftpClient.prototype.put).toHaveBeenCalledWith(expect.any(Buffer), '/foo/bar.txt', expect.anything());
     const buffer = vi.mocked(SftpClient.prototype.put).mock.calls[0][0];
     assert(Buffer.isBuffer(buffer), 'first argument should be a buffer');
 
@@ -144,7 +144,53 @@ describe('write', () => {
     expect(SftpClient.prototype.put).toHaveBeenCalledWith(
       expect.any(Buffer),
       `/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`,
+      expect.anything(),
     );
+  });
+
+  test('new file should be created with the default mode', async () => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue(false);
+
+    await podmanSFTP.write('/foo/bar.txt', 'hello');
+
+    expect(SftpClient.prototype.exists).toHaveBeenCalledExactlyOnceWith('/foo/bar.txt');
+    expect(SftpClient.prototype.stat).not.toHaveBeenCalled();
+    expect(SftpClient.prototype.put).toHaveBeenCalledExactlyOnceWith(expect.any(Buffer), '/foo/bar.txt', {
+      writeStreamOptions: { mode: DEFAULT_FILE_MODE },
+    });
+  });
+
+  test.each([
+    { label: '0600', mode: 0o600 },
+    { label: '0640', mode: 0o640 },
+    { label: '0644', mode: 0o644 },
+  ])('existing file should keep its mode $label', async ({ mode }) => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue('-');
+    // stat mode includes the file type (0o100000 for a regular file)
+    vi.mocked(SftpClient.prototype.stat).mockResolvedValue({
+      mode: 0o100000 | mode,
+    } as unknown as SftpClient.FileStats);
+
+    await podmanSFTP.write('/foo/bar.txt', 'hello');
+
+    expect(SftpClient.prototype.stat).toHaveBeenCalledExactlyOnceWith('/foo/bar.txt');
+    expect(SftpClient.prototype.put).toHaveBeenCalledExactlyOnceWith(expect.any(Buffer), '/foo/bar.txt', {
+      writeStreamOptions: { mode },
+    });
+  });
+
+  test('homedir path should be resolved before reading the mode', async () => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue('-');
+    vi.mocked(SftpClient.prototype.stat).mockResolvedValue({
+      mode: 0o100600,
+    } as unknown as SftpClient.FileStats);
+
+    await podmanSFTP.write('~/foo/bar.txt', 'hello');
+
+    expect(SftpClient.prototype.exists).toHaveBeenCalledExactlyOnceWith(
+      `/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`,
+    );
+    expect(SftpClient.prototype.stat).toHaveBeenCalledExactlyOnceWith(`/home/${SSH_CONFIG_MOCK.username}/foo/bar.txt`);
   });
 });
 
