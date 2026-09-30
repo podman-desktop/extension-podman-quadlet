@@ -41,7 +41,7 @@ const COMMAND_API_MOCK: typeof commandsApi = {
 } as unknown as typeof commandsApi;
 const ROUTING_MOCK: RoutingService = {
   openQuadletCompose: vi.fn(),
-  openQuadletCreateContainer: vi.fn(),
+  openQuadletGenerate: vi.fn(),
 } as unknown as RoutingService;
 const CONTAINER_SERVICE_MOCK: ContainerService = {
   getRunningProviderContainerConnectionByEngineId: vi.fn(),
