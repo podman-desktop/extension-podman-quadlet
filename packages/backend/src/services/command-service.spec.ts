@@ -34,6 +34,7 @@ import type { BigIntStats, Stats } from 'node:fs';
 import { join } from 'node:path';
 import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),
@@ -203,5 +204,9 @@ test(`${PODLET_GENERATE_CONTAINER_CMD} command`, async () => {
   );
   expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
 
-  expect(ROUTING_MOCK.openQuadletCreateContainer).toHaveBeenCalledWith(PROVIDER_INFO_MOCK, 'container-id');
+  expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
+    PROVIDER_INFO_MOCK,
+    QuadletType.CONTAINER,
+    'container-id',
+  );
 });
