@@ -4,7 +4,7 @@ import Fa from 'svelte-fa';
 import ProgressBar from '/@/lib/progress/ProgressBar.svelte';
 import { router } from 'tinro';
 import QuadletGenerateForm from '/@/lib/forms/quadlet/QuadletGenerateForm.svelte';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faHammer } from '@fortawesome/free-solid-svg-icons/faHammer';
 import type { QuadletGenerateFormProps } from '/@/lib/forms/quadlet/quadlet-utils';
 
 // We get the query parameters from the parent
@@ -25,7 +25,7 @@ function close(): void {
   onbreadcrumbClick={close}>
   {#snippet icon()}
     <div class="rounded-full w-8 h-8 flex items-center justify-center">
-      <Fa size="1.125x" class="text-[var(--pd-content-header-icon)]" icon={faCode} />
+      <Fa size="1.125x" class="text-[var(--pd-content-header-icon)]" icon={faHammer} />
     </div>
   {/snippet}
   {#snippet content()}

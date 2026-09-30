@@ -4,7 +4,7 @@ import { podAPI, podletAPI } from '/@/api/client';
 import { router } from 'tinro';
 import PodsSelect from '/@/lib/select/PodsSelect.svelte';
 import type { SimplePodInfo } from '@podman-desktop/quadlet-extension-core-api';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faHammer } from '@fortawesome/free-solid-svg-icons/faHammer';
 import { Button } from '@podman-desktop/ui-svelte';
 
 let {
@@ -80,6 +80,6 @@ $effect(() => {
 
 <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
   <Button type="secondary" onclick={close} title="cancel">Cancel</Button>
-  <Button disabled={!generatable} inProgress={loading} icon={faCode} title="Generate" onclick={generate}
+  <Button disabled={!generatable} inProgress={loading} icon={faHammer} title="Generate" onclick={generate}
     >Generate</Button>
 </div>

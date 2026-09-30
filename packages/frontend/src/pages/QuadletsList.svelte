@@ -13,7 +13,7 @@ import { quadletsInfo } from '/@store/quadlets';
 import { router } from 'tinro';
 import ContainerProviderConnectionSelect from '/@/lib/select/ContainerProviderConnectionSelect.svelte';
 import { providerConnectionsInfo } from '/@store/connections';
-import { faCode } from '@fortawesome/free-solid-svg-icons/faCode';
+import { faHammer } from '@fortawesome/free-solid-svg-icons/faHammer';
 import MachineBadge from '/@/lib/table/MachineBadge.svelte';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -209,7 +209,7 @@ onMount(async () => {
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
   {#snippet additionalActions()}
-    <Button icon={faCode} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
+    <Button icon={faHammer} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
       >Generate Quadlet</Button>
     <Button
       icon={faArrowsRotate}
