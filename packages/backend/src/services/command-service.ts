@@ -16,6 +16,7 @@ import type { ProviderService } from '/@/services/provider-service';
 import type { ComposeInfoUI } from '/@/models/compose-info-ui';
 import { stat } from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
+import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
   commandsApi: typeof commandsApi;
@@ -73,7 +74,7 @@ export class CommandService implements Disposable, AsyncInit {
     // 2. Transform the ProviderContainerConnection in ProviderContainerConnectionDetailedInfo
     const providerIdentifier = this.dependencies.providers.toProviderContainerConnectionDetailedInfo(provider);
     // 3. Open the quadlet create page
-    return this.dependencies.routing.openQuadletCreateContainer(providerIdentifier, container.id);
+    return this.dependencies.routing.openQuadletGenerate(providerIdentifier, QuadletType.CONTAINER, container.id);
   }
 
   dispose(): void {
