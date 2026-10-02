@@ -37,7 +37,7 @@ jobs:
 
   tag:
     name: Tagging
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
       pull-requests: write
@@ -128,7 +128,7 @@ jobs:
 
   build:
     needs: [tag]
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: read
       packages: write
@@ -151,7 +151,7 @@ jobs:
   release:
     needs: [tag, build]
     name: Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:
