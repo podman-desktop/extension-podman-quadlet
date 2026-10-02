@@ -36,8 +36,7 @@ export class WebviewService implements Disposable, AsyncInit {
 
     // replace links with webView Uri links
     // in the content <script type="module" crossorigin src="./index-RKnfBG18.js"></script> replace src with webview.asWebviewUri
-    // eslint-disable-next-line sonarjs/slow-regex
-    const scriptLink = indexHtml.match(/<script.*?src="(.*?)".*?>/g);
+    const scriptLink = indexHtml.match(/<script[^>]*src="([^"]*)"[^>]*>/g);
     if (scriptLink) {
       scriptLink.forEach(link => {
         const src = RegExp(/src="(.*?)"/).exec(link);
@@ -50,8 +49,7 @@ export class WebviewService implements Disposable, AsyncInit {
     }
 
     // and now replace for css file as well
-    // eslint-disable-next-line sonarjs/slow-regex
-    const cssLink = indexHtml.match(/<link.*?href="(.*?)".*?>/g);
+    const cssLink = indexHtml.match(/<link[^>]*href="([^"]*)"[^>]*>/g);
     if (cssLink) {
       cssLink.forEach(link => {
         const href = RegExp(/href="(.*?)"/).exec(link);

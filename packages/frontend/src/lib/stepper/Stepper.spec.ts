@@ -23,8 +23,7 @@ import { expect, test, describe, vi, beforeEach } from 'vitest';
 import Stepper from '/@/lib/stepper/Stepper.svelte';
 import type { Step } from './stepper';
 
-// eslint-disable-next-line sonarjs/slow-regex
-const STEP_LABEL_REGEX = /^Step\s+(.+)$/;
+const STEP_LABEL_REGEX = /^Step (\S.*)$/;
 
 const STEPS_MOCK: Array<Step> = [
   {
