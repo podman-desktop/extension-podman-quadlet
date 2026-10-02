@@ -29,7 +29,7 @@ import { editor } from 'monaco-editor';
  * /!\ If your code is importing a mocked module, without any associated __mocks__ file or factory for this module,
  * Vitest will mock the module itself by invoking it and mocking every export.
  */
-vi.mock('monaco-editor', () => ({
+vi.mock(import('monaco-editor'), () => ({
   editor: {
     defineTheme: vi.fn(),
     create: vi.fn(),
