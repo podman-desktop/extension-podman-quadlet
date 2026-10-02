@@ -58,6 +58,10 @@ export class PodmanSSHWorker extends PodmanWorker {
     return this.#podmanSSH.exec(command, options);
   }
 
+  override get alive(): boolean {
+    return this.#podmanSSH.connected && this.#podmanSFTP.connected;
+  }
+
   override dispose(): void {
     this.#podmanSFTP.dispose();
     this.#podmanSSH.dispose();
