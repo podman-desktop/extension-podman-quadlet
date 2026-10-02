@@ -70,6 +70,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
 
     test(`Install Podman Quadlet extension`, async () => {
+      // Skipped when the extension is already preinstalled — no need to install from OCI
       test.skip(PODMAN_QUADLET_EXTENSION_PREINSTALLED, 'Podman Quadlet extension is preinstalled');
       await extensionsPage.installExtensionFromOCIImage(PODMAN_QUADLET_EXTENSION_OCI_IMAGE);
     });
