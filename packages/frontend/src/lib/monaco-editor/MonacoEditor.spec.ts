@@ -21,7 +21,7 @@ import '@testing-library/jest-dom/vitest';
 import { render } from '@testing-library/svelte';
 import { beforeEach, test, vi, expect, describe } from 'vitest';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
-import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
+import { editor } from 'monaco-editor';
 
 /**
  * mock all monaco core component
@@ -29,14 +29,12 @@ import { editor } from 'monaco-editor/esm/vs/editor/editor.api.js';
  * /!\ If your code is importing a mocked module, without any associated __mocks__ file or factory for this module,
  * Vitest will mock the module itself by invoking it and mocking every export.
  */
-vi.mock(import('monaco-editor/esm/vs/editor/editor.api.js'), () => ({
+vi.mock(import('monaco-editor'), () => ({
   editor: {
     defineTheme: vi.fn(),
     create: vi.fn(),
   } as unknown as typeof editor,
 }));
-vi.mock(import('monaco-editor/esm/vs/basic-languages/ini/ini.contribution.js'), () => ({}));
-vi.mock(import('monaco-editor/esm/vs/basic-languages/yaml/yaml.contribution.js'), () => ({}));
 
 const EDITOR_MOCK: editor.IStandaloneCodeEditor = {
   dispose: vi.fn(),
