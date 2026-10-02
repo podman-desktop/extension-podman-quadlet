@@ -121,7 +121,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const updatedImages = await pullImagePage.pullImage(QUAY_HELLO_IMAGE);
 
       const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
-      expect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
+      expect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images`).toBeTruthy();
     });
 
     test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
