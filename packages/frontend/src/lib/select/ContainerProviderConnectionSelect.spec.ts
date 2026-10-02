@@ -56,7 +56,7 @@ test('Should list all container provider connections', async () => {
   // get all options available
   const items: string[] = await select.getOptions();
   // ensure we have two options
-  expect(items.length).toBe(2);
+  expect(items).toHaveLength(2);
   expect(items[0]).toContain(wslConnection.name);
   expect(items[1]).toContain(qemuConnection.name);
 });
