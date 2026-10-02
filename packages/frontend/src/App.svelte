@@ -48,17 +48,17 @@ onDestroy(() => {
       <!-- create quadlet -->
       <Route path="/quadlets/generate/*" firstmatch let:meta>
         <QuadletGenerate
-          providerId={meta.query.providerId}
-          connection={meta.query.connection}
-          quadletType={meta.query.quadletType}
-          resourceId={meta.query.resourceId} />
+          providerId={meta.query.providerId ? decodeURIComponent(meta.query.providerId) : undefined}
+          connection={meta.query.connection ? decodeURIComponent(meta.query.connection) : undefined}
+          quadletType={meta.query.quadletType ? decodeURIComponent(meta.query.quadletType) : undefined}
+          resourceId={meta.query.resourceId ? decodeURIComponent(meta.query.resourceId) : undefined} />
       </Route>
 
       <Route path="/quadlets/compose/*" firstmatch let:meta>
         <QuadletCompose
-          providerId={meta.query.providerId}
-          connection={meta.query.connection}
-          filepath={meta.query.filepath} />
+          providerId={decodeURIComponent(meta.query.providerId)}
+          connection={decodeURIComponent(meta.query.connection)}
+          filepath={decodeURIComponent(meta.query.filepath)} />
       </Route>
 
       <!-- quadlets details -->
