@@ -20,6 +20,11 @@ import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
 import { ConnectionHandler } from '/@/utils/remote/connection-handler';
 
+/**
+ * Permissions for newly created files (same as `podman quadlet install`)
+ */
+export const DEFAULT_FILE_MODE = 0o644;
+
 export class PodmanSFTP extends ConnectionHandler {
   #sshConfig: ConnectConfig;
   #client: SftpClient;
@@ -100,8 +105,23 @@ export class PodmanSFTP extends ConnectionHandler {
 
     // create parent directory
     await this.#client.mkdir(dirname(resolved), true);
+    // ssh2 always chmods the file after opening it (0o666 by default), so the mode must be specified
+    const mode = await this.getMode(resolved);
     // put the file
-    await this.#client.put(Buffer.from(content, 'utf8'), resolved);
+    await this.#client.put(Buffer.from(content, 'utf8'), resolved, { writeStreamOptions: { mode } });
+  }
+
+  /**
+   * Returns the permissions to use when writing the given (resolved) path:
+   * the ones of the existing file if any, {@link DEFAULT_FILE_MODE} otherwise.
+   */
+  protected async getMode(resolved: string): Promise<number> {
+    const exists = await this.#client.exists(resolved);
+    if (!exists) return DEFAULT_FILE_MODE;
+
+    const { mode } = await this.#client.stat(resolved);
+    // keep the permission bits only (drop the file type)
+    return mode & 0o777;
   }
 
   async rm(path: string): Promise<void> {
