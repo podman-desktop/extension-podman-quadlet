@@ -63,6 +63,13 @@
           "icon": "fas fa-hammer"
         }
       ],
+      "dashboard/pod": [
+        {
+          "command": "podlet.generate.pod",
+          "title": "Generate Quadlet",
+          "icon": "fas fa-hammer"
+        }
+      ],
       "dashboard/compose": [
         {
           "command": "podlet.compose",
@@ -79,6 +86,10 @@
       {
         "command": "podlet.generate.image",
         "title": "Podlet: generate image quadlet"
+      },
+      {
+        "command": "podlet.generate.pod",
+        "title": "Podlet: generate pod quadlet"
       },
       {
         "command": "podlet.compose",
