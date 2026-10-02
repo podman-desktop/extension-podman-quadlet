@@ -6,7 +6,6 @@
     "strict": true,
     "preserveValueImports": false,
     "skipLibCheck": false,
-    "baseUrl": ".",
   },
   "include": ["src/**/*.ts", "playwright.config.ts"],
   "exclude": ["node_modules/**", "output/**", "tests/**"]
