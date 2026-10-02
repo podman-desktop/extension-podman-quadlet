@@ -15,30 +15,27 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
+import type { Disposable } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
-import { ConnectionHandler } from '/@/utils/remote/connection-handler';
 
 /**
  * Permissions for newly created files (same as `podman quadlet install`)
  */
 export const DEFAULT_FILE_MODE = 0o644;
 
-export class PodmanSFTP extends ConnectionHandler {
+export class PodmanSFTP implements Disposable {
   #sshConfig: ConnectConfig;
   #client: SftpClient;
   #connected: boolean = false;
 
   constructor(sshConfig: ConnectConfig) {
-    super();
     this.#sshConfig = sshConfig;
     this.#client = new SftpClient();
   }
 
-  override dispose(): void {
-    super.dispose();
-
+  dispose(): void {
     this.#client.end().catch(console.error);
     this.#connected = false;
   }
@@ -64,13 +61,11 @@ export class PodmanSFTP extends ConnectionHandler {
     this.#client.on('end', () => {
       console.warn('connection ended by remote host');
       this.#connected = false;
-      this.handleReconnect();
     });
 
     this.#client.on('close', () => {
       console.warn('connection closed by remote host');
       this.#connected = false;
-      this.handleReconnect();
     });
 
     return this.#connected;

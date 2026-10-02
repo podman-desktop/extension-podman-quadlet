@@ -73,6 +73,10 @@ class PodmanWorkerImpl extends PodmanWorker {
     super(connection);
   }
 
+  override get alive(): boolean {
+    return true;
+  }
+
   override realPath(path: string): Promise<string> {
     return this.callbacks.realpath(path);
   }
