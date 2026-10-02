@@ -1,6 +1,6 @@
 import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import {
-  expect as playExpect,
+  expect,
   test,
   RunnerOptions,
   waitForPodmanMachineStartup,
@@ -64,19 +64,22 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
     test(`Open Settings -> Extensions page`, async ({ navigationBar }) => {
       const dashboardPage = await navigationBar.openDashboard();
-      await playExpect(dashboardPage.mainPage).toBeVisible();
+      await expect(dashboardPage.mainPage).toBeVisible();
       extensionsPage = await navigationBar.openExtensions();
-      await playExpect(extensionsPage.header).toBeVisible();
+      await expect(extensionsPage.header).toBeVisible();
     });
 
     test(`Install Podman Quadlet extension`, async () => {
-      test.skip(PODMAN_QUADLET_EXTENSION_PREINSTALLED, 'Podman Quadlet extension is preinstalled');
+      if (PODMAN_QUADLET_EXTENSION_PREINSTALLED) {
+        return;
+      }
       await extensionsPage.installExtensionFromOCIImage(PODMAN_QUADLET_EXTENSION_OCI_IMAGE);
+      expect(PODMAN_QUADLET_EXTENSION_OCI_IMAGE).toBeTruthy();
     });
 
     test('Extension (card) is installed, present and active', async ({ navigationBar }) => {
       const extensions = await navigationBar.openExtensions();
-      await playExpect
+      await expect
         .poll(async () => await extensions.extensionIsInstalled(PODMAN_QUADLET_CATALOG_EXTENSION_LABEL), {
           timeout: 30000,
         })
@@ -85,7 +88,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
         PODMAN_QUADLET_CATALOG_EXTENSION_NAME,
         PODMAN_QUADLET_CATALOG_EXTENSION_LABEL,
       );
-      await playExpect(extensionCard.status).toHaveText(PODMAN_QUADLET_CATALOG_STATUS_ACTIVE);
+      await expect(extensionCard.status).toHaveText(PODMAN_QUADLET_CATALOG_STATUS_ACTIVE);
     });
 
     test(`Extension's details show correct status, no error`, async ({ page, navigationBar }) => {
@@ -93,8 +96,8 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const extensionCard = await extensions.getInstalledExtension('quadlet', PODMAN_QUADLET_CATALOG_EXTENSION_LABEL);
       await extensionCard.openExtensionDetails(PODMAN_QUADLET_CATALOG_EXTENSION_NAME);
       const details = new PdQuadletDetailsPage(page);
-      await playExpect(details.heading).toBeVisible();
-      await playExpect(details.status).toHaveText(PODMAN_QUADLET_CATALOG_STATUS_ACTIVE);
+      await expect(details.heading).toBeVisible();
+      await expect(details.status).toHaveText(PODMAN_QUADLET_CATALOG_STATUS_ACTIVE);
       const errorTab = details.tabs.getByRole('button', { name: 'Error' });
       // we would like to propagate the error's stack trace into test failure message
       let stackTrace = '';
@@ -102,7 +105,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
         await details.activateTab('Error');
         stackTrace = await details.errorStackTrace.innerText();
       }
-      await playExpect(errorTab, `Error Tab was present with stackTrace: ${stackTrace}`).not.toBeVisible();
+      await expect(errorTab, `Error Tab was present with stackTrace: ${stackTrace}`).not.toBeVisible();
     });
   });
 
@@ -112,13 +115,13 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     test.beforeAll('Pull Images & Start Hello Container', async ({ navigationBar }) => {
       // let's pull QUAY_HELLO_IMAGE image
       const imagesPage = await navigationBar.openImages();
-      await playExpect(imagesPage.heading).toBeVisible();
+      await expect(imagesPage.heading).toBeVisible();
 
       const pullImagePage = await imagesPage.openPullImage();
       const updatedImages = await pullImagePage.pullImage(QUAY_HELLO_IMAGE);
 
       const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
-      playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
+      expect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
     });
 
     test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
@@ -131,6 +134,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
     test('screenshot quadlet list page empty', async () => {
       await quadletListPage.screenshot('quadlet-list-page-empty');
+      expect(await quadletListPage.pageIsEmpty()).toBeTruthy();
     });
 
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
@@ -139,11 +143,11 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const generateForm = await quadletListPage.navigateToGenerateForm();
       await generateForm.waitForLoad();
 
-      await playExpect(generateForm.cancelButton).toBeEnabled();
-      await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
+      await expect(generateForm.cancelButton).toBeEnabled();
+      await expect(generateForm.generateButton).toBeDisabled(); // default should be disabled
 
       // wait for loading to be finished
-      await playExpect
+      await expect
         .poll(async () => await generateForm.isLoading(), {
           timeout: 5_000,
         })
@@ -153,11 +157,11 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
       // select the image
       const options = await generateForm.quadletType.getOptions();
-      playExpect(options).toContain('Image');
+      expect(options).toContain('Image');
       await generateForm.quadletType.select('Image');
 
       // wait for loading to be finished
-      await playExpect
+      await expect
         .poll(async () => await generateForm.isLoading(), {
           timeout: 5_000,
         })
@@ -165,12 +169,12 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
 
       // select hello world image
       const images = await generateForm.imageSelect.getOptions();
-      playExpect(images.length).toBeGreaterThan(0);
-      playExpect(images).toContain(QUAY_HELLO_IMAGE);
+      expect(images.length).toBeGreaterThan(0);
+      expect(images).toContain(QUAY_HELLO_IMAGE);
       await generateForm.imageSelect.set(QUAY_HELLO_IMAGE);
 
       // wait for generateButton to be enabled
-      await playExpect
+      await expect
         .poll(async () => await generateForm.generateButton.isEnabled(), {
           timeout: 5_000,
         })
@@ -180,14 +184,14 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await generateForm.generateButton.click();
 
       // wait for loading (generate) to be finished
-      await playExpect
+      await expect
         .poll(async () => await generateForm.isLoading(), {
           timeout: 15_000,
         })
         .toBeFalsy();
 
       // wait for content to be available
-      await playExpect
+      await expect
         .poll(
           async (): Promise<boolean> => {
             const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
@@ -204,7 +208,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await generateForm.quadletName.fill('hello.image');
 
       // wait for saveIntoMachine button to be enabled
-      await playExpect
+      await expect
         .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
           timeout: 5_000,
         })
@@ -214,7 +218,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await generateForm.saveIntoMachine.click();
 
       // wait for complete button to appear
-      await playExpect
+      await expect
         .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
           timeout: 15_000,
         })
@@ -230,7 +234,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const status = row.getByRole('status');
       // read the title (either 'RUNNING' or '')
       const title = await status.getAttribute('title');
-      playExpect(title).not.toBe('RUNNING');
+      expect(title).not.toBe('RUNNING');
 
       await quadletListPage.screenshot('quadlet-list-page-one-quadlet');
 
@@ -245,7 +249,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await details.start.click();
 
       // wait for active status to appear
-      await playExpect
+      await expect
         .poll(async () => await details.isActive(), {
           timeout: 15_000,
         })
@@ -255,7 +259,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await details.stop.click();
 
       // wait for inactive status
-      await playExpect
+      await expect
         .poll(async () => !(await details.isActive()), {
           timeout: 15_000,
         })
@@ -271,7 +275,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await quadletListPage.waitForLoad();
 
       // ensure the page is empty
-      await playExpect
+      await expect
         .poll(async () => await quadletListPage.pageIsEmpty(), {
           timeout: 15_000,
         })
