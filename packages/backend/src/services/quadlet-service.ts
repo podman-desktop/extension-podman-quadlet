@@ -13,6 +13,7 @@ import type {
   SynchronisationInfo,
   Template,
   ServiceQuadlet,
+  ProviderContainerConnectionDetailedInfo,
 } from '@podman-desktop/quadlet-extension-core-api';
 import type { AsyncInit } from '/@/utils/async-init';
 import { join as joinposix, basename } from 'node:path/posix';
@@ -25,6 +26,7 @@ import { isRelative } from '/@/utils/path';
 
 export class QuadletService extends QuadletHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
+  #providersEventDisposable: Disposable | undefined;
   // symbols are internal to QuadletService: do not expose outside
   #value: Map<symbol, Quadlet[]>;
   #synchronisation: Map<symbol, number>;
@@ -68,7 +70,34 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     }, [] as QuadletInfo[]);
   }
 
-  async init(): Promise<void> {}
+  async init(): Promise<void> {
+    // track connections updates (start / stop / unregister)
+    this.#providersEventDisposable = this.providers.event(this.onProvidersUpdate.bind(this));
+  }
+
+  /**
+   * Remove the quadlets of connections which are not started anymore (stopped, unregistered)
+   * @param connections
+   * @protected
+   */
+  protected onProvidersUpdate(connections: ProviderContainerConnectionDetailedInfo[]): void {
+    const started = new Set(
+      connections
+        .filter(connection => connection.status === 'started')
+        .map(({ providerId, name }) => this.getSymbol({ providerId, connection: { name } })),
+    );
+
+    let changed = false;
+    for (const symbol of Array.from(this.#value.keys())) {
+      if (started.has(symbol)) continue;
+
+      this.#value.delete(symbol);
+      this.#synchronisation.delete(symbol);
+      changed = true;
+    }
+
+    if (changed) this.notify();
+  }
 
   protected findQuadlet(options: { provider: ProviderContainerConnection; id: string }): Quadlet | undefined {
     // get the corresponding symbol
@@ -255,6 +284,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
       // retrieve the provider from the symbol
       const providerIdentifier = this.fromSymbol(symbol);
       const provider = this.providers.getProviderContainerConnection(providerIdentifier);
+      // cannot get the statuses of a connection not started
+      if (provider.connection.status() !== 'started') continue;
 
       const serviceQuadlets: Array<ServiceQuadlet> = quadlets
         // filter service quadlet and filter out template quadlet
@@ -480,6 +511,8 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     this.#value.clear();
     this.#extensionsEventDisposable?.dispose();
     this.#extensionsEventDisposable = undefined;
+    this.#providersEventDisposable?.dispose();
+    this.#providersEventDisposable = undefined;
   }
 
   public templates(): Array<Template> {
