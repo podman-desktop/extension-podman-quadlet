@@ -58,6 +58,21 @@ describe('init', () => {
   });
 });
 
+describe('alive', () => {
+  test.each<{ ssh: boolean; sftp: boolean; expected: boolean }>([
+    { ssh: true, sftp: true, expected: true },
+    { ssh: true, sftp: false, expected: false },
+    { ssh: false, sftp: true, expected: false },
+    { ssh: false, sftp: false, expected: false },
+  ])('ssh connected $ssh and sftp connected $sftp should be alive $expected', ({ ssh, sftp, expected }) => {
+    vi.spyOn(PodmanSSH.prototype, 'connected', 'get').mockReturnValue(ssh);
+    vi.spyOn(PodmanSFTP.prototype, 'connected', 'get').mockReturnValue(sftp);
+
+    const worker = getPodmanSSHWorker();
+    expect(worker.alive).toEqual(expected);
+  });
+});
+
 describe('read', () => {
   const DUMMY_CONTENT = 'bar';
 

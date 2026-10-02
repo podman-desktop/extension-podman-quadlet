@@ -72,6 +72,10 @@ export class PodmanNativeWorker extends PodmanWorker {
     });
   }
 
+  override get alive(): boolean {
+    return true;
+  }
+
   override dispose(): void {}
 
   override async init(): Promise<void> {

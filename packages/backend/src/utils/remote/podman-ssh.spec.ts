@@ -113,7 +113,7 @@ describe('connect', () => {
     expect(podmanSSH.connected).toBeFalsy();
   });
 
-  test('client receiving end event should start reconnection', async () => {
+  test.each(['end', 'close'])('client receiving %s event should not reconnect', async event => {
     const connectPromise: Promise<boolean> = podmanSSH.connect();
 
     // call the ready listener
@@ -128,8 +128,8 @@ describe('connect', () => {
     // we should have connected only once
     expect(Client.prototype.connect).toHaveBeenCalledOnce();
 
-    // call the ready listener
-    getEventListener('end')();
+    // call the end / close listener
+    getEventListener(event)();
 
     // worker should be marked as not connected
     expect(podmanSSH.connected).toBeFalsy();
@@ -137,8 +137,9 @@ describe('connect', () => {
     // move in the future
     await vi.advanceTimersByTimeAsync(50_000);
 
-    // we should have connected again
-    expect(Client.prototype.connect).toHaveBeenCalledTimes(2);
+    // we should not have tried to reconnect
+    expect(Client.prototype.connect).toHaveBeenCalledOnce();
+    expect(podmanSSH.connected).toBeFalsy();
   });
 });
 
