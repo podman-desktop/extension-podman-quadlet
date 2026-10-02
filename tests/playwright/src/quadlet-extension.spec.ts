@@ -1,6 +1,6 @@
 import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
+import { expect as playExpect } from '@playwright/test';
 import {
-  expect as playExpect,
   test,
   RunnerOptions,
   waitForPodmanMachineStartup,
@@ -70,8 +70,14 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
 
     test(`Install Podman Quadlet extension`, async () => {
+      // Skipped when the extension is already preinstalled — no need to install from OCI
       test.skip(PODMAN_QUADLET_EXTENSION_PREINSTALLED, 'Podman Quadlet extension is preinstalled');
       await extensionsPage.installExtensionFromOCIImage(PODMAN_QUADLET_EXTENSION_OCI_IMAGE);
+      await playExpect
+        .poll(async () => await extensionsPage.extensionIsInstalled(PODMAN_QUADLET_CATALOG_EXTENSION_LABEL), {
+          timeout: 30000,
+        })
+        .toBeTruthy();
     });
 
     test('Extension (card) is installed, present and active', async ({ navigationBar }) => {
@@ -130,6 +136,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
 
     test('screenshot quadlet list page empty', async () => {
+      await playExpect(quadletListPage.generateButton).toBeVisible();
       await quadletListPage.screenshot('quadlet-list-page-empty');
     });
 
