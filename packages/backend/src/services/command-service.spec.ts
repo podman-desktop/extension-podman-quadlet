@@ -1,5 +1,5 @@
 /**********************************************************************
- * Copyright (C) 2025 Red Hat, Inc.
+ * Copyright (C) 2025-2026 Red Hat, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import {
   COMPOSE_LABEL_WORKING_DIR,
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
+  PODLET_GENERATE_IMAGE_CMD,
 } from '/@/utils/constants';
 import { CommandService } from '/@/services/command-service';
 import type { commands as commandsApi, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
@@ -35,6 +36,7 @@ import { join } from 'node:path';
 import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
+import type { ImageInfoUI } from '/@/models/image-info-ui';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),
@@ -76,26 +78,27 @@ function getCommandService(): CommandService {
   });
 }
 
-async function getComposeHandler(): Promise<(raw: ComposeInfoUI) => Promise<void>> {
+async function getHandler<T>(command: string): Promise<(raw: T) => Promise<void>> {
   const commands = getCommandService();
   await commands.init();
   // extract the PODLET_COMPOSE_CMD handler
   const handler = vi
     .mocked(COMMAND_API_MOCK.registerCommand)
-    .mock.calls.find(([command]) => command === PODLET_COMPOSE_CMD)?.[1];
-  assert(handler, `handler for command ${PODLET_COMPOSE_CMD} should be defined`);
-  return handler;
+    .mock.calls.find(([mCommand]) => mCommand === command)?.[1];
+  assert(handler, `handler for command ${command} should be defined`);
+  return handler as unknown as Promise<(raw: T) => Promise<void>>;
+}
+
+async function getComposeHandler(): Promise<(raw: ComposeInfoUI) => Promise<void>> {
+  return getHandler<ComposeInfoUI>(PODLET_COMPOSE_CMD);
 }
 
 async function getContainerGenerateHandler(): Promise<(container: ContainerInfoUI) => Promise<void>> {
-  const commands = getCommandService();
-  await commands.init();
-  // extract the PODLET_GENERATE_CONTAINER_CMD handler
-  const handler = vi
-    .mocked(COMMAND_API_MOCK.registerCommand)
-    .mock.calls.find(([command]) => command === PODLET_GENERATE_CONTAINER_CMD)?.[1];
-  assert(handler, `handler for command ${PODLET_GENERATE_CONTAINER_CMD} should be defined`);
-  return handler;
+  return getHandler<ContainerInfoUI>(PODLET_GENERATE_CONTAINER_CMD);
+}
+
+async function getImageGenerateHandler(): Promise<(image: ImageInfoUI) => Promise<void>> {
+  return getHandler<ImageInfoUI>(PODLET_GENERATE_IMAGE_CMD);
 }
 
 test.each<string>([PODLET_COMPOSE_CMD, PODLET_GENERATE_CONTAINER_CMD])(
@@ -114,7 +117,7 @@ test('disposing the command service should dispose resources', async () => {
 
   commands.dispose();
   // we have two commands registered
-  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(2);
+  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(3);
 });
 
 describe(`${PODLET_COMPOSE_CMD} command`, () => {
@@ -192,21 +195,42 @@ describe(`${PODLET_COMPOSE_CMD} command`, () => {
   });
 });
 
-test(`${PODLET_GENERATE_CONTAINER_CMD} command`, async () => {
-  const handler = await getContainerGenerateHandler();
-  await handler({
-    id: 'container-id',
-    engineId: 'dummy-engine-id',
-  } as unknown as ContainerInfoUI);
+describe('resources commands', () => {
+  test(`${PODLET_GENERATE_CONTAINER_CMD} command`, async () => {
+    const handler = await getContainerGenerateHandler();
+    await handler({
+      id: 'container-id',
+      engineId: 'dummy-engine-id',
+    } as unknown as ContainerInfoUI);
 
-  expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
-    'dummy-engine-id',
-  );
-  expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
+    expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
+      'dummy-engine-id',
+    );
+    expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
 
-  expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
-    PROVIDER_INFO_MOCK,
-    QuadletType.CONTAINER,
-    'container-id',
-  );
+    expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
+      PROVIDER_INFO_MOCK,
+      QuadletType.CONTAINER,
+      'container-id',
+    );
+  });
+
+  test(`${PODLET_GENERATE_IMAGE_CMD} command`, async () => {
+    const handler = await getImageGenerateHandler();
+    await handler({
+      id: 'sha256:image-sha',
+      engineId: 'dummy-engine-id',
+    } as unknown as ImageInfoUI);
+
+    expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
+      'dummy-engine-id',
+    );
+    expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
+
+    expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
+      PROVIDER_INFO_MOCK,
+      QuadletType.IMAGE,
+      'sha256:image-sha',
+    );
+  });
 });

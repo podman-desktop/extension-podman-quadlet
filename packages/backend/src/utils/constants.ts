@@ -6,6 +6,7 @@
 export const PODMAN_EXTENSION_ID = 'podman-desktop.podman';
 // commands
 export const PODLET_GENERATE_CONTAINER_CMD = 'podlet.generate.container';
+export const PODLET_GENERATE_IMAGE_CMD = 'podlet.generate.image';
 export const PODLET_COMPOSE_CMD = 'podlet.compose';
 
 // compose constants
