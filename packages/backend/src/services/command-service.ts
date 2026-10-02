@@ -8,6 +8,7 @@ import {
   COMPOSE_LABEL_WORKING_DIR,
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
+  PODLET_GENERATE_IMAGE_CMD,
 } from '/@/utils/constants';
 import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { RoutingService } from '/@/services/routing-service';
@@ -16,6 +17,7 @@ import type { ProviderService } from '/@/services/provider-service';
 import type { ComposeInfoUI } from '/@/models/compose-info-ui';
 import { stat } from 'node:fs/promises';
 import { isAbsolute, join } from 'node:path';
+import type { ImageInfoUI } from '/@/models/image-info-ui';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
@@ -35,6 +37,13 @@ export class CommandService implements Disposable, AsyncInit {
       this.dependencies.commandsApi.registerCommand(
         PODLET_GENERATE_CONTAINER_CMD,
         this.routeToQuadletCreateContainer.bind(this),
+      ),
+    );
+
+    this.#disposables.push(
+      this.dependencies.commandsApi.registerCommand(
+        PODLET_GENERATE_IMAGE_CMD,
+        this.routeToQuadletCreateImage.bind(this),
       ),
     );
 
@@ -65,6 +74,16 @@ export class CommandService implements Disposable, AsyncInit {
     }
 
     return this.dependencies.routing.openQuadletCompose(configFile);
+  }
+
+  protected async routeToQuadletCreateImage(image: ImageInfoUI): Promise<void> {
+    // 1. Get the {@link ProviderContainerConnection} by engine id
+    const provider: ProviderContainerConnection =
+      await this.dependencies.containers.getRunningProviderContainerConnectionByEngineId(image.engineId);
+    // 2. Transform the ProviderContainerConnection in ProviderContainerConnectionDetailedInfo
+    const providerIdentifier = this.dependencies.providers.toProviderContainerConnectionDetailedInfo(provider);
+    // 3. Open the quadlet create page
+    return this.dependencies.routing.openQuadletGenerate(providerIdentifier, QuadletType.IMAGE, image.id);
   }
 
   protected async routeToQuadletCreateContainer(container: ContainerInfoUI): Promise<void> {

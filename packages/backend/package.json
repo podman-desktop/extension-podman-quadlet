@@ -53,6 +53,12 @@
       "dashboard/container": [
         {
           "command": "podlet.generate.container",
+          "title": "Generate Quadlet"
+        }
+      ],
+      "dashboard/image": [
+        {
+          "command": "podlet.generate.image",
           "title": "Generate Quadlet",
           "icon": "fas fa-hammer"
         }
@@ -68,7 +74,11 @@
     "commands": [
       {
         "command": "podlet.generate.container",
-        "title": "Podlet: generate"
+        "title": "Podlet: generate container quadlet"
+      },
+      {
+        "command": "podlet.generate.image",
+        "title": "Podlet: generate image quadlet"
       },
       {
         "command": "podlet.compose",
