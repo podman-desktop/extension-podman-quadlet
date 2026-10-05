@@ -97,14 +97,10 @@ jobs:
         with:
           node-version: 24
           cache: 'pnpm'
-          registry-url: 'https://npm.pkg.github.com'
-          scope: '@feloy'
 
       # Install npm packages for quadlet extension
       - name: Execute pnpm in Podman Quadlet Extension
         run: pnpm install
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Extract @podman-desktop/api version used (and store to $GITHUB_OUTPUT)
       - name: Extract @podman-desktop/api version

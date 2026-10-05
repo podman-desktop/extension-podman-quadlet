@@ -17,7 +17,7 @@
     "@podman-desktop/tests-playwright": "1.29.1",
     "@types/node": "^24",
     "typescript": "^5.9.3",
-    "video-captions": "npm:@feloy/video-captions@0.1.0",
+    "video-captions": "file:../../vendor/feloy-video-captions-0.1.0.tgz",
     "xvfb-maybe": "^0.2.1"
   },
   "type": "module"
