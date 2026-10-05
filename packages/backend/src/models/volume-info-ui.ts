@@ -1,0 +1,38 @@
+/**********************************************************************
+ * Copyright (C) 2026 Red Hat, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ ***********************************************************************/
+/**
+ * This is a copy from {@link https://github.com/podman-desktop/podman-desktop/blob/871d22965e70c413f175b612acaf7ee6a46bc165/packages/renderer/src/lib/volume/VolumeInfoUI.ts#L19}
+ */
+export interface VolumeInfoUI {
+  name: string;
+  shortName: string;
+  mountPoint: string;
+  scope: string;
+  driver: string;
+  created: string;
+  age: string;
+  size: number;
+  humanSize: string;
+  engineId: string;
+  engineName: string;
+  selected: boolean;
+  status: 'USED' | 'UNUSED' | 'DELETING';
+  containersUsage: { id: string; names: string[] }[];
+  labels?: { [key: string]: string };
+  options?: { [key: string]: string };
+}

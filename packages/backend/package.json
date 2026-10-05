@@ -70,6 +70,13 @@
           "icon": "fas fa-hammer"
         }
       ],
+      "dashboard/volume": [
+        {
+          "command": "podlet.generate.volume",
+          "title": "Generate Quadlet",
+          "icon": "fas fa-hammer"
+        }
+      ],
       "dashboard/compose": [
         {
           "command": "podlet.compose",
@@ -90,6 +97,10 @@
       {
         "command": "podlet.generate.pod",
         "title": "Podlet: generate pod quadlet"
+      },
+      {
+        "command": "podlet.generate.volume",
+        "title": "Podlet: generate volume quadlet"
       },
       {
         "command": "podlet.compose",

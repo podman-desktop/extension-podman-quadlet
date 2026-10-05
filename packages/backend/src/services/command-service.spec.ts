@@ -24,6 +24,7 @@ import {
   PODLET_GENERATE_CONTAINER_CMD,
   PODLET_GENERATE_IMAGE_CMD,
   PODLET_GENERATE_POD_CMD,
+  PODLET_GENERATE_VOLUME_CMD,
 } from '/@/utils/constants';
 import { CommandService } from '/@/services/command-service';
 import type { commands as commandsApi, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
@@ -39,6 +40,7 @@ import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/qu
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ImageInfoUI } from '/@/models/image-info-ui';
 import type { PodInfoUI } from '/@/models/pod-info-ui';
+import type { VolumeInfoUI } from '/@/models/volume-info-ui';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),
@@ -107,11 +109,16 @@ async function getPodGenerateHandler(): Promise<(pod: PodInfoUI) => Promise<void
   return getHandler<PodInfoUI>(PODLET_GENERATE_POD_CMD);
 }
 
+async function getVolumeGenerateHandler(): Promise<(volume: VolumeInfoUI) => Promise<void>> {
+  return getHandler<VolumeInfoUI>(PODLET_GENERATE_VOLUME_CMD);
+}
+
 test.each<string>([
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
   PODLET_GENERATE_IMAGE_CMD,
   PODLET_GENERATE_POD_CMD,
+  PODLET_GENERATE_VOLUME_CMD,
 ])('CommandService#init should register command %s', async (command: string) => {
   const commands = getCommandService();
   await commands.init();
@@ -124,8 +131,8 @@ test('disposing the command service should dispose resources', async () => {
   await commands.init();
 
   commands.dispose();
-  // we have four commands registered
-  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(4);
+  // we have five commands registered
+  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(5);
 });
 
 describe(`${PODLET_COMPOSE_CMD} command`, () => {
@@ -255,5 +262,24 @@ describe('resources commands', () => {
     expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
 
     expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(PROVIDER_INFO_MOCK, QuadletType.POD, 'pod-id');
+  });
+
+  test(`${PODLET_GENERATE_VOLUME_CMD} command`, async () => {
+    const handler = await getVolumeGenerateHandler();
+    await handler({
+      name: 'volume-name',
+      engineId: 'dummy-engine-id',
+    } as unknown as VolumeInfoUI);
+
+    expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
+      'dummy-engine-id',
+    );
+    expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
+
+    expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
+      PROVIDER_INFO_MOCK,
+      QuadletType.VOLUME,
+      'volume-name',
+    );
   });
 });
