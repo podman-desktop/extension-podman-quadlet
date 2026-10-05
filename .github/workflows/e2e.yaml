@@ -53,13 +53,22 @@ jobs:
           path: output/plugins/
 
   e2e:
-    name: e2e tests smoke / ${{ matrix.os }}
+    name: e2e tests smoke / ${{ matrix.os }} / ${{ matrix.variant }}
     runs-on: ${{ matrix.os }}
     needs: build-container
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
-        os: [ windows-2025, ubuntu-24.04 ]
+        include:
+          - os: windows-2025
+            variant: baseline
+            test_command: test:e2e:smoke
+          - os: ubuntu-24.04
+            variant: baseline
+            test_command: test:e2e:smoke
+          - os: ubuntu-24.04
+            variant: subtitled
+            test_command: test:e2e:smoke:subtitled
     env:
       SKIP_INSTALLATION: true
       EXTENSION_PREINSTALLED: true
@@ -118,9 +127,15 @@ jobs:
           name: quadlet-plugin
           path: tests/playwright/tests/playwright/output/pd-extension-quadlet-tests/plugins/
 
+      - name: Install FFmpeg for captioned recording
+        if: matrix.variant == 'subtitled'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
       - name: Run E2E Smoke tests
         shell: bash
-        run: pnpm test:e2e:smoke
+        run: pnpm ${{ matrix.test_command }}
         env:
           ELECTRON_DISABLE_SANDBOX: '1'
           NODE_OPTIONS: --no-experimental-strip-types
@@ -130,12 +145,14 @@ jobs:
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: e2e-results-${{ matrix.os }}
+          name: e2e-results-${{ matrix.os }}-${{ matrix.variant }}
           path: |
             tests/playwright/output/
             tests/playwright/tests/
+            tests/playwright/recordings/
 
       - name: Upload screenshots
+        if: matrix.variant == 'baseline'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: e2e-screenshots-${{ matrix.os }}

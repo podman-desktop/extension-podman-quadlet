@@ -1,15 +1,18 @@
-import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import { expect as playExpect } from '@playwright/test';
+import type { ExtensionsPage } from '@podman-desktop/tests-playwright';
 import {
-  test,
+  test as baseTest,
   RunnerOptions,
   waitForPodmanMachineStartup,
   handleConfirmationDialog,
 } from '@podman-desktop/tests-playwright';
+import { configureVideoCaptions, createVideoCaptionTest, frameForCaption } from 'video-captions';
 import { PdQuadletDetailsPage } from './model/pd-quadlet-details-page';
 import { QuadletListPage } from './model/quadlet-list-page';
 import { handleWebview } from './utils/webviewHandler';
 import { QuadletDetailsPage } from './model/quadlet-details-page';
+
+const { test, expect: captionExpect } = createVideoCaptionTest(baseTest, playExpect);
 
 const PODMAN_QUADLET_EXTENSION_OCI_IMAGE =
   process.env.EXTENSION_OCI_IMAGE ?? 'ghcr.io/podman-desktop/pd-extension-quadlet:latest';
@@ -42,6 +45,10 @@ test.use({
       ],
     },
   }),
+});
+
+test.beforeEach(({ page }, testInfo) => {
+  configureVideoCaptions(page, testInfo);
 });
 
 test.beforeAll(async ({ runner, welcomePage, page }) => {
@@ -81,17 +88,26 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
 
     test('Extension (card) is installed, present and active', async ({ navigationBar }) => {
-      const extensions = await navigationBar.openExtensions();
-      await playExpect
-        .poll(async () => await extensions.extensionIsInstalled(PODMAN_QUADLET_CATALOG_EXTENSION_LABEL), {
-          timeout: 30000,
-        })
-        .toBeTruthy();
-      const extensionCard = await extensions.getInstalledExtension(
-        PODMAN_QUADLET_CATALOG_EXTENSION_NAME,
-        PODMAN_QUADLET_CATALOG_EXTENSION_LABEL,
+      await test.step(
+        'Verify the Podman Quadlet extension is active',
+        async () => {
+          const extensions = await navigationBar.openExtensions();
+          await playExpect
+            .poll(async () => await extensions.extensionIsInstalled(PODMAN_QUADLET_CATALOG_EXTENSION_LABEL), {
+              timeout: 30000,
+            })
+            .toBeTruthy();
+          const extensionCard = await extensions.getInstalledExtension(
+            PODMAN_QUADLET_CATALOG_EXTENSION_NAME,
+            PODMAN_QUADLET_CATALOG_EXTENSION_LABEL,
+          );
+          await frameForCaption(extensionCard.status);
+          await captionExpect(extensionCard.status, 'The Podman Quadlet extension is active').toHaveText(
+            PODMAN_QUADLET_CATALOG_STATUS_ACTIVE,
+          );
+        },
+        { params: { videoCaption: true } },
       );
-      await playExpect(extensionCard.status).toHaveText(PODMAN_QUADLET_CATALOG_STATUS_ACTIVE);
     });
 
     test(`Extension's details show correct status, no error`, async ({ page, navigationBar }) => {
@@ -124,7 +140,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       const updatedImages = await pullImagePage.pullImage(QUAY_HELLO_IMAGE);
 
       const exists = await updatedImages.waitForImageExists(QUAY_HELLO_IMAGE_REPO);
-      playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images\`).toBeTruthy();`);
+      playExpect(exists, `${QUAY_HELLO_IMAGE} image not present in the list of images`).toBeTruthy();
     });
 
     test.beforeEach('Open Podman Quadlet webview', async ({ runner, page, navigationBar }) => {
@@ -136,153 +152,214 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
     });
 
     test('screenshot quadlet list page empty', async () => {
-      await playExpect(quadletListPage.generateButton).toBeVisible();
-      await quadletListPage.screenshot('quadlet-list-page-empty');
+      await test.step(
+        'Show the empty Quadlet list',
+        async () => {
+          await playExpect(quadletListPage.generateButton).toBeVisible();
+          await quadletListPage.screenshot('quadlet-list-page-empty');
+          const emptyHeading = quadletListPage.webview.getByRole('heading', { name: 'No Quadlets', exact: true });
+          await frameForCaption(emptyHeading);
+          await captionExpect(emptyHeading, 'The Quadlet list is empty').toBeVisible();
+        },
+        { params: { videoCaption: true } },
+      );
     });
 
     test(`generate ${QUAY_HELLO_IMAGE} image quadlet`, async () => {
-      test.setTimeout(150_000);
+      test.setTimeout(Number(process.env.CAPTION_PACE_MS) > 0 ? 270_000 : 150_000);
 
-      const generateForm = await quadletListPage.navigateToGenerateForm();
-      await generateForm.waitForLoad();
+      const generateForm = await test.step(
+        'Choose the hello image for a new Quadlet',
+        async () => {
+          const generateForm = await quadletListPage.navigateToGenerateForm();
+          await generateForm.waitForLoad();
 
-      await playExpect(generateForm.cancelButton).toBeEnabled();
-      await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
+          await playExpect(generateForm.cancelButton).toBeEnabled();
+          await playExpect(generateForm.generateButton).toBeDisabled(); // default should be disabled
 
-      // wait for loading to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 5_000,
-        })
-        .toBeFalsy();
+          // wait for loading to be finished
+          await playExpect
+            .poll(async () => await generateForm.isLoading(), {
+              timeout: 5_000,
+            })
+            .toBeFalsy();
 
-      await generateForm.screenshot('quadlet-generate-form-default');
+          await generateForm.screenshot('quadlet-generate-form-default');
 
-      // select the image
-      const options = await generateForm.quadletType.getOptions();
-      playExpect(options).toContain('Image');
-      await generateForm.quadletType.select('Image');
+          // select the image
+          const options = await generateForm.quadletType.getOptions();
+          playExpect(options).toContain('Image');
+          await generateForm.quadletType.select('Image');
 
-      // wait for loading to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 5_000,
-        })
-        .toBeFalsy();
+          // wait for loading to be finished
+          await playExpect
+            .poll(async () => await generateForm.isLoading(), {
+              timeout: 5_000,
+            })
+            .toBeFalsy();
 
-      // select hello world image
-      const images = await generateForm.imageSelect.getOptions();
-      playExpect(images.length).toBeGreaterThan(0);
-      playExpect(images).toContain(QUAY_HELLO_IMAGE);
-      await generateForm.imageSelect.set(QUAY_HELLO_IMAGE);
+          // select hello world image
+          const images = await generateForm.imageSelect.getOptions();
+          playExpect(images.length).toBeGreaterThan(0);
+          playExpect(images).toContain(QUAY_HELLO_IMAGE);
+          await generateForm.imageSelect.set(QUAY_HELLO_IMAGE);
 
-      // wait for generateButton to be enabled
-      await playExpect
-        .poll(async () => await generateForm.generateButton.isEnabled(), {
-          timeout: 5_000,
-        })
-        .toBeTruthy();
+          // wait for generateButton to be enabled
+          await playExpect
+            .poll(async () => await generateForm.generateButton.isEnabled(), {
+              timeout: 5_000,
+            })
+            .toBeTruthy();
+          await frameForCaption(generateForm.generateButton);
+          await captionExpect(generateForm.generateButton, 'The hello image is ready to generate').toBeEnabled();
+          return generateForm;
+        },
+        { params: { videoCaption: true } },
+      );
 
-      // generate
-      await generateForm.generateButton.click();
+      await test.step(
+        'Generate the hello image Quadlet',
+        async () => {
+          // generate
+          await generateForm.generateButton.click();
 
-      // wait for loading (generate) to be finished
-      await playExpect
-        .poll(async () => await generateForm.isLoading(), {
-          timeout: 15_000,
-        })
-        .toBeFalsy();
+          // wait for loading (generate) to be finished
+          await playExpect
+            .poll(async () => await generateForm.isLoading(), {
+              timeout: 15_000,
+            })
+            .toBeFalsy();
 
-      // wait for content to be available
-      await playExpect
-        .poll(
-          async (): Promise<boolean> => {
-            const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
-            const content = await monacoEditor.textContent();
-            return content?.includes('[Image]Arch=amd64OS=linuxImage=quay.io/podman/hello:latest') ?? false;
-          },
-          {
-            timeout: 5_000,
-          },
-        )
-        .toBeTruthy();
+          // wait for content to be available
+          const monacoEditor = generateForm.webview.locator('.monaco-editor').nth(0);
+          await playExpect
+            .poll(
+              async (): Promise<boolean> => {
+                const content = await monacoEditor.textContent();
+                return content?.includes('[Image]Arch=amd64OS=linuxImage=quay.io/podman/hello:latest') ?? false;
+              },
+              {
+                timeout: 5_000,
+              },
+            )
+            .toBeTruthy();
+          await frameForCaption(monacoEditor);
+          await captionExpect(monacoEditor, 'The generated Quadlet uses the hello image').toContainText(
+            'Image=quay.io/podman/hello:latest',
+          );
+        },
+        { params: { videoCaption: true } },
+      );
 
-      // put the filename
-      await generateForm.quadletName.fill('hello.image');
+      const row = await test.step(
+        'Save hello.image into the Podman machine',
+        async () => {
+          // put the filename
+          await generateForm.quadletName.fill('hello.image');
 
-      // wait for saveIntoMachine button to be enabled
-      await playExpect
-        .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
-          timeout: 5_000,
-        })
-        .toBeTruthy();
+          // wait for saveIntoMachine button to be enabled
+          await playExpect
+            .poll(async () => await generateForm.saveIntoMachine.isEnabled(), {
+              timeout: 5_000,
+            })
+            .toBeTruthy();
 
-      // start save into machine
-      await generateForm.saveIntoMachine.click();
+          // start save into machine
+          await generateForm.saveIntoMachine.click();
 
-      // wait for complete button to appear
-      await playExpect
-        .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
-          timeout: 15_000,
-        })
-        .toBeTruthy();
+          // wait for complete button to appear
+          await playExpect
+            .poll(async () => await generateForm.gotoPageButton.isEnabled(), {
+              timeout: 15_000,
+            })
+            .toBeTruthy();
 
-      // return to home page
-      await generateForm.gotoPageButton.click();
+          // return to home page
+          await generateForm.gotoPageButton.click();
 
-      // let's get the new row we added
-      const row = await quadletListPage.getQuadletRow('hello-image.service');
+          // let's get the new row we added
+          const row = await quadletListPage.getQuadletRow('hello-image.service');
+          // get the status locator
+          const status = row.getByRole('status');
+          // read the title (either 'RUNNING' or '')
+          const title = await status.getAttribute('title');
+          playExpect(title).not.toBe('RUNNING');
+          await quadletListPage.screenshot('quadlet-list-page-one-quadlet');
+          await frameForCaption(row);
+          await captionExpect(row, 'The hello image Quadlet is listed').toBeVisible();
+          return row;
+        },
+        { params: { videoCaption: true } },
+      );
 
-      // get the status locator
       const status = row.getByRole('status');
-      // read the title (either 'RUNNING' or '')
-      const title = await status.getAttribute('title');
-      playExpect(title).not.toBe('RUNNING');
 
-      await quadletListPage.screenshot('quadlet-list-page-one-quadlet');
+      const details = await test.step(
+        'Start the hello image Quadlet',
+        async () => {
+          // open the details page
+          await status.click();
+          // Create quadlet details page
+          const details = new QuadletDetailsPage(quadletListPage.page, quadletListPage.webview, 'hello-image.service');
+          await details.waitForLoad();
+          // start the quadlet
+          await details.start.click();
+          // wait for active status to appear
+          await playExpect
+            .poll(async () => await details.isActive(), {
+              timeout: 15_000,
+            })
+            .toBeTruthy();
+          const runningStatus = details.webview.getByRole('status');
+          await frameForCaption(runningStatus);
+          await captionExpect(runningStatus, 'The hello image Quadlet is running').toHaveAttribute('title', 'RUNNING');
+          return details;
+        },
+        { params: { videoCaption: true } },
+      );
 
-      // open the details page
-      await status.click();
+      await test.step(
+        'Stop the hello image Quadlet',
+        async () => {
+          // stop the quadlet
+          await details.stop.click();
+          // wait for inactive status
+          await playExpect
+            .poll(async () => !(await details.isActive()), {
+              timeout: 15_000,
+            })
+            .toBeTruthy();
+          const stoppedStatus = details.webview.getByRole('status');
+          await frameForCaption(stoppedStatus);
+          await captionExpect(stoppedStatus, 'The hello image Quadlet has stopped').not.toHaveAttribute(
+            'title',
+            'RUNNING',
+          );
+        },
+        { params: { videoCaption: true } },
+      );
 
-      // Create quadlet details page
-      const details = new QuadletDetailsPage(quadletListPage.page, quadletListPage.webview, 'hello-image.service');
-      await details.waitForLoad();
-
-      // start the quadlet
-      await details.start.click();
-
-      // wait for active status to appear
-      await playExpect
-        .poll(async () => await details.isActive(), {
-          timeout: 15_000,
-        })
-        .toBeTruthy();
-
-      // stop the quadlet
-      await details.stop.click();
-
-      // wait for inactive status
-      await playExpect
-        .poll(async () => !(await details.isActive()), {
-          timeout: 15_000,
-        })
-        .toBeTruthy();
-
-      // remove the quadlet
-      await details.remove.click();
-
-      // confirm removal
-      await handleConfirmationDialog(details.page, 'Podman Quadlet', true, 'Confirm');
-
-      // wait to be redirected to list page
-      await quadletListPage.waitForLoad();
-
-      // ensure the page is empty
-      await playExpect
-        .poll(async () => await quadletListPage.pageIsEmpty(), {
-          timeout: 15_000,
-        })
-        .toBeTruthy();
+      await test.step(
+        'Remove the hello image Quadlet',
+        async () => {
+          // remove the quadlet
+          await details.remove.click();
+          // confirm removal
+          await handleConfirmationDialog(details.page, 'Podman Quadlet', true, 'Confirm');
+          // wait to be redirected to list page
+          await quadletListPage.waitForLoad();
+          // ensure the page is empty
+          await playExpect
+            .poll(async () => await quadletListPage.pageIsEmpty(), {
+              timeout: 15_000,
+            })
+            .toBeTruthy();
+          const emptyHeading = quadletListPage.webview.getByRole('heading', { name: 'No Quadlets', exact: true });
+          await frameForCaption(emptyHeading);
+          await captionExpect(emptyHeading, 'The Quadlet list is empty after removal').toBeVisible();
+        },
+        { params: { videoCaption: true } },
+      );
     });
   });
 });
