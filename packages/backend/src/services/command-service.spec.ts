@@ -23,6 +23,7 @@ import {
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
   PODLET_GENERATE_IMAGE_CMD,
+  PODLET_GENERATE_POD_CMD,
 } from '/@/utils/constants';
 import { CommandService } from '/@/services/command-service';
 import type { commands as commandsApi, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
@@ -37,6 +38,7 @@ import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { ProviderContainerConnectionDetailedInfo } from '@podman-desktop/quadlet-extension-core-api';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ImageInfoUI } from '/@/models/image-info-ui';
+import type { PodInfoUI } from '/@/models/pod-info-ui';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),
@@ -101,23 +103,29 @@ async function getImageGenerateHandler(): Promise<(image: ImageInfoUI) => Promis
   return getHandler<ImageInfoUI>(PODLET_GENERATE_IMAGE_CMD);
 }
 
-test.each<string>([PODLET_COMPOSE_CMD, PODLET_GENERATE_CONTAINER_CMD])(
-  'CommandService#init should register command %s',
-  async (command: string) => {
-    const commands = getCommandService();
-    await commands.init();
+async function getPodGenerateHandler(): Promise<(pod: PodInfoUI) => Promise<void>> {
+  return getHandler<PodInfoUI>(PODLET_GENERATE_POD_CMD);
+}
 
-    expect(COMMAND_API_MOCK.registerCommand).toHaveBeenCalledWith(command, expect.any(Function));
-  },
-);
+test.each<string>([
+  PODLET_COMPOSE_CMD,
+  PODLET_GENERATE_CONTAINER_CMD,
+  PODLET_GENERATE_IMAGE_CMD,
+  PODLET_GENERATE_POD_CMD,
+])('CommandService#init should register command %s', async (command: string) => {
+  const commands = getCommandService();
+  await commands.init();
+
+  expect(COMMAND_API_MOCK.registerCommand).toHaveBeenCalledWith(command, expect.any(Function));
+});
 
 test('disposing the command service should dispose resources', async () => {
   const commands = getCommandService();
   await commands.init();
 
   commands.dispose();
-  // we have two commands registered
-  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(3);
+  // we have four commands registered
+  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(4);
 });
 
 describe(`${PODLET_COMPOSE_CMD} command`, () => {
@@ -232,5 +240,20 @@ describe('resources commands', () => {
       QuadletType.IMAGE,
       'sha256:image-sha',
     );
+  });
+
+  test(`${PODLET_GENERATE_POD_CMD} command`, async () => {
+    const handler = await getPodGenerateHandler();
+    await handler({
+      id: 'pod-id',
+      engineId: 'dummy-engine-id',
+    } as unknown as PodInfoUI);
+
+    expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
+      'dummy-engine-id',
+    );
+    expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
+
+    expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(PROVIDER_INFO_MOCK, QuadletType.POD, 'pod-id');
   });
 });
