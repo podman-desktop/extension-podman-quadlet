@@ -25,6 +25,7 @@ import {
   PODLET_GENERATE_IMAGE_CMD,
   PODLET_GENERATE_POD_CMD,
   PODLET_GENERATE_VOLUME_CMD,
+  PODLET_GENERATE_NETWORK_CMD,
 } from '/@/utils/constants';
 import { CommandService } from '/@/services/command-service';
 import type { commands as commandsApi, Disposable, ProviderContainerConnection } from '@podman-desktop/api';
@@ -41,6 +42,7 @@ import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 import type { ImageInfoUI } from '/@/models/image-info-ui';
 import type { PodInfoUI } from '/@/models/pod-info-ui';
 import type { VolumeInfoUI } from '/@/models/volume-info-ui';
+import type { NetworkInfoUI } from '/@/models/network-info-ui';
 
 const COMMAND_API_MOCK: typeof commandsApi = {
   registerCommand: vi.fn(),
@@ -113,12 +115,17 @@ async function getVolumeGenerateHandler(): Promise<(volume: VolumeInfoUI) => Pro
   return getHandler<VolumeInfoUI>(PODLET_GENERATE_VOLUME_CMD);
 }
 
+async function getNetworkGenerateHandler(): Promise<(network: NetworkInfoUI) => Promise<void>> {
+  return getHandler<NetworkInfoUI>(PODLET_GENERATE_NETWORK_CMD);
+}
+
 test.each<string>([
   PODLET_COMPOSE_CMD,
   PODLET_GENERATE_CONTAINER_CMD,
   PODLET_GENERATE_IMAGE_CMD,
   PODLET_GENERATE_POD_CMD,
   PODLET_GENERATE_VOLUME_CMD,
+  PODLET_GENERATE_NETWORK_CMD,
 ])('CommandService#init should register command %s', async (command: string) => {
   const commands = getCommandService();
   await commands.init();
@@ -131,8 +138,8 @@ test('disposing the command service should dispose resources', async () => {
   await commands.init();
 
   commands.dispose();
-  // we have five commands registered
-  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(5);
+  // we have six commands registered
+  expect(DISPOSABLE_MOCK.dispose).toHaveBeenCalledTimes(6);
 });
 
 describe(`${PODLET_COMPOSE_CMD} command`, () => {
@@ -280,6 +287,25 @@ describe('resources commands', () => {
       PROVIDER_INFO_MOCK,
       QuadletType.VOLUME,
       'volume-name',
+    );
+  });
+
+  test(`${PODLET_GENERATE_NETWORK_CMD} command`, async () => {
+    const handler = await getNetworkGenerateHandler();
+    await handler({
+      id: 'network-id',
+      engineId: 'dummy-engine-id',
+    } as unknown as NetworkInfoUI);
+
+    expect(CONTAINER_SERVICE_MOCK.getRunningProviderContainerConnectionByEngineId).toHaveBeenCalledWith(
+      'dummy-engine-id',
+    );
+    expect(PROVIDER_SERVICE_MOCK.toProviderContainerConnectionDetailedInfo).toHaveBeenCalledWith(PROVIDER_MOCK);
+
+    expect(ROUTING_MOCK.openQuadletGenerate).toHaveBeenCalledWith(
+      PROVIDER_INFO_MOCK,
+      QuadletType.NETWORK,
+      'network-id',
     );
   });
 });

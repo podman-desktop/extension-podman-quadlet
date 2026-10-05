@@ -11,6 +11,7 @@ import {
   PODLET_GENERATE_IMAGE_CMD,
   PODLET_GENERATE_POD_CMD,
   PODLET_GENERATE_VOLUME_CMD,
+  PODLET_GENERATE_NETWORK_CMD,
 } from '/@/utils/constants';
 import type { ContainerInfoUI } from '/@/models/container-info-ui';
 import type { RoutingService } from '/@/services/routing-service';
@@ -22,6 +23,7 @@ import { isAbsolute, join } from 'node:path';
 import type { ImageInfoUI } from '/@/models/image-info-ui';
 import type { PodInfoUI } from '/@/models/pod-info-ui';
 import type { VolumeInfoUI } from '/@/models/volume-info-ui';
+import type { NetworkInfoUI } from '/@/models/network-info-ui';
 import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Dependencies {
@@ -59,6 +61,13 @@ export class CommandService implements Disposable, AsyncInit {
       this.dependencies.commandsApi.registerCommand(
         PODLET_GENERATE_VOLUME_CMD,
         this.routeToQuadletCreateVolume.bind(this),
+      ),
+    );
+
+    this.#disposables.push(
+      this.dependencies.commandsApi.registerCommand(
+        PODLET_GENERATE_NETWORK_CMD,
+        this.routeToQuadletCreateNetwork.bind(this),
       ),
     );
 
@@ -119,6 +128,16 @@ export class CommandService implements Disposable, AsyncInit {
     const providerIdentifier = this.dependencies.providers.toProviderContainerConnectionDetailedInfo(provider);
     // 3. Open the quadlet create page
     return this.dependencies.routing.openQuadletGenerate(providerIdentifier, QuadletType.VOLUME, volume.name);
+  }
+
+  protected async routeToQuadletCreateNetwork(network: NetworkInfoUI): Promise<void> {
+    // 1. Get the {@link ProviderContainerConnection} by engine id
+    const provider: ProviderContainerConnection =
+      await this.dependencies.containers.getRunningProviderContainerConnectionByEngineId(network.engineId);
+    // 2. Transform the ProviderContainerConnection in ProviderContainerConnectionDetailedInfo
+    const providerIdentifier = this.dependencies.providers.toProviderContainerConnectionDetailedInfo(provider);
+    // 3. Open the quadlet create page
+    return this.dependencies.routing.openQuadletGenerate(providerIdentifier, QuadletType.NETWORK, network.id);
   }
 
   protected async routeToQuadletCreateContainer(container: ContainerInfoUI): Promise<void> {

@@ -77,6 +77,13 @@
           "icon": "fas fa-hammer"
         }
       ],
+      "dashboard/network": [
+        {
+          "command": "podlet.generate.network",
+          "title": "Generate Quadlet",
+          "icon": "fas fa-hammer"
+        }
+      ],
       "dashboard/compose": [
         {
           "command": "podlet.compose",
@@ -101,6 +108,10 @@
       {
         "command": "podlet.generate.volume",
         "title": "Podlet: generate volume quadlet"
+      },
+      {
+        "command": "podlet.generate.network",
+        "title": "Podlet: generate network quadlet"
       },
       {
         "command": "podlet.compose",
