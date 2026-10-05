@@ -346,8 +346,8 @@ importers:
         specifier: ^6.9.5
         version: 6.9.5(@types/node@24.10.9)(supports-color@10.2.2)
       '@playwright/test':
-        specifier: 1.57.0
-        version: 1.57.0
+        specifier: 1.63.0
+        version: 1.63.0
       '@podman-desktop/tests-playwright':
         specifier: 1.29.1
         version: 1.29.1
@@ -357,6 +357,9 @@ importers:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
+      video-captions:
+        specifier: npm:@feloy/video-captions@0.1.0
+        version: '@feloy/video-captions@0.1.0(@playwright/test@1.63.0)'
       xvfb-maybe:
         specifier: ^0.2.1
         version: 0.2.1(supports-color@10.2.2)
@@ -570,6 +573,12 @@ packages:
     peerDependenciesMeta:
       '@noble/hashes':
         optional: true
+
+  '@feloy/video-captions@0.1.0':
+    resolution: {integrity: sha512-wfxwTZQ/6PrphuonI0gxQRIH74rSbbgVmnq/Dsme7gtn4lXMj4Rp1M96tSmSkssr9SlEax9gtCTw3SMjElJtFQ==, tarball: https://npm.pkg.github.com/download/@feloy/video-captions/0.1.0/c30687b75e5b1fdc83bc05f1686d2da8589ac682}
+    engines: {node: '>=20'}
+    peerDependencies:
+      '@playwright/test': '>=1.63.0 <2'
 
   '@floating-ui/core@1.7.5':
     resolution: {integrity: sha512-1Ih4WTWyw0+lKyFMcBHGbb5U5FtuHJuujoyyr5zTaWS5EYMeT6Jb2AuDeftsCsEuchO+mM2ij5+q9crhydzLhQ==}
@@ -900,9 +909,9 @@ packages:
     peerDependencies:
       typescript: ^3 || ^4 || ^5
 
-  '@playwright/test@1.57.0':
-    resolution: {integrity: sha512-6TyEnHgd6SArQO8UO2OMTxshln3QMWBtPGrOCgs3wVEmQmwyuNtB10IZMfmYDE0riwNR1cu4q+pPcxMVtaG3TA==}
-    engines: {node: '>=18'}
+  '@playwright/test@1.63.0':
+    resolution: {integrity: sha512-oxMK4vllB9RK5NQ2l1pq1IfOf2AvnEuj/vYGDj0H2nMtmtZpKtCwt/l00GEO6xjGfpBNAvjovvYdCm50dRQkpQ==}
+    engines: {node: '>=20'}
     hasBin: true
 
   '@podman-desktop/api@1.29.1':
@@ -2368,11 +2377,6 @@ packages:
     resolution: {integrity: sha512-w8ZNZr2mKIc7qeNaQ9AVPT1+iFaI+Avd4xudVOvdDJ8VytREi1Ft5Ih7hd9jjehod8vAM5GMsfQ/TpPf4EyoEA==}
     engines: {node: '>=14.14'}
 
-  fsevents@2.3.2:
-    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
-    engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
-    os: [darwin]
-
   fsevents@2.3.3:
     resolution: {integrity: sha512-5xoDfX+fL7faATnagmWPpbFtwh/R77WmMMqqHGS65C3vvB0YHrgF+B1YmZ3441tMj5n63k0212XNoJwzlhffQw==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
@@ -3186,14 +3190,14 @@ packages:
   pkg-types@2.3.3:
     resolution: {integrity: sha512-j/lCFdcppV0JxWpCEITdbDltBxPP6cHT+yNJ6Go2OgoSA9518X847X9z0p6LtA4Nc16+eQzCZjRrWanTGvHJ5w==}
 
-  playwright-core@1.57.0:
-    resolution: {integrity: sha512-agTcKlMw/mjBWOnD6kFZttAAGHgi/Nw0CZ2o6JqWSbMlI219lAFLZZCyqByTsvVAJq5XA5H8cA6PrvBRpBWEuQ==}
-    engines: {node: '>=18'}
+  playwright-core@1.63.0:
+    resolution: {integrity: sha512-rYCsBF/M5HjUch52bbtVONEFjv6Xu8sm8h72dNlR5bzIE1fvC/bxgspzkjSfU+MweEMmPM8KJebG6nnyxo5mCg==}
+    engines: {node: '>=20'}
     hasBin: true
 
-  playwright@1.57.0:
-    resolution: {integrity: sha512-ilYQj1s8sr2ppEJ2YVadYBN0Mb3mdo9J0wQ+UuDhzYqURwSoW4n1Xs5vs7ORwgDGmyEh33tRMeS8KhdkMoLXQw==}
-    engines: {node: '>=18'}
+  playwright@1.63.0:
+    resolution: {integrity: sha512-+7ziBLidS4NaNCdt57SUDT+wYmmd5fmiQejUic/kb+YsYSCPyOOE9sebzMjNmQrsnNpDJqd4WHvV/8lfKfUDUg==}
+    engines: {node: '>=20'}
     hasBin: true
 
   pluralize@8.0.0:
@@ -4394,6 +4398,10 @@ snapshots:
 
   '@exodus/bytes@1.15.1': {}
 
+  '@feloy/video-captions@0.1.0(@playwright/test@1.63.0)':
+    dependencies:
+      '@playwright/test': 1.63.0
+
   '@floating-ui/core@1.7.5':
     dependencies:
       '@floating-ui/utils': 0.2.11
@@ -4700,9 +4708,9 @@ snapshots:
       esquery: 1.7.0
       typescript: 5.9.3
 
-  '@playwright/test@1.57.0':
+  '@playwright/test@1.63.0':
     dependencies:
-      playwright: 1.57.0
+      playwright: 1.63.0
 
   '@podman-desktop/api@1.29.1': {}
 
@@ -6243,9 +6251,6 @@ snapshots:
       universalify: 2.0.1
     optional: true
 
-  fsevents@2.3.2:
-    optional: true
-
   fsevents@2.3.3:
     optional: true
 
@@ -6992,13 +6997,11 @@ snapshots:
       exsolve: 1.1.1
       pathe: 2.0.3
 
-  playwright-core@1.57.0: {}
+  playwright-core@1.63.0: {}
 
-  playwright@1.57.0:
+  playwright@1.63.0:
     dependencies:
-      playwright-core: 1.57.0
-    optionalDependencies:
-      fsevents: 2.3.2
+      playwright-core: 1.63.0
 
   pluralize@8.0.0: {}
 
