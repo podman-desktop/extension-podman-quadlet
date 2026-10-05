@@ -19,6 +19,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import type {
   CancellationToken,
+  Disposable,
   env,
   Progress,
   ProviderContainerConnection,
@@ -35,6 +36,7 @@ import type { SystemdService } from '/@/services/systemd-service';
 import { QuadletService } from '/@/services/quadlet-service';
 import { QuadletDryRunParser } from '/@/utils/parsers/quadlet-dryrun-parser';
 import type {
+  ProviderContainerConnectionDetailedInfo,
   Quadlet,
   ServiceQuadlet,
   TemplateQuadlet,
@@ -61,6 +63,7 @@ const WSL_RUNNING_PROVIDER_CONNECTION_MOCK: ProviderContainerConnection = {
 
 // Mock for dependencies injection (constructor)
 const PROVIDER_SERVICE_MOCK: ProviderService = {
+  event: vi.fn(),
   getContainerConnections: vi.fn(),
   getProviderContainerConnection: vi.fn(),
   toProviderContainerConnectionDetailedInfo: vi.fn(),
@@ -379,7 +382,89 @@ describe('QuadletService#getQuadletVersion', () => {
   });
 });
 
+describe('QuadletService#init', () => {
+  const PROVIDERS_EVENT_DISPOSABLE: Disposable = {
+    dispose: vi.fn(),
+  };
+
+  const WSL_CONNECTION_INFO: ProviderContainerConnectionDetailedInfo = {
+    providerId: WSL_RUNNING_PROVIDER_CONNECTION_MOCK.providerId,
+    name: WSL_RUNNING_PROVIDER_CONNECTION_MOCK.connection.name,
+    status: 'started',
+    vmType: WSL_RUNNING_PROVIDER_CONNECTION_MOCK.connection.vmType,
+  };
+
+  let quadlet: QuadletServiceTest;
+  let listener: (connections: ProviderContainerConnectionDetailedInfo[]) => void;
+
+  beforeEach(async () => {
+    vi.mocked(PROVIDER_SERVICE_MOCK.event).mockReturnValue(PROVIDERS_EVENT_DISPOSABLE);
+
+    quadlet = getQuadletService();
+    await quadlet.init();
+    await quadlet.collectPodmanQuadlet();
+
+    expect(PROVIDER_SERVICE_MOCK.event).toHaveBeenCalledOnce();
+    listener = vi.mocked(PROVIDER_SERVICE_MOCK.event).mock.calls[0][0];
+
+    expect(quadlet.all()).not.toHaveLength(0);
+    vi.mocked(WEBVIEW_MOCK.postMessage).mockClear();
+  });
+
+  test('connection still started should keep its quadlets', () => {
+    listener([WSL_CONNECTION_INFO]);
+
+    expect(quadlet.all()).not.toHaveLength(0);
+    expect(quadlet.getSynchronisationInfo()).toHaveLength(1);
+    expect(WEBVIEW_MOCK.postMessage).not.toHaveBeenCalled();
+  });
+
+  test('connection stopped should remove its quadlets', () => {
+    listener([{ ...WSL_CONNECTION_INFO, status: 'stopped' }]);
+
+    expect(quadlet.all()).toHaveLength(0);
+    expect(quadlet.getSynchronisationInfo()).toHaveLength(0);
+    expect(WEBVIEW_MOCK.postMessage).toHaveBeenCalledWith({
+      id: Messages.UPDATE_QUADLETS,
+      body: [],
+    });
+  });
+
+  test('connection unregistered should remove its quadlets', () => {
+    listener([]);
+
+    expect(quadlet.all()).toHaveLength(0);
+    expect(quadlet.getSynchronisationInfo()).toHaveLength(0);
+  });
+
+  test('dispose should dispose the providers event listener', () => {
+    quadlet.dispose();
+
+    expect(PROVIDERS_EVENT_DISPOSABLE.dispose).toHaveBeenCalledOnce();
+  });
+});
+
 describe('QuadletService#refreshQuadletsStatuses', () => {
+  test('should skip connection not started', async () => {
+    const quadlet = getQuadletService();
+    await quadlet.collectPodmanQuadlet();
+    vi.mocked(SYSTEMD_SERVICE_MOCK.getActiveStatus).mockClear();
+    vi.mocked(PODMAN_SERVICE_MOCK.getWorker).mockClear();
+
+    vi.mocked(PROVIDER_SERVICE_MOCK.getProviderContainerConnection).mockReturnValue({
+      ...WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+      connection: {
+        ...WSL_RUNNING_PROVIDER_CONNECTION_MOCK.connection,
+        status: () => 'stopped',
+      },
+    });
+
+    await quadlet.refreshQuadletsStatuses();
+
+    expect(PODMAN_SERVICE_MOCK.getWorker).not.toHaveBeenCalled();
+    expect(SYSTEMD_SERVICE_MOCK.getActiveStatus).not.toHaveBeenCalled();
+  });
+
   test('should only provide quadlet with corresponding service and non-template', async () => {
     const quadlet = getQuadletService();
     await quadlet.collectPodmanQuadlet();
