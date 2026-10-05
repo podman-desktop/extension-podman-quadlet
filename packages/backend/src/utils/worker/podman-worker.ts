@@ -177,6 +177,12 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
   }
 
   /**
+   * Whether the worker can still be used. A worker is bound to a single session with the
+   * underlying engine: once it is not alive anymore, it should be disposed and a new one created.
+   */
+  abstract get alive(): boolean;
+
+  /**
    * Dispose any pending resources / connections
    */
   abstract dispose(): void;

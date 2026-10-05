@@ -121,7 +121,18 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
   async getWorker(connection: ProviderContainerConnection): Promise<PodmanWorker> {
     const key = this.getKey(connection);
     const worker = this.#pools.get(key);
-    if (worker) return worker;
+    /**
+     * The worker is bound to the session it was created with (e.g. ssh user for a rootless / rootful machine),
+     * if the session ended (machine stopped, network issue) we need to create a new one.
+     */
+    if (worker) {
+      if (worker.alive) {
+        return worker;
+      } else {
+        worker.dispose();
+        this.#pools.delete(key);
+      }
+    }
 
     /**
      * Detect podman linux native

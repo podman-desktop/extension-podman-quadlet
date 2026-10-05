@@ -56,25 +56,25 @@ describe('connect', () => {
     expect(podmanSFTP.connected).toBeTruthy();
   });
 
-  test('connection closing should handle reconnection', async () => {
+  test.each(['end', 'close'])('connection receiving %s event should not reconnect', async event => {
     await podmanSFTP.connect();
 
     // ensure is connected
     expect(podmanSFTP.connected).toBeTruthy();
 
-    const endListener = vi.mocked(SftpClient.prototype.on).mock.calls.find(([event]) => event === 'end')?.[1];
-    assert(endListener, 'client should register end listener');
+    const listener = vi.mocked(SftpClient.prototype.on).mock.calls.find(([name]) => name === event)?.[1];
+    assert(listener, `client should register ${event} listener`);
 
-    endListener();
+    listener();
 
-    // ensure is connected
+    // ensure is not connected
     expect(podmanSFTP.connected).toBeFalsy();
 
     await vi.advanceTimersByTimeAsync(50_000);
 
-    expect(SftpClient.prototype.connect).toHaveBeenCalledTimes(2);
-    // ensure is connected
-    expect(podmanSFTP.connected).toBeTruthy();
+    // we should not have tried to reconnect
+    expect(SftpClient.prototype.connect).toHaveBeenCalledOnce();
+    expect(podmanSFTP.connected).toBeFalsy();
   });
 });
 
