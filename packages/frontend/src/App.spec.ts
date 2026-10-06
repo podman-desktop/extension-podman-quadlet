@@ -94,3 +94,21 @@ test('compose route should decode query parameters', async () => {
     expect(QuadletCompose).toHaveBeenCalledWith(expect.anything(), query);
   });
 });
+
+test.each([
+  '/home/user/compose.yaml',
+  '/home/user/100%/compose.yaml',
+  '/home/user/a+b c&d#e,f=g/compose.yaml',
+  '/home/user/%20/compose.yaml',
+])('compose route should receive the original filepath %s', async filepath => {
+  vi.mocked(getRouterState).mockResolvedValue({
+    // same encoding as RoutingService#openQuadletCompose
+    url: `/quadlets/compose?filepath=${encodeURIComponent(filepath)}`,
+  });
+
+  render(App);
+
+  await vi.waitFor(() => {
+    expect(QuadletCompose).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ filepath }));
+  });
+});
