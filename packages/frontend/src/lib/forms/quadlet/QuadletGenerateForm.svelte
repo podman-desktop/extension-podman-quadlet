@@ -83,6 +83,11 @@ $effect(() => {
 
 let quadlet: string | undefined = $state(undefined);
 let quadletFilename: string = $state('');
+let quadletFilenameInput: HTMLInputElement | undefined = $state(undefined);
+// guide the user by focusing the filename input when reaching the edit step
+$effect(() => {
+  quadletFilenameInput?.focus();
+});
 let loaded: boolean = $state(false);
 let validFilename: boolean = $derived.by(() => {
   // split filename by . (E.g. foo.container => ['foo', 'container'])
@@ -225,6 +230,7 @@ function resetGenerate(): void {
         name="quadlet filename"
         placeholder="Quadlet filename (E.g. foo.{quadletType.toLowerCase()})"
         bind:value={quadletFilename}
+        bind:element={quadletFilenameInput}
         id="quadlet-filename" />
       {#if quadletFilename.length > 0 && !validFilename}
         <ErrorMessage error="Quadlet filename must be <name>.{quadletType.toLowerCase()}" />
