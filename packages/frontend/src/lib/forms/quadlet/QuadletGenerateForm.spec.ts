@@ -202,6 +202,14 @@ describe('validating filename', () => {
     expect(loadIntoMachine).toBeDefined();
   });
 
+  test('expect quadlet filename input to be focused', async () => {
+    const input = renderResult.getByRole('textbox', { name: 'Quadlet filename' });
+
+    await vi.waitFor(() => {
+      expect(input).toHaveFocus();
+    });
+  });
+
   test('expect button to be disabled by default', async () => {
     const loadIntoMachine = renderResult.getByRole('button', { name: 'Load into machine' });
 
