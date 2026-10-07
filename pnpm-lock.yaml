@@ -320,8 +320,8 @@ importers:
         specifier: ^8.3.2
         version: 8.3.2(@types/node@24.10.9)(jiti@2.7.0)
       vite-plugin-dts:
-        specifier: ^5.1.1
-        version: 5.1.1(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
+        specifier: ^5.1.2
+        version: 5.1.2(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@24.10.9)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
@@ -335,8 +335,8 @@ importers:
         specifier: ^8.3.2
         version: 8.3.2(@types/node@24.10.9)(jiti@2.7.0)
       vite-plugin-dts:
-        specifier: ^5.1.1
-        version: 5.1.1(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
+        specifier: ^5.1.2
+        version: 5.1.2(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@24.10.9)(@vitest/coverage-v8@5.0.3)(jsdom@30.1.1)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
@@ -2299,8 +2299,8 @@ packages:
     resolution: {integrity: sha512-KfYbmpRm0VbLjEvVa9yGwCi9GI34xvi7A/HXYWQO65CSD2u3MczUJSuwXKFIxlGsgBQizV9q5J9NHj4VG0n+pA==}
     engines: {node: '>=12.0.0'}
 
-  exsolve@1.1.1:
-    resolution: {integrity: sha512-9U/jZUgjnSGyntRr6y5Muu1MJcwFl6kPu7k8qLF0IMNfLqvw0NZ4nnVDq0RVoZ0RvCyumib4Ez3KYrVfilrw+g==}
+  exsolve@1.1.3:
+    resolution: {integrity: sha512-kuzL9zherLQoqDeQaS55AiiIg1kb4KYXaSusTtgZTPlvKP2gGCI82LNmBNh5RjDVUXIcmgx+/Mx7vPwRzBbhJA==}
 
   fast-content-type-parse@3.0.0:
     resolution: {integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg==}
@@ -3847,8 +3847,8 @@ packages:
     resolution: {integrity: sha512-gptHNQghINnc/vTGIk0SOFGFNXw7JVrlRUtConJRlvaw6DuX0wO5Jeko9sWrMBhh+PsYAZ7oXAiOnf/UKogyiw==}
     engines: {node: '>= 10.0.0'}
 
-  unplugin-dts@1.1.1:
-    resolution: {integrity: sha512-Z2VcabC0hjYuzF62oWmZXVoxagkM8bUWgqUy+dotoJTPnooR5mNaxbpv63JCmcaxdGCW2Bb75omK6FOryOYCRg==}
+  unplugin-dts@1.1.2:
+    resolution: {integrity: sha512-RDqy90XUmFj6rz4U5YoTMdYdaCJe2ZnQZaWIjkWS4952Gv0zBTQyqWtlGgVMPYHa982dURvyoc+sUOFIcDFv+w==}
     peerDependencies:
       '@microsoft/api-extractor': '>=7'
       '@rspack/core': ^1
@@ -3900,8 +3900,8 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  vite-plugin-dts@5.1.1:
-    resolution: {integrity: sha512-U5dyX3DPFvHB+gaJIULn90kKGsXNYllyJ3vn491Y+LGu2nL5Fb8z7YgurN/Pi6ZFlnGljh2wSM0ZbFogSh4yAg==}
+  vite-plugin-dts@5.1.2:
+    resolution: {integrity: sha512-1bXUz836sWq6ewEMQre3ZtNFVfZk/92DppgCCKP8tWx/NWwV2wHuXlRHb2TztHjbikPxvyAGLGu7hVh94Plwww==}
     peerDependencies:
       '@microsoft/api-extractor': '>=7'
       rollup: 4.59.0
@@ -6173,7 +6173,7 @@ snapshots:
 
   expect-type@1.4.0: {}
 
-  exsolve@1.1.1: {}
+  exsolve@1.1.3: {}
 
   fast-content-type-parse@3.0.0: {}
 
@@ -6986,7 +6986,7 @@ snapshots:
   pkg-types@2.3.3:
     dependencies:
       confbox: 0.3.1
-      exsolve: 1.1.1
+      exsolve: 1.1.3
       pathe: 2.0.3
 
   playwright-core@1.57.0: {}
@@ -7670,7 +7670,7 @@ snapshots:
   universalify@2.0.1:
     optional: true
 
-  unplugin-dts@1.1.1(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0)):
+  unplugin-dts@1.1.2(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0)):
     dependencies:
       '@rollup/pluginutils': 5.4.0
       '@volar/typescript': 2.4.28(typescript@6.0.3)
@@ -7740,9 +7740,9 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vite-plugin-dts@5.1.1(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0)):
+  vite-plugin-dts@5.1.2(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0)):
     dependencies:
-      unplugin-dts: 1.1.1(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
+      unplugin-dts: 1.1.2(@microsoft/api-extractor@7.52.8(@types/node@24.10.9))(rolldown@1.2.12)(supports-color@10.2.2)(typescript@6.0.3)(vite@8.3.2(@types/node@24.10.9)(jiti@2.7.0))
     optionalDependencies:
       '@microsoft/api-extractor': 7.52.8(@types/node@24.10.9)
       vite: 8.3.2(@types/node@24.10.9)(jiti@2.7.0)
