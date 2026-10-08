@@ -344,8 +344,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.9.5
-        version: 6.9.5(@types/node@24.10.9)(supports-color@10.2.2)
+        specifier: ^6.9.6
+        version: 6.9.6(@types/node@24.10.9)(supports-color@10.2.2)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -385,21 +385,21 @@ packages:
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@argos-ci/api-client@0.31.1':
-    resolution: {integrity: sha512-QkJ6/1xzoolhYqYYTtRH4iTc6FFY3TVtLyjb1BFytif4RsvW+uwozhZCU0oPDRxR2rCmBQD9miVB+km9nDhh7Q==}
+  '@argos-ci/api-client@0.31.2':
+    resolution: {integrity: sha512-ejVcvK4BsMmUSt4K/E+wtcAq7V4Tk2cOH7HdkLBEAQoRs1dLzjXIvvD8spthJ/UlIBhtVbiktDeTzB2dcO5/Dg==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.9.5':
-    resolution: {integrity: sha512-cc9jxbGrT7BCeQlV4y9GfmbtNoULLQ+uy1+MOOm6YU7i1tYKWTUUcUnKJG87JBvqPUVAkjsQE9AMO09eKTri5w==}
+  '@argos-ci/cli@6.9.6':
+    resolution: {integrity: sha512-h4a/CQbBG4KyUJuxqMFI9LI4vdJq6NWNvcPXNQEh+JXUYpWKwlcj8edx8YJwuVWTyujIpnKEHsoMHi6fqjiX3g==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.8.6':
-    resolution: {integrity: sha512-B8xZUSocftDVc2pw2Su63e6KKPx928iQLLqNjV/xOTqnRrRGUAMnlezsHZZ/T6UpX1U9eRR3at/kDZa4bTVYmQ==}
+  '@argos-ci/core@6.8.7':
+    resolution: {integrity: sha512-usclV9hcOXNKk327diW5EQ2IvFhqG7e0RWGmv2e+d7JhX0SdrIh2mj3U5EAXvd1HcDEu0tOpeOnoX4HEE7IKFQ==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/util@4.2.1':
-    resolution: {integrity: sha512-TriX5ahqHmIZg8eiSkL/b7to29bybxZ1x8VRMxwW998RLuYrXqg73vUI+LrhD2zksAchS61KjuCcMF/AC6s7Aw==}
+  '@argos-ci/util@4.2.2':
+    resolution: {integrity: sha512-2gOelvXtZNqE25zSXh5jvqmgSvNfxY/9hP31XWm6vcQQSq4QGGeHaBSKjP2m/2P4formr3KCoAq+sl2FZg16aA==}
     engines: {node: '>=22.0.0'}
 
   '@asamuzakjp/css-color@7.0.0':
@@ -2076,10 +2076,6 @@ packages:
   enhanced-resolve@5.24.2:
     resolution: {integrity: sha512-rpsZEGT1jFuve6QlpyRp9ckQ+kN61hvF9BzCPyMdaKTm8UJce96KBn3sorXOFXlzjPrs3Vc4T1NsSroZ3PxlFw==}
     engines: {node: '>=10.13.0'}
-
-  entities@8.0.0:
-    resolution: {integrity: sha512-zwfzJecQ/Uej6tusMqwAqU/6KL2XaB2VZ2Jg54Je6ahNBGNH6Ek6g3jjNCF0fG9EWQKGZNddNjU5F1ZQn/sBnA==}
-    engines: {node: '>=20.19.0'}
 
   entities@8.1.0:
     resolution: {integrity: sha512-kxL7msIffSuh9aaFAMD7rxAIuTRMAHMeBtgHW2yUdWw732ZNh4MehkF2gdjvtdmikkaIP9bFDDJOPlsvm7avrA==}
@@ -4198,7 +4194,7 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@argos-ci/api-client@0.31.1(supports-color@10.2.2)':
+  '@argos-ci/api-client@0.31.2(supports-color@10.2.2)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       openapi-fetch: 0.17.0
@@ -4206,10 +4202,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.9.5(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/cli@6.9.6(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.31.1(supports-color@10.2.2)
-      '@argos-ci/core': 6.8.6(@types/node@24.10.9)(supports-color@10.2.2)
+      '@argos-ci/api-client': 0.31.2(supports-color@10.2.2)
+      '@argos-ci/core': 6.8.7(@types/node@24.10.9)(supports-color@10.2.2)
       '@vercel/detect-agent': 1.2.5
       commander: 15.0.0
       open: 11.0.4
@@ -4218,10 +4214,10 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.8.6(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/core@6.8.7(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.31.1(supports-color@10.2.2)
-      '@argos-ci/util': 4.2.1
+      '@argos-ci/api-client': 0.31.2(supports-color@10.2.2)
+      '@argos-ci/util': 4.2.2
       convict: 6.2.5
       debug: 4.4.3(supports-color@10.2.2)
       fast-glob: 3.3.3
@@ -4233,7 +4229,7 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/util@4.2.1': {}
+  '@argos-ci/util@4.2.2': {}
 
   '@asamuzakjp/css-color@7.0.0':
     dependencies:
@@ -5838,8 +5834,6 @@ snapshots:
       graceful-fs: 4.2.11
       tapable: 2.3.3
 
-  entities@8.0.0: {}
-
   entities@8.1.0: {}
 
   es-abstract@1.24.0:
@@ -6994,7 +6988,7 @@ snapshots:
 
   parse5@8.0.1:
     dependencies:
-      entities: 8.0.0
+      entities: 8.1.0
 
   path-browserify@1.0.1: {}
 
