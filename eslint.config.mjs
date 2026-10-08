@@ -253,6 +253,12 @@ export default [
     },
 
     rules: {
+      /**
+       * Svelte declaration tags (`{const foo = $derived(bar)}`) are parsed as variable declarations,
+       * conflicting with prettier-plugin-svelte which removes the trailing semicolon.
+       * Semicolons in script blocks are still enforced by prettier.
+       */
+      semi: 'off',
       eqeqeq: 'off',
       'etc/no-implicit-any-catch': 'off',
       'no-inner-declarations': 'off',
