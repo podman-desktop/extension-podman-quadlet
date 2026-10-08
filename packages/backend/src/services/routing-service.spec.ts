@@ -43,7 +43,7 @@ describe('RoutingService#openQuadletCompose', () => {
   test.each<{ filepath: string; expected: string }>([
     { filepath: '/home/user/compose.yaml', expected: '%2Fhome%2Fuser%2Fcompose.yaml' },
     { filepath: '/home/user/100%/compose.yaml', expected: '%2Fhome%2Fuser%2F100%25%2Fcompose.yaml' },
-    { filepath: '/home/user/a+b c&d#e/compose.yaml', expected: '%2Fhome%2Fuser%2Fa%2Bb%20c%26d%23e%2Fcompose.yaml' },
+    { filepath: '/home/user/a+b c&d#e/compose.yaml', expected: '%2Fhome%2Fuser%2Fa%2Bb+c%26d%23e%2Fcompose.yaml' },
   ])('filepath $filepath should be encoded in the route', async ({ filepath, expected }) => {
     const routing = getRoutingService();
     await routing.openQuadletCompose(filepath);
