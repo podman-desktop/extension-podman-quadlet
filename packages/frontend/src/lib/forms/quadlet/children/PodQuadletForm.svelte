@@ -15,6 +15,7 @@ let {
   onChange,
   disabled,
   onGenerated,
+  close,
 }: QuadletChildrenFormProps = $props();
 
 let pods: Array<SimplePodInfo> | undefined = $state();

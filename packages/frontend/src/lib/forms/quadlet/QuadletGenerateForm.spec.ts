@@ -28,9 +28,13 @@ import {
   type ContainerApi,
   type ProviderApi,
   type PodletApi,
+  type ImageApi,
+  type PodApi,
+  type VolumeApi,
+  type NetworkApi,
   QuadletType,
 } from '@podman-desktop/quadlet-extension-core-api';
-import { containerAPI, podletAPI } from '/@/api/client';
+import { containerAPI, imageAPI, networkAPI, podAPI, podletAPI, volumeAPI } from '/@/api/client';
 import type { Component, ComponentProps } from 'svelte';
 import { router } from 'tinro';
 
@@ -45,6 +49,18 @@ vi.mock(import('/@/api/client'), () => ({
   providerAPI: {
     all: vi.fn(),
   } as unknown as ProviderApi,
+  imageAPI: {
+    all: vi.fn(),
+  } as unknown as ImageApi,
+  podAPI: {
+    all: vi.fn(),
+  } as unknown as PodApi,
+  volumeAPI: {
+    all: vi.fn(),
+  } as unknown as VolumeApi,
+  networkAPI: {
+    all: vi.fn(),
+  } as unknown as NetworkApi,
   podletAPI: {
     generateContainer: vi.fn(),
     generateImage: vi.fn(),
@@ -73,6 +89,10 @@ const PODLET_GENERATE_RUN_RESULT: string = `
 beforeEach(() => {
   vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_PROVIDER_DETAILED_INFO]);
   vi.mocked(containerAPI.all).mockResolvedValue([]);
+  vi.mocked(imageAPI.all).mockResolvedValue([]);
+  vi.mocked(podAPI.all).mockResolvedValue([]);
+  vi.mocked(volumeAPI.all).mockResolvedValue([]);
+  vi.mocked(networkAPI.all).mockResolvedValue([]);
   vi.mocked(podletAPI.generateContainer).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
   vi.mocked(podletAPI.generateImage).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
   vi.mocked(podletAPI.generatePod).mockResolvedValue(PODLET_GENERATE_RUN_RESULT);
@@ -93,21 +113,25 @@ describe('Step options', () => {
     expect(router.location.query.set).toHaveBeenCalledWith('connection', WSL_PROVIDER_DETAILED_INFO.name);
   });
 
-  test('expect cancel to call close', async () => {
-    const closeMock = vi.fn();
-    const { getByRole } = render(QuadletGenerateForm, {
-      providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
-      connection: WSL_PROVIDER_DETAILED_INFO.name,
-      loading: false,
-      close: closeMock,
-    });
+  test.each([QuadletType.CONTAINER, QuadletType.IMAGE, QuadletType.POD, QuadletType.VOLUME, QuadletType.NETWORK])(
+    'expect cancel to call close for type %s',
+    async quadletType => {
+      const closeMock = vi.fn();
+      const { getByRole } = render(QuadletGenerateForm, {
+        providerId: WSL_PROVIDER_DETAILED_INFO.providerId,
+        connection: WSL_PROVIDER_DETAILED_INFO.name,
+        quadletType,
+        loading: false,
+        close: closeMock,
+      });
 
-    const cancel = getByRole('button', { name: 'Cancel' });
-    expect(cancel).toBeEnabled();
+      const cancel = getByRole('button', { name: 'Cancel' });
+      expect(cancel).toBeEnabled();
 
-    await fireEvent.click(cancel);
-    expect(closeMock).toHaveBeenCalled();
-  });
+      await fireEvent.click(cancel);
+      expect(closeMock).toHaveBeenCalled();
+    },
+  );
 
   test('expect generate to be disabled by default', async () => {
     const { getByRole } = render(QuadletGenerateForm, {
