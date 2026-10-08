@@ -43,7 +43,10 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
   }
 
   async openQuadletCompose(filepath: string): Promise<void> {
-    return this.write(`/quadlets/compose?filepath=${filepath}`);
+    const search = new URLSearchParams({
+      filepath,
+    });
+    return this.write(`/quadlets/compose?${search.toString()}`);
   }
 
   async openQuadletGenerate(

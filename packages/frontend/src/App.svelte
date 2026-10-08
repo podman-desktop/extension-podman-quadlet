@@ -47,18 +47,20 @@ onDestroy(() => {
 
       <!-- create quadlet -->
       <Route path="/quadlets/generate/*" firstmatch let:meta>
+        {const query = $derived(new URL(meta.url, 'http://localhost').searchParams)}
         <QuadletGenerate
-          providerId={meta.query.providerId ? decodeURIComponent(meta.query.providerId) : undefined}
-          connection={meta.query.connection ? decodeURIComponent(meta.query.connection) : undefined}
-          quadletType={meta.query.quadletType ? decodeURIComponent(meta.query.quadletType) : undefined}
-          resourceId={meta.query.resourceId ? decodeURIComponent(meta.query.resourceId) : undefined} />
+          providerId={query.get('providerId') ?? undefined}
+          connection={query.get('connection') ?? undefined}
+          quadletType={query.get('quadletType') ?? undefined}
+          resourceId={query.get('resourceId') ?? undefined} />
       </Route>
 
       <Route path="/quadlets/compose/*" firstmatch let:meta>
+        {const query = $derived(new URL(meta.url, 'http://localhost').searchParams)}
         <QuadletCompose
-          providerId={decodeURIComponent(meta.query.providerId)}
-          connection={decodeURIComponent(meta.query.connection)}
-          filepath={decodeURIComponent(meta.query.filepath)} />
+          providerId={query.get('providerId') ?? undefined}
+          connection={query.get('connection') ?? undefined}
+          filepath={query.get('filepath') ?? undefined} />
       </Route>
 
       <!-- quadlets details -->

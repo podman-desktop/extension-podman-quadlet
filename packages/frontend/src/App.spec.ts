@@ -94,3 +94,37 @@ test('compose route should decode query parameters', async () => {
     expect(QuadletCompose).toHaveBeenCalledWith(expect.anything(), query);
   });
 });
+
+test.each([
+  '/home/user/compose.yaml',
+  '/home/user/100%/compose.yaml',
+  '/home/user/a+b c&d#e,f=g/compose.yaml',
+  '/home/user/%20/compose.yaml',
+])('compose route should receive the original filepath %s', async filepath => {
+  vi.mocked(getRouterState).mockResolvedValue({
+    // same encoding as RoutingService#openQuadletCompose
+    url: `/quadlets/compose?${new URLSearchParams({ filepath }).toString()}`,
+  });
+
+  render(App);
+
+  await vi.waitFor(() => {
+    expect(QuadletCompose).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ filepath }));
+  });
+});
+
+test.each(['quay.io/podman/hello@sha256:abc', 'a+b c&d#e,f=g', '100%'])(
+  'generate route should receive the original resourceId %s',
+  async resourceId => {
+    vi.mocked(getRouterState).mockResolvedValue({
+      // same encoding as RoutingService#openQuadletGenerate
+      url: `/quadlets/generate?${new URLSearchParams({ resourceId }).toString()}`,
+    });
+
+    render(App);
+
+    await vi.waitFor(() => {
+      expect(QuadletGenerate).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ resourceId }));
+    });
+  },
+);
