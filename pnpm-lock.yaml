@@ -109,8 +109,8 @@ importers:
         specifier: ^4.7.6
         version: 4.7.6(picomatch@4.0.7)(svelte@5.57.1(@typescript-eslint/types@8.71.0))(typescript@6.0.3)
       svelte-eslint-parser:
-        specifier: ^1.8.1
-        version: 1.8.1(svelte@5.57.1(@typescript-eslint/types@8.71.0))
+        specifier: ^1.9.0
+        version: 1.9.0(svelte@5.57.1(@typescript-eslint/types@8.71.0))
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -3699,9 +3699,9 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: ^5.0.0 || ^6.0.0
 
-  svelte-eslint-parser@1.8.1:
-    resolution: {integrity: sha512-5zgKBqAf6V8Jyrmr1jViksyG4NKT8NheYwkdxRaMRDAqpGWi9wR8ktcGrAZbfMn/PHUp1BWzAp0cYQECkWuAMA==}
-    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0, pnpm: 10.34.5}
+  svelte-eslint-parser@1.9.0:
+    resolution: {integrity: sha512-aKdKQAZP7MobfVcQNyy5Yk0QjlC9m5T1lTS0qA7+0EIsFzFX3WgbGHfb8267QK+4hI8Az9+2f+hk5sp39op8sg==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0, pnpm: 10.34.6}
     peerDependencies:
       svelte: ^3.37.0 || ^4.0.0 || ^5.0.0
     peerDependenciesMeta:
@@ -6219,7 +6219,7 @@ snapshots:
       postcss-load-config: 3.1.4(postcss@8.5.26)
       postcss-safe-parser: 7.0.1(postcss@8.5.26)
       semver: 7.8.5
-      svelte-eslint-parser: 1.8.1(svelte@5.57.1(@typescript-eslint/types@8.71.0))
+      svelte-eslint-parser: 1.9.0(svelte@5.57.1(@typescript-eslint/types@8.71.0))
     optionalDependencies:
       svelte: 5.57.1(@typescript-eslint/types@8.71.0)
     transitivePeerDependencies:
@@ -7208,9 +7208,9 @@ snapshots:
     dependencies:
       postcss: 8.5.26
 
-  postcss-scss@4.0.9(postcss@8.5.26):
+  postcss-scss@4.0.9(postcss@8.5.29):
     dependencies:
-      postcss: 8.5.26
+      postcss: 8.5.29
 
   postcss-selector-parser@7.1.6:
     dependencies:
@@ -7647,13 +7647,13 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-eslint-parser@1.8.1(svelte@5.57.1(@typescript-eslint/types@8.71.0)):
+  svelte-eslint-parser@1.9.0(svelte@5.57.1(@typescript-eslint/types@8.71.0)):
     dependencies:
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
       espree: 10.4.0
-      postcss: 8.5.26
-      postcss-scss: 4.0.9(postcss@8.5.26)
+      postcss: 8.5.29
+      postcss-scss: 4.0.9(postcss@8.5.29)
       postcss-selector-parser: 7.1.6
       semver: 7.8.5
     optionalDependencies:
