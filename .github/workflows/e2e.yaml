@@ -47,7 +47,7 @@ jobs:
           podman rm -f $CONTAINER_ID
           podman rmi -f localhost/local_image:latest
       - name: Upload Quadlet Image Artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: quadlet-plugin
           path: output/plugins/
@@ -127,7 +127,7 @@ jobs:
           DEBUGGING_PORT: 9222
           PODMAN_DESKTOP_BINARY: ${{ steps.podman-desktop-install.outputs.binary }}
 
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: e2e-results-${{ matrix.os }}
@@ -136,7 +136,7 @@ jobs:
             tests/playwright/tests/
 
       - name: Upload screenshots
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: e2e-screenshots-${{ matrix.os }}
           path: tests/playwright/screenshots/
