@@ -1,7 +1,7 @@
 {
   "name": "@podman-desktop/quadlet-extension-core-api",
   "private": true,
-  "version": "0.13.0-next",
+  "version": "0.13.0",
   "type": "module",
   "license": "Apache-2.0",
   "main": "./dist/index.cjs",

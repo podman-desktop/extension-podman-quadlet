@@ -4,7 +4,7 @@
   "homepage": "https://github.com/podman-desktop/extension-podman-quadlet#readme",
   "displayName": "Podman Quadlet",
   "description": "Manage, generate Podman Quadlet",
-  "version": "0.13.0-next",
+  "version": "0.13.0",
   "icon": "icon.png",
   "publisher": "podman-desktop",
   "private": true,
