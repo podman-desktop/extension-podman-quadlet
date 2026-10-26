@@ -1,4 +1,4 @@
-FROM registry.access.redhat.com/ubi10/nodejs-24-minimal:10.2-1792484234 AS builder
+FROM registry.access.redhat.com/ubi10/nodejs-24-minimal:10.1-1766060610 AS builder
 
 WORKDIR /opt/app-root/src
 
