@@ -272,7 +272,7 @@ test.describe.serial(`Podman Quadlet extension installation and verification`, {
       await details.remove.click();
 
       // confirm removal
-      await handleConfirmationDialog(details.page, 'Podman Quadlet', true, 'Confirm');
+      await handleConfirmationDialog({ page: details.page, dialogTitle: 'Podman Quadlet', buttonName: 'Confirm' });
 
       // wait to be redirected to list page
       await quadletListPage.waitForLoad();
