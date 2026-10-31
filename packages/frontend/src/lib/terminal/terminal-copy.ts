@@ -35,6 +35,11 @@ export async function copySelection(terminal: Pick<Terminal, 'getSelection'>): P
   }
 }
 
+/**
+ * Copy text using a temporary textarea and `document.execCommand('copy')`,
+ * for webviews where the async clipboard API is not allowed.
+ * @returns true if the browser accepted the copy
+ */
 function legacyCopy(text: string): boolean {
   const textarea = document.createElement('textarea');
   textarea.value = text;
