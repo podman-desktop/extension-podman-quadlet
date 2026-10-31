@@ -46,6 +46,9 @@ test.each([
   { metaKey: true, key: 'c' },
   { ctrlKey: true, shiftKey: true, key: 'C' },
   { ctrlKey: true, key: 'Insert' },
+  // non-Latin layout (e.g. Russian): the physical C key does not produce 'c'
+  { ctrlKey: true, shiftKey: true, key: 'С', code: 'KeyC' },
+  { ctrlKey: true, key: 'с', code: 'KeyC' },
 ])('%o with selection should copy and be consumed', init => {
   const event = new KeyboardEvent('keydown', { ...init, cancelable: true });
   expect(handleCopyKeyEvent(terminalWith('log line'), event)).toBe(false);
@@ -81,6 +84,6 @@ test('copySelection should log an error when both copy methods fail', async () =
   Object.assign(document, { execCommand: vi.fn().mockReturnValue(false) });
   const error = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-  await copySelection(terminalWith('hello'));
+  expect(await copySelection(terminalWith('hello'))).toBe(false);
   expect(error).toHaveBeenCalled();
 });

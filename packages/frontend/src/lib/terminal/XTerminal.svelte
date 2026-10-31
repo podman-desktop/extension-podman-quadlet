@@ -40,6 +40,8 @@ async function refreshTerminal(): Promise<void> {
   shellTerminal = new Terminal({
     theme: getTerminalTheme(),
     disableStdin: readonly,
+    // keep the current selection on right click (macOS would replace it with the word under the cursor), we copy it
+    rightClickSelectsWord: false,
   });
 
   const fitAddon = new FitAddon();

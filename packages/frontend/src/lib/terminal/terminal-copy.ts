@@ -28,14 +28,14 @@ export async function copySelection(terminal: Pick<Terminal, 'getSelection'>): P
   if (!selection) return false;
   try {
     await navigator.clipboard.writeText(selection);
+    return true;
   } catch {
     // the async clipboard API can be denied (e.g. Flatpak webview): use the legacy way
-    legacyCopy(selection);
+    return legacyCopy(selection);
   }
-  return true;
 }
 
-function legacyCopy(text: string): void {
+function legacyCopy(text: string): boolean {
   const textarea = document.createElement('textarea');
   textarea.value = text;
   textarea.style.position = 'fixed';
@@ -43,7 +43,9 @@ function legacyCopy(text: string): void {
   document.body.appendChild(textarea);
   textarea.select();
   try {
-    if (!document.execCommand('copy')) console.error('[quadlet] execCommand copy was refused');
+    const copied = document.execCommand('copy');
+    if (!copied) console.error('[quadlet] execCommand copy was refused');
+    return copied;
   } finally {
     textarea.remove();
   }
@@ -56,13 +58,14 @@ function legacyCopy(text: string): void {
 export function handleCopyKeyEvent(terminal: Pick<Terminal, 'getSelection'>, event: KeyboardEvent): boolean {
   if (event.type !== 'keydown') return true;
 
-  const key = event.key.toLowerCase();
+  // event.key depends on the keyboard layout (non-Latin layouts do not produce 'c'): also check the physical key
+  const isC = event.key.toLowerCase() === 'c' || event.code === 'KeyC';
   const isCopy =
     // Ctrl+Shift+C (terminal style) or Ctrl+Insert
-    (event.ctrlKey && event.shiftKey && key === 'c') ||
-    (event.ctrlKey && key === 'insert') ||
+    (event.ctrlKey && event.shiftKey && isC) ||
+    (event.ctrlKey && event.key.toLowerCase() === 'insert') ||
     // Ctrl+C / Cmd+C only copy when something is selected, otherwise let xterm handle it
-    ((event.ctrlKey || event.metaKey) && !event.shiftKey && key === 'c' && terminal.getSelection() !== '');
+    ((event.ctrlKey || event.metaKey) && !event.shiftKey && isC && terminal.getSelection() !== '');
 
   if (!isCopy) return true;
 
