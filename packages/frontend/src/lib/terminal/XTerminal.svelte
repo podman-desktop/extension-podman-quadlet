@@ -6,6 +6,7 @@ import { Terminal } from '@xterm/xterm';
 
 import { onDestroy, onMount } from 'svelte';
 import type { Readable, Unsubscriber } from 'svelte/store';
+import { copySelection, handleCopyKeyEvent } from '/@/lib/terminal/terminal-copy';
 import { getTerminalTheme } from '/@/lib/terminal/terminal-theme';
 
 let terminalXtermDiv: HTMLDivElement;
@@ -48,6 +49,9 @@ async function refreshTerminal(): Promise<void> {
 
   shellTerminal.open(terminalXtermDiv);
 
+  // xterm keeps its selection internally: make sure it can be copied (keyboard shortcuts and right click)
+  shellTerminal.attachCustomKeyEventHandler(event => handleCopyKeyEvent(shellTerminal, event));
+
   // Resize the terminal each time we change the div size
   resizeObserver = new ResizeObserver(() => {
     fitAddon?.fit();
@@ -77,4 +81,14 @@ onDestroy(() => {
 });
 </script>
 
-<div class="h-full p-[5px] pr-0 bg-[var(--pd-terminal-background)]" bind:this={terminalXtermDiv}></div>
+<div
+  role="presentation"
+  class="h-full p-[5px] pr-0 bg-[var(--pd-terminal-background)]"
+  bind:this={terminalXtermDiv}
+  oncontextmenu={(event): void => {
+    // only override the context menu when there is something to copy
+    if (!shellTerminal?.hasSelection()) return;
+    event.preventDefault();
+    copySelection(shellTerminal).catch(console.error);
+  }}>
+</div>
