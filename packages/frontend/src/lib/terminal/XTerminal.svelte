@@ -6,6 +6,7 @@ import { Terminal } from '@xterm/xterm';
 
 import { onDestroy, onMount } from 'svelte';
 import type { Readable, Unsubscriber } from 'svelte/store';
+import { copySelection, handleCopyKeyEvent } from '/@/lib/terminal/terminal-copy';
 import { getTerminalTheme } from '/@/lib/terminal/terminal-theme';
 
 let terminalXtermDiv: HTMLDivElement;
@@ -39,6 +40,8 @@ async function refreshTerminal(): Promise<void> {
   shellTerminal = new Terminal({
     theme: getTerminalTheme(),
     disableStdin: readonly,
+    // keep the current selection on right click (macOS would replace it with the word under the cursor), we copy it
+    rightClickSelectsWord: false,
   });
 
   const fitAddon = new FitAddon();
@@ -47,6 +50,9 @@ async function refreshTerminal(): Promise<void> {
   shellTerminal.loadAddon(serializeAddon);
 
   shellTerminal.open(terminalXtermDiv);
+
+  // xterm keeps its selection internally: make sure it can be copied (keyboard shortcuts and right click)
+  shellTerminal.attachCustomKeyEventHandler(event => handleCopyKeyEvent(shellTerminal, event));
 
   // Resize the terminal each time we change the div size
   resizeObserver = new ResizeObserver(() => {
@@ -77,4 +83,14 @@ onDestroy(() => {
 });
 </script>
 
-<div class="h-full p-[5px] pr-0 bg-[var(--pd-terminal-background)]" bind:this={terminalXtermDiv}></div>
+<div
+  role="presentation"
+  class="h-full p-[5px] pr-0 bg-[var(--pd-terminal-background)]"
+  bind:this={terminalXtermDiv}
+  oncontextmenu={(event): void => {
+    // only override the context menu when there is something to copy
+    if (!shellTerminal?.hasSelection()) return;
+    event.preventDefault();
+    copySelection(shellTerminal).catch(console.error);
+  }}>
+</div>

@@ -267,7 +267,7 @@ function onchange(content: string): void {
             </div>
           {/if}
           {#if logger}
-            <XTerminal store={logger} />
+            <XTerminal store={logger} readonly />
           {/if}
         </Route>
       </div>
