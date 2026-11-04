@@ -42,6 +42,7 @@
     "wrap-ansi": "^7.0.0"
   },
   "devDependencies": {
+    "@podman-desktop/eslint-config": "^0.1.0",
     "@typescript-eslint/eslint-plugin": "^8.72.1",
     "@typescript-eslint/parser": "^8.72.1",
     "@vitest/coverage-v8": "^5.0.5",
