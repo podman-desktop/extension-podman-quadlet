@@ -28,7 +28,7 @@ test('Should use running color if state is running', async () => {
 
   const indicator = container.firstElementChild;
   expect(indicator).toBeDefined();
-  expect(indicator).toHaveStyle('background-color: var(--pd-status-running)');
+  expect(indicator?.getAttribute('style')).toContain('background-color: var(--pd-status-running)');
 });
 
 test('Should use stopped color if state is not running', async () => {
@@ -38,5 +38,5 @@ test('Should use stopped color if state is not running', async () => {
 
   const indicator = container.firstElementChild;
   expect(indicator).toBeDefined();
-  expect(indicator).toHaveStyle('background-color: var(--pd-status-stopped)');
+  expect(indicator?.getAttribute('style')).toContain('background-color: var(--pd-status-stopped)');
 });
