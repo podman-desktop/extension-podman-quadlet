@@ -19,7 +19,7 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { PodmanNativeWorker } from '/@/utils/worker/podman-native-worker';
 import { homedir } from 'node:os';
-import { readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
+import { access, readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 import type { process as ProcessApi, ProviderContainerConnection } from '@podman-desktop/api';
 import type { PodmanWorker } from '/@/utils/worker/podman-worker';
@@ -81,6 +81,34 @@ describe('read', () => {
 
     expect(content).toBe(expectedContent);
     expect(readFile).toHaveBeenCalledWith('test-path', { encoding: 'utf8' });
+  });
+});
+
+describe('exists', () => {
+  let worker: PodmanWorker;
+  beforeEach(() => {
+    worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+  });
+
+  test('accessible path should return true', async () => {
+    vi.mocked(access).mockResolvedValue(undefined);
+
+    await expect(worker.exists('/foo/bar.env')).resolves.toBeTruthy();
+    expect(access).toHaveBeenCalledExactlyOnceWith('/foo/bar.env');
+  });
+
+  test('ENOENT error should return false', async () => {
+    vi.mocked(access).mockRejectedValue(
+      Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' }),
+    );
+
+    await expect(worker.exists('/foo/bar.env')).resolves.toBeFalsy();
+  });
+
+  test('other errors should be propagated', async () => {
+    vi.mocked(access).mockRejectedValue(Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }));
+
+    await expect(worker.exists('/foo/bar.env')).rejects.toThrow('EACCES: permission denied');
   });
 });
 

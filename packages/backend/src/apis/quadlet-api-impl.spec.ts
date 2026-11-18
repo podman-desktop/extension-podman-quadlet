@@ -34,6 +34,7 @@ import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 
 const QUADLET_SERVICE: QuadletService = {
   readIntoMachine: vi.fn(),
+  existsIntoMachine: vi.fn(),
   getQuadlet: vi.fn(),
   refreshQuadletsStatuses: vi.fn(),
 } as unknown as QuadletService;
@@ -134,6 +135,26 @@ describe('QuadletApiImpl#readIntoMachine', () => {
 
     expect(QUADLET_SERVICE.readIntoMachine).toHaveBeenCalledExactlyOnceWith({
       path: '/foo/bar.yaml',
+      provider: WSL_PROVIDER_CONNECTION_MOCK,
+    });
+  });
+});
+
+describe('QuadletApiImpl#existsIntoMachine', () => {
+  test('should use QuadletService#existsIntoMachine with correct arguments', async () => {
+    vi.mocked(QUADLET_SERVICE.existsIntoMachine).mockResolvedValue(false);
+
+    const api = getQuadletApiImpl();
+    const result = await api.existsIntoMachine({
+      path: '/foo/bar.env',
+      connection: WSL_PROVIDER_IDENTIFIER,
+    });
+
+    expect(PROVIDER_SERVICE.getProviderContainerConnection).toHaveBeenCalledWith(WSL_PROVIDER_IDENTIFIER);
+    expect(result).toBeFalsy();
+
+    expect(QUADLET_SERVICE.existsIntoMachine).toHaveBeenCalledExactlyOnceWith({
+      path: '/foo/bar.env',
       provider: WSL_PROVIDER_CONNECTION_MOCK,
     });
   });

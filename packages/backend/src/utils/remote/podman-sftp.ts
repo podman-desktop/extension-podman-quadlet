@@ -90,6 +90,14 @@ export class PodmanSFTP implements Disposable {
   }
 
   /**
+   * Returns true if a file or directory exists at the given path.
+   */
+  async exists(path: string): Promise<boolean> {
+    const type = await this.#client.exists(this.resolve(path));
+    return type !== false;
+  }
+
+  /**
    * Returns the real path of the given path.
    */
   async realpath(path: string): Promise<string> {
