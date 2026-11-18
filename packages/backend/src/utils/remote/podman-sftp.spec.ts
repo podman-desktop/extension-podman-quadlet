@@ -102,6 +102,14 @@ describe('read', () => {
     expect(response).toBe('bar');
   });
 
+  test('get empty array response should be converted to empty string', async () => {
+    // an empty file resolves an empty array
+    vi.mocked(SftpClient.prototype.get).mockResolvedValue([] as unknown as Buffer);
+
+    const response: string = await podmanSFTP.read('/foo');
+    expect(response).toBe('');
+  });
+
   test('homedir path should be resolved', async () => {
     // mock string for resolve content
     vi.mocked(SftpClient.prototype.get).mockResolvedValue('bar');

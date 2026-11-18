@@ -82,6 +82,9 @@ export class PodmanSFTP implements Disposable {
       return response.toString('utf8');
     }
 
+    // when the file is empty, no data is received and an empty array is resolved
+    if (Array.isArray(response) && response.length === 0) return '';
+
     if (typeof response !== 'string') throw new Error('PodmanSFTP read operation cannot handle writable stream');
     return response;
   }
