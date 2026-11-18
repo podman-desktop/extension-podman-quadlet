@@ -14,12 +14,15 @@ import type { PodmanConnection } from '/@/models/podman-connection';
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
   #pools: Map<string, PodmanWorker>;
+  #pending: Map<string, Promise<PodmanWorker>>;
   #connections: Map<string, PodmanConnection>;
 
   constructor(dependencies: PodmanDependencies) {
     super(dependencies);
     // create a Pool of Podman Workers
     this.#pools = new Map();
+    // workers being created, shared by concurrent callers
+    this.#pending = new Map();
     // create a map to store the connections
     this.#connections = new Map();
   }
@@ -135,6 +138,33 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     }
 
     /**
+     * Creating a worker involves several async steps, concurrent callers for the same connection
+     * must share the same creation, otherwise each one would create its own worker and only the last
+     * one would be kept in the pool (the others would never be disposed).
+     */
+    let pending = this.#pending.get(key);
+    if (!pending) {
+      pending = this.createWorker(connection)
+        .then(created => {
+          this.#pools.set(key, created);
+          return created;
+        })
+        .finally(() => {
+          this.#pending.delete(key);
+        });
+      this.#pending.set(key, pending);
+    }
+    return pending;
+  }
+
+  /**
+   * Create and init a new {@link PodmanWorker} for the given connection
+   * @remarks the worker is not cached
+   * @param connection
+   * @protected
+   */
+  protected async createWorker(connection: ProviderContainerConnection): Promise<PodmanWorker> {
+    /**
      * Detect podman linux native
      * - it does not have a vmType
      * - it does not have a connection with the same name
@@ -143,8 +173,6 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
       const native = new PodmanNativeWorker(connection, this.dependencies.processApi);
       // init
       await native.init();
-      // cache
-      this.#pools.set(key, native);
       return native;
     }
 
@@ -180,9 +208,6 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
 
     // init
     await sshWorker.init();
-
-    // update the pools
-    this.#pools.set(key, sshWorker);
     return sshWorker;
   }
 
