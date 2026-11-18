@@ -223,6 +223,38 @@ describe('rm', () => {
   });
 });
 
+describe('exists', () => {
+  let podmanSFTP: PodmanSFTP;
+
+  beforeEach(async () => {
+    podmanSFTP = new PodmanSFTP(SSH_CONFIG_MOCK);
+    await podmanSFTP.connect();
+  });
+
+  test.each(['-', 'd', 'l'] as const)('SftpClient#exists returning %s should return true', async type => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue(type);
+
+    await expect(podmanSFTP.exists('/foo/bar.env')).resolves.toBeTruthy();
+    expect(SftpClient.prototype.exists).toHaveBeenCalledExactlyOnceWith('/foo/bar.env');
+  });
+
+  test('SftpClient#exists returning false should return false', async () => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue(false);
+
+    await expect(podmanSFTP.exists('/foo/bar.env')).resolves.toBeFalsy();
+  });
+
+  test('homedir path should be resolved', async () => {
+    vi.mocked(SftpClient.prototype.exists).mockResolvedValue('-');
+
+    await podmanSFTP.exists('~/foo/bar.env');
+
+    expect(SftpClient.prototype.exists).toHaveBeenCalledExactlyOnceWith(
+      `/home/${SSH_CONFIG_MOCK.username}/foo/bar.env`,
+    );
+  });
+});
+
 describe('realpath', () => {
   let podmanSFTP: PodmanSFTP;
 

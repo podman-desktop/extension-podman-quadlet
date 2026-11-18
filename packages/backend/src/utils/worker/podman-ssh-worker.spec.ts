@@ -90,6 +90,18 @@ describe('read', () => {
   });
 });
 
+describe('exists', () => {
+  test('exists should proxy to PodmanSFTP#exists', async () => {
+    vi.mocked(PodmanSFTP.prototype.exists).mockResolvedValue(true);
+    const worker = getPodmanSSHWorker();
+
+    const result = await worker.exists('/foo.txt');
+    expect(result).toBeTruthy();
+
+    expect(PodmanSFTP.prototype.exists).toHaveBeenCalledExactlyOnceWith('/foo.txt');
+  });
+});
+
 describe('rm', () => {
   test('rm should proxy to PodmanSFTP#rm', async () => {
     const worker = getPodmanSSHWorker();
