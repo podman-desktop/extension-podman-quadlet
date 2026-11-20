@@ -1,7 +1,7 @@
 /**
  * @author axel7083
  */
-import type { env, extensions as Extensions, process as ProcessApi } from '@podman-desktop/api';
+import type { env, extensions as Extensions, process as ProcessApi, cli as CliApi } from '@podman-desktop/api';
 import type { PodmanExtensionApi } from '@podman-desktop/podman-extension-api';
 import { PODMAN_EXTENSION_ID } from '/@/utils/constants';
 import type { ProviderService } from '/@/services/provider-service';
@@ -12,6 +12,7 @@ export interface PodmanDependencies {
   providers: ProviderService;
   env: typeof env;
   processApi: typeof ProcessApi;
+  cliApi: typeof CliApi;
 }
 
 export abstract class PodmanHelper {

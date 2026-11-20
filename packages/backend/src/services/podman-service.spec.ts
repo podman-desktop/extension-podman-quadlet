@@ -7,6 +7,7 @@ import type {
   Extension,
   extensions,
   process as processApi,
+  cli as cliApi,
   ProviderContainerConnection,
   RunResult,
   Uri,
@@ -43,6 +44,9 @@ const podmanExtensionApiMock: Extension<PodmanExtensionApi> = {
 };
 
 const processApiMock: typeof processApi = {} as unknown as typeof processApi;
+const cliApiMock: typeof cliApi = {
+  onDidChange: vi.fn(),
+} as unknown as typeof cliApi;
 
 const providersMock: ProviderService = {
   event: vi.fn(),
@@ -108,6 +112,7 @@ function getPodmanService(options?: { isLinux?: boolean; isMac?: boolean; isWind
     extensions: extensionsMock,
     processApi: processApiMock,
     providers: providersMock,
+    cliApi: cliApiMock,
   });
 }
 
@@ -115,9 +120,13 @@ describe('PodmanService#init', () => {
   const EXTENSION_EVENT_DISPOSABLE: Disposable = {
     dispose: vi.fn(),
   };
+  const CLI_EVENT_DISPOSABLE: Disposable = {
+    dispose: vi.fn(),
+  };
 
   beforeEach(() => {
     vi.mocked(extensionsMock.onDidChange).mockReturnValue(EXTENSION_EVENT_DISPOSABLE);
+    vi.mocked(cliApiMock.onDidChange).mockReturnValue(CLI_EVENT_DISPOSABLE);
   });
 
   test('init should subscribe to extensions events', async () => {
@@ -128,6 +137,16 @@ describe('PodmanService#init', () => {
 
     podman.dispose();
     expect(EXTENSION_EVENT_DISPOSABLE.dispose).toHaveBeenCalledOnce();
+  });
+
+  test('init should subscribe to cli events', async () => {
+    const podman = getPodmanService();
+    await podman.init();
+
+    expect(cliApiMock.onDidChange).toHaveBeenCalledWith(expect.any(Function));
+
+    podman.dispose();
+    expect(CLI_EVENT_DISPOSABLE.dispose).toHaveBeenCalledOnce();
   });
 
   test('init should collect all podman connections', async () => {
@@ -144,6 +163,17 @@ describe('PodmanService#init', () => {
     expect(connections).toHaveLength(1);
 
     expect(connections[0]).toStrictEqual(WSL_CONNECTION_INFO_MOCK);
+  });
+
+  test('init should not reject when podman cli is not available', async () => {
+    vi.mocked(podmanExtensionApiMock.exports.exec).mockRejectedValue(
+      new Error('Failed to execute command: spawn podman.exe ENOENT'),
+    );
+
+    const podman = getPodmanService();
+    await expect(podman.init()).resolves.toBeUndefined();
+
+    expect(podmanExtensionApiMock.exports.exec).toHaveBeenCalledWith(['system', 'connection', 'ls', '--format=json']);
   });
 });
 

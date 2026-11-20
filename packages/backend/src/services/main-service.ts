@@ -150,6 +150,7 @@ export class MainService implements Disposable, AsyncInit {
       extensions: this.dependencies.extensions,
       processApi: this.dependencies.processApi,
       providers: providers,
+      cliApi: this.dependencies.cliApi,
     });
     await podman.init();
     this.#disposables.push(podman);
