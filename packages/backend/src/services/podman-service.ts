@@ -13,6 +13,7 @@ import type { PodmanConnection } from '/@/models/podman-connection';
 
 export class PodmanService extends PodmanHelper implements Disposable, AsyncInit {
   #extensionsEventDisposable: Disposable | undefined;
+  #cliEventDisposable: Disposable | undefined;
   #pools: Map<string, PodmanWorker>;
   #connections: Map<string, PodmanConnection>;
 
@@ -39,13 +40,23 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
     this.#extensionsEventDisposable = this.dependencies.extensions.onDidChange(() => {
       this.resetPodmanExtensionApiCache(); // reset podman cache
     });
+    // track if podman cli is updated
+    this.#cliEventDisposable = this.dependencies.cliApi.onDidChange(this.onUpdate.bind(this));
+
     // listen for any providers update
-    this.dependencies.providers.event(this.onProviderUpdate.bind(this));
+    this.dependencies.providers.event(this.onUpdate.bind(this));
+
     // update the collection of connections
-    return this.collectConnections();
+    // the podman cli may not be available (e.g. not installed), it should not prevent the extension from activating
+    // connections will be collected again on the next providers or cli update
+    try {
+      await this.collectConnections();
+    } catch (err: unknown) {
+      console.error('[PodmanService] failed to collect podman connections', err);
+    }
   }
 
-  protected onProviderUpdate(): void {
+  protected onUpdate(): void {
     // update the podman remote connections info
     this.collectConnections().catch(console.error);
   }
@@ -188,6 +199,7 @@ export class PodmanService extends PodmanHelper implements Disposable, AsyncInit
 
   dispose(): void {
     this.#extensionsEventDisposable?.dispose();
+    this.#cliEventDisposable?.dispose();
 
     // dispose workers
     this.#pools.forEach(pool => pool.dispose());
