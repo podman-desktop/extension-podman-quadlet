@@ -31,6 +31,17 @@ function writeMultilineString(xterm: Terminal, data: string, colorPrefix: string
   }
 }
 
+async function copySelection(): Promise<void> {
+  const selection = shellTerminal?.getSelection();
+  if (!selection) return;
+
+  try {
+    await navigator.clipboard.writeText(selection);
+  } catch (err: unknown) {
+    console.error('Failed to copy terminal selection to clipboard', err);
+  }
+}
+
 async function refreshTerminal(): Promise<void> {
   // missing element, return
   if (!terminalXtermDiv) {
@@ -47,6 +58,28 @@ async function refreshTerminal(): Promise<void> {
   shellTerminal.loadAddon(serializeAddon);
 
   shellTerminal.open(terminalXtermDiv);
+
+  // Enable copying selected text via Ctrl+C / Ctrl+Shift+C
+  shellTerminal.attachCustomKeyEventHandler((event: KeyboardEvent): boolean => {
+    if (
+      event.type === 'keydown' &&
+      event.key === 'c' &&
+      (event.ctrlKey || event.metaKey) &&
+      shellTerminal.hasSelection()
+    ) {
+      copySelection().catch(console.error);
+      return false;
+    }
+    return true;
+  });
+
+  // Enable right-click copy via context menu
+  terminalXtermDiv.addEventListener('contextmenu', (event: MouseEvent) => {
+    if (shellTerminal?.hasSelection()) {
+      event.preventDefault();
+      copySelection().catch(console.error);
+    }
+  });
 
   // Resize the terminal each time we change the div size
   resizeObserver = new ResizeObserver(() => {
