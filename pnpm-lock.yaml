@@ -508,8 +508,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.11.0
-        version: 6.11.0(@types/node@24.10.9)(supports-color@10.2.2)
+        specifier: ^6.12.0
+        version: 6.12.0(@types/node@24.10.9)(supports-color@10.2.2)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -549,21 +549,21 @@ packages:
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@argos-ci/api-client@0.31.3':
-    resolution: {integrity: sha512-BkkEVnHLPFNblZfUAKD7llhCL0tRvpbi5OnJCBsp10H5mP4b9SSIi3RByxWVE84DyVDkYZ89LzyKibKKmQB8/w==}
+  '@argos-ci/api-client@0.32.0':
+    resolution: {integrity: sha512-C/ee3bkTGdqgag3KpCCka4hGUoBcJYnisaD9Atq7mj/aVVgco8V38M9MNldch5Wg4FP71mP6mVoos1fQ3F90TA==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.11.0':
-    resolution: {integrity: sha512-8U3RhSdcsVszW1WbKJDr5XZDr77mbSI9C/Ivl5SYKrEsApBUE8Ke5AwypRyXLl3GQe3R2AFkx+s09GBlaMnftQ==}
+  '@argos-ci/cli@6.12.0':
+    resolution: {integrity: sha512-Q3Wb/Rc8NYrkNPECGDEj0C2utJrehZC+0q5gbVa5kglSgD6op7sDMy5rfqXooy2vwMkCrSCaCikphn2jtX4a4Q==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.8.8':
-    resolution: {integrity: sha512-Y7pdBqlz6G9hjFLLBDthKmJL0s3AOyTyZ4i7iK4279xanQCxsxMNY30oJKGUtcaSD9a/QKxqJnYNuNC/2pJlvA==}
+  '@argos-ci/core@6.9.0':
+    resolution: {integrity: sha512-upfQtaHW52tud/OsxmXXSFZ1doeW4AUKZvvLqE6hjLCnhHI9W76DUdhURqRcks00qFKIhu+BhofnLJosah9yng==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/util@4.2.3':
-    resolution: {integrity: sha512-4Lna1kV57nziBkXilHuxEF2BVcxggoU+4pW343T6+RFrCBuaq1RekOXQiyE+AjYf2VM/FJO5Wv0Tt9xu42IDOg==}
+  '@argos-ci/util@4.3.0':
+    resolution: {integrity: sha512-ReA/yhR0rGxOv32RhQZjIoabDco+59K+Yv0E78ewf1bVTl2d7BIJeWPWrCTAebF3s1rXpQwREoWJHZg/fzoBzg==}
     engines: {node: '>=22.0.0'}
 
   '@babel/code-frame@7.29.7':
@@ -2075,8 +2075,8 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  commander@15.0.0:
-    resolution: {integrity: sha512-z67u4ZhzCL/Tydu1lJARtEZYWbWaN7oYLHbsuzocr6y4N6WZAagG3RQ4FW61V1/0+jImpj293XfrcYnd1qxtPg==}
+  commander@15.1.0:
+    resolution: {integrity: sha512-cgnQ88TRrWcC7pVq46RzJVRMktu3W2RcbnoidnfBsl1bmDCBwJS/udcIZpKoCrbAYYaCqsz1yZCVIgbIaU3ddQ==}
     engines: {node: '>=22.12.0'}
 
   compare-versions@6.1.1:
@@ -4272,7 +4272,7 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@argos-ci/api-client@0.31.3(supports-color@10.2.2)':
+  '@argos-ci/api-client@0.32.0(supports-color@10.2.2)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       openapi-fetch: 0.17.0
@@ -4280,22 +4280,22 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.11.0(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/cli@6.12.0(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.31.3(supports-color@10.2.2)
-      '@argos-ci/core': 6.8.8(@types/node@24.10.9)(supports-color@10.2.2)
+      '@argos-ci/api-client': 0.32.0(supports-color@10.2.2)
+      '@argos-ci/core': 6.9.0(@types/node@24.10.9)(supports-color@10.2.2)
       '@vercel/detect-agent': 1.2.7
-      commander: 15.0.0
+      commander: 15.1.0
       open: 11.0.4
       ora: 9.4.1
     transitivePeerDependencies:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.8.8(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/core@6.9.0(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.31.3(supports-color@10.2.2)
-      '@argos-ci/util': 4.2.3
+      '@argos-ci/api-client': 0.32.0(supports-color@10.2.2)
+      '@argos-ci/util': 4.3.0
       convict: 6.2.5
       debug: 4.4.3(supports-color@10.2.2)
       fast-glob: 3.3.3
@@ -4307,7 +4307,7 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/util@4.2.3': {}
+  '@argos-ci/util@4.3.0': {}
 
   '@babel/code-frame@7.29.7':
     dependencies:
@@ -5787,7 +5787,7 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  commander@15.0.0: {}
+  commander@15.1.0: {}
 
   compare-versions@6.1.1: {}
 
