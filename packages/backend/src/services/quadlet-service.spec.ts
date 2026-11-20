@@ -75,6 +75,7 @@ const PODMAN_SERVICE_MOCK: PodmanService = {
 
 const PODMAN_WORKER_MOCK: PodmanWorker = {
   read: vi.fn(),
+  exists: vi.fn(),
   rm: vi.fn(),
   write: vi.fn(),
   exec: vi.fn(),
@@ -694,6 +695,37 @@ describe('QuadletService#readIntoMachine', () => {
 
     expect(SPECIFIERS_MOCK.expand).toHaveBeenCalledExactlyOnceWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK, '%h/bar.yaml');
     expect(PODMAN_WORKER_MOCK.read).toHaveBeenCalledExactlyOnceWith('/home/user/bar.yaml');
+  });
+});
+
+describe('QuadletService#existsIntoMachine', () => {
+  test.each([true, false])('should return worker.exists result (%s)', async exists => {
+    vi.mocked(PODMAN_WORKER_MOCK.exists).mockResolvedValue(exists);
+
+    const quadlet = getQuadletService();
+
+    const result = await quadlet.existsIntoMachine({
+      path: '/foo/bar.env',
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    });
+
+    // ensure we get the worker with appropriate connection
+    expect(PODMAN_SERVICE_MOCK.getWorker).toHaveBeenCalledWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK);
+    expect(result).toEqual(exists);
+  });
+
+  test('expanded path should be used', async () => {
+    vi.mocked(SPECIFIERS_MOCK.expand).mockResolvedValue('/home/user/bar.env');
+
+    const quadlet = getQuadletService();
+
+    await quadlet.existsIntoMachine({
+      path: '%h/bar.env',
+      provider: WSL_RUNNING_PROVIDER_CONNECTION_MOCK,
+    });
+
+    expect(SPECIFIERS_MOCK.expand).toHaveBeenCalledExactlyOnceWith(WSL_RUNNING_PROVIDER_CONNECTION_MOCK, '%h/bar.env');
+    expect(PODMAN_WORKER_MOCK.exists).toHaveBeenCalledExactlyOnceWith('/home/user/bar.env');
   });
 });
 

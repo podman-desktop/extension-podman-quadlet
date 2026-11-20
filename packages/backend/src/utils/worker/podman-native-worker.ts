@@ -24,7 +24,7 @@ import type {
 } from '@podman-desktop/api';
 import { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { homedir } from 'node:os';
-import { mkdir, readFile, rm, writeFile, realpath } from 'node:fs/promises';
+import { access, mkdir, readFile, rm, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 
 export class PodmanNativeWorker extends PodmanWorker {
@@ -37,6 +37,16 @@ export class PodmanNativeWorker extends PodmanWorker {
 
   override read(path: string): Promise<string> {
     return readFile(path, { encoding: 'utf8' });
+  }
+
+  override async exists(path: string): Promise<boolean> {
+    try {
+      await access(path);
+      return true;
+    } catch (err: unknown) {
+      if (err instanceof Error && 'code' in err && err.code === 'ENOENT') return false;
+      throw err;
+    }
   }
 
   override rm(path: string): Promise<void> {

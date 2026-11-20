@@ -2,8 +2,9 @@
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { quadletAPI } from '/@/api/client';
 import { onMount } from 'svelte';
-import { Button, ErrorMessage } from '@podman-desktop/ui-svelte';
+import { Button, EmptyScreen, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
+import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons/faFileCirclePlus';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 
@@ -27,6 +28,8 @@ let language: string = $derived.by(() => {
 });
 
 let error: string | undefined = $state(undefined);
+// true when the file does not exist on the connection
+let missing: boolean = $state(false);
 let contentChanged: boolean = $derived(originalContent !== currentContent);
 
 async function pull(): Promise<void> {
@@ -39,6 +42,44 @@ async function pull(): Promise<void> {
 
     currentContent = originalContent;
     error = undefined;
+    missing = false;
+  } catch (err: unknown) {
+    console.error(err);
+    missing = await isMissing();
+    error = missing ? undefined : `Something went wrong: ${String(err)}`;
+  } finally {
+    loading = false;
+  }
+}
+
+async function isMissing(): Promise<boolean> {
+  try {
+    return !(await quadletAPI.existsIntoMachine({
+      path: path,
+      connection: $state.snapshot(connection),
+    }));
+  } catch (err: unknown) {
+    console.error(err);
+    return false;
+  }
+}
+
+async function create(): Promise<void> {
+  loading = true;
+  try {
+    await quadletAPI.writeIntoMachine({
+      connection: $state.snapshot(connection),
+      files: [
+        {
+          content: '',
+          filename: path,
+        },
+      ],
+      // prevent reloading systemd
+      skipSystemdDaemonReload: true,
+    });
+    error = undefined;
+    await pull(); // reload
   } catch (err: unknown) {
     console.error(err);
     error = `Something went wrong: ${String(err)}`;
@@ -97,7 +138,13 @@ function onchange(content: string): void {
 {#if error}
   <ErrorMessage error={error} />
 {/if}
-{#if !loading && currentContent && !error}
+{#if missing}
+  <EmptyScreen icon={faFileCirclePlus} title="File not found" message="The file {path} does not exist.">
+    <div class="flex flex-col">
+      <Button icon={faFileCirclePlus} disabled={loading} title="Create file" on:click={create}>Create</Button>
+    </div>
+  </EmptyScreen>
+{:else if !loading && currentContent !== undefined && !error}
   <EditorOverlay save={saveKube} loading={loading} changed={contentChanged} />
   <MonacoEditor class="h-full" content={currentContent} onChange={onchange} language={language} />
 {/if}
