@@ -202,8 +202,9 @@ function back(): void {
 
     <!-- SELECT FILE (readonly, kinda lie) -->
     {#if step === 'select'}
-      <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Compose file</label>
+      <label for="compose-file" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Compose file
+      </label>
       <Input id="compose-file" name="Compose file" readonly value={filepath} />
 
       {#if error}
@@ -217,8 +218,9 @@ function back(): void {
 
       <!-- EDIT KUBE YAML -->
     {:else if step === 'edit-kube'}
-      <label for="kube-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Kube filename</label>
+      <label for="kube-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Kube filename
+      </label>
       <Input
         class="grow"
         name="kube file name"
@@ -242,8 +244,9 @@ function back(): void {
       <!-- EDIT QUADLET -->
     {:else if step === 'edit-quadlet'}
       <!-- select the container engine -->
-      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Container engine</label>
+      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Container engine
+      </label>
       <ContainerProviderConnectionSelect
         disabled={loading}
         onChange={onContainerProviderConnectionChange}
@@ -256,8 +259,9 @@ function back(): void {
         </div>
       {/if}
 
-      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet filename</label>
+      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Quadlet filename
+      </label>
       <Input
         class="grow"
         name="quadlet filename"
@@ -279,7 +283,9 @@ function back(): void {
           disabled={quadletFilename.length === 0 || selectedContainerProviderConnection?.status !== 'started'}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
-          title="Load into machine">Load into machine</Button>
+          title="Load into machine">
+          Load into machine
+        </Button>
       </div>
     {:else if step === 'completed'}
       <EmptyScreen icon={faCheck} title="Completed" message="The quadlet has been loaded.">
