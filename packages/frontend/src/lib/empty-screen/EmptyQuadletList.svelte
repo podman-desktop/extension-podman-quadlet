@@ -64,7 +64,9 @@ let message: string = $derived.by(() => {
         inProgress={loading}
         disabled={disabled}
         title="Refresh Quadlets"
-        on:click={refreshQuadlets}>Refresh</Button>
+        on:click={refreshQuadlets}>
+        Refresh
+      </Button>
     </div>
   {/if}
 </EmptyScreen>

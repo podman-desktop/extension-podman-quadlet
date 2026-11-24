@@ -81,6 +81,7 @@ $effect(() => {
 
 <div class="w-full flex flex-row gap-x-2 justify-end pt-4">
   <Button type="secondary" onclick={close} title="cancel">Cancel</Button>
-  <Button disabled={!generatable} inProgress={loading} icon={faHammer} title="Generate" onclick={generate}
-    >Generate</Button>
+  <Button disabled={!generatable} inProgress={loading} icon={faHammer} title="Generate" onclick={generate}>
+    Generate
+  </Button>
 </div>
