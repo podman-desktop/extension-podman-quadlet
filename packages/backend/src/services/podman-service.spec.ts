@@ -277,6 +277,95 @@ describe('PodmanService#getWorker', () => {
     expect(PodmanSSHWorker).toHaveBeenCalledTimes(2);
   });
 
+  test('concurrent calls should share the same remote connection', async () => {
+    podman = getPodmanService();
+    await podman.init();
+
+    vi.spyOn(podman, 'isMachineRootful').mockResolvedValue(false);
+
+    const [first, second] = await Promise.all([
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+    ]);
+
+    // only created once
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+    expect(first).toBe(second);
+    expect(first.dispose).not.toHaveBeenCalled();
+
+    // the shared worker should be cached
+    await expect(podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK)).resolves.toBe(first);
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+  });
+
+  test('concurrent calls on a not alive remote connection should re-create it once', async () => {
+    podman = getPodmanService();
+    await podman.init();
+
+    vi.spyOn(podman, 'isMachineRootful').mockResolvedValue(false);
+
+    const first = await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
+
+    // the ssh session ended (e.g. machine stopped)
+    const alive = vi.spyOn(PodmanSSHWorker.prototype, 'alive', 'get').mockReturnValue(false);
+
+    const [second, third] = await Promise.all([
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+    ]);
+
+    expect(first.dispose).toHaveBeenCalledOnce();
+    expect(PodmanSSHWorker).toHaveBeenCalledTimes(2);
+    expect(second).not.toBe(first);
+    expect(second).toBe(third);
+
+    // the new worker should be cached
+    alive.mockReturnValue(true);
+    await expect(podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK)).resolves.toBe(second);
+    expect(PodmanSSHWorker).toHaveBeenCalledTimes(2);
+  });
+
+  test('concurrent calls should share the remote connection init failure', async () => {
+    podman = getPodmanService();
+    await podman.init();
+
+    vi.spyOn(podman, 'isMachineRootful').mockResolvedValue(false);
+    vi.mocked(PodmanSSHWorker.prototype.init).mockRejectedValueOnce(new Error('connection refused'));
+
+    const results = await Promise.allSettled([
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+    ]);
+
+    expect(results).toStrictEqual([
+      { status: 'rejected', reason: new Error('connection refused') },
+      { status: 'rejected', reason: new Error('connection refused') },
+    ]);
+    expect(PodmanSSHWorker).toHaveBeenCalledOnce();
+
+    // next call should create a new worker
+    await podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK);
+    expect(PodmanSSHWorker).toHaveBeenCalledTimes(2);
+  });
+
+  test('concurrent calls on different connections should create a worker for each', async () => {
+    podman = getPodmanService();
+    await podman.init();
+
+    vi.spyOn(podman, 'isMachineRootful').mockResolvedValue(false);
+
+    const [first, second] = await Promise.all([
+      podman.getWorker(WSL_PROVIDER_CONNECTION_MOCK),
+      podman.getWorker({
+        ...WSL_PROVIDER_CONNECTION_MOCK,
+        providerId: 'another-provider',
+      }),
+    ]);
+
+    expect(PodmanSSHWorker).toHaveBeenCalledTimes(2);
+    expect(first).not.toBe(second);
+  });
+
   test('native connection should be created', async () => {
     podman = getPodmanService({
       isLinux: true,
@@ -303,6 +392,22 @@ describe('PodmanService#getWorker', () => {
     // only created once
     expect(PodmanNativeWorker).toHaveBeenCalledOnce();
     expect(PodmanSSHWorker).not.toHaveBeenCalled();
+  });
+
+  test('concurrent calls should share the same native connection', async () => {
+    podman = getPodmanService({
+      isLinux: true,
+    });
+    await podman.init();
+
+    const [first, second] = await Promise.all([
+      podman.getWorker(NATIVE_PROVIDER_CONNECTION_MOCK),
+      podman.getWorker(NATIVE_PROVIDER_CONNECTION_MOCK),
+    ]);
+
+    // only created once
+    expect(PodmanNativeWorker).toHaveBeenCalledOnce();
+    expect(first).toBe(second);
   });
 
   test('rootful remote connection should be created', async () => {
