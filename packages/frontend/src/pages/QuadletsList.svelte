@@ -209,14 +209,17 @@ onMount(async () => {
 
 <NavPage title="Podman Quadlets" searchEnabled={true} bind:searchTerm={searchTerm}>
   {#snippet additionalActions()}
-    <Button icon={faHammer} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}
-      >Generate Quadlet</Button>
+    <Button icon={faHammer} disabled={disabled} title="Generate Quadlet" on:click={navigateToGenerate}>
+      Generate Quadlet
+    </Button>
     <Button
       icon={faArrowsRotate}
       inProgress={loading}
       disabled={disabled}
       title="Refresh Quadlets"
-      on:click={refreshQuadlets}>Refresh</Button>
+      on:click={refreshQuadlets}>
+      Refresh
+    </Button>
   {/snippet}
   {#snippet bottomAdditionalActions()}
     <div class="w-full flex justify-between">

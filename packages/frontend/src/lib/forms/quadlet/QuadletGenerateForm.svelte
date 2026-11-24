@@ -160,8 +160,9 @@ function resetGenerate(): void {
     <!-- step 1 -->
     {#if step === 'options'}
       <!-- all forms share the container provider connection selection -->
-      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Container engine</label>
+      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Container engine
+      </label>
       <ContainerProviderConnectionSelect
         disabled={loading}
         onChange={onContainerProviderConnectionChange}
@@ -175,8 +176,9 @@ function resetGenerate(): void {
         </div>
       {/if}
 
-      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet type</label>
+      <label for="container-engine" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Quadlet type
+      </label>
       <RadioButtons
         label="Quadlet type"
         disabled={loading || selectedContainerProviderConnection?.status !== 'started'}
@@ -223,8 +225,9 @@ function resetGenerate(): void {
 
       <!-- step 2 edit -->
     {:else if step === 'edit' && quadlet !== undefined}
-      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]"
-        >Quadlet filename</label>
+      <label for="quadlet-filename" class="pt-4 block mb-2 font-bold text-[var(--pd-content-card-header-text)]">
+        Quadlet filename
+      </label>
       <Input
         class="grow"
         name="quadlet filename"
@@ -249,7 +252,9 @@ function resetGenerate(): void {
           inProgress={loading}
           icon={faTruckPickup}
           on:click={saveIntoMachine}
-          title="Load into machine">Load into machine</Button>
+          title="Load into machine">
+          Load into machine
+        </Button>
       </div>
     {:else if step === 'completed'}
       <EmptyScreen icon={faCheck} title="Completed" message="The quadlet has been loaded.">
