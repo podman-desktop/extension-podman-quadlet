@@ -19,10 +19,11 @@
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { PodmanNativeWorker } from '/@/utils/worker/podman-native-worker';
 import { homedir } from 'node:os';
-import { access, readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
+import { readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 import type { process as ProcessApi, ProviderContainerConnection } from '@podman-desktop/api';
 import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 
 // mock node packages
 vi.mock(import('node:fs/promises'));
@@ -82,33 +83,31 @@ describe('read', () => {
     expect(content).toBe(expectedContent);
     expect(readFile).toHaveBeenCalledWith('test-path', { encoding: 'utf8' });
   });
-});
 
-describe('exists', () => {
-  let worker: PodmanWorker;
-  beforeEach(() => {
-    worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+  test('homedir path should be resolved', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockResolvedValue('');
+
+    await worker.read('~/foo/bar.env');
+
+    expect(readFile).toHaveBeenCalledWith(`${HOMEDIR_MOCK}/foo/bar.env`, { encoding: 'utf8' });
   });
 
-  test('accessible path should return true', async () => {
-    vi.mocked(access).mockResolvedValue(undefined);
-
-    await expect(worker.exists('/foo/bar.env')).resolves.toBeTruthy();
-    expect(access).toHaveBeenCalledExactlyOnceWith('/foo/bar.env');
-  });
-
-  test('ENOENT error should return false', async () => {
-    vi.mocked(access).mockRejectedValue(
+  test('ENOENT error should be converted to file not found error', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockRejectedValue(
       Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' }),
     );
 
-    await expect(worker.exists('/foo/bar.env')).resolves.toBeFalsy();
+    const error = await worker.read('/foo/bar.env').catch((err: unknown) => err);
+    expect(isFileNotFoundError(error)).toBeTruthy();
   });
 
   test('other errors should be propagated', async () => {
-    vi.mocked(access).mockRejectedValue(Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }));
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockRejectedValue(Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }));
 
-    await expect(worker.exists('/foo/bar.env')).rejects.toThrow('EACCES: permission denied');
+    await expect(worker.read('/foo/bar.env')).rejects.toThrow('EACCES: permission denied');
   });
 });
 

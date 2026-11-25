@@ -39,10 +39,6 @@ export class PodmanSSHWorker extends PodmanWorker {
     return this.#podmanSFTP.read(path);
   }
 
-  override exists(path: string): Promise<boolean> {
-    return this.#podmanSFTP.exists(path);
-  }
-
   override rm(path: string): Promise<void> {
     return this.#podmanSFTP.rm(path);
   }

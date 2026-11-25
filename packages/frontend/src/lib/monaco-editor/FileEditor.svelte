@@ -2,10 +2,10 @@
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
 import { quadletAPI } from '/@/api/client';
 import { onMount } from 'svelte';
-import { Button, EmptyScreen, ErrorMessage } from '@podman-desktop/ui-svelte';
+import { Button, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
-import { faFileCirclePlus } from '@fortawesome/free-solid-svg-icons/faFileCirclePlus';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
+import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
@@ -28,8 +28,8 @@ let language: string = $derived.by(() => {
 });
 
 let error: string | undefined = $state(undefined);
-// true when the file does not exist on the connection
-let missing: boolean = $state(false);
+// true when the file does not exist yet, it will be created on save
+let isNew: boolean = $state(false);
 let contentChanged: boolean = $derived(originalContent !== currentContent);
 
 async function pull(): Promise<void> {
@@ -42,54 +42,25 @@ async function pull(): Promise<void> {
 
     currentContent = originalContent;
     error = undefined;
-    missing = false;
+    isNew = false;
   } catch (err: unknown) {
     console.error(err);
-    missing = await isMissing();
-    error = missing ? undefined : `Something went wrong: ${String(err)}`;
-  } finally {
-    loading = false;
-  }
-}
-
-async function isMissing(): Promise<boolean> {
-  try {
-    return !(await quadletAPI.existsIntoMachine({
-      path: path,
-      connection: $state.snapshot(connection),
-    }));
-  } catch (err: unknown) {
-    console.error(err);
-    return false;
-  }
-}
-
-async function create(): Promise<void> {
-  loading = true;
-  try {
-    await quadletAPI.writeIntoMachine({
-      connection: $state.snapshot(connection),
-      files: [
-        {
-          content: '',
-          filename: path,
-        },
-      ],
-      // prevent reloading systemd
-      skipSystemdDaemonReload: true,
-    });
-    error = undefined;
-    await pull(); // reload
-  } catch (err: unknown) {
-    console.error(err);
-    error = `Something went wrong: ${String(err)}`;
+    if (isFileNotFoundError(err)) {
+      // like an editor opening a file which does not exist yet: start from an empty content
+      originalContent = undefined;
+      currentContent = '';
+      error = undefined;
+      isNew = true;
+    } else {
+      error = `Something went wrong: ${String(err)}`;
+    }
   } finally {
     loading = false;
   }
 }
 
 async function saveKube(): Promise<void> {
-  if (!path || !currentContent) return;
+  if (!path || currentContent === undefined) return;
 
   loading = true;
   try {
@@ -138,13 +109,12 @@ function onchange(content: string): void {
 {#if error}
   <ErrorMessage error={error} />
 {/if}
-{#if missing}
-  <EmptyScreen icon={faFileCirclePlus} title="File not found" message="The file {path} does not exist.">
-    <div class="flex flex-col">
-      <Button icon={faFileCirclePlus} disabled={loading} title="Create file" on:click={create}>Create</Button>
-    </div>
-  </EmptyScreen>
-{:else if !loading && currentContent !== undefined && !error}
+{#if isNew && !error}
+  <div aria-label="new file notice" class="px-4 pb-2 text-sm text-[var(--pd-content-text)]">
+    This file does not exist yet, it will be created when you save.
+  </div>
+{/if}
+{#if !loading && currentContent !== undefined && !error}
   <EditorOverlay save={saveKube} loading={loading} changed={contentChanged} />
   <MonacoEditor class="h-full" content={currentContent} onChange={onchange} language={language} />
 {/if}

@@ -226,17 +226,6 @@ export class QuadletApiImpl extends QuadletApi {
     });
   }
 
-  override existsIntoMachine(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    path: string;
-  }): Promise<boolean> {
-    const providerConnection = this.dependencies.providers.getProviderContainerConnection(options.connection);
-    return this.dependencies.quadlet.existsIntoMachine({
-      path: options.path,
-      provider: providerConnection,
-    });
-  }
-
   override async templates(): Promise<Array<Template>> {
     return this.dependencies.quadlet.templates();
   }

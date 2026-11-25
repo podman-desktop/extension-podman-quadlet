@@ -69,15 +69,6 @@ export abstract class QuadletApi {
     path: string;
   }): Promise<string>;
 
-  /**
-   * Check if a file exists on a given connection
-   * @param options
-   */
-  abstract existsIntoMachine(options: {
-    connection: ProviderContainerConnectionIdentifierInfo;
-    path: string;
-  }): Promise<boolean>;
-
   abstract getSynchronisationInfo(): Promise<SynchronisationInfo[]>;
   /**
    * List Quadlets templates

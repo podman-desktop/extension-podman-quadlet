@@ -61,7 +61,6 @@ class PodmanWorkerImpl extends PodmanWorker {
     connection: ProviderContainerConnection,
     public callbacks: {
       read: (path: string) => Promise<string>;
-      exists: (path: string) => Promise<boolean>;
       rm: (path: string) => Promise<void>;
       write: (path: string, content: string) => Promise<void>;
       realpath: (path: string) => Promise<string>;
@@ -84,9 +83,6 @@ class PodmanWorkerImpl extends PodmanWorker {
 
   override read(path: string): Promise<string> {
     return this.callbacks.read(path);
-  }
-  override exists(path: string): Promise<boolean> {
-    return this.callbacks.exists(path);
   }
   override rm(path: string): Promise<void> {
     return this.callbacks.rm(path);
@@ -111,7 +107,6 @@ beforeEach(() => {
 function getPodmanWorkerImpl(): PodmanWorkerImpl {
   return new PodmanWorkerImpl(WSL_PROVIDER_CONNECTION_MOCK, {
     read: vi.fn(),
-    exists: vi.fn(),
     exec: vi.fn(),
     write: vi.fn(),
     rm: vi.fn(),

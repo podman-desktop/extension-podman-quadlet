@@ -325,14 +325,6 @@ export class QuadletService extends QuadletHelper implements Disposable, AsyncIn
     return worker.read(expanded);
   }
 
-  async existsIntoMachine(options: { provider: ProviderContainerConnection; path: string }): Promise<boolean> {
-    // Get the worker
-    const worker: PodmanWorker = await this.podman.getWorker(options.provider);
-    const expanded = await this.dependencies.specifiers.expand(options.provider, options.path);
-
-    return worker.exists(expanded);
-  }
-
   /**
    * @param options
    */

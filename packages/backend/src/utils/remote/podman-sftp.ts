@@ -19,11 +19,17 @@ import type { Disposable } from '@podman-desktop/api';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
+import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 
 /**
  * Permissions for newly created files (same as `podman quadlet install`)
  */
 export const DEFAULT_FILE_MODE = 0o644;
+
+/**
+ * SFTP status code returned by the server when a file does not exist (SSH_FX_NO_SUCH_FILE)
+ */
+const SFTP_STATUS_NO_SUCH_FILE = 2;
 
 export class PodmanSFTP implements Disposable {
   #sshConfig: ConnectConfig;
@@ -76,7 +82,17 @@ export class PodmanSFTP implements Disposable {
   }
 
   async read(path: string): Promise<string> {
-    const response = await this.#client.get(this.resolve(path));
+    const resolved = this.resolve(path);
+
+    let response: Awaited<ReturnType<SftpClient['get']>>;
+    try {
+      response = await this.#client.get(resolved);
+    } catch (err: unknown) {
+      if (err instanceof Error && 'code' in err && err.code === SFTP_STATUS_NO_SUCH_FILE) {
+        throw createFileNotFoundError(resolved);
+      }
+      throw err;
+    }
 
     if (Buffer.isBuffer(response)) {
       return response.toString('utf8');
@@ -87,14 +103,6 @@ export class PodmanSFTP implements Disposable {
 
     if (typeof response !== 'string') throw new Error('PodmanSFTP read operation cannot handle writable stream');
     return response;
-  }
-
-  /**
-   * Returns true if a file or directory exists at the given path.
-   */
-  async exists(path: string): Promise<boolean> {
-    const type = await this.#client.exists(this.resolve(path));
-    return type !== false;
   }
 
   /**

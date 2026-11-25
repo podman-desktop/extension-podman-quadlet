@@ -19,8 +19,9 @@
 import '@testing-library/jest-dom/vitest';
 
 import { render, fireEvent } from '@testing-library/svelte';
-import { beforeEach, describe, test, vi, expect, assert } from 'vitest';
+import { beforeEach, test, vi, expect, assert } from 'vitest';
 import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
+import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo, QuadletApi } from '@podman-desktop/quadlet-extension-core-api';
 import { quadletAPI } from '/@/api/client';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
@@ -32,7 +33,6 @@ vi.mock(import('/@/api/client'), () => ({
   quadletAPI: {
     readIntoMachine: vi.fn(),
     writeIntoMachine: vi.fn(),
-    existsIntoMachine: vi.fn(),
   } as unknown as QuadletApi,
 }));
 
@@ -44,7 +44,6 @@ beforeEach(() => {
   vi.resetAllMocks();
 
   vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue(MOCK_YAML);
-  vi.mocked(quadletAPI.existsIntoMachine).mockResolvedValue(true);
 });
 
 const PODMAN_MACHINE_DEFAULT: ProviderContainerConnectionIdentifierInfo = {
@@ -211,10 +210,11 @@ test('expect save button to be enabled when content is updated', async () => {
   });
 });
 
-test('empty file should be displayed in monaco editor', async () => {
-  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
+test('expect empty editor and notice when the file does not exist', async () => {
+  // errors are serialized as message between backend and frontend
+  vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(createFileNotFoundError('/mnt/foo/bar.env').message);
 
-  render(FileEditor, {
+  const { getByLabelText, queryByRole } = render(FileEditor, {
     connection: PODMAN_MACHINE_DEFAULT,
     path: '/mnt/foo/bar.env',
     loading: false,
@@ -228,157 +228,56 @@ test('empty file should be displayed in monaco editor', async () => {
       }),
     );
   });
+
+  expect(getByLabelText('new file notice')).toHaveTextContent('created when you save');
+  expect(queryByRole('alert')).not.toBeInTheDocument();
 });
 
-test('successful read should not check if the file exists', async () => {
-  render(FileEditor, {
+test('expect empty new file to be created on save', async () => {
+  vi.mocked(quadletAPI.readIntoMachine).mockRejectedValueOnce(createFileNotFoundError('/mnt/foo/bar.env').message);
+  vi.mocked(quadletAPI.writeIntoMachine).mockResolvedValue(undefined);
+
+  const { getByRole } = render(FileEditor, {
     connection: PODMAN_MACHINE_DEFAULT,
-    path: '/mnt/foo/bar.yaml',
+    path: '/mnt/foo/bar.env',
+    loading: false,
+  });
+
+  const saveBtn = await vi.waitFor(() => {
+    const btn = getByRole('button', { name: 'Save' });
+    expect(btn).toBeEnabled();
+    return btn;
+  });
+
+  // the file now exists
+  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
+  saveBtn.click();
+
+  await vi.waitFor(() => {
+    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledExactlyOnceWith({
+      connection: PODMAN_MACHINE_DEFAULT,
+      files: [{ content: '', filename: '/mnt/foo/bar.env' }],
+      skipSystemdDaemonReload: true,
+    });
+  });
+});
+
+test('expect existing empty file to be displayed in the editor without notice', async () => {
+  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
+
+  const { queryByLabelText } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.env',
     loading: false,
   });
 
   await vi.waitFor(() => {
-    expect(MonacoEditor).toHaveBeenCalled();
+    expect(MonacoEditor).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        content: '',
+      }),
+    );
   });
-
-  expect(quadletAPI.existsIntoMachine).not.toHaveBeenCalled();
-});
-
-describe('missing file', () => {
-  beforeEach(() => {
-    vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(new Error('ENOENT: no such file or directory'));
-    vi.mocked(quadletAPI.existsIntoMachine).mockResolvedValue(false);
-  });
-
-  test('error from quadletAPI#readIntoMachine should check if the file exists', async () => {
-    render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    await vi.waitFor(() => {
-      expect(quadletAPI.existsIntoMachine).toHaveBeenCalledExactlyOnceWith({
-        connection: PODMAN_MACHINE_DEFAULT,
-        path: '/mnt/foo/bar.env',
-      });
-    });
-  });
-
-  test('missing file should display a create button instead of the error', async () => {
-    const { getByTitle, getByText, queryByRole } = render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    await vi.waitFor(() => {
-      expect(getByTitle('Create file')).toBeEnabled();
-    });
-
-    expect(getByText('File not found')).toBeInTheDocument();
-    expect(queryByRole('alert')).toBeNull();
-    expect(MonacoEditor).not.toHaveBeenCalled();
-  });
-
-  test('existing file should display the error from quadletAPI#readIntoMachine', async () => {
-    vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(new Error('Dummy foo error'));
-    vi.mocked(quadletAPI.existsIntoMachine).mockResolvedValue(true);
-
-    const { getByRole, queryByTitle } = render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    await vi.waitFor(() => {
-      expect(getByRole('alert')).toHaveTextContent('Something went wrong: Error: Dummy foo error');
-    });
-    expect(queryByTitle('Create file')).toBeNull();
-  });
-
-  test('error from quadletAPI#existsIntoMachine should display the error from quadletAPI#readIntoMachine', async () => {
-    vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(new Error('Dummy foo error'));
-    vi.mocked(quadletAPI.existsIntoMachine).mockRejectedValue(new Error('Dummy bar error'));
-
-    const { getByRole, queryByTitle } = render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    await vi.waitFor(() => {
-      expect(getByRole('alert')).toHaveTextContent('Something went wrong: Error: Dummy foo error');
-    });
-    expect(queryByTitle('Create file')).toBeNull();
-  });
-
-  test('create button should write an empty file and reload it', async () => {
-    const { getByTitle, queryByTitle } = render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    const createBtn = await vi.waitFor(() => {
-      const button = getByTitle('Create file');
-      expect(button).toBeEnabled();
-      return button;
-    });
-
-    // the file now exists
-    vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
-
-    await fireEvent.click(createBtn);
-
-    await vi.waitFor(() => {
-      expect(quadletAPI.writeIntoMachine).toHaveBeenCalledExactlyOnceWith({
-        connection: PODMAN_MACHINE_DEFAULT,
-        files: [
-          {
-            filename: '/mnt/foo/bar.env',
-            content: '',
-          },
-        ],
-        skipSystemdDaemonReload: true,
-      });
-    });
-
-    await vi.waitFor(() => {
-      expect(MonacoEditor).toHaveBeenCalledWith(
-        expect.anything(),
-        expect.objectContaining({
-          content: '',
-        }),
-      );
-    });
-
-    expect(quadletAPI.readIntoMachine).toHaveBeenCalledTimes(2);
-    expect(queryByTitle('Create file')).toBeNull();
-  });
-
-  test('error from quadletAPI#writeIntoMachine should be displayed', async () => {
-    vi.mocked(quadletAPI.writeIntoMachine).mockRejectedValue(new Error('Dummy write error'));
-
-    const { getByRole, getByTitle } = render(FileEditor, {
-      connection: PODMAN_MACHINE_DEFAULT,
-      path: '/mnt/foo/bar.env',
-      loading: false,
-    });
-
-    const createBtn = await vi.waitFor(() => {
-      const button = getByTitle('Create file');
-      expect(button).toBeEnabled();
-      return button;
-    });
-
-    await fireEvent.click(createBtn);
-
-    await vi.waitFor(() => {
-      expect(getByRole('alert')).toHaveTextContent('Something went wrong: Error: Dummy write error');
-    });
-
-    // user should be able to try again
-    expect(getByTitle('Create file')).toBeEnabled();
-  });
+  expect(queryByLabelText('new file notice')).not.toBeInTheDocument();
 });

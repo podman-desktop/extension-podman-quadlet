@@ -48,12 +48,6 @@ export abstract class PodmanWorker implements Disposable, AsyncInit {
   abstract read(path: string): Promise<string>;
 
   /**
-   * Check if a file or directory exists at path
-   * @param path
-   */
-  abstract exists(path: string): Promise<boolean>;
-
-  /**
    * Remove a file at a given path
    * @remarks does not support recursive
    * @param path
