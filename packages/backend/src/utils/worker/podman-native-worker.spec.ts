@@ -93,6 +93,15 @@ describe('read', () => {
     expect(readFile).toHaveBeenCalledWith(`${HOMEDIR_MOCK}/foo/bar.env`, { encoding: 'utf8' });
   });
 
+  test('embedded tilde should not be resolved', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockResolvedValue('');
+
+    await worker.read('/foo/app~backup.env');
+
+    expect(readFile).toHaveBeenCalledWith('/foo/app~backup.env', { encoding: 'utf8' });
+  });
+
   test('ENOENT error should be converted to file not found error', async () => {
     const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
     vi.mocked(readFile).mockRejectedValue(

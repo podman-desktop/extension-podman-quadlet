@@ -37,7 +37,8 @@ export class PodmanNativeWorker extends PodmanWorker {
   }
 
   protected resolve(path: string): string {
-    return path.replace('~', homedir());
+    // only expand a leading ~ (alone or followed by a separator), embedded tildes are literal
+    return path.replace(/^~(?=\/|$)/, homedir());
   }
 
   override async read(path: string): Promise<string> {

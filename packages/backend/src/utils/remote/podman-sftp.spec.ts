@@ -21,7 +21,6 @@ import SftpClient from 'ssh2-sftp-client';
 import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import { DEFAULT_FILE_MODE, PodmanSFTP } from '/@/utils/remote/podman-sftp';
 
-vi.mock(import('ssh2'));
 vi.mock(import('ssh2-sftp-client'));
 
 const SSH_CONFIG_MOCK: ConnectConfig = {

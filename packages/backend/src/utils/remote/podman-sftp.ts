@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { Disposable } from '@podman-desktop/api';
-import type { ConnectConfig } from 'ssh2';
+import { utils, type ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
 import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
@@ -25,11 +25,6 @@ import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-
  * Permissions for newly created files (same as `podman quadlet install`)
  */
 export const DEFAULT_FILE_MODE = 0o644;
-
-/**
- * SFTP status code returned by the server when a file does not exist (SSH_FX_NO_SUCH_FILE)
- */
-const SFTP_STATUS_NO_SUCH_FILE = 2;
 
 export class PodmanSFTP implements Disposable {
   #sshConfig: ConnectConfig;
@@ -88,7 +83,7 @@ export class PodmanSFTP implements Disposable {
     try {
       response = await this.#client.get(resolved);
     } catch (err: unknown) {
-      if (err instanceof Error && 'code' in err && err.code === SFTP_STATUS_NO_SUCH_FILE) {
+      if (err instanceof Error && 'code' in err && err.code === utils.sftp.STATUS_CODE.NO_SUCH_FILE) {
         throw createFileNotFoundError(resolved);
       }
       throw err;
