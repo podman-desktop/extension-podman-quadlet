@@ -57,4 +57,5 @@ export * from './models/container-generator-options';
 // export utility enums & constants
 export * from './utils/quadlet-type';
 export * from './utils/vm-types';
+export * from './utils/file-not-found-error';
 export * from './messages';

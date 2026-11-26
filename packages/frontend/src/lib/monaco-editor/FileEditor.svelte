@@ -5,6 +5,7 @@ import { onMount } from 'svelte';
 import { Button, ErrorMessage } from '@podman-desktop/ui-svelte';
 import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
+import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
 
 interface Props {
@@ -27,6 +28,8 @@ let language: string = $derived.by(() => {
 });
 
 let error: string | undefined = $state(undefined);
+// true when the file does not exist yet, it will be created on save
+let isNew: boolean = $state(false);
 let contentChanged: boolean = $derived(originalContent !== currentContent);
 
 async function pull(): Promise<void> {
@@ -39,16 +42,25 @@ async function pull(): Promise<void> {
 
     currentContent = originalContent;
     error = undefined;
+    isNew = false;
   } catch (err: unknown) {
     console.error(err);
-    error = `Something went wrong: ${String(err)}`;
+    if (isFileNotFoundError(err)) {
+      // like an editor opening a file which does not exist yet: start from an empty content
+      originalContent = undefined;
+      currentContent = '';
+      error = undefined;
+      isNew = true;
+    } else {
+      error = `Something went wrong: ${String(err)}`;
+    }
   } finally {
     loading = false;
   }
 }
 
 async function saveKube(): Promise<void> {
-  if (!path || !currentContent) return;
+  if (!path || currentContent === undefined) return;
 
   loading = true;
   try {
@@ -97,7 +109,12 @@ function onchange(content: string): void {
 {#if error}
   <ErrorMessage error={error} />
 {/if}
-{#if !loading && currentContent && !error}
+{#if isNew && !error}
+  <div aria-label="new file notice" class="px-4 pb-2 text-sm text-[var(--pd-content-text)]">
+    This file does not exist yet, it will be created when you save.
+  </div>
+{/if}
+{#if !loading && currentContent !== undefined && !error}
   <EditorOverlay save={saveKube} loading={loading} changed={contentChanged} />
   <MonacoEditor class="h-full" content={currentContent} onChange={onchange} language={language} />
 {/if}

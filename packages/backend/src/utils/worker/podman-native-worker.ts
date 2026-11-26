@@ -26,6 +26,7 @@ import { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { homedir } from 'node:os';
 import { mkdir, readFile, rm, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
+import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 
 export class PodmanNativeWorker extends PodmanWorker {
   constructor(
@@ -35,8 +36,19 @@ export class PodmanNativeWorker extends PodmanWorker {
     super(connection);
   }
 
-  override read(path: string): Promise<string> {
-    return readFile(path, { encoding: 'utf8' });
+  protected resolve(path: string): string {
+    // only expand a leading ~ (alone or followed by a separator), embedded tildes are literal
+    return path.replace(/^~(?=\/|$)/, homedir());
+  }
+
+  override async read(path: string): Promise<string> {
+    const resolved = this.resolve(path);
+    try {
+      return await readFile(resolved, { encoding: 'utf8' });
+    } catch (err: unknown) {
+      if (err instanceof Error && 'code' in err && err.code === 'ENOENT') throw createFileNotFoundError(resolved);
+      throw err;
+    }
   }
 
   override rm(path: string): Promise<void> {
@@ -45,7 +57,7 @@ export class PodmanNativeWorker extends PodmanWorker {
 
   override async write(path: string, content: string): Promise<void> {
     // 1. resolve homedir
-    const resolved = path.replace('~', homedir());
+    const resolved = this.resolve(path);
     // 2. mkdir parent directory
     await mkdir(dirname(resolved), { recursive: true });
     // 3. write file

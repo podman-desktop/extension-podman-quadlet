@@ -21,6 +21,7 @@ import '@testing-library/jest-dom/vitest';
 import { render, fireEvent } from '@testing-library/svelte';
 import { beforeEach, test, vi, expect, assert } from 'vitest';
 import FileEditor from '/@/lib/monaco-editor/FileEditor.svelte';
+import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo, QuadletApi } from '@podman-desktop/quadlet-extension-core-api';
 import { quadletAPI } from '/@/api/client';
 import MonacoEditor from '/@/lib/monaco-editor/MonacoEditor.svelte';
@@ -207,4 +208,76 @@ test('expect save button to be enabled when content is updated', async () => {
       skipSystemdDaemonReload: true,
     });
   });
+});
+
+test('expect empty editor and notice when the file does not exist', async () => {
+  // errors are serialized as message between backend and frontend
+  vi.mocked(quadletAPI.readIntoMachine).mockRejectedValue(createFileNotFoundError('/mnt/foo/bar.env').message);
+
+  const { getByLabelText, queryByRole } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.env',
+    loading: false,
+  });
+
+  await vi.waitFor(() => {
+    expect(MonacoEditor).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        content: '',
+      }),
+    );
+  });
+
+  expect(getByLabelText('new file notice')).toHaveTextContent('created when you save');
+  expect(queryByRole('alert')).not.toBeInTheDocument();
+});
+
+test('expect empty new file to be created on save', async () => {
+  vi.mocked(quadletAPI.readIntoMachine).mockRejectedValueOnce(createFileNotFoundError('/mnt/foo/bar.env').message);
+  vi.mocked(quadletAPI.writeIntoMachine).mockResolvedValue(undefined);
+
+  const { getByRole } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.env',
+    loading: false,
+  });
+
+  const saveBtn = await vi.waitFor(() => {
+    const btn = getByRole('button', { name: 'Save' });
+    expect(btn).toBeEnabled();
+    return btn;
+  });
+
+  // the file now exists
+  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
+  saveBtn.click();
+
+  await vi.waitFor(() => {
+    expect(quadletAPI.writeIntoMachine).toHaveBeenCalledExactlyOnceWith({
+      connection: PODMAN_MACHINE_DEFAULT,
+      files: [{ content: '', filename: '/mnt/foo/bar.env' }],
+      skipSystemdDaemonReload: true,
+    });
+  });
+});
+
+test('expect existing empty file to be displayed in the editor without notice', async () => {
+  vi.mocked(quadletAPI.readIntoMachine).mockResolvedValue('');
+
+  const { queryByLabelText } = render(FileEditor, {
+    connection: PODMAN_MACHINE_DEFAULT,
+    path: '/mnt/foo/bar.env',
+    loading: false,
+  });
+
+  await vi.waitFor(() => {
+    expect(MonacoEditor).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        content: '',
+      }),
+    );
+  });
+  expect(queryByLabelText('new file notice')).not.toBeInTheDocument();
 });

@@ -18,9 +18,9 @@
 import { vi, test, expect, beforeEach, afterEach, describe, assert } from 'vitest';
 import type { ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
+import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import { DEFAULT_FILE_MODE, PodmanSFTP } from '/@/utils/remote/podman-sftp';
 
-vi.mock(import('ssh2'));
 vi.mock(import('ssh2-sftp-client'));
 
 const SSH_CONFIG_MOCK: ConnectConfig = {
@@ -102,6 +102,14 @@ describe('read', () => {
     expect(response).toBe('bar');
   });
 
+  test('get empty array response should be converted to empty string', async () => {
+    // an empty file resolves an empty array
+    vi.mocked(SftpClient.prototype.get).mockResolvedValue([] as unknown as Buffer);
+
+    const response: string = await podmanSFTP.read('/foo');
+    expect(response).toBe('');
+  });
+
   test('homedir path should be resolved', async () => {
     // mock string for resolve content
     vi.mocked(SftpClient.prototype.get).mockResolvedValue('bar');
@@ -109,6 +117,22 @@ describe('read', () => {
     await podmanSFTP.read('~/foo');
 
     expect(SftpClient.prototype.get).toHaveBeenCalledWith(`/home/${SSH_CONFIG_MOCK.username}/foo`);
+  });
+
+  test('NO_SUCH_FILE status should be converted to file not found error', async () => {
+    vi.mocked(SftpClient.prototype.get).mockRejectedValue(
+      Object.assign(new Error('get: No such file /foo'), { code: 2 }),
+    );
+
+    const error = await podmanSFTP.read('/foo').catch((err: unknown) => err);
+    expect(isFileNotFoundError(error)).toBeTruthy();
+  });
+
+  test('other errors should be propagated', async () => {
+    // generic FAILURE status
+    vi.mocked(SftpClient.prototype.get).mockRejectedValue(Object.assign(new Error('get: Failure /foo'), { code: 4 }));
+
+    await expect(podmanSFTP.read('/foo')).rejects.toThrow('get: Failure /foo');
   });
 });
 

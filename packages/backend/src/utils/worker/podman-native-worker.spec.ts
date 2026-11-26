@@ -23,6 +23,7 @@ import { readFile, rm, mkdir, writeFile, realpath } from 'node:fs/promises';
 import { dirname } from 'node:path/posix';
 import type { process as ProcessApi, ProviderContainerConnection } from '@podman-desktop/api';
 import type { PodmanWorker } from '/@/utils/worker/podman-worker';
+import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 
 // mock node packages
 vi.mock(import('node:fs/promises'));
@@ -81,6 +82,41 @@ describe('read', () => {
 
     expect(content).toBe(expectedContent);
     expect(readFile).toHaveBeenCalledWith('test-path', { encoding: 'utf8' });
+  });
+
+  test('homedir path should be resolved', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockResolvedValue('');
+
+    await worker.read('~/foo/bar.env');
+
+    expect(readFile).toHaveBeenCalledWith(`${HOMEDIR_MOCK}/foo/bar.env`, { encoding: 'utf8' });
+  });
+
+  test('embedded tilde should not be resolved', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockResolvedValue('');
+
+    await worker.read('/foo/app~backup.env');
+
+    expect(readFile).toHaveBeenCalledWith('/foo/app~backup.env', { encoding: 'utf8' });
+  });
+
+  test('ENOENT error should be converted to file not found error', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockRejectedValue(
+      Object.assign(new Error('ENOENT: no such file or directory'), { code: 'ENOENT' }),
+    );
+
+    const error = await worker.read('/foo/bar.env').catch((err: unknown) => err);
+    expect(isFileNotFoundError(error)).toBeTruthy();
+  });
+
+  test('other errors should be propagated', async () => {
+    const worker = new PodmanNativeWorker(NATIVE_PROVIDER_CONNECTION_MOCK, PROCESS_API_MOCK);
+    vi.mocked(readFile).mockRejectedValue(Object.assign(new Error('EACCES: permission denied'), { code: 'EACCES' }));
+
+    await expect(worker.read('/foo/bar.env')).rejects.toThrow('EACCES: permission denied');
   });
 });
 

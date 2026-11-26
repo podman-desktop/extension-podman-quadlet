@@ -16,9 +16,10 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 import type { Disposable } from '@podman-desktop/api';
-import type { ConnectConfig } from 'ssh2';
+import { utils, type ConnectConfig } from 'ssh2';
 import SftpClient from 'ssh2-sftp-client';
 import { dirname } from 'node:path/posix';
+import { createFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 
 /**
  * Permissions for newly created files (same as `podman quadlet install`)
@@ -76,11 +77,24 @@ export class PodmanSFTP implements Disposable {
   }
 
   async read(path: string): Promise<string> {
-    const response = await this.#client.get(this.resolve(path));
+    const resolved = this.resolve(path);
+
+    let response: Awaited<ReturnType<SftpClient['get']>>;
+    try {
+      response = await this.#client.get(resolved);
+    } catch (err: unknown) {
+      if (err instanceof Error && 'code' in err && err.code === utils.sftp.STATUS_CODE.NO_SUCH_FILE) {
+        throw createFileNotFoundError(resolved);
+      }
+      throw err;
+    }
 
     if (Buffer.isBuffer(response)) {
       return response.toString('utf8');
     }
+
+    // when the file is empty, no data is received and an empty array is resolved
+    if (Array.isArray(response) && response.length === 0) return '';
 
     if (typeof response !== 'string') throw new Error('PodmanSFTP read operation cannot handle writable stream');
     return response;
