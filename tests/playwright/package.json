@@ -11,7 +11,7 @@
   "publisher": "podman-desktop",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@argos-ci/cli": "^6.14.0",
+    "@argos-ci/cli": "^6.15.0",
     "@playwright/test": "1.57.0",
     "@podman-desktop/tests-playwright": "1.30.7",
     "@types/node": "^24",
