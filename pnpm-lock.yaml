@@ -296,8 +296,8 @@ importers:
         specifier: ^4.7.8
         version: 4.7.8(picomatch@4.0.7)(svelte@5.59.1(@typescript-eslint/types@8.72.0))(typescript@6.0.3)
       svelte-eslint-parser:
-        specifier: ^1.10.1
-        version: 1.10.1(svelte@5.59.1(@typescript-eslint/types@8.72.0))
+        specifier: ^1.11.0
+        version: 1.11.0(svelte@5.59.1(@typescript-eslint/types@8.72.0))
       typescript:
         specifier: 6.0.3
         version: 6.0.3
@@ -533,8 +533,8 @@ importers:
   tests/playwright:
     devDependencies:
       '@argos-ci/cli':
-        specifier: ^6.14.0
-        version: 6.14.0(@types/node@24.10.9)(supports-color@10.2.2)
+        specifier: ^6.15.0
+        version: 6.15.0(@types/node@24.10.9)(supports-color@10.2.2)
       '@playwright/test':
         specifier: 1.57.0
         version: 1.57.0
@@ -574,17 +574,17 @@ packages:
   '@adobe/css-tools@4.5.0':
     resolution: {integrity: sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q==}
 
-  '@argos-ci/api-client@0.34.0':
-    resolution: {integrity: sha512-smJJJnopYPdqQip2lptsTm851pqz1XiKXYS1QroOmmDG3NpoUvNHkPKuKaZ9qDQDreLdUQ98L4bZAfiX2kIYCg==}
+  '@argos-ci/api-client@0.35.0':
+    resolution: {integrity: sha512-Gtb5P3sKXuTsJ2B8A7sK6GFZCFAavU5LFZUmNUiI77/RdB16tWbHQehpwVa8Av97NFOY6JdqXZOOs+Pi60mKMQ==}
     engines: {node: '>=22.0.0'}
 
-  '@argos-ci/cli@6.14.0':
-    resolution: {integrity: sha512-ij7trvh1n5hV7sBFdK6+DPbFQrhprGMIlBiQURryzM6kiVh6t/P0w2FVaUqUImZ2IZjqO2VrUnnhTrWmWwbu8g==}
+  '@argos-ci/cli@6.15.0':
+    resolution: {integrity: sha512-v0kS3QD2u/GqOPympHBYHcRdzBtGdi8y47wvgnNukLG4I2/SO8tguamFlB88aFA4dt5G5PCCNgXzmucaS1OGEA==}
     engines: {node: '>=22.0.0'}
     hasBin: true
 
-  '@argos-ci/core@6.9.2':
-    resolution: {integrity: sha512-5BKh3kpPLW5fIyP7RI9eRwKL4dO11pDpynEIZQxwH+SnQK6ej7nSQZBnXqRtBTy6zYlQ4G7LMOHnxc5n+vSvOw==}
+  '@argos-ci/core@6.9.3':
+    resolution: {integrity: sha512-ZZWsk0kbGVEfOscqheMp+fc2xEShNN0c5zfwVluKZ6LrWHgA5rCr18806PEhc827tsxgeLZrcYWZi3yiJ5sP1g==}
     engines: {node: '>=22.0.0'}
 
   '@argos-ci/util@4.4.0':
@@ -3715,8 +3715,8 @@ packages:
       svelte: ^4.0.0 || ^5.0.0-next.0
       typescript: ^5.0.0 || ^6.0.0
 
-  svelte-eslint-parser@1.10.1:
-    resolution: {integrity: sha512-owYBhrNRp/m+hDaQCH0S683kc0TMFy2bB+qvsMQQZRsjSFD9xp/3FYgI8FZoOKA3xk62gwkUj1HpVek0p6WgNw==}
+  svelte-eslint-parser@1.11.0:
+    resolution: {integrity: sha512-THKSuH+05dzMjBg0CJcBSdWLMC0ujzViX0h5w4vwxoPvCsaHv6WJ0d15otuitUVeLFDAb7Ertf5dH9qx+h0WiQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0, pnpm: 10.34.6}
     peerDependencies:
       svelte: ^3.37.0 || ^4.0.0 || ^5.0.0
@@ -4274,7 +4274,7 @@ snapshots:
 
   '@adobe/css-tools@4.5.0': {}
 
-  '@argos-ci/api-client@0.34.0(supports-color@10.2.2)':
+  '@argos-ci/api-client@0.35.0(supports-color@10.2.2)':
     dependencies:
       debug: 4.4.3(supports-color@10.2.2)
       openapi-fetch: 0.17.0
@@ -4282,10 +4282,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@argos-ci/cli@6.14.0(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/cli@6.15.0(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.34.0(supports-color@10.2.2)
-      '@argos-ci/core': 6.9.2(@types/node@24.10.9)(supports-color@10.2.2)
+      '@argos-ci/api-client': 0.35.0(supports-color@10.2.2)
+      '@argos-ci/core': 6.9.3(@types/node@24.10.9)(supports-color@10.2.2)
       '@vercel/detect-agent': 1.2.7
       commander: 15.1.0
       open: 11.0.4
@@ -4294,9 +4294,9 @@ snapshots:
       - '@types/node'
       - supports-color
 
-  '@argos-ci/core@6.9.2(@types/node@24.10.9)(supports-color@10.2.2)':
+  '@argos-ci/core@6.9.3(@types/node@24.10.9)(supports-color@10.2.2)':
     dependencies:
-      '@argos-ci/api-client': 0.34.0(supports-color@10.2.2)
+      '@argos-ci/api-client': 0.35.0(supports-color@10.2.2)
       '@argos-ci/util': 4.4.0
       convict: 6.2.5
       debug: 4.4.3(supports-color@10.2.2)
@@ -6126,7 +6126,7 @@ snapshots:
       postcss-load-config: 3.1.4(postcss@8.5.32)
       postcss-safe-parser: 7.1.0(postcss@8.5.32)
       semver: 7.8.6
-      svelte-eslint-parser: 1.10.1(svelte@5.59.1(@typescript-eslint/types@8.72.0))
+      svelte-eslint-parser: 1.11.0(svelte@5.59.1(@typescript-eslint/types@8.72.0))
     optionalDependencies:
       svelte: 5.59.1(@typescript-eslint/types@8.72.0)
     transitivePeerDependencies:
@@ -7497,7 +7497,7 @@ snapshots:
     transitivePeerDependencies:
       - picomatch
 
-  svelte-eslint-parser@1.10.1(svelte@5.59.1(@typescript-eslint/types@8.72.0)):
+  svelte-eslint-parser@1.11.0(svelte@5.59.1(@typescript-eslint/types@8.72.0)):
     dependencies:
       eslint-scope: 8.4.0
       eslint-visitor-keys: 4.2.1
