@@ -9,4 +9,10 @@ export abstract class RoutingApi {
    * route it should use. This method has a side effect of removing the pending route after calling.
    */
   abstract readRoute(): Promise<string | undefined>;
+
+  /**
+   * Navigate to the Podman Desktop Resources page, where the user can install Podman
+   * and manage the Podman machines.
+   */
+  abstract navigateToResources(): Promise<void>;
 }

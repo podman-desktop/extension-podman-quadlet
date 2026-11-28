@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: Apache-2.0
  ***********************************************************************/
 
-import type { WebviewPanel } from '@podman-desktop/api';
+import type { WebviewPanel, navigation as NavigationApi } from '@podman-desktop/api';
 
 import { beforeEach, vi, test, expect, describe } from 'vitest';
 import { RoutingService } from '/@/services/routing-service';
@@ -28,6 +28,10 @@ const PANEL_MOCK: WebviewPanel = {
   reveal: vi.fn(),
 } as unknown as WebviewPanel;
 
+const NAVIGATION_API_MOCK: typeof NavigationApi = {
+  navigateToResources: vi.fn(),
+} as unknown as typeof NavigationApi;
+
 beforeEach(() => {
   vi.resetAllMocks();
   vi.mocked(PANEL_MOCK.webview.postMessage).mockResolvedValue(true);
@@ -36,6 +40,7 @@ beforeEach(() => {
 function getRoutingService(): RoutingService {
   return new RoutingService({
     panel: PANEL_MOCK,
+    navigation: NAVIGATION_API_MOCK,
   });
 }
 
@@ -51,4 +56,16 @@ describe('RoutingService#openQuadletCompose', () => {
     expect(routing.read()).toStrictEqual(`/quadlets/compose?filepath=${expected}`);
     expect(PANEL_MOCK.reveal).toHaveBeenCalledOnce();
   });
+});
+
+test('RoutingService#navigateToResources should use the navigation api', async () => {
+  vi.mocked(NAVIGATION_API_MOCK.navigateToResources).mockResolvedValue(undefined);
+
+  const routing = getRoutingService();
+  await routing.navigateToResources();
+
+  expect(NAVIGATION_API_MOCK.navigateToResources).toHaveBeenCalledOnce();
+  // navigating outside the webview should not affect the webview route
+  expect(routing.read()).toBeUndefined();
+  expect(PANEL_MOCK.reveal).not.toHaveBeenCalled();
 });

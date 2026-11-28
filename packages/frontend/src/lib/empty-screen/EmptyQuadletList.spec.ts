@@ -19,21 +19,38 @@
 import '@testing-library/jest-dom/vitest';
 
 import { fireEvent, render } from '@testing-library/svelte';
-import { expect, test, vi } from 'vitest';
+import { beforeEach, expect, test, vi } from 'vitest';
 import EmptyQuadletList from '/@/lib/empty-screen/EmptyQuadletList.svelte';
 import * as connectionStore from '/@store/connections';
 import * as synchronisationStore from '/@store/synchronisation';
+import { routingAPI } from '/@/api/client';
 
 import { readable } from 'svelte/store';
 import type {
   ProviderContainerConnectionDetailedInfo,
   SynchronisationInfo,
+  ProviderApi,
+  QuadletApi,
+  RoutingApi,
 } from '@podman-desktop/quadlet-extension-core-api';
 import type {} from 'svelte';
 
+// mock clients
+vi.mock(import('/@/api/client'), () => ({
+  providerAPI: {} as unknown as ProviderApi,
+  quadletAPI: {} as unknown as QuadletApi,
+  routingAPI: {
+    navigateToResources: vi.fn(),
+  } as unknown as RoutingApi,
+}));
 // mock stores
 vi.mock(import('/@store/connections'));
 vi.mock(import('/@store/synchronisation'));
+
+beforeEach(() => {
+  vi.resetAllMocks();
+  vi.mocked(routingAPI.navigateToResources).mockResolvedValue(undefined);
+});
 
 // ui object
 const WSL_RUNNING_PROVIDER_DETAILED_INFO: ProviderContainerConnectionDetailedInfo = {
@@ -64,8 +81,9 @@ test.each([
   {
     synchronisation: [],
     connections: [],
-    message: 'No running connection could be found',
-    name: 'no container connections should say no running connection could be found',
+    message:
+      'Quadlets are managed through Podman, but no Podman connection could be found. Go to Resources to install Podman or set up a Podman machine.',
+    name: 'no container connections should say podman is required',
   },
   {
     synchronisation: [],
@@ -138,4 +156,53 @@ test('refresh button should be disabled if disable props is true', async () => {
   await vi.waitFor(() => {
     expect(button).toBeDisabled();
   });
+});
+
+test('no container connections should display podman is required title', async () => {
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([]);
+  vi.mocked(synchronisationStore).synchronisation = readable([]);
+
+  const { getByRole, queryByRole } = render(EmptyQuadletList, {
+    refreshQuadlets: vi.fn(),
+  });
+
+  await vi.waitFor(() => {
+    expect(getByRole('heading', { name: 'Podman is required' })).toBeInTheDocument();
+  });
+  expect(queryByRole('heading', { name: 'No Quadlets' })).not.toBeInTheDocument();
+  expect(queryByRole('button', { name: 'Refresh' })).not.toBeInTheDocument();
+});
+
+test('go to resources button should navigate to the resources page', async () => {
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([]);
+  vi.mocked(synchronisationStore).synchronisation = readable([]);
+
+  const { getByRole } = render(EmptyQuadletList, {
+    refreshQuadlets: vi.fn(),
+  });
+
+  const button = await vi.waitFor(() => {
+    const element = getByRole('button', { name: 'Go to Resources' });
+    expect(element).toBeDefined();
+    return element;
+  });
+  await fireEvent.click(button);
+
+  await vi.waitFor(() => {
+    expect(routingAPI.navigateToResources).toHaveBeenCalledOnce();
+  });
+});
+
+test('go to resources button should not be displayed when a podman connection exists', async () => {
+  vi.mocked(connectionStore).providerConnectionsInfo = readable([WSL_STOPPED_PROVIDER_DETAILED_INFO]);
+  vi.mocked(synchronisationStore).synchronisation = readable([]);
+
+  const { getByRole, queryByRole } = render(EmptyQuadletList, {
+    refreshQuadlets: vi.fn(),
+  });
+
+  await vi.waitFor(() => {
+    expect(getByRole('heading', { name: 'No Quadlets' })).toBeInTheDocument();
+  });
+  expect(queryByRole('button', { name: 'Go to Resources' })).not.toBeInTheDocument();
 });

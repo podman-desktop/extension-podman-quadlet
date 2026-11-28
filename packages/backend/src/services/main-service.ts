@@ -13,6 +13,7 @@ import type {
   configuration as configurationAPI,
   cli as cliApi,
   containerEngine,
+  navigation as navigationApi,
   TelemetryLogger,
 } from '@podman-desktop/api';
 import { WebviewService } from '/@/services/webview-service';
@@ -72,6 +73,7 @@ interface Dependencies {
   commandsApi: typeof commandsApi;
   containers: typeof containerEngine;
   configuration: typeof configurationAPI;
+  navigation: typeof navigationApi;
 }
 
 export class MainService implements Disposable, AsyncInit {
@@ -124,6 +126,7 @@ export class MainService implements Disposable, AsyncInit {
     // routing service
     const routing = new RoutingService({
       panel: webview.getPanel(),
+      navigation: this.dependencies.navigation,
     });
     await routing.init();
     this.#disposables.push(routing);

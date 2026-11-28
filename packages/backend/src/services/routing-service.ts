@@ -2,7 +2,7 @@
  * @author axel7083
  */
 import type { AsyncInit } from '/@/utils/async-init';
-import type { Disposable, WebviewPanel } from '@podman-desktop/api';
+import type { Disposable, WebviewPanel, navigation as NavigationApi } from '@podman-desktop/api';
 import { Publisher } from '/@/utils/publisher';
 import { Messages } from '@podman-desktop/quadlet-extension-core-api';
 import type {
@@ -12,6 +12,7 @@ import type {
 
 interface Dependencies {
   panel: WebviewPanel;
+  navigation: typeof NavigationApi;
 }
 
 export class RoutingService extends Publisher<string | undefined> implements Disposable, AsyncInit {
@@ -61,6 +62,13 @@ export class RoutingService extends Publisher<string | undefined> implements Dis
       quadletType,
     });
     return this.write(`/quadlets/generate?${search.toString()}`);
+  }
+
+  /**
+   * Navigate to the Podman Desktop Resources page
+   */
+  async navigateToResources(): Promise<void> {
+    return this.dependencies.navigation.navigateToResources();
   }
 
   override dispose(): void {
