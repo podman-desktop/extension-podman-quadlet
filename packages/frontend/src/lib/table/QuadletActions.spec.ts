@@ -34,15 +34,19 @@ import { QuadletType } from '@podman-desktop/quadlet-extension-core-api';
 vi.mock(import('/@/api/client'), () => ({
   dialogAPI: {
     showWarningMessage: vi.fn(),
+    showErrorMessage: vi.fn(),
   } as unknown as DialogApi,
   quadletAPI: {
     remove: vi.fn(),
+    start: vi.fn(),
+    stop: vi.fn(),
     restart: vi.fn(),
   } as unknown as QuadletApi,
 }));
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.mocked(dialogAPI.showErrorMessage).mockResolvedValue(undefined);
 });
 
 const PROVIDER_MOCK: ProviderContainerConnectionIdentifierInfo = {
@@ -188,4 +192,50 @@ test('expect restart action to call quadletAPI#restart', async () => {
   await vi.waitFor(() => {
     expect(quadletAPI.restart).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
   });
+});
+
+test.each<{ action: 'start' | 'stop' | 'restart'; title: string; state: QuadletInfo['state'] }>([
+  { action: 'start', title: 'Start quadlet', state: 'inactive' },
+  { action: 'stop', title: 'Stop quadlet', state: 'active' },
+  { action: 'restart', title: 'Restart quadlet', state: 'active' },
+])('expect $action error to be displayed with dialogAPI#showErrorMessage', async ({ action, title, state }) => {
+  // errors are serialized as message between backend and frontend
+  vi.mocked(quadletAPI[action]).mockRejectedValue(`cannot ${action} foo.service (5): Unit foo.service not found.`);
+
+  const { getByRole } = render(QuadletActions, {
+    object: { ...QUADLET_MOCK, state },
+  });
+
+  const button = getByRole('button', { name: title });
+  await fireEvent.click(button);
+
+  await vi.waitFor(() => {
+    expect(dialogAPI.showErrorMessage).toHaveBeenCalledWith(
+      `Failed to ${action} quadlet ${QUADLET_MOCK.path}: cannot ${action} foo.service (5): Unit foo.service not found.`,
+    );
+  });
+  // the action should be available again
+  await vi.waitFor(() => {
+    expect(getByRole('button', { name: title })).toBeEnabled();
+  });
+});
+
+test.each<{ action: 'start' | 'stop' | 'restart'; title: string; state: QuadletInfo['state'] }>([
+  { action: 'start', title: 'Start quadlet', state: 'inactive' },
+  { action: 'stop', title: 'Stop quadlet', state: 'active' },
+  { action: 'restart', title: 'Restart quadlet', state: 'active' },
+])('expect successful $action not to display any error', async ({ action, title, state }) => {
+  vi.mocked(quadletAPI[action]).mockResolvedValue(true);
+
+  const { getByRole } = render(QuadletActions, {
+    object: { ...QUADLET_MOCK, state },
+  });
+
+  const button = getByRole('button', { name: title });
+  await fireEvent.click(button);
+
+  await vi.waitFor(() => {
+    expect(quadletAPI[action]).toHaveBeenCalledWith(PROVIDER_MOCK, QUADLET_MOCK.id);
+  });
+  expect(dialogAPI.showErrorMessage).not.toHaveBeenCalled();
 });

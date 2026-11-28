@@ -18,10 +18,22 @@ let deleting: boolean = $derived(object.state === 'deleting');
 let loading: boolean = $state(false);
 let startable: boolean = $derived(isTemplateQuadlet(object) ? !!object.defaultInstance : true);
 
+/**
+ * Display the error to the user, otherwise a failing action would be silently ignored
+ * @param action the action which failed (E.g. start)
+ * @param err the error thrown
+ */
+function showActionError(action: string, err: unknown): void {
+  console.error(err);
+  dialogAPI.showErrorMessage(`Failed to ${action} quadlet ${object.path}: ${String(err)}`).catch(console.error);
+}
+
 async function start(): Promise<void> {
   loading = true;
   try {
     await quadletAPI.start(object.connection, object.id);
+  } catch (err: unknown) {
+    showActionError('start', err);
   } finally {
     loading = false;
   }
@@ -31,6 +43,8 @@ async function stop(): Promise<void> {
   loading = true;
   try {
     await quadletAPI.stop(object.connection, object.id);
+  } catch (err: unknown) {
+    showActionError('stop', err);
   } finally {
     loading = false;
   }
@@ -40,6 +54,8 @@ async function restart(): Promise<void> {
   loading = true;
   try {
     await quadletAPI.restart(object.connection, object.id);
+  } catch (err: unknown) {
+    showActionError('restart', err);
   } finally {
     loading = false;
   }

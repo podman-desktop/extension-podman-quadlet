@@ -28,6 +28,7 @@ const WINDOWS_API_MOCK: typeof window = {
   showWarningMessage: vi.fn(),
   showInputBox: vi.fn(),
   showInformationMessage: vi.fn(),
+  showErrorMessage: vi.fn(),
 } as unknown as typeof window;
 
 function getDialogService(): DialogService {
@@ -67,4 +68,14 @@ test('expect DialogService#showInformationMessage to use windowApi#showInformati
   expect(result).toStrictEqual('hello');
 
   expect(WINDOWS_API_MOCK.showInformationMessage).toHaveBeenCalledWith('foo.bar', 'hello', 'world');
+});
+
+test('expect DialogService#showErrorMessage to use windowApi#showErrorMessage', async () => {
+  vi.mocked(WINDOWS_API_MOCK.showErrorMessage).mockResolvedValue('hello');
+
+  const dialog = getDialogService();
+  const result = await dialog.showErrorMessage('foo.bar', 'hello', 'world');
+  expect(result).toStrictEqual('hello');
+
+  expect(WINDOWS_API_MOCK.showErrorMessage).toHaveBeenCalledWith('foo.bar', 'hello', 'world');
 });

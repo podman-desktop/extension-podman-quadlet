@@ -21,6 +21,7 @@ import type { DialogService } from '/@/services/dialog-service';
 
 const DIALOG_SERVICE_MOCK: DialogService = {
   showWarningMessage: vi.fn(),
+  showErrorMessage: vi.fn(),
 } as unknown as DialogService;
 
 beforeEach(() => {
@@ -45,4 +46,14 @@ test('expect error to be propagated', async () => {
   await expect(() => {
     return dialog.showWarningMessage('Are you sure?', 'Yes', 'No');
   }).rejects.toThrow('Something went wrong');
+});
+
+test('expect DialogApiImpl#showErrorMessage to use DialogService#showErrorMessage', async () => {
+  vi.mocked(DIALOG_SERVICE_MOCK.showErrorMessage).mockResolvedValue('OK');
+  const dialog = new DialogApiImpl({
+    dialog: DIALOG_SERVICE_MOCK,
+  });
+  const result = await dialog.showErrorMessage('Something went wrong', 'OK');
+  expect(result).toStrictEqual('OK');
+  expect(DIALOG_SERVICE_MOCK.showErrorMessage).toHaveBeenCalledWith('Something went wrong', 'OK');
 });

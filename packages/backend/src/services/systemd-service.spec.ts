@@ -160,3 +160,55 @@ test('expect SystemdService#restart to call PodmanService#systemctlExec', async 
     duration: expect.any(Number),
   });
 });
+
+describe.each<{ action: 'start' | 'stop' | 'restart'; event: TelemetryEvents }>([
+  { action: 'start', event: TelemetryEvents.SYSTEMD_START },
+  { action: 'stop', event: TelemetryEvents.SYSTEMD_STOP },
+  { action: 'restart', event: TelemetryEvents.SYSTEMD_RESTART },
+])('SystemdService#$action', ({ action, event }) => {
+  test('expect systemctl non-zero exit code to be thrown as an error', async () => {
+    vi.mocked(PODMAN_WORKER_MOCK.systemctlExec).mockResolvedValue({
+      exitCode: 5,
+      stdout: '',
+      stderr: `Failed to ${action} dummy.service: Unit dummy.service not found.\n`,
+      command: 'systemctl',
+      cancelled: false,
+      killed: false,
+      name: 'RunError',
+      message: 'Command execution failed with exit code 5',
+    });
+
+    const systemd = getSystemdService();
+    await expect(
+      systemd[action]({
+        provider: WSL_PROVIDER_CONNECTION_MOCK,
+        service: 'dummy.service',
+        admin: false,
+      }),
+    ).rejects.toThrow(
+      `cannot ${action} dummy.service (5): Failed to ${action} dummy.service: Unit dummy.service not found.`,
+    );
+
+    expect(telemetryMock.logUsage).toHaveBeenCalledWith(event, {
+      admin: false,
+      duration: expect.any(Number),
+      error: expect.any(Error),
+    });
+  });
+
+  test('expect stderr output with zero exit code not to be thrown', async () => {
+    vi.mocked(PODMAN_WORKER_MOCK.systemctlExec).mockResolvedValue({
+      stdout: '',
+      stderr: 'Warning: The unit file of dummy.service changed on disk.',
+      command: 'systemctl',
+    });
+
+    const systemd = getSystemdService();
+    const result = await systemd[action]({
+      provider: WSL_PROVIDER_CONNECTION_MOCK,
+      service: 'dummy.service',
+      admin: false,
+    });
+    expect(result).toBeFalsy();
+  });
+});
