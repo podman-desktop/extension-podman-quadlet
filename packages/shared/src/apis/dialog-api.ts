@@ -22,5 +22,6 @@ export abstract class DialogApi {
 
   abstract showWarningMessage(message: string, ...items: string[]): Promise<string | undefined>;
   abstract showInformationMessage(message: string, ...items: string[]): Promise<string | undefined>;
+  abstract showErrorMessage(message: string, ...items: string[]): Promise<string | undefined>;
   abstract showInputBox(options: InputBoxOptions): Promise<string | undefined>;
 }

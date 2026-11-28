@@ -35,4 +35,8 @@ export class DialogService {
   showInformationMessage(message: string, ...items: string[]): Promise<string | undefined> {
     return this.dependencies.windowApi.showInformationMessage(message, ...items);
   }
+
+  showErrorMessage(message: string, ...items: string[]): Promise<string | undefined> {
+    return this.dependencies.windowApi.showErrorMessage(message, ...items);
+  }
 }

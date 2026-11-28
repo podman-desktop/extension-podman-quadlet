@@ -36,6 +36,10 @@ export class DialogApiImpl extends DialogApi {
     return this.dependencies.dialog.showInformationMessage(message, ...items);
   }
 
+  override showErrorMessage(message: string, ...items: string[]): Promise<string | undefined> {
+    return this.dependencies.dialog.showErrorMessage(message, ...items);
+  }
+
   override showInputBox(options: InputBoxOptions): Promise<string | undefined> {
     return this.dependencies.dialog.showInputBox(options);
   }

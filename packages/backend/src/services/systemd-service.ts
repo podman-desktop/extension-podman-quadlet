@@ -8,6 +8,7 @@ import type { AsyncInit } from '/@/utils/async-init';
 import { TelemetryEvents } from '/@/utils/telemetry-events';
 import type { PodmanWorker } from '/@/utils/worker/podman-worker';
 import { performance } from 'node:perf_hooks';
+import { isRunError } from '/@/utils/run-error';
 
 export class SystemdService extends SystemdHelper implements Disposable, AsyncInit {
   constructor(dependencies: SystemdServiceDependencies) {
@@ -125,6 +126,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       const result = await worker.systemctlExec({
         args,
       });
+      // systemctl exits with a non-zero code when the service cannot be started (E.g. unit not found)
+      if (isRunError(result))
+        throw new Error(`cannot start ${options.service} (${result.exitCode}): ${result.stderr.trim()}`);
       return result.stderr.length === 0;
     } catch (err: unknown) {
       telemetry['error'] = err;
@@ -163,6 +167,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       const result = await worker.systemctlExec({
         args,
       });
+      // systemctl exits with a non-zero code when the service cannot be stopped (E.g. unit not loaded)
+      if (isRunError(result))
+        throw new Error(`cannot stop ${options.service} (${result.exitCode}): ${result.stderr.trim()}`);
       return result.stderr.length === 0;
     } catch (err: unknown) {
       telemetry['error'] = err;
@@ -201,6 +208,9 @@ export class SystemdService extends SystemdHelper implements Disposable, AsyncIn
       const result = await worker.systemctlExec({
         args,
       });
+      // systemctl exits with a non-zero code when the service cannot be restarted (E.g. unit not found)
+      if (isRunError(result))
+        throw new Error(`cannot restart ${options.service} (${result.exitCode}): ${result.stderr.trim()}`);
       return result.stderr.length === 0;
     } catch (err: unknown) {
       telemetry['error'] = err;
