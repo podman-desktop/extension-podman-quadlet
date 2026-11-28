@@ -16,4 +16,8 @@ export class RoutingApiImpl extends RoutingApi {
   override async readRoute(): Promise<string | undefined> {
     return this.dependencies.routing.read();
   }
+
+  override async navigateToResources(): Promise<void> {
+    return this.dependencies.routing.navigateToResources();
+  }
 }

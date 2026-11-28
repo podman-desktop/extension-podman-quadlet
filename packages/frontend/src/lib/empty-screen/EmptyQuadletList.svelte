@@ -4,6 +4,7 @@ import { faArrowsRotate } from '@fortawesome/free-solid-svg-icons/faArrowsRotate
 import { Button, EmptyScreen } from '@podman-desktop/ui-svelte';
 import { providerConnectionsInfo } from '/@store/connections';
 import { synchronisation } from '/@store/synchronisation';
+import { routingAPI } from '/@/api/client';
 
 interface Props {
   connection?: ProviderContainerConnectionDetailedInfo;
@@ -14,6 +15,9 @@ interface Props {
 }
 
 let { connection, loading, disabled, refreshQuadlets }: Props = $props();
+
+// Podman Desktop does not register any podman connection when podman is not installed (or without any podman machine)
+let noPodmanConnection: boolean = $derived($providerConnectionsInfo.length === 0);
 
 let runningConnection: number = $derived(
   $providerConnectionsInfo.reduce((accumulator, connection) => {
@@ -38,7 +42,13 @@ let outOfSync: boolean = $derived.by(() => {
   );
 });
 
+let title: string = $derived(noPodmanConnection ? 'Podman is required' : 'No Quadlets');
+
 let message: string = $derived.by(() => {
+  if (noPodmanConnection) {
+    return 'Quadlets are managed through Podman, but no Podman connection could be found. Go to Resources to install Podman or set up a Podman machine.';
+  }
+
   if (runningConnection === 0) {
     return 'No running connection could be found';
   }
@@ -54,10 +64,18 @@ let message: string = $derived.by(() => {
 
   return 'No Quadlets found on your system';
 });
+
+function navigateToResources(): void {
+  routingAPI.navigateToResources().catch(console.error);
+}
 </script>
 
-<EmptyScreen icon={faArrowsRotate} title="No Quadlets" message={message}>
-  {#if outOfSync}
+<EmptyScreen icon={faArrowsRotate} title={title} message={message}>
+  {#if noPodmanConnection}
+    <div class="flex flex-col">
+      <Button type="link" title="Go to Resources" on:click={navigateToResources}>Go to Resources</Button>
+    </div>
+  {:else if outOfSync}
     <div class="flex flex-col">
       <Button
         icon={faArrowsRotate}

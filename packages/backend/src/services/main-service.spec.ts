@@ -26,6 +26,7 @@ import type {
   window,
   cli as cliApi,
   containerEngine,
+  navigation as navigationApi,
   Webview,
   WebviewPanel,
 } from '@podman-desktop/api';
@@ -93,6 +94,7 @@ const CLI_API_MOCK: typeof cliApi = {} as unknown as typeof cliApi;
 const COMMANDS_API_MOCK: typeof commandsApi = {} as unknown as typeof commandsApi;
 const CONTAINER_API_MOCK: typeof containerEngine = {} as unknown as typeof containerEngine;
 const CONFIGURATION_API_MOCK: typeof configurationApi = {} as unknown as typeof configurationApi;
+const NAVIGATION_API_MOCK: typeof navigationApi = {} as unknown as typeof navigationApi;
 
 const WEBVIEW_PANEL: WebviewPanel = {
   webview: {
@@ -117,6 +119,7 @@ function getMainService(): MainService {
     commandsApi: COMMANDS_API_MOCK,
     containers: CONTAINER_API_MOCK,
     configuration: CONFIGURATION_API_MOCK,
+    navigation: NAVIGATION_API_MOCK,
   });
 }
 
