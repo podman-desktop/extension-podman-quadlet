@@ -7,6 +7,7 @@ import { faRotateRight } from '@fortawesome/free-solid-svg-icons/faRotateRight';
 import EditorOverlay from '/@/lib/forms/EditorOverlay.svelte';
 import { isFileNotFoundError } from '@podman-desktop/quadlet-extension-core-api';
 import type { ProviderContainerConnectionIdentifierInfo } from '@podman-desktop/quadlet-extension-core-api';
+import { getLanguageFromPath } from '/@/lib/monaco-editor/language';
 
 interface Props {
   connection: ProviderContainerConnectionIdentifierInfo;
@@ -19,13 +20,7 @@ let { path, connection, loading = $bindable() }: Props = $props();
 let originalContent: string | undefined = $state(undefined);
 let currentContent: string | undefined = $state(undefined);
 
-let language: string = $derived.by(() => {
-  const pathParts = path.split('/');
-  const filename = pathParts[pathParts.length - 1];
-
-  const filenameParts = filename.split('.');
-  return filenameParts[filenameParts.length - 1];
-});
+let language: string = $derived(getLanguageFromPath(path));
 
 let error: string | undefined = $state(undefined);
 // true when the file does not exist yet, it will be created on save
